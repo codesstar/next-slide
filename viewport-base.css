@@ -1,0 +1,296 @@
+/* ===========================================
+   VIEWPORT FITTING: MANDATORY BASE STYLES
+   Include this ENTIRE block in every presentation.
+   These styles ensure slides fit exactly in the viewport
+   with no overflow, on any screen size.
+   =========================================== */
+
+/* 1. Lock html/body to viewport */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* 2. Each slide = exact viewport height */
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height — handles mobile browser chrome */
+    overflow: hidden; /* CRITICAL: prevent ANY content overflow */
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* 3. Content container — flex centering with overflow protection */
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden; /* Double-protection against overflow */
+    padding: var(--slide-padding);
+}
+
+/* 4. ALL typography uses clamp() for responsive scaling */
+:root {
+    /* --- Titles scale from mobile to desktop --- */
+    --title-size: clamp(1.5rem, 5vw, 4rem);
+    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+
+    /* --- Body text --- */
+    --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+    --small-size: clamp(0.65rem, 1vw, 0.875rem);
+
+    /* --- Large display numbers (stats slides) --- */
+    --stat-size: clamp(2rem, 8vw, 6rem);
+
+    /* --- Spacing scales with viewport --- */
+    --slide-padding: clamp(1rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 2vw, 2rem);
+    --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+
+/* 5. Cards/containers use viewport-relative max sizes */
+.card, .container, .content-box {
+    max-width: min(90vw, 1000px);
+    max-height: min(80vh, 700px);
+}
+
+/* 6. Lists auto-scale with viewport */
+.feature-list, .bullet-list {
+    gap: clamp(0.4rem, 1vh, 1rem);
+}
+
+.feature-list li, .bullet-list li {
+    font-size: var(--body-size);
+    line-height: 1.5; /* Slightly taller than 1.4 for CJK readability */
+}
+
+/* 7. Grids adapt to available space */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+/* 8. Images constrained to viewport */
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+/* 9. CJK-specific typography adjustments */
+:lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
+    line-height: 1.6; /* CJK characters need more line height */
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+/* 10. Ensure text doesn't overflow containers */
+h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+p, li, blockquote {
+    overflow-wrap: break-word;
+}
+
+/* ===========================================
+   RESPONSIVE BREAKPOINTS
+   Aggressive scaling for smaller viewports
+   =========================================== */
+
+/* Short viewports (< 700px height) — laptops, split-screen */
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+    }
+}
+
+/* Very short viewports (< 600px height) — compact displays */
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+    }
+
+    /* Hide non-essential decorative elements */
+    .nav-dots, .keyboard-hint, .decorative {
+        display: none;
+    }
+}
+
+/* Extremely short (landscape phones, < 500px height) */
+@media (max-height: 500px) {
+    :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+
+    /* Stack comparison slides vertically */
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Narrow viewports (< 600px width) — phones in portrait */
+@media (max-width: 600px) {
+    :root {
+        --title-size: clamp(1.25rem, 7vw, 2.5rem);
+    }
+
+    /* Stack all grids vertically */
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stack two-column layouts */
+    .slide-content[style*="flex-direction: row"] {
+        flex-direction: column !important;
+    }
+
+    /* Hide slide counter on small screens */
+    .slide-counter {
+        display: none;
+    }
+}
+
+/* Tall narrow viewports (phones) — optimize vertical space */
+@media (max-width: 600px) and (min-height: 700px) {
+    :root {
+        --slide-padding: clamp(1.5rem, 6vw, 3rem);
+        --content-gap: clamp(1rem, 3vw, 2rem);
+    }
+}
+
+/* Ultra-wide screens (> 2000px) — prevent content from becoming too sparse */
+@media (min-width: 2000px) {
+    .slide-content {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* ===========================================
+   HIGH DPI / RETINA
+   Sharper borders on high-density displays
+   =========================================== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .card, .content-box {
+        border-width: 0.5px;
+    }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   Respect user accessibility preferences
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+        scroll-behavior: auto !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+        scroll-snap-type: none; /* Snap can feel jarring without smooth scroll */
+    }
+
+    /* Still allow visibility toggle (just instant, no motion) */
+    .reveal, .reveal-scale, .reveal-left, .reveal-right,
+    .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+    .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+    .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+        opacity: 0;
+        transform: none !important;
+        filter: none !important;
+        clip-path: none !important;
+        transition: opacity 0.2s ease !important;
+    }
+
+    .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+    .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+    .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+    .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+    .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+    .visible .reveal-quote {
+        opacity: 1;
+    }
+}
+
+/* ===========================================
+   DARK MODE / LIGHT MODE
+   Auto-detect system preference when using
+   light-mode presets
+   =========================================== */
+@media (prefers-color-scheme: light) {
+    /* Only applies if the presentation uses .auto-theme class on <html>.
+       Dark-only presentations should NOT use .auto-theme. */
+    .auto-theme {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-tertiary: #e9ecef;
+        --text-primary: #1a1a2e;
+        --text-secondary: #495057;
+        --text-muted: #868e96;
+        --border-subtle: rgba(0, 0, 0, 0.08);
+        --surface: rgba(0, 0, 0, 0.03);
+    }
+}
+
+/* ===========================================
+   PRINT STYLES
+   Clean output for PDF export
+   =========================================== */
+@media print {
+    html {
+        scroll-snap-type: none;
+    }
+
+    .slide {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+        page-break-after: always;
+        page-break-inside: avoid;
+    }
+
+    .progress-bar, .nav-dots, .slide-counter,
+    .edit-hotzone, .edit-toggle {
+        display: none !important;
+    }
+
+    /* Force all reveals to be visible */
+    .reveal, [class*="reveal-"] {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        clip-path: none !important;
+    }
+}

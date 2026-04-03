@@ -1,0 +1,22 @@
+{
+  "name": "next-slide",
+  "displayName": "Next Slide 🦞",
+  "description": "AI-powered HTML presentations. 26+ styles, zero dependencies, bilingual. 你的下个 slide，何必是 PPT",
+  "version": "0.1.0",
+  "kind": "skill",
+  "author": "Callum",
+  "homepage": "https://github.com/user/next-slide",
+  "instructions": "./SKILL.md",
+  "assets": [
+    "STYLE_PRESETS.md",
+    "viewport-base.css",
+    "html-template.md",
+    "animation-patterns.md",
+    "scripts/extract-pptx.py"
+  ],
+  "triggers": [
+    "presentation", "slides", "slide deck", "PPT", "演示", "做个slide", "next-slide",
+    "pptx", "convert ppt", "markdown to slides"
+  ],
+  "tags": ["presentation", "design", "html", "bilingual"]
+}
