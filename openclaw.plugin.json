@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "kind": "skill",
   "author": "Callum",
-  "homepage": "https://github.com/user/next-slide",
+  "homepage": "https://github.com/codesstar/next-slide",
   "instructions": "./SKILL.md",
   "assets": [
     "STYLE_PRESETS.md",
