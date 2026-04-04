@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next Slide — 你的下个 slide，何必是 PPT</title>
+<meta name="description" content="AI-powered HTML presentation generator. 26+ curated styles, zero dependencies, bilingual EN/中文.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   CSS Variables & Reset
+   ═══════════════════════════════════════════ */
+:root {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #111111;
+    --bg-surface: #1a1a1a;
+    --bg-surface-hover: #222222;
+    --text-primary: #f5f5f5;
+    --text-secondary: #a0a0a0;
+    --text-muted: #666666;
+    --accent: #FF5722;
+    --accent-glow: rgba(255, 87, 34, 0.4);
+    --accent-amber: #FFB300;
+    --accent-amber-glow: rgba(255, 179, 0, 0.3);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-accent: rgba(255, 87, 34, 0.3);
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --font-display: 'Archivo Black', sans-serif;
+    --font-body: 'Space Grotesk', sans-serif;
+
+    --section-padding: clamp(80px, 12vh, 140px) clamp(20px, 5vw, 80px);
+    --max-width: 1200px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+
+::selection {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* ═══════════════════════════════════════════
+   Background Effects
+   ═══════════════════════════════════════════ */
+.grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.noise-overlay {
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ═══════════════════════════════════════════
+   Navigation
+   ═══════════════════════════════════════════ */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-subtle);
+    transition: transform 0.3s ease;
+}
+
+nav.hidden { transform: translateY(-100%); }
+
+.nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-logo .lobster { font-size: 1.3rem; }
+
+.nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+}
+
+.nav-links a {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.nav-links a:hover { color: var(--accent); }
+
+.nav-cta {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 20px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    color: var(--accent);
+    transition: all 0.2s ease;
+}
+
+.nav-cta:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* ═══════════════════════════════════════════
+   Section Base
+   ═══════════════════════════════════════════ */
+section {
+    position: relative;
+    z-index: 2;
+    padding: var(--section-padding);
+}
+
+.section-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.15;
+    margin-bottom: 24px;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════════
+   Hero
+   ═══════════════════════════════════════════ */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-gradient {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 800px 600px at 30% 40%, rgba(255, 87, 34, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 500px at 70% 60%, rgba(255, 179, 0, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 900px 700px at 50% 80%, rgba(255, 87, 34, 0.05) 0%, transparent 70%);
+    animation: hero-gradient-drift 20s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+@keyframes hero-gradient-drift {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 15px) scale(0.98); }
+    100% { transform: translate(10px, -10px) scale(1.02); }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid var(--border-accent);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 40px;
+    background: rgba(255, 87, 34, 0.05);
+}
+
+.hero-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+}
+
+.hero h1 .accent { color: var(--accent); }
+.hero h1 .amber { color: var(--accent-amber); }
+
+.hero-tagline {
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 30px rgba(255, 87, 34, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 40px rgba(255, 87, 34, 0.35), 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 500;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-secondary:hover {
+    border-color: var(--text-muted);
+    transform: translateY(-2px);
+}
+
+.hero-badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.tool-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.tool-badge svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════
+   Problem Section
+   ═══════════════════════════════════════════ */
+.problem {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.problem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+}
+
+.problem-card {
+    padding: 32px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-subtle);
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.problem-card:hover {
+    border-color: rgba(255, 87, 34, 0.2);
+    transform: translateY(-4px);
+}
+
+.problem-icon {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.problem-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+}
+
+.problem-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+}
+
+/* ═══════════════════════════════════════════
+   Solution / How It Works
+   ═══════════════════════════════════════════ */
+.solution { overflow: hidden; }
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-top: 56px;
+    position: relative;
+}
+
+.steps::before {
+    content: '';
+    position: absolute;
+    top: 48px;
+    left: calc(100% / 6);
+    right: calc(100% / 6);
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-amber), var(--accent));
+    opacity: 0.3;
+}
+
+.step {
+    text-align: center;
+    position: relative;
+}
+
+.step-number {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 28px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(255, 87, 34, 0.1), rgba(255, 179, 0, 0.05));
+    border: 1px solid var(--border-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--accent);
+    position: relative;
+    z-index: 2;
+}
+
+.step h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+}
+
+.step p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════
+   Style Gallery
+   ═══════════════════════════════════════════ */
+.gallery {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+}
+
+.gallery-card {
+    padding: 32px;
+    border-radius: 16px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+    overflow: hidden;
+}
+
+.gallery-card:hover {
+    border-color: rgba(255, 87, 34, 0.25);
+    transform: translateY(-4px);
+}
+
+.gallery-swatches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.gallery-info h3 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+}
+
+.gallery-info .count {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.gallery-info p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════
+   Features Grid
+   ═══════════════════════════════════════════ */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+}
+
+.feature-card {
+    padding: 32px;
+    border-radius: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-amber));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-4px);
+}
+
+.feature-card:hover::before { opacity: 1; }
+
+.feature-icon {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.feature-card h3 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════
+   Comparison
+   ═══════════════════════════════════════════ */
+.comparison {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.comparison-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 40px;
+    align-items: start;
+    margin-top: 48px;
+}
+
+.comparison-col { padding: 40px; border-radius: 20px; }
+
+.comparison-old {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-subtle);
+}
+
+.comparison-new {
+    background: linear-gradient(135deg, rgba(255, 87, 34, 0.06), rgba(255, 179, 0, 0.03));
+    border: 1px solid var(--border-accent);
+}
+
+.comparison-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    padding-top: 20px;
+}
+
+.comparison-divider span {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    writing-mode: vertical-lr;
+    letter-spacing: 0.2em;
+}
+
+.comparison-col h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comparison-old h3 { color: var(--text-muted); }
+.comparison-new h3 { color: var(--accent); }
+
+.comparison-steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.comparison-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.comparison-old .comparison-steps li { color: var(--text-muted); }
+.comparison-new .comparison-steps li { color: var(--text-secondary); }
+
+.step-marker {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.comparison-old .step-marker {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-muted);
+    border: 1px solid var(--border-subtle);
+}
+
+.comparison-new .step-marker {
+    background: rgba(255, 87, 34, 0.12);
+    color: var(--accent);
+    border: 1px solid var(--border-accent);
+}
+
+/* ═══════════════════════════════════════════
+   Install Section
+   ═══════════════════════════════════════════ */
+.install-block {
+    margin-top: 48px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.code-window {
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0d0d0d;
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.code-titlebar {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border-subtle);
+    gap: 8px;
+}
+
+.code-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.code-dot.red { background: #ff5f57; }
+.code-dot.yellow { background: #febc2e; }
+.code-dot.green { background: #28c840; }
+
+.code-titlebar span {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.code-body {
+    padding: 24px;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    overflow-x: auto;
+}
+
+.code-body .comment { color: #555; }
+.code-body .cmd { color: var(--accent); }
+.code-body .arg { color: var(--accent-amber); }
+.code-body .url { color: #888; }
+
+/* ═══════════════════════════════════════════
+   Footer
+   ═══════════════════════════════════════════ */
+footer {
+    position: relative;
+    z-index: 2;
+    padding: 60px 40px;
+    text-align: center;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+.footer-logo {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover { color: var(--accent); }
+
+.footer-copy {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+
+/* ═══════════════════════════════════════════
+   Scroll Reveal Animations
+   ═══════════════════════════════════════════ */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-blur {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(20px);
+    transition: opacity 0.9s ease, filter 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+}
+
+.reveal-blur.visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+}
+
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+}
+
+.reveal-scale.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.stagger > * {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+}
+
+.stagger.visible > *:nth-child(1) { transition-delay: 0.05s; }
+.stagger.visible > *:nth-child(2) { transition-delay: 0.1s; }
+.stagger.visible > *:nth-child(3) { transition-delay: 0.15s; }
+.stagger.visible > *:nth-child(4) { transition-delay: 0.2s; }
+.stagger.visible > *:nth-child(5) { transition-delay: 0.25s; }
+.stagger.visible > *:nth-child(6) { transition-delay: 0.3s; }
+
+.stagger.visible > * {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hero specific animations */
+.hero-content .hero-badge {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-fade-in 0.8s var(--ease-out-expo) 0.2s forwards;
+}
+
+.hero-content h1 {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+    animation: hero-title-in 1s var(--ease-out-expo) 0.4s forwards;
+}
+
+.hero-content .hero-tagline {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-fade-in 0.8s var(--ease-out-expo) 0.7s forwards;
+}
+
+.hero-content .hero-actions {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-fade-in 0.8s var(--ease-out-expo) 0.9s forwards;
+}
+
+.hero-content .hero-badges {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-fade-in 0.8s var(--ease-out-expo) 1.1s forwards;
+}
+
+@keyframes hero-fade-in {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-title-in {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Glow effect on accent elements */
+.glow-accent {
+    text-shadow: 0 0 40px rgba(255, 87, 34, 0.3);
+}
+
+/* Scanning line on code block */
+.code-window {
+    position: relative;
+    overflow: hidden;
+}
+
+.code-window::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scan 4s linear infinite;
+}
+
+@keyframes scan {
+    0% { left: -100%; top: 0; }
+    49% { left: 100%; top: 0; }
+    50% { left: 100%; top: 100%; }
+    51% { left: -100%; top: 100%; }
+    100% { left: 100%; top: 100%; }
+}
+
+/* ═══════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .problem-grid,
+    .steps,
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .comparison-container {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .comparison-divider {
+        writing-mode: horizontal-tb;
+        padding-top: 0;
+    }
+
+    .comparison-divider span {
+        writing-mode: horizontal-tb;
+    }
+
+    .steps::before { display: none; }
+
+    .nav-links { display: none; }
+
+    nav { padding: 16px 20px; }
+}
+
+@media (max-width: 600px) {
+    .hero h1 { font-size: 2.2rem; }
+
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .gallery-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .reveal, .reveal-blur, .reveal-scale, .stagger > * {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- Background effects -->
+<div class="grid-bg"></div>
+<div class="noise-overlay"></div>
+
+<!-- Navigation -->
+<nav>
+    <div class="nav-logo">
+        <span class="lobster">&#x1F99E;</span> Next Slide
+    </div>
+    <ul class="nav-links">
+        <li><a href="#problem">Why</a></li>
+        <li><a href="#solution">How</a></li>
+        <li><a href="#styles">Styles</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#install">Install</a></li>
+    </ul>
+    <a href="https://github.com/codesstar/next-slide" class="nav-cta" target="_blank">GitHub</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+    <div class="hero-gradient"></div>
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            Open Source &middot; MIT License
+        </div>
+        <h1>
+            <span class="accent glow-accent">你的下个 slide</span><br>
+            何必是 PPT
+        </h1>
+        <p class="hero-tagline">
+            Your next slide doesn't have to be PowerPoint.<br>
+            AI-powered HTML presentations &mdash; 26+ styles, zero dependencies, bilingual.
+        </p>
+        <div class="hero-actions">
+            <a href="https://github.com/codesstar/next-slide" class="btn-primary" target="_blank">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                Get Started
+            </a>
+            <a href="#solution" class="btn-secondary">
+                See How It Works
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </a>
+        </div>
+        <div class="hero-badges">
+            <div class="tool-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                Claude Code
+            </div>
+            <div class="tool-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                OpenClaw
+            </div>
+            <div class="tool-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Zero Dependencies
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Problem -->
+<section class="problem" id="problem">
+    <div class="section-inner">
+        <div class="reveal">
+            <span class="section-label">The Problem</span>
+            <h2 class="section-title">还在用 PowerPoint？</h2>
+            <p class="section-subtitle">It's 2026. You shouldn't need a 2GB desktop app to make slides.</p>
+        </div>
+        <div class="problem-grid stagger">
+            <div class="problem-card">
+                <span class="problem-icon">&#x23F3;</span>
+                <h3>Painfully Slow</h3>
+                <p>Drag. Align. Resize. Repeat. Hours lost to manual formatting when you should be thinking about content.</p>
+            </div>
+            <div class="problem-card">
+                <span class="problem-icon">&#x1F971;</span>
+                <h3>Ugly Templates</h3>
+                <p>Same corporate blue gradients since 2003. "Professional" shouldn't mean "boring." Your ideas deserve better.</p>
+            </div>
+            <div class="problem-card">
+                <span class="problem-icon">&#x1F512;</span>
+                <h3>Locked In</h3>
+                <p>Proprietary formats, no version control, no API. Can't automate, can't integrate, can't collaborate with code.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Solution -->
+<section class="solution" id="solution">
+    <div class="section-inner">
+        <div class="reveal">
+            <span class="section-label">How It Works</span>
+            <h2 class="section-title">Three steps. That's it.</h2>
+            <p class="section-subtitle">Describe what you want. Pick a style. Get a beautiful, self-contained HTML presentation.</p>
+        </div>
+        <div class="steps stagger">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Describe Your Content</h3>
+                <p>Write in natural language or Markdown. No manual layout, no pixel-pushing. Just say what you mean.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Pick a Style</h3>
+                <p>Choose from 26+ curated presets &mdash; dark, light, bold, minimal, cultural. Each one crafted, not generated.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Get Beautiful HTML</h3>
+                <p>A single .html file with smooth animations, responsive layout, and zero external dependencies. Open anywhere.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Style Gallery -->
+<section class="gallery" id="styles">
+    <div class="section-inner">
+        <div class="reveal">
+            <span class="section-label">Style Gallery</span>
+            <h2 class="section-title">26+ curated presets.<br>Not random themes &mdash; <span style="color:var(--accent)">crafted identities.</span></h2>
+        </div>
+        <div class="gallery-grid stagger">
+            <div class="gallery-card">
+                <div class="gallery-swatches">
+                    <div class="swatch" style="background:#0a0a0a;"></div>
+                    <div class="swatch" style="background:#1a1a2e;"></div>
+                    <div class="swatch" style="background:#0f1923;"></div>
+                    <div class="swatch" style="background:#16213e;"></div>
+                </div>
+                <div class="gallery-info">
+                    <h3>Dark Themes</h3>
+                    <div class="count">8 styles</div>
+                    <p>Deep blacks, midnight blues, carbon fiber. For keynotes that command the room.</p>
+                </div>
+            </div>
+            <div class="gallery-card">
+                <div class="gallery-swatches">
+                    <div class="swatch" style="background:#fafafa;"></div>
+                    <div class="swatch" style="background:#f5f0eb;"></div>
+                    <div class="swatch" style="background:#fffef5;"></div>
+                    <div class="swatch" style="background:#f0f4f8;"></div>
+                </div>
+                <div class="gallery-info">
+                    <h3>Light Themes</h3>
+                    <div class="count">8 styles</div>
+                    <p>Clean whites, warm creams, soft grays. Minimalist elegance for any occasion.</p>
+                </div>
+            </div>
+            <div class="gallery-card">
+                <div class="gallery-swatches">
+                    <div class="swatch" style="background:linear-gradient(135deg,#FF5722,#FF9800);"></div>
+                    <div class="swatch" style="background:linear-gradient(135deg,#E91E63,#9C27B0);"></div>
+                    <div class="swatch" style="background:linear-gradient(135deg,#00BCD4,#009688);"></div>
+                    <div class="swatch" style="background:linear-gradient(135deg,#FFD600,#FF6D00);"></div>
+                </div>
+                <div class="gallery-info">
+                    <h3>Bold &amp; Creative</h3>
+                    <div class="count">5 styles</div>
+                    <p>Vibrant gradients, strong typography, high-energy layouts. Make statements.</p>
+                </div>
+            </div>
+            <div class="gallery-card">
+                <div class="gallery-swatches">
+                    <div class="swatch" style="background:linear-gradient(135deg,#2c2c2c,#e8dcc8);"></div>
+                    <div class="swatch" style="background:linear-gradient(135deg,#1a1a1a,#c41e3a);"></div>
+                    <div class="swatch" style="background:linear-gradient(135deg,#f5f5dc,#333);"></div>
+                    <div class="swatch" style="background:linear-gradient(135deg,#2d1b69,#b8860b);"></div>
+                </div>
+                <div class="gallery-info">
+                    <h3>Cultural &amp; Special</h3>
+                    <div class="count">5 styles</div>
+                    <p>Ink wash, Japanese minimal, festival red. Aesthetics rooted in culture.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+    <div class="section-inner">
+        <div class="reveal">
+            <span class="section-label">Features</span>
+            <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+        </div>
+        <div class="features-grid stagger">
+            <div class="feature-card">
+                <span class="feature-icon">&#x1F3A8;</span>
+                <h3>26+ Curated Styles</h3>
+                <p>Handcrafted presets across dark, light, bold, and cultural themes. Each one a complete design system.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#x1F4E6;</span>
+                <h3>Zero Dependencies</h3>
+                <p>Single HTML file output. No frameworks, no CDN links, no build step. Works offline, forever.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#x1F30F;</span>
+                <h3>Bilingual Native</h3>
+                <p>First-class EN/中文 support with proper CJK fonts, line heights, and typographic rhythm.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#x1F4DD;</span>
+                <h3>Markdown to Slides</h3>
+                <p>Write in Markdown, get production-ready slides. Headers become sections. Lists become bullets. Simple.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#x1F504;</span>
+                <h3>PPT to HTML</h3>
+                <p>Convert existing PowerPoint decks to beautiful, modern HTML presentations. Escape vendor lock-in.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#x1F680;</span>
+                <h3>One-click Deploy</h3>
+                <p>Drop the HTML file on Vercel, Netlify, or any static host. Share with a URL, not an attachment.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comparison -->
+<section class="comparison" id="comparison">
+    <div class="section-inner">
+        <div class="reveal">
+            <span class="section-label">Comparison</span>
+            <h2 class="section-title">Old way vs. <span style="color:var(--accent)">Next Slide</span></h2>
+        </div>
+        <div class="comparison-container reveal-scale">
+            <div class="comparison-col comparison-old">
+                <h3>
+                    <span style="font-size:1.3rem">&#x1F4A4;</span>
+                    The Old Way
+                </h3>
+                <ul class="comparison-steps">
+                    <li>
+                        <span class="step-marker">1</span>
+                        <span>Open PowerPoint (wait for loading...)</span>
+                    </li>
+                    <li>
+                        <span class="step-marker">2</span>
+                        <span>Pick a boring template that looks like 2010</span>
+                    </li>
+                    <li>
+                        <span class="step-marker">3</span>
+                        <span>Manually format every slide, fight with alignment</span>
+                    </li>
+                    <li>
+                        <span class="step-marker">4</span>
+                        <span>Export as PDF, lose all animations</span>
+                    </li>
+                    <li>
+                        <span class="step-marker">5</span>
+                        <span>Email a 50MB file. Hope it opens on their machine</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="comparison-divider">
+                <span>VS</span>
+            </div>
+            <div class="comparison-col comparison-new">
+                <h3>
+                    <span style="font-size:1.3rem">&#x1F99E;</span>
+                    Next Slide
+                </h3>
+                <ul class="comparison-steps">
+                    <li>
+                        <span class="step-marker">1</span>
+                        <span>Describe your content in natural language</span>
+                    </li>
+                    <li>
+                        <span class="step-marker">2</span>
+                        <span>Pick from 26+ curated styles</span>
+                    </li>
+                    <li>
+                        <span class="step-marker">3</span>
+                        <span>Done. Beautiful HTML with smooth animations</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Install -->
+<section class="install" id="install">
+    <div class="section-inner" style="text-align:center">
+        <div class="reveal">
+            <span class="section-label">Get Started</span>
+            <h2 class="section-title">Install in seconds.</h2>
+            <p class="section-subtitle" style="margin:0 auto 0">Pick your tool. Run one command. Start creating.</p>
+        </div>
+        <div class="install-block reveal-scale">
+            <div class="code-window">
+                <div class="code-titlebar">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span>Terminal</span>
+                </div>
+                <div class="code-body">
+                    <div><span class="comment"># OpenClaw</span></div>
+                    <div><span class="cmd">clawhub</span> <span class="arg">install</span> next-slide</div>
+                    <br>
+                    <div><span class="comment"># Claude Code</span></div>
+                    <div><span class="cmd">git</span> <span class="arg">clone</span> <span class="url">https://github.com/codesstar/next-slide</span> ~/.claude/skills/next-slide</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-logo">&#x1F99E; Next Slide</div>
+        <div class="footer-links">
+            <a href="https://github.com/codesstar/next-slide" target="_blank">GitHub</a>
+            <a href="https://github.com/codesstar/next-slide#readme" target="_blank">Documentation</a>
+            <a href="https://github.com/codesstar/next-slide/issues" target="_blank">Issues</a>
+        </div>
+        <p class="footer-copy">
+            Made with &#x1F99E; by Callum<br>
+            MIT License &middot; Open Source
+        </p>
+    </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════
+   Scroll-triggered Reveal (IntersectionObserver)
+   ═══════════════════════════════════════════ */
+(function() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -60px 0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal, .reveal-blur, .reveal-scale, .stagger').forEach(el => {
+        observer.observe(el);
+    });
+})();
+
+/* ═══════════════════════════════════════════
+   Nav hide on scroll down, show on scroll up
+   ═══════════════════════════════════════════ */
+(function() {
+    const nav = document.querySelector('nav');
+    let lastScroll = 0;
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const currentScroll = window.scrollY;
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    nav.classList.add('hidden');
+                } else {
+                    nav.classList.remove('hidden');
+                }
+                lastScroll = currentScroll;
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+})();
+
+/* ═══════════════════════════════════════════
+   Smooth anchor scrolling
+   ═══════════════════════════════════════════ */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+
+/* ═══════════════════════════════════════════
+   3D Tilt on feature cards
+   ═══════════════════════════════════════════ */
+document.querySelectorAll('.feature-card, .gallery-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-4px)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform 0.4s var(--ease-out-expo), border-color 0.3s ease';
+    });
+
+    card.addEventListener('mouseenter', () => {
+        card.style.transition = 'border-color 0.3s ease';
+    });
+});
+
+/* ═══════════════════════════════════════════
+   Magnetic CTA button
+   ═══════════════════════════════════════════ */
+document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        btn.style.transition = 'box-shadow 0.25s ease';
+    });
+
+    btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.transition = 'all 0.4s var(--ease-out-expo)';
+    });
+});
+</script>
+</body>
+</html>

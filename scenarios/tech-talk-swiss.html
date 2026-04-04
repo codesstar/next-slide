@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How We Cut API Latency by 97% Without Rewriting Anything</title>
+
+    <!-- Fonts: Archivo + Nunito for Swiss Modern -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=Nunito:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Swiss Modern
+           White, red accent, grid-based, left-aligned
+           =========================================== */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #eeeeee;
+            --text-primary: #0a0a0a;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --accent: #ff3300;
+            --accent-secondary: #ff3300;
+            --accent-glow: rgba(255, 51, 0, 0.15);
+            --grid-line: rgba(0, 0, 0, 0.06);
+            --border: #0a0a0a;
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --surface: #f8f8f8;
+
+            --font-display: 'Archivo', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(1.8rem, 5.5vw, 4.5rem);
+            --h2-size: clamp(1.2rem, 3.2vw, 2.5rem);
+            --h3-size: clamp(0.95rem, 2.2vw, 1.5rem);
+            --subtitle-size: clamp(0.8rem, 1.8vw, 1.2rem);
+            --body-size: clamp(0.72rem, 1.3vw, 1rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --stat-size: clamp(2rem, 8vw, 5.5rem);
+
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.5s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 2.5vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 3.5vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide {
+                height: auto; min-height: 100vh; overflow: visible;
+                page-break-after: always; page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important; transform: none !important;
+                filter: none !important; clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           THEME STYLES — Swiss Modern
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Red accent bar on left of each slide */
+        .slide::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: clamp(3px, 0.4vw, 5px);
+            background: var(--accent);
+            z-index: 2;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.06s; }
+        .reveal:nth-child(2) { transition-delay: 0.12s; }
+        .reveal:nth-child(3) { transition-delay: 0.18s; }
+        .reveal:nth-child(4) { transition-delay: 0.24s; }
+        .reveal:nth-child(5) { transition-delay: 0.30s; }
+        .reveal:nth-child(6) { transition-delay: 0.36s; }
+        .reveal:nth-child(7) { transition-delay: 0.42s; }
+        .reveal:nth-child(8) { transition-delay: 0.48s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 0;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.3);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+            font-weight: 700;
+        }
+
+        /* ===========================================
+           CODE SYNTAX HIGHLIGHTING
+           =========================================== */
+        .code-keyword { color: #d32f2f; }
+        .code-string { color: #1565c0; }
+        .code-comment { color: #999999; font-style: italic; }
+        .code-function { color: #6a1b9a; }
+        .code-type { color: #0277bd; }
+        .code-number { color: #0277bd; }
+        .code-const { color: #0277bd; }
+        .code-param { color: #e65100; }
+        .code-punct { color: #0a0a0a; }
+        .code-green { color: #2e7d32; }
+        .code-added { color: #2e7d32; background: rgba(46, 125, 50, 0.06); display: inline-block; width: 100%; }
+        .code-removed { color: #d32f2f; background: rgba(211, 47, 47, 0.06); display: inline-block; width: 100%; text-decoration: line-through; opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDES =================== -->
+
+    <!-- SLIDE 1: Title -->
+    <section class="slide title-slide" aria-label="Title">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700;">
+                PlatformCon 2026 &middot; Performance Track
+            </p>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.1; text-transform: uppercase;">
+                How We Cut API<br>Latency by 97%<br>Without Rewriting<br>Anything
+            </h1>
+            <div class="reveal" style="width: clamp(40px, 6vw, 80px); height: clamp(3px, 0.4vw, 5px); background: var(--accent); margin-top: var(--content-gap);"></div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                Kai Zhang &mdash; Staff Engineer, Meridian Health
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.15rem, 0.5vw, 0.4rem);">
+                @kaizhang_dev &middot; github.com/kzhang
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: Agenda -->
+    <section class="slide" aria-label="Agenda">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                Agenda
+            </h2>
+            <div style="margin-top: var(--content-gap); max-width: min(80vw, 650px);">
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 900; min-width: 2em;">01</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">The problem &mdash; how p99 hit 340ms at 2am</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-weight: 600;">3 min</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 900; min-width: 2em;">02</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">What we tried (and why the obvious fixes failed)</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-weight: 600;">4 min</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 900; min-width: 2em;">03</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">The architecture &mdash; edge cache + connection pooling</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-weight: 600;">8 min</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 900; min-width: 2em;">04</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">Results &amp; lessons learned</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-weight: 600;">5 min</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: The Problem -->
+    <section class="slide" aria-label="The Problem">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                Why this mattered
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                Meridian Health's patient portal serves 4.2M users. Our API is the backbone.
+            </p>
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0; border-left: 3px solid var(--accent); padding-left: 1em;">
+                    <span>Jan 14: PagerDuty fires at 2:17am &mdash; p99 latency spikes to <strong style="color: var(--accent);">340ms</strong> on /api/v2/records</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0; border-left: 3px solid var(--accent); padding-left: 1em;">
+                    <span>Mobile app timeout threshold: 250ms. Result: <strong style="color: var(--accent);">23% of requests failing</strong> for night-shift nurses</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0; border-left: 3px solid var(--text-muted); padding-left: 1em;">
+                    <span>Root cause wasn't the code &mdash; it was <em>infrastructure friction</em>: cold connections, no caching layer, TLS renegotiation on every request</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0; border-left: 3px solid var(--text-muted); padding-left: 1em;">
+                    <span>Rewrite estimates: 4-6 months, 3 engineers. We had neither the time nor the headcount</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: Comparison -->
+    <section class="slide" aria-label="Approaches compared">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                What we considered
+            </h2>
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: start;">
+                <div style="border-top: 3px solid var(--accent); padding-top: clamp(0.6rem, 1.2vw, 1rem);">
+                    <h3 style="font-size: var(--h3-size); color: var(--accent); margin-bottom: 0.6em; font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">Option A: Full Rewrite</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; 4-6 month timeline</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; High regression risk (HIPAA audit)</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; Requires revalidation with all 3 EHR integrations</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; Team of 3 fully dedicated</li>
+                    </ul>
+                </div>
+                <div style="border-top: 3px solid var(--text-primary); padding-top: clamp(0.6rem, 1.2vw, 1rem);">
+                    <h3 style="font-size: var(--h3-size); color: var(--text-primary); margin-bottom: 0.6em; font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">Option B: Infra-Only</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; 3-week rollout (1 engineer)</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; Zero application code changes</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; Transparent to all consumers</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; Reversible &mdash; feature-flagged per route</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                We picked B. Not because it was fancy &mdash; because it was deployable on Monday.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: Architecture -->
+    <section class="slide" aria-label="Architecture">
+        <div class="slide-content" style="align-items: center; padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase; align-self: flex-start;">
+                The new request path
+            </h2>
+            <div class="reveal" style="display: flex; align-items: center; justify-content: flex-start; gap: 0; margin-top: var(--content-gap); flex-wrap: wrap; align-self: flex-start;">
+                <div style="border: 2px solid var(--text-primary); padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <p style="font-size: var(--body-size); font-weight: 700; color: var(--text-primary); font-family: var(--font-display);">Client</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">React Native</p>
+                </div>
+                <div style="font-size: var(--body-size); color: var(--text-primary); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem); font-weight: 700;">&#8594;</div>
+                <div style="border: 2px solid var(--accent); padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <p style="font-size: var(--body-size); font-weight: 700; color: var(--accent); font-family: var(--font-display);">Edge Cache</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">Cloudflare Workers</p>
+                </div>
+                <div style="font-size: var(--body-size); color: var(--text-primary); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem); font-weight: 700;">&#8594;</div>
+                <div style="border: 2px solid var(--accent); padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <p style="font-size: var(--body-size); font-weight: 700; color: var(--accent); font-family: var(--font-display);">Pool Proxy</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">pgBouncer + custom</p>
+                </div>
+                <div style="font-size: var(--body-size); color: var(--text-primary); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem); font-weight: 700;">&#8594;</div>
+                <div style="border: 2px solid var(--text-primary); padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <p style="font-size: var(--body-size); font-weight: 700; color: var(--text-primary); font-family: var(--font-display);">API</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">Node.js (unchanged)</p>
+                </div>
+                <div style="font-size: var(--body-size); color: var(--text-primary); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem); font-weight: 700;">&#8594;</div>
+                <div style="border: 2px solid var(--text-primary); padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <p style="font-size: var(--body-size); font-weight: 700; color: var(--text-primary); font-family: var(--font-display);">PostgreSQL</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">RDS r6g.xlarge</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); align-self: flex-start;">
+                Red borders = new components. Everything else untouched. Total diff: <span style="color: #2e7d32; font-weight: 700;">+847</span> / <span style="color: var(--accent); font-weight: 700;">-12</span> lines (all config).
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: Code — Edge Cache -->
+    <section class="slide" aria-label="Code: Edge Cache">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                The edge cache layer
+            </h2>
+            <div class="reveal" style="margin-top: var(--content-gap); background: var(--bg-secondary); border-top: 3px solid var(--text-primary); overflow: hidden;">
+                <div style="padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.2vw, 1rem); background: var(--bg-tertiary); font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono); display: flex; justify-content: space-between;">
+                    <span>src/workers/edge-cache.ts</span>
+                    <span style="opacity: 0.5;">TypeScript</span>
+                </div>
+                <pre style="padding: clamp(0.8rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem); font-family: var(--font-mono); font-size: var(--body-size); line-height: 1.6; overflow-x: auto; color: var(--text-primary);"><code><span class="code-keyword">export default</span> {
+  <span class="code-keyword">async</span> <span class="code-function">fetch</span>(<span class="code-param">req</span>: <span class="code-type">Request</span>, <span class="code-param">env</span>: <span class="code-type">Env</span>): <span class="code-type">Promise</span>&lt;<span class="code-type">Response</span>&gt; {
+    <span class="code-keyword">const</span> <span class="code-const">cacheKey</span> = <span class="code-function">buildCacheKey</span>(<span class="code-param">req</span>);
+    <span class="code-keyword">const</span> <span class="code-const">cached</span> = <span class="code-keyword">await</span> <span class="code-param">env</span>.<span class="code-const">KV</span>.<span class="code-function">get</span>(<span class="code-const">cacheKey</span>, <span class="code-string">'json'</span>);
+
+    <span class="code-keyword">if</span> (<span class="code-const">cached</span> &amp;&amp; !<span class="code-function">isStale</span>(<span class="code-const">cached</span>.<span class="code-const">ts</span>, <span class="code-const">TTL_MAP</span>[<span class="code-param">req</span>.<span class="code-const">path</span>])) {
+      <span class="code-keyword">return</span> <span class="code-function">jsonResponse</span>(<span class="code-const">cached</span>.<span class="code-const">data</span>, { <span class="code-string">'X-Cache'</span>: <span class="code-string">'HIT'</span> });
+    }
+
+    <span class="code-keyword">const</span> <span class="code-const">res</span> = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(<span class="code-param">env</span>.<span class="code-const">ORIGIN</span> + <span class="code-param">req</span>.<span class="code-const">path</span>, {
+      <span class="code-const">headers</span>: <span class="code-function">stripHopHeaders</span>(<span class="code-param">req</span>.<span class="code-const">headers</span>),
+    });
+    <span class="code-keyword">await</span> <span class="code-param">env</span>.<span class="code-const">KV</span>.<span class="code-function">put</span>(<span class="code-const">cacheKey</span>, <span class="code-type">JSON</span>.<span class="code-function">stringify</span>({ <span class="code-const">data</span>: <span class="code-keyword">await</span> <span class="code-const">res</span>.<span class="code-function">json</span>(), <span class="code-const">ts</span>: <span class="code-type">Date</span>.<span class="code-function">now</span>() }));
+    <span class="code-keyword">return</span> <span class="code-const">res</span>;
+  }
+};</code></pre>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                <span style="color: var(--accent); font-weight: 700;">Key insight:</span> Per-route TTLs via TTL_MAP. Patient vitals = 30s. Formulary data = 24h. Personalized, not blanket caching.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: Code — Connection Pool -->
+    <section class="slide" aria-label="Code: Connection Pool">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                The connection pool trick
+            </h2>
+            <div class="reveal" style="margin-top: var(--content-gap); background: var(--bg-secondary); border-top: 3px solid var(--text-primary); overflow: hidden;">
+                <div style="padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.2vw, 1rem); background: var(--bg-tertiary); font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono); display: flex; justify-content: space-between;">
+                    <span>infra/pgbouncer.ini &rarr; pool-wrapper.ts</span>
+                    <span style="opacity: 0.5;">Before / After</span>
+                </div>
+                <pre style="padding: clamp(0.8rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem); font-family: var(--font-mono); font-size: var(--body-size); line-height: 1.6; overflow-x: auto; color: var(--text-primary);"><code><span class="code-comment">// BEFORE: each request opens a new TCP + TLS connection</span>
+<span class="code-removed"><span class="code-keyword">const</span> client = <span class="code-keyword">new</span> <span class="code-type">Client</span>({ connectionString: <span class="code-param">process</span>.<span class="code-param">env</span>.<span class="code-const">DB_URL</span> });</span>
+<span class="code-removed"><span class="code-keyword">await</span> client.<span class="code-function">connect</span>();  <span class="code-comment">// ~45ms cold start per query</span></span>
+
+<span class="code-comment">// AFTER: warm pool via pgBouncer + transaction mode</span>
+<span class="code-added"><span class="code-keyword">import</span> { <span class="code-const">Pool</span> } <span class="code-keyword">from</span> <span class="code-string">'pg'</span>;</span>
+<span class="code-added"><span class="code-keyword">const</span> pool = <span class="code-keyword">new</span> <span class="code-type">Pool</span>({</span>
+<span class="code-added">  <span class="code-const">connectionString</span>: <span class="code-param">process</span>.<span class="code-param">env</span>.<span class="code-const">PGBOUNCER_URL</span>,</span>
+<span class="code-added">  <span class="code-const">max</span>: <span class="code-number">20</span>,</span>
+<span class="code-added">  <span class="code-const">idleTimeoutMillis</span>: <span class="code-number">30_000</span>,</span>
+<span class="code-added">  <span class="code-const">connectionTimeoutMillis</span>: <span class="code-number">3_000</span>,</span>
+<span class="code-added">});</span>
+<span class="code-comment">// Avg connect time: 45ms &rarr; 0.8ms (pre-warmed)</span></code></pre>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                <span style="color: var(--accent); font-weight: 700;">The trick:</span> pgBouncer in transaction mode keeps 20 warm connections. The Node app connects to localhost:6432 instead of RDS directly. One env var change per service.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: Stats -->
+    <section class="slide" aria-label="Results">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                Benchmark results
+            </h2>
+            <div style="display: flex; justify-content: flex-start; gap: clamp(1.5rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: left;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700;">p99 Latency</div>
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent);">
+                        <span style="font-size: clamp(0.7rem, 2vw, 1.2rem); color: var(--text-muted); text-decoration: line-through; vertical-align: super; margin-right: 0.2em;">340ms</span>12ms
+                    </div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">97% reduction</div>
+                </div>
+                <div class="reveal" style="text-align: left;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700;">Throughput</div>
+                    <div class="counter" data-target="3" data-suffix="x" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--text-primary);">0x</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">1,200 &rarr; 3,800 rps</div>
+                </div>
+                <div class="reveal" style="text-align: left;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700;">Cache Hit Rate</div>
+                    <div class="counter" data-target="73" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent);">0%</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">avg across all routes</div>
+                </div>
+                <div class="reveal" style="text-align: left;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700;">Downtime</div>
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--text-primary);">0s</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">zero-downtime deploy</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                Measured over 14 days post-deploy (Jan 28 &ndash; Feb 10, 2026). wrk2 + Datadog APM.<sup style="color: var(--accent);">1</sup>
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: Lessons Learned -->
+    <section class="slide" aria-label="Lessons learned">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                What I'd tell past-me
+            </h2>
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0; max-width: min(85vw, 800px);">
+                <li class="reveal" style="padding: clamp(0.3rem, 0.7vw, 0.55rem) 0; border-left: 3px solid var(--accent); padding-left: 1em;">
+                    <strong style="color: var(--text-primary);">Profile before you refactor.</strong> <span style="color: var(--text-secondary);">Our bottleneck was TLS handshake + connection setup, not handler logic. Flame graphs don't lie.</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.7vw, 0.55rem) 0; border-left: 3px solid var(--accent); padding-left: 1em;">
+                    <strong style="color: var(--text-primary);">Per-route TTLs > global TTLs.</strong> <span style="color: var(--text-secondary);">Vitals need 30s freshness. Drug formularies can cache for 24h. One-size-fits-all caching wastes either freshness or performance.</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.7vw, 0.55rem) 0; border-left: 3px solid var(--accent); padding-left: 1em;">
+                    <strong style="color: var(--text-primary);">pgBouncer in transaction mode is free performance.</strong> <span style="color: var(--text-secondary);">We saved ~45ms per query just by keeping connections warm. If you're using serverless, this is table stakes.</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.7vw, 0.55rem) 0; border-left: 3px solid var(--text-primary); padding-left: 1em;">
+                    <strong style="color: var(--text-primary);">Feature-flag everything, even infra.</strong> <span style="color: var(--text-secondary);">We rolled out edge caching one route at a time via LaunchDarkly. Caught a serialization bug in /api/v2/allergies before it hit prod traffic.</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.7vw, 0.55rem) 0; border-left: 3px solid var(--text-primary); padding-left: 1em;">
+                    <strong style="color: var(--text-primary);">The best optimization is the one you can ship this week.</strong> <span style="color: var(--text-secondary);">A 3-week infra project beat a 6-month rewrite. Not always the right call, but always worth asking.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: Closing -->
+    <section class="slide closing-slide" aria-label="Closing">
+        <div class="slide-content" style="padding-left: clamp(2rem, 6vw, 7rem);">
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">
+                Questions?
+            </h2>
+            <div class="reveal" style="width: clamp(40px, 6vw, 80px); height: clamp(3px, 0.4vw, 5px); background: var(--accent); margin-top: var(--element-gap);"></div>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 2.2;">
+                <p><span style="color: var(--text-primary); font-weight: 700;">@</span> kaizhang_dev</p>
+                <p><span style="color: var(--text-primary); font-weight: 700;">git</span> github.com/kzhang/edge-cache-demo</p>
+                <p><span style="color: var(--text-primary); font-weight: 700;">web</span> meridianhealth.dev/engineering</p>
+            </div>
+            <div class="reveal" style="margin-top: var(--content-gap); padding: clamp(0.6rem, 1.5vw, 1rem); border-top: 2px solid var(--text-primary); max-width: min(80vw, 500px);">
+                <p style="font-size: var(--small-size); color: var(--text-muted); text-align: left;">
+                    <strong style="color: var(--text-primary);">Resources:</strong><br>
+                    &bull; Cloudflare Workers KV docs &mdash; developers.cloudflare.com/kv<br>
+                    &bull; pgBouncer transaction mode &mdash; pgbouncer.github.io<br>
+                    &bull; "Connection pooling considered essential" &mdash; brandur.org/fragments/connection-pooling
+                </p>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); font-style: italic;">
+                <sup style="color: var(--accent);">1</sup> All benchmarks run against production traffic with consent under Meridian's IRB-approved observability protocol. No PHI was cached or logged.
+            </p>
+        </div>
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4; font-family: var(--font-body);">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 1500;
+                    const start = performance.now();
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

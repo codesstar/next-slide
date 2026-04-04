@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofia Chen — Product Designer</title>
+
+    <!-- Fonts: Bebas Neue (display) + Lato (body) — Cinema Scope -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Cinema Scope
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #0a0a0a;
+            --letterbox: #000000;
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --text-muted: #666666;
+            --accent: #d4a843;
+            --accent-red: #b22234;
+            --accent-glow: rgba(212, 168, 67, 0.3);
+            --overlay: rgba(0, 0, 0, 0.6);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --surface: rgba(255, 255, 255, 0.05);
+
+            /* --- Typography --- */
+            --font-display: 'Bebas Neue', 'Impact', sans-serif;
+            --font-body: 'Lato', 'Helvetica Neue', sans-serif;
+            --font-mono: 'Courier New', monospace;
+
+            --title-size: clamp(2.5rem, 8vw, 7rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1.1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 9vw, 7rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --letterbox-height: 8vh;
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+            --duration-dramatic: 1.5s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size: clamp(2rem, 7vw, 6rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        /* --- Responsive Breakpoints --- */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+                --letterbox-height: 5vh;
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+                --letterbox-height: 3vh;
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+                --letterbox-height: 2vh;
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           THEME STYLES — Cinema Scope
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .slide {
+            background: var(--bg-primary);
+        }
+
+        /* ===========================================
+           LETTERBOX BARS — Persistent cinematic bands
+           =========================================== */
+        .letterbox-top, .letterbox-bottom {
+            position: fixed;
+            left: 0;
+            right: 0;
+            background: var(--letterbox);
+            z-index: 9990;
+            pointer-events: none;
+        }
+        .letterbox-top {
+            top: 0;
+            height: var(--letterbox-height);
+        }
+        .letterbox-bottom {
+            bottom: 0;
+            height: var(--letterbox-height);
+        }
+
+        /* Adjust slide content to live within letterbox */
+        .slide-content {
+            padding-top: calc(var(--letterbox-height) + var(--slide-padding));
+            padding-bottom: calc(var(--letterbox-height) + var(--slide-padding));
+        }
+
+        /* ===========================================
+           CHAPTER LABEL
+           =========================================== */
+        .chapter-label {
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        /* ===========================================
+           ANIMATIONS — Fade-in (cinematic, slow)
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity var(--duration-slow) var(--ease-out-expo),
+                        transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.15s; }
+        .reveal:nth-child(2) { transition-delay: 0.3s; }
+        .reveal:nth-child(3) { transition-delay: 0.45s; }
+        .reveal:nth-child(4) { transition-delay: 0.6s; }
+        .reveal:nth-child(5) { transition-delay: 0.75s; }
+        .reveal:nth-child(6) { transition-delay: 0.9s; }
+        .reveal:nth-child(7) { transition-delay: 1.05s; }
+        .reveal:nth-child(8) { transition-delay: 1.2s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.4);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: calc(var(--letterbox-height) + clamp(8px, 1vw, 16px));
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+            letter-spacing: 0.15em;
+        }
+
+        /* ===========================================
+           CINEMA SCOPE — Signature Elements
+           =========================================== */
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-weight: 400;
+            color: var(--text-primary);
+            line-height: 1;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-label {
+            font-family: var(--font-body);
+            font-weight: 300;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Lower-third text placement */
+        .lower-third {
+            position: absolute;
+            bottom: calc(var(--letterbox-height) + clamp(2rem, 5vh, 5rem));
+            left: var(--slide-padding);
+            right: var(--slide-padding);
+        }
+
+        .work-card {
+            transition: transform 0.4s var(--ease-out-expo);
+        }
+        .work-card:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <!-- Letterbox bars -->
+    <div class="letterbox-top"></div>
+    <div class="letterbox-bottom"></div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide title-slide" aria-label="Title">
+        <div class="slide-content" style="align-items: flex-start; justify-content: flex-end;">
+            <span class="reveal chapter-label">Chapter 01</span>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); letter-spacing: 0.08em; line-height: 0.95; margin-top: var(--element-gap);">
+                Sofia Chen
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); font-family: var(--font-body); font-weight: 300; color: var(--text-secondary); margin-top: var(--element-gap);">
+                Product Designer
+            </p>
+            <div style="width: clamp(40px, 6vw, 60px); height: 1px; background: var(--accent); margin-top: var(--content-gap);" class="reveal"></div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-muted); margin-top: var(--element-gap); font-weight: 300; font-style: italic; max-width: min(50vw, 400px);">
+                Design is decision-making made visible.
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); letter-spacing: 0.08em; font-weight: 300;">
+                Portland, OR &ensp;&middot;&ensp; 8 years experience &ensp;&middot;&ensp; Available Q2 2026
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: SELECTED WORKS =================== -->
+    <section class="slide" aria-label="Selected Works">
+        <div class="slide-content" style="align-items: center;">
+            <span class="reveal chapter-label">Chapter 02</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap); letter-spacing: 0.1em;">
+                Selected Works
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); max-width: min(90vw, 900px); width: 100%;">
+                <!-- Card 1: Healthcare -->
+                <div class="reveal work-card" style="overflow: hidden; cursor: pointer; position: relative;">
+                    <div style="height: clamp(120px, 22vh, 240px); background: linear-gradient(160deg, #2a5a4a 0%, #1a3a2a 100%); position: relative; overflow: hidden; border-radius: 2px;">
+                        <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.3);"></div>
+                        <div style="position: absolute; bottom: clamp(0.6rem, 1.2vw, 1rem); left: clamp(0.6rem, 1.2vw, 1rem); z-index: 1;">
+                            <p style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;">Healthcare</p>
+                            <h3 style="font-size: var(--body-size); font-family: var(--font-display); letter-spacing: 0.08em; margin-top: 0.15em;">Meridian Health</h3>
+                            <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; font-weight: 300;">Patient portal redesign</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2: SaaS -->
+                <div class="reveal work-card" style="overflow: hidden; cursor: pointer; position: relative;">
+                    <div style="height: clamp(120px, 22vh, 240px); background: linear-gradient(160deg, #3a2870 0%, #1a1040 100%); position: relative; overflow: hidden; border-radius: 2px;">
+                        <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.3);"></div>
+                        <div style="position: absolute; bottom: clamp(0.6rem, 1.2vw, 1rem); left: clamp(0.6rem, 1.2vw, 1rem); z-index: 1;">
+                            <p style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;">SaaS</p>
+                            <h3 style="font-size: var(--body-size); font-family: var(--font-display); letter-spacing: 0.08em; margin-top: 0.15em;">Canopy Analytics</h3>
+                            <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; font-weight: 300;">Dashboard experience</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3: Brand Identity -->
+                <div class="reveal work-card" style="overflow: hidden; cursor: pointer; position: relative;">
+                    <div style="height: clamp(120px, 22vh, 240px); background: linear-gradient(160deg, #5a4028 0%, #2a1a08 100%); position: relative; overflow: hidden; border-radius: 2px;">
+                        <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.3);"></div>
+                        <div style="position: absolute; bottom: clamp(0.6rem, 1.2vw, 1rem); left: clamp(0.6rem, 1.2vw, 1rem); z-index: 1;">
+                            <p style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;">Branding</p>
+                            <h3 style="font-size: var(--body-size); font-family: var(--font-display); letter-spacing: 0.08em; margin-top: 0.15em;">Terracotta & Co.</h3>
+                            <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; font-weight: 300;">Full brand identity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center; font-weight: 300; font-style: italic;">
+                Work spanning healthcare, enterprise SaaS, and consumer brands &mdash; 2021&ndash;2026
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: FEATURED PROJECT 1 — Overview =================== -->
+    <section class="slide" aria-label="Meridian Health — Overview">
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(1.5rem, 4vw, 4rem);">
+            <!-- Left: Project Visual -->
+            <div style="flex: 1.1; min-width: 0; display: flex; justify-content: center;">
+                <div class="reveal" style="width: 100%; max-width: min(45vw, 440px); aspect-ratio: 21/9; border-radius: 2px; overflow: hidden; position: relative; background: linear-gradient(160deg, #1a5a4a 0%, #2a8868 30%, #1a6a50 60%, #104a38 100%); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);">
+                    <div style="position: absolute; top: 12%; left: 8%; right: 8%; height: 14%; background: rgba(255,255,255,0.15); border-radius: 3px;"></div>
+                    <div style="position: absolute; top: 34%; left: 8%; width: 50%; height: 50%; background: rgba(255,255,255,0.1); border-radius: 3px;"></div>
+                    <div style="position: absolute; top: 34%; right: 8%; width: 32%; height: 24%; background: rgba(255,255,255,0.08); border-radius: 3px;"></div>
+                    <div style="position: absolute; top: 64%; right: 8%; width: 32%; height: 22%; background: rgba(255,255,255,0.08); border-radius: 3px;"></div>
+                </div>
+            </div>
+            <!-- Right: Project Brief -->
+            <div style="flex: 1; min-width: 0;">
+                <span class="reveal chapter-label">Case Study 01</span>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1; letter-spacing: 0.08em;">
+                    Meridian Health
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300; font-style: italic;">
+                    Redesigning patient access for 1.2M users
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7; font-weight: 300;">
+                    <p>Meridian's patient portal was losing 67% of users at the appointment booking stage. I led the end-to-end redesign across mobile and web, from research through to implementation hand-off.</p>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Role</p>
+                        <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.15em;">Lead Designer</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Timeline</p>
+                        <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.15em;">14 weeks</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Team</p>
+                        <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.15em;">4 people</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: FEATURED PROJECT 1 — Results =================== -->
+    <section class="slide" aria-label="Meridian Health — Results">
+        <div class="slide-content" style="align-items: center;">
+            <span class="reveal chapter-label">Impact</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap); letter-spacing: 0.1em;">
+                Meridian Health &mdash; Results
+            </h2>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number counter" data-target="340" data-prefix="+" data-suffix="%" style="font-size: var(--stat-size); letter-spacing: 0.05em;">0</div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">User Engagement</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em; max-width: 180px; font-weight: 300;">Booking completion rate, measured 90 days post-launch</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number" style="font-size: var(--stat-size);">
+                        <span class="counter" data-target="2.1" data-suffix="M" style="font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit; letter-spacing: 0.05em;">0</span>
+                    </div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">Campaign Views</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em; max-width: 180px; font-weight: 300;">Launch campaign across social and partner channels</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number" style="font-size: var(--stat-size);">
+                        <span class="counter" data-target="3" style="font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit; letter-spacing: 0.05em;">0</span>
+                    </div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">Design Awards</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em; max-width: 180px; font-weight: 300;">Including IxDA and AIGA Healthcare Design</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center; font-weight: 300;">
+                Source: Meridian Health internal analytics, Q3 2025. Awards verified via public records.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: FEATURED PROJECT 2 — Overview =================== -->
+    <section class="slide" aria-label="Canopy Analytics — Overview">
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(1.5rem, 4vw, 4rem);">
+            <!-- Left: Project Brief -->
+            <div style="flex: 1; min-width: 0;">
+                <span class="reveal chapter-label">Case Study 02</span>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1; letter-spacing: 0.08em;">
+                    Canopy Analytics
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300; font-style: italic;">
+                    Making complex data feel simple
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7; font-weight: 300;">
+                    <p>Canopy's marketing teams were drowning in dashboards. I consolidated 23 separate views into a unified experience that surfaced the right metric at the right moment &mdash; reducing time-to-insight from 12 minutes to under 90 seconds.</p>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Role</p>
+                        <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.15em;">Senior Designer</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Timeline</p>
+                        <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.15em;">8 months</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Outcome</p>
+                        <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.15em;">Shipped to 40K users</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Right: Project Visual -->
+            <div style="flex: 1.1; min-width: 0; display: flex; justify-content: center;">
+                <div class="reveal" style="width: 100%; max-width: min(45vw, 440px); aspect-ratio: 21/9; border-radius: 2px; overflow: hidden; position: relative; background: linear-gradient(160deg, #3a2870 0%, #5040a0 30%, #3a3090 60%, #2a2068 100%); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);">
+                    <div style="position: absolute; top: 8%; left: 5%; right: 5%; height: 10%; background: rgba(255,255,255,0.12); border-radius: 3px;"></div>
+                    <div style="position: absolute; top: 24%; left: 5%; width: 18%; bottom: 8%; background: rgba(255,255,255,0.06); border-radius: 3px;"></div>
+                    <div style="position: absolute; top: 24%; left: 28%; right: 5%; height: 40%; background: rgba(255,255,255,0.1); border-radius: 3px;"></div>
+                    <div style="position: absolute; bottom: 14%; left: 30%; width: 10%; height: 22%; background: rgba(255,255,255,0.08); border-radius: 2px;"></div>
+                    <div style="position: absolute; bottom: 14%; left: 44%; width: 10%; height: 34%; background: rgba(255,255,255,0.08); border-radius: 2px;"></div>
+                    <div style="position: absolute; bottom: 14%; left: 58%; width: 10%; height: 28%; background: rgba(255,255,255,0.08); border-radius: 2px;"></div>
+                    <div style="position: absolute; bottom: 14%; left: 72%; width: 10%; height: 38%; background: rgba(255,255,255,0.1); border-radius: 2px;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: CLIENT TESTIMONIAL =================== -->
+    <section class="slide" aria-label="Client Testimonial">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(80vw, 800px); margin: 0 auto;">
+            <div class="reveal" style="font-size: clamp(3rem, 6vw, 5rem); color: var(--accent); line-height: 1; opacity: 0.5;">
+                &ldquo;
+            </div>
+            <blockquote class="reveal" style="font-size: var(--h2-size); font-family: var(--font-body); font-weight: 300; line-height: 1.5; margin-top: -0.3em; font-style: italic;">
+                Sofia doesn't just make things look right &mdash; she makes them <em style="font-style: normal; color: var(--accent);">feel</em> right. The Meridian redesign changed how our patients think about digital healthcare. That's not UI; that's transformation.
+            </blockquote>
+            <div style="width: clamp(30px, 4vw, 50px); height: 1px; background: var(--accent); margin-top: var(--content-gap);" class="reveal"></div>
+            <cite class="reveal" style="display: block; margin-top: var(--element-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; font-weight: 300; letter-spacing: 0.05em;">
+                James Whitfield, CTO at Meridian Health Systems
+            </cite>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: WORKING PROCESS =================== -->
+    <section class="slide" aria-label="Process & Approach">
+        <div class="slide-content" style="max-width: min(90vw, 800px); margin: 0 auto;">
+            <span class="reveal chapter-label">Methodology</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); letter-spacing: 0.1em;">
+                How I Work
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300; font-style: italic;">
+                Every project is different, but the principles stay the same.
+            </p>
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); color: var(--accent); min-width: 2em; font-size: var(--body-size); letter-spacing: 0.1em;">01</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6; font-weight: 300;"><strong style="font-weight: 400;">Listen before sketching.</strong> The first two weeks are conversations, not wireframes. I map stakeholder assumptions against user reality.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); color: var(--accent); min-width: 2em; font-size: var(--body-size); letter-spacing: 0.1em;">02</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6; font-weight: 300;"><strong style="font-weight: 400;">Design in systems, not screens.</strong> Components, tokens, and patterns come before pixels. This is how you scale without losing coherence.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); color: var(--accent); min-width: 2em; font-size: var(--body-size); letter-spacing: 0.1em;">03</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6; font-weight: 300;"><strong style="font-weight: 400;">Prototype the risk.</strong> I build interactive prototypes of the hardest interaction first &mdash; the part where most projects stall.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); color: var(--accent); min-width: 2em; font-size: var(--body-size); letter-spacing: 0.1em;">04</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6; font-weight: 300;"><strong style="font-weight: 400;">Ship, measure, refine.</strong> Design doesn't end at handoff. I stay involved through launch and track outcomes against the original hypothesis.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0;">
+                    <span style="font-family: var(--font-display); color: var(--accent); min-width: 2em; font-size: var(--body-size); letter-spacing: 0.1em;">05</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6; font-weight: 300;"><strong style="font-weight: 400;">Document the decisions.</strong> Future teams inherit your thinking, not just your files. Every major decision gets a written rationale.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: CLOSING =================== -->
+    <section class="slide closing-slide" aria-label="Contact">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); letter-spacing: 0.1em; line-height: 0.95;">
+                Let's Make<br>Something Together.
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: min(60vw, 500px); line-height: 1.6; font-weight: 300;">
+                I'm currently taking on select projects for Q2&ndash;Q3 2026. If you're building something that matters, I'd love to hear about it.
+            </p>
+            <div style="width: clamp(40px, 6vw, 60px); height: 1px; background: var(--accent); margin-top: var(--content-gap);" class="reveal"></div>
+            <div class="reveal" style="margin-top: var(--content-gap); display: inline-flex; gap: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap; justify-content: center;">
+                <div style="text-align: center;">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Email</p>
+                    <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.2em;">sofia@sofiachendesign.com</p>
+                </div>
+                <div style="text-align: center;">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Portfolio</p>
+                    <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.2em;">sofiachendesign.com</p>
+                </div>
+                <div style="text-align: center;">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 300;">Status</p>
+                    <p style="font-size: var(--body-size); font-weight: 400; margin-top: 0.2em; color: var(--accent);">Open to projects</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); font-weight: 300;">
+                Portland, OR &ensp;&middot;&ensp; Open to remote collaboration worldwide
+            </p>
+        </div>
+
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: calc(var(--letterbox-height) + clamp(4px, 0.8vw, 8px)); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const isDecimal = target % 1 !== 0;
+                    const duration = 1500;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const current = target * eased;
+                        if (isDecimal) {
+                            el.textContent = prefix + current.toFixed(1) + suffix;
+                        } else {
+                            el.textContent = prefix + Math.round(current).toLocaleString() + suffix;
+                        }
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

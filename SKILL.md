@@ -378,4 +378,5 @@ Options: Deploy to URL / Export to PDF / Both / No thanks
 | [viewport-base.css](viewport-base.css) | Mandatory responsive CSS | Phase 3 |
 | [html-template.md](html-template.md) | HTML structure, JS features | Phase 3 |
 | [animation-patterns.md](animation-patterns.md) | Animation snippets | Phase 3 |
+| [SCENARIO_TEMPLATES.md](SCENARIO_TEMPLATES.md) | Scenario structures, narrative arcs, extra slide types | Phase 1 (when user picks a scenario) & Phase 3 |
 | [scripts/extract-pptx.py](scripts/extract-pptx.py) | PPT content extraction | Phase 4A |

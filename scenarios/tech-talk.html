@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How We Cut API Latency by 97% Without Rewriting Anything</title>
+
+    <!-- Fonts: JetBrains Mono for Terminal Green -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Terminal Green
+           Dark terminal aesthetic, green phosphor text
+           =========================================== */
+        :root {
+            /* --- Color Palette (Terminal Green) --- */
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #1c2129;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --text-muted: #484f58;
+            --text-green: #39d353;
+            --accent: #39d353;
+            --accent-secondary: #e3b341;
+            --accent-glow: rgba(57, 211, 83, 0.3);
+            --accent-yellow: #e3b341;
+            --accent-red: #f85149;
+            --border: #30363d;
+            --border-subtle: rgba(48, 54, 61, 0.6);
+            --surface: rgba(22, 27, 34, 0.8);
+
+            /* --- Typography — ALL sizes use clamp() --- */
+            --font-display: 'JetBrains Mono', monospace;
+            --font-body: 'JetBrains Mono', monospace;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(1.5rem, 4.5vw, 3.5rem);
+            --h2-size: clamp(1.15rem, 3vw, 2.2rem);
+            --h3-size: clamp(0.9rem, 2vw, 1.5rem);
+            --subtitle-size: clamp(0.8rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.7rem, 1.3vw, 1rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --stat-size: clamp(1.8rem, 7vw, 5rem);
+
+            /* --- Spacing — ALL use clamp() --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+            --duration-dramatic: 1.5s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size-base: clamp(1.5rem, 5vw, 4rem);
+            --h2-size-base: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size-base: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size-base: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size-base: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size-base: clamp(2rem, 8vw, 6rem);
+            --slide-padding-base: clamp(1rem, 4vw, 4rem);
+            --content-gap-base: clamp(0.5rem, 2vw, 2rem);
+            --element-gap-base: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        /* --- Responsive breakpoints --- */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4vw, 2.5rem);
+                --h2-size: clamp(1rem, 2.5vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 3.5vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           THEME STYLES — Terminal Green
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* --- Terminal window chrome --- */
+        .terminal-chrome {
+            display: flex;
+            align-items: center;
+            gap: clamp(4px, 0.5vw, 8px);
+            padding: clamp(6px, 1vw, 12px) clamp(10px, 1.5vw, 16px);
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+        }
+        .terminal-dot {
+            width: clamp(8px, 1vw, 12px);
+            height: clamp(8px, 1vw, 12px);
+            border-radius: 50%;
+        }
+        .terminal-dot.red { background: #f85149; }
+        .terminal-dot.yellow { background: #e3b341; }
+        .terminal-dot.green { background: #39d353; }
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* --- CRT scan line overlay --- */
+        .slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- Blinking cursor --- */
+        .cursor::after {
+            content: '_';
+            color: var(--text-green);
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* --- Prompt prefix style --- */
+        .prompt::before {
+            content: '$ ';
+            color: var(--text-green);
+            font-weight: 700;
+        }
+
+        /* --- Green glow on key elements --- */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(57, 211, 83, 0.4), 0 0 30px rgba(57, 211, 83, 0.1);
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--text-green), var(--accent-yellow));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--text-green);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           CODE SYNTAX HIGHLIGHTING
+           =========================================== */
+        .code-keyword { color: #ff7b72; }
+        .code-string { color: #a5d6ff; }
+        .code-comment { color: #7d8590; font-style: italic; }
+        .code-function { color: #d2a8ff; }
+        .code-type { color: #79c0ff; }
+        .code-number { color: #79c0ff; }
+        .code-const { color: #79c0ff; }
+        .code-param { color: #ffa657; }
+        .code-punct { color: #e6edf3; }
+        .code-green { color: #39d353; }
+        .code-added { color: #39d353; background: rgba(57, 211, 83, 0.1); display: inline-block; width: 100%; }
+        .code-removed { color: #f85149; background: rgba(248, 81, 73, 0.1); display: inline-block; width: 100%; text-decoration: line-through; opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDES =================== -->
+
+    <!-- SLIDE 1: Title -->
+    <section class="slide title-slide" aria-label="Title">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">kai@meridian ~ /talks/perf-deep-dive</span>
+        </div>
+        <div class="slide-content" style="align-items: center; text-align: center; padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-green); text-transform: uppercase; letter-spacing: 0.15em;">
+                PlatformCon 2026 &middot; Performance Track
+            </p>
+            <h1 class="reveal cursor glow-text" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; color: var(--text-green); margin-top: var(--element-gap); line-height: 1.25;">
+                How We Cut API Latency<br>by 97% Without<br>Rewriting Anything
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap);">
+                Kai Zhang &mdash; Staff Engineer, Meridian Health
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap);">
+                @kaizhang_dev &middot; github.com/kzhang
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: Agenda -->
+    <section class="slide" aria-label="Agenda">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">agenda.md</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green);">
+                Agenda
+            </h2>
+            <div style="margin-top: var(--content-gap); max-width: min(80vw, 650px);">
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--text-green); font-weight: 700; min-width: 2em;">01</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">The problem &mdash; how p99 hit 340ms at 2am</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">3 min</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--text-green); font-weight: 700; min-width: 2em;">02</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">What we tried (and why the obvious fixes failed)</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">4 min</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--text-green); font-weight: 700; min-width: 2em;">03</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">The architecture &mdash; edge cache + connection pooling</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">8 min</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--text-green); font-weight: 700; min-width: 2em;">04</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">Results &amp; lessons learned</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">5 min</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: The Problem / Motivation -->
+    <section class="slide" aria-label="The Problem">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">incident-report-2026-01-14.md</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green);">
+                Why this mattered
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                Meridian Health's patient portal serves 4.2M users. Our API is the backbone.
+            </p>
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0;">
+                    <span style="color: var(--accent-red); font-size: 0.6em;">&#9679;</span>
+                    <span>Jan 14: PagerDuty fires at 2:17am &mdash; p99 latency spikes to <strong style="color: var(--accent-red);">340ms</strong> on /api/v2/records</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0;">
+                    <span style="color: var(--accent-red); font-size: 0.6em;">&#9679;</span>
+                    <span>Mobile app timeout threshold: 250ms. Result: <strong style="color: var(--accent-red);">23% of requests failing</strong> for night-shift nurses</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0;">
+                    <span style="color: var(--accent-yellow); font-size: 0.6em;">&#9679;</span>
+                    <span>Root cause wasn't the code &mdash; the Node.js handlers were fine. It was <em>infrastructure friction</em>: cold connections, no caching layer, TLS renegotiation on every request</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.6vw, 0.5rem) 0;">
+                    <span style="color: var(--accent-yellow); font-size: 0.6em;">&#9679;</span>
+                    <span>Rewrite estimates: 4-6 months, 3 engineers. We had neither the time nor the headcount</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: Comparison — Existing Approaches -->
+    <section class="slide" aria-label="Approaches compared">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">diff --approach old new</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green); text-align: center;">
+                What we considered
+            </h2>
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch;">
+                <!-- Left: Rewrite -->
+                <div style="background: rgba(248, 81, 73, 0.06); border: 1px solid rgba(248, 81, 73, 0.2); border-radius: 8px; padding: clamp(0.8rem, 2vw, 1.3rem);">
+                    <h3 style="font-size: var(--h3-size); color: var(--accent-red); margin-bottom: 0.6em; font-family: var(--font-display);">Option A: Full Rewrite</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; 4-6 month timeline</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; High regression risk (HIPAA audit)</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; Requires revalidation with all 3 EHR integrations</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10007; Team of 3 fully dedicated</li>
+                    </ul>
+                </div>
+                <!-- Divider -->
+                <div style="width: 2px; background: var(--border); align-self: stretch;"></div>
+                <!-- Right: Infrastructure -->
+                <div style="background: rgba(57, 211, 83, 0.05); border: 1px solid rgba(57, 211, 83, 0.15); border-radius: 8px; padding: clamp(0.8rem, 2vw, 1.3rem);">
+                    <h3 style="font-size: var(--h3-size); color: var(--text-green); margin-bottom: 0.6em; font-family: var(--font-display);">Option B: Infra-Only</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; 3-week rollout (1 engineer)</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; Zero application code changes</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; Transparent to all consumers</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.35rem) 0;">&#10003; Reversible &mdash; feature-flagged per route</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                We picked B. Not because it was fancy &mdash; because it was deployable on Monday.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: Architecture Diagram -->
+    <section class="slide" aria-label="Architecture">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">architecture.svg</span>
+        </div>
+        <div class="slide-content" style="align-items: center; padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green); text-align: center;">
+                The new request path
+            </h2>
+            <div class="reveal" style="display: flex; align-items: center; justify-content: center; gap: 0; margin-top: var(--content-gap); flex-wrap: wrap;">
+                <!-- Node: Client -->
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em; color: var(--text-green);">&#9633;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600; color: var(--text-primary);">Client</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">React Native</p>
+                </div>
+                <!-- Arrow -->
+                <div style="font-size: var(--body-size); color: var(--text-green); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem);">&#8594;</div>
+                <!-- Node: Edge Cache -->
+                <div style="background: var(--bg-secondary); border: 1px solid var(--text-green); border-radius: 8px; padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px); box-shadow: 0 0 12px rgba(57, 211, 83, 0.15);">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em; color: var(--text-green);">&#9729;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600; color: var(--text-green);">Edge Cache</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">Cloudflare Workers</p>
+                </div>
+                <!-- Arrow -->
+                <div style="font-size: var(--body-size); color: var(--text-green); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem);">&#8594;</div>
+                <!-- Node: Pool Proxy -->
+                <div style="background: var(--bg-secondary); border: 1px solid var(--text-green); border-radius: 8px; padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px); box-shadow: 0 0 12px rgba(57, 211, 83, 0.15);">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em; color: var(--accent-yellow);">&#9881;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600; color: var(--accent-yellow);">Pool Proxy</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">pgBouncer + custom</p>
+                </div>
+                <!-- Arrow -->
+                <div style="font-size: var(--body-size); color: var(--text-green); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem);">&#8594;</div>
+                <!-- Node: API -->
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em;">&#128187;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600; color: var(--text-primary);">API</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">Node.js (unchanged)</p>
+                </div>
+                <!-- Arrow -->
+                <div style="font-size: var(--body-size); color: var(--text-green); padding: 0 clamp(0.2rem, 0.8vw, 0.6rem);">&#8594;</div>
+                <!-- Node: DB -->
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1.2vw, 1rem); text-align: center; min-width: clamp(70px, 11vw, 130px);">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em;">&#128451;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600; color: var(--text-primary);">PostgreSQL</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">RDS r6g.xlarge</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                Green borders = new components. Everything else untouched. Total diff: <span style="color: var(--text-green);">+847</span> / <span style="color: var(--accent-red);">-12</span> lines (all config).
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: Code Showcase — Edge Cache -->
+    <section class="slide" aria-label="Code: Edge Cache">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">vim edge-cache.ts</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green);">
+                The edge cache layer
+            </h2>
+            <div class="reveal" style="margin-top: var(--content-gap); background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                <div style="padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.2vw, 1rem); background: var(--bg-tertiary); font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono); display: flex; justify-content: space-between;">
+                    <span>src/workers/edge-cache.ts</span>
+                    <span style="opacity: 0.5;">TypeScript</span>
+                </div>
+                <pre style="padding: clamp(0.8rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem); font-family: var(--font-mono); font-size: var(--body-size); line-height: 1.6; overflow-x: auto; color: var(--text-primary);"><code><span class="code-keyword">export default</span> {
+  <span class="code-keyword">async</span> <span class="code-function">fetch</span>(<span class="code-param">req</span>: <span class="code-type">Request</span>, <span class="code-param">env</span>: <span class="code-type">Env</span>): <span class="code-type">Promise</span>&lt;<span class="code-type">Response</span>&gt; {
+    <span class="code-keyword">const</span> <span class="code-const">cacheKey</span> = <span class="code-function">buildCacheKey</span>(<span class="code-param">req</span>);
+    <span class="code-keyword">const</span> <span class="code-const">cached</span> = <span class="code-keyword">await</span> <span class="code-param">env</span>.<span class="code-const">KV</span>.<span class="code-function">get</span>(<span class="code-const">cacheKey</span>, <span class="code-string">'json'</span>);
+
+    <span class="code-keyword">if</span> (<span class="code-const">cached</span> &amp;&amp; !<span class="code-function">isStale</span>(<span class="code-const">cached</span>.<span class="code-const">ts</span>, <span class="code-const">TTL_MAP</span>[<span class="code-param">req</span>.<span class="code-const">path</span>])) {
+      <span class="code-keyword">return</span> <span class="code-function">jsonResponse</span>(<span class="code-const">cached</span>.<span class="code-const">data</span>, { <span class="code-string">'X-Cache'</span>: <span class="code-string">'HIT'</span> });
+    }
+
+    <span class="code-keyword">const</span> <span class="code-const">res</span> = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(<span class="code-param">env</span>.<span class="code-const">ORIGIN</span> + <span class="code-param">req</span>.<span class="code-const">path</span>, {
+      <span class="code-const">headers</span>: <span class="code-function">stripHopHeaders</span>(<span class="code-param">req</span>.<span class="code-const">headers</span>),
+    });
+    <span class="code-keyword">await</span> <span class="code-param">env</span>.<span class="code-const">KV</span>.<span class="code-function">put</span>(<span class="code-const">cacheKey</span>, <span class="code-type">JSON</span>.<span class="code-function">stringify</span>({ <span class="code-const">data</span>: <span class="code-keyword">await</span> <span class="code-const">res</span>.<span class="code-function">json</span>(), <span class="code-const">ts</span>: <span class="code-type">Date</span>.<span class="code-function">now</span>() }));
+    <span class="code-keyword">return</span> <span class="code-const">res</span>;
+  }
+};</code></pre>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                <span style="color: var(--text-green);">Key insight:</span> Per-route TTLs via TTL_MAP. Patient vitals = 30s. Formulary data = 24h. Personalized, not blanket caching.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: Code Showcase — Connection Pool -->
+    <section class="slide" aria-label="Code: Connection Pool">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">vim pool-config.ts</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green);">
+                The connection pool trick
+            </h2>
+            <div class="reveal" style="margin-top: var(--content-gap); background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                <div style="padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.2vw, 1rem); background: var(--bg-tertiary); font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono); display: flex; justify-content: space-between;">
+                    <span>infra/pgbouncer.ini &rarr; pool-wrapper.ts</span>
+                    <span style="opacity: 0.5;">Before / After</span>
+                </div>
+                <pre style="padding: clamp(0.8rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem); font-family: var(--font-mono); font-size: var(--body-size); line-height: 1.6; overflow-x: auto; color: var(--text-primary);"><code><span class="code-comment">// BEFORE: each request opens a new TCP + TLS connection</span>
+<span class="code-removed"><span class="code-keyword">const</span> client = <span class="code-keyword">new</span> <span class="code-type">Client</span>({ connectionString: <span class="code-param">process</span>.<span class="code-param">env</span>.<span class="code-const">DB_URL</span> });</span>
+<span class="code-removed"><span class="code-keyword">await</span> client.<span class="code-function">connect</span>();  <span class="code-comment">// ~45ms cold start per query</span></span>
+
+<span class="code-comment">// AFTER: warm pool via pgBouncer + transaction mode</span>
+<span class="code-added"><span class="code-keyword">import</span> { <span class="code-const">Pool</span> } <span class="code-keyword">from</span> <span class="code-string">'pg'</span>;</span>
+<span class="code-added"><span class="code-keyword">const</span> pool = <span class="code-keyword">new</span> <span class="code-type">Pool</span>({</span>
+<span class="code-added">  <span class="code-const">connectionString</span>: <span class="code-param">process</span>.<span class="code-param">env</span>.<span class="code-const">PGBOUNCER_URL</span>,</span>
+<span class="code-added">  <span class="code-const">max</span>: <span class="code-number">20</span>,</span>
+<span class="code-added">  <span class="code-const">idleTimeoutMillis</span>: <span class="code-number">30_000</span>,</span>
+<span class="code-added">  <span class="code-const">connectionTimeoutMillis</span>: <span class="code-number">3_000</span>,</span>
+<span class="code-added">});</span>
+<span class="code-comment">// Avg connect time: 45ms &rarr; 0.8ms (pre-warmed)</span></code></pre>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                <span style="color: var(--accent-yellow);">The trick:</span> pgBouncer in transaction mode keeps 20 warm connections. The Node app connects to localhost:6432 instead of RDS directly. One env var change per service.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: Stats / Benchmark Results -->
+    <section class="slide" aria-label="Results">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">$ wrk --benchmark results.json</span>
+        </div>
+        <div class="slide-content" style="align-items: center; padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green); text-align: center;">
+                Benchmark results
+            </h2>
+            <div style="display: flex; justify-content: center; gap: clamp(1.5rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">p99 LATENCY</div>
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--text-green); text-shadow: 0 0 20px rgba(57, 211, 83, 0.3);">
+                        <span style="font-size: clamp(0.7rem, 2vw, 1.2rem); color: var(--accent-red); text-decoration: line-through; vertical-align: super; margin-right: 0.2em;">340ms</span>12ms
+                    </div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">97% reduction</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">THROUGHPUT</div>
+                    <div class="counter" data-target="3" data-suffix="x" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--accent-yellow); text-shadow: 0 0 20px rgba(227, 179, 65, 0.3);">0x</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">1,200 &rarr; 3,800 rps</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">CACHE HIT RATE</div>
+                    <div class="counter" data-target="73" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--text-green); text-shadow: 0 0 20px rgba(57, 211, 83, 0.3);">0%</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">avg across all routes</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">DOWNTIME</div>
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--text-green); text-shadow: 0 0 20px rgba(57, 211, 83, 0.3);">0s</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.3rem);">zero-downtime deploy</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                Measured over 14 days post-deploy (Jan 28 &ndash; Feb 10, 2026). wrk2 + Datadog APM.<sup style="color: var(--text-green);">1</sup>
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: Lessons Learned -->
+    <section class="slide" aria-label="Lessons learned">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">cat lessons-learned.md</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green);">
+                What I'd tell past-me
+            </h2>
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.7vw, 0.55rem) 0;">
+                    <span style="color: var(--text-green); font-size: 0.8em;">$</span>
+                    <span><strong style="color: var(--text-primary);">Profile before you refactor.</strong> <span style="color: var(--text-secondary);">Our bottleneck was TLS handshake + connection setup, not handler logic. Flame graphs don't lie.</span></span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.7vw, 0.55rem) 0;">
+                    <span style="color: var(--text-green); font-size: 0.8em;">$</span>
+                    <span><strong style="color: var(--text-primary);">Per-route TTLs > global TTLs.</strong> <span style="color: var(--text-secondary);">Vitals need 30s freshness. Drug formularies can cache for 24h. One-size-fits-all caching wastes either freshness or performance.</span></span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.7vw, 0.55rem) 0;">
+                    <span style="color: var(--text-green); font-size: 0.8em;">$</span>
+                    <span><strong style="color: var(--text-primary);">pgBouncer in transaction mode is free performance.</strong> <span style="color: var(--text-secondary);">We saved ~45ms per query just by keeping connections warm. If you're using serverless, this is table stakes.</span></span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.7vw, 0.55rem) 0;">
+                    <span style="color: var(--text-green); font-size: 0.8em;">$</span>
+                    <span><strong style="color: var(--text-primary);">Feature-flag everything, even infra.</strong> <span style="color: var(--text-secondary);">We rolled out edge caching one route at a time via LaunchDarkly. Caught a serialization bug in /api/v2/allergies before it hit prod traffic.</span></span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.7vw, 0.55rem) 0;">
+                    <span style="color: var(--text-green); font-size: 0.8em;">$</span>
+                    <span><strong style="color: var(--text-primary);">The best optimization is the one you can ship this week.</strong> <span style="color: var(--text-secondary);">A 3-week infra project beat a 6-month rewrite. Not always the right call, but always worth asking.</span></span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: Closing -->
+    <section class="slide closing-slide" aria-label="Closing">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">kai@meridian ~ /talks/thank-you</span>
+        </div>
+        <div class="slide-content" style="align-items: center; text-align: center; padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <h2 class="reveal glow-text" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--text-green);">
+                Questions?<span style="animation: blink 1s step-end infinite;">_</span>
+            </h2>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 2;">
+                <p><span style="color: var(--text-green);">@</span> kaizhang_dev</p>
+                <p><span style="color: var(--text-green);">git</span> github.com/kzhang/edge-cache-demo</p>
+                <p><span style="color: var(--text-green);">web</span> meridianhealth.dev/engineering</p>
+            </div>
+            <div class="reveal" style="margin-top: var(--content-gap); padding: clamp(0.6rem, 1.5vw, 1rem); background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; max-width: min(80vw, 500px);">
+                <p style="font-size: var(--small-size); color: var(--text-muted); text-align: left;">
+                    <strong style="color: var(--text-primary);">Resources:</strong><br>
+                    &bull; Cloudflare Workers KV docs &mdash; developers.cloudflare.com/kv<br>
+                    &bull; pgBouncer transaction mode &mdash; pgbouncer.github.io<br>
+                    &bull; "Connection pooling considered essential" &mdash; brandur.org/fragments/connection-pooling
+                </p>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); font-style: italic;">
+                <sup style="color: var(--text-green);">1</sup> All benchmarks run against production traffic with consent under Meridian's IRB-approved observability protocol. No PHI was cached or logged.
+            </p>
+        </div>
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4; font-family: var(--font-mono);">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Full-featured, production-ready
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                // Mark first slide visible
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            /* --- Intersection Observer: triggers .visible on scroll --- */
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            /* --- Keyboard: arrows, space, pgup/pgdown, home/end --- */
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            /* --- Touch: swipe up/down with 50px threshold --- */
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            /* --- Mouse wheel with debounce --- */
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            /* --- Progress bar --- */
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            /* --- Navigation dots --- */
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            /* --- Slide counter --- */
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            /* --- Navigation core --- */
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            /* --- Update all UI indicators --- */
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           Animates stat numbers when slide becomes visible
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 1500;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

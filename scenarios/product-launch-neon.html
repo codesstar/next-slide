@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipfast — From Commit to Production in 45 Seconds</title>
+
+    <!-- Fonts: Neon Cyber — Clash Display + Satoshi (Fontshare) -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Neon Cyber
+           Cyberpunk, neon pink/cyan, glitch effects
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #0a0f1c;
+            --bg-secondary: #0d1a2d;
+            --bg-tertiary: #111827;
+            --accent-cyan: #00ffcc;
+            --accent-magenta: #ff00aa;
+            --accent-blue: #4466ff;
+            --accent: #00ffcc;
+            --accent-secondary: #ff00aa;
+            --text-primary: #e0f0ff;
+            --text-secondary: #5a7a9a;
+            --text-muted: #2d4a6a;
+            --glow-cyan: 0 0 20px rgba(0, 255, 204, 0.3);
+            --glow-magenta: 0 0 20px rgba(255, 0, 170, 0.3);
+            --border-subtle: rgba(0, 255, 204, 0.1);
+            --surface: rgba(0, 255, 204, 0.03);
+
+            /* --- Typography --- */
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --font-mono: 'Satoshi', sans-serif;
+
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
+            line-height: 1.6;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+
+        /* ===========================================
+           BODY & GLOBAL — Neon Cyber
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent-cyan);
+            transform: scale(1.4);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-body);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           NEON CYBER — Signature Elements
+           =========================================== */
+
+        /* Scan line overlay */
+        .scan-lines::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.05) 2px,
+                rgba(0, 0, 0, 0.05) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Background for all slides */
+        .slide {
+            background: radial-gradient(ellipse at 30% 50%, var(--bg-secondary) 0%, var(--bg-primary) 70%);
+        }
+
+        /* Neon glow on text */
+        .glow-cyan {
+            text-shadow: 0 0 clamp(8px, 1.5vw, 20px) rgba(0, 255, 204, 0.4);
+        }
+
+        .glow-magenta {
+            text-shadow: 0 0 clamp(8px, 1.5vw, 20px) rgba(255, 0, 170, 0.4);
+        }
+
+        /* Corner bracket markers */
+        .bracket-frame::before,
+        .bracket-frame::after {
+            position: absolute;
+            font-size: var(--body-size);
+            color: var(--accent-cyan);
+            opacity: 0.3;
+        }
+        .bracket-frame::before {
+            content: '[ ';
+            top: var(--slide-padding);
+            left: var(--slide-padding);
+        }
+        .bracket-frame::after {
+            content: ' ]';
+            bottom: var(--slide-padding);
+            right: var(--slide-padding);
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Neon bordered card */
+        .neon-card {
+            border: 1px solid rgba(0, 255, 204, 0.15);
+            box-shadow: inset 0 0 clamp(10px, 2vw, 20px) rgba(0, 255, 204, 0.02);
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDES =================== -->
+
+    <!-- SLIDE 1: Title -->
+    <section class="slide scan-lines bracket-frame" aria-label="Title">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal" style="display: inline-block; border: 1px solid var(--accent-cyan); padding: clamp(0.2rem, 0.5vw, 0.35rem) clamp(0.6rem, 1.2vw, 1rem); font-size: var(--small-size); color: var(--accent-cyan); letter-spacing: 0.1em; text-transform: uppercase;">
+                Public Launch &mdash; April 15, 2026
+            </div>
+            <h1 class="reveal gradient-text" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--content-gap); line-height: 1.05;">
+                Shipfast
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(80vw, 600px); line-height: 1.5;">
+                From commit to production in 45 seconds.
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                scroll to begin &darr;
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: Section Divider -->
+    <section class="slide scan-lines" aria-label="The Problem">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <span class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-magenta);">
+                Part 01
+            </span>
+            <h2 class="reveal glow-cyan" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); color: var(--accent-cyan);">
+                The Problem
+            </h2>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: Quote -->
+    <section class="slide scan-lines bracket-frame" aria-label="Quote">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(80vw, 800px); margin: 0 auto;">
+            <div class="reveal" style="font-size: clamp(2rem, 5vw, 4rem); color: var(--accent-magenta); line-height: 1; opacity: 0.4; font-family: Georgia, serif;">
+                &ldquo;
+            </div>
+            <blockquote class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 600; line-height: 1.4; margin-top: clamp(-0.3rem, -0.5vw, -0.5rem);">
+                I spend more time configuring CI/CD pipelines than writing actual features. Last Tuesday I burned 4 hours debugging a deploy script.
+            </blockquote>
+            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal;">
+                &mdash; Ava Torres, Senior Engineer at Lattice &nbsp;|&nbsp; Stack Overflow Developer Survey, 2025<sup style="font-size: 0.7em; color: var(--accent-magenta);">1</sup>
+            </cite>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: Features -->
+    <section class="slide scan-lines" aria-label="Features">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center;">
+                What Shipfast Does
+            </h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr);">
+                <div class="reveal card neon-card" style="background: var(--surface); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); position: relative;">
+                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#9889;</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 600; margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem); color: var(--accent-cyan);">Zero-Config Deploy</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5;">Push to main. That's it. Shipfast detects your framework, builds, and ships automatically.</p>
+                </div>
+                <div class="reveal card neon-card" style="background: var(--surface); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); position: relative;">
+                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#128274;</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 600; margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem); color: var(--accent-cyan);">Built-in Rollbacks</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5;">Every deploy is atomic. One-click rollback to any previous version in under 3 seconds.</p>
+                </div>
+                <div class="reveal card neon-card" style="background: var(--surface); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); position: relative;">
+                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#127760;</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 600; margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem); color: var(--accent-cyan);">Edge-First</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5;">Deploys to 42 edge locations worldwide. P95 cold start under 18ms. No region config needed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: Comparison -->
+    <section class="slide scan-lines" aria-label="Before vs After">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center;">
+                Before vs After
+            </h2>
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch;">
+                <div class="neon-card" style="border-color: rgba(255, 0, 170, 0.2); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); background: rgba(255, 0, 170, 0.03);">
+                    <h3 style="font-size: var(--h3-size); color: var(--accent-magenta); font-family: var(--font-display); font-weight: 600; margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">Without Shipfast</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Write Dockerfile manually</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Configure CI/CD from scratch</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Debug YAML indentation errors</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Manually manage SSL certs</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; ~12 min average deploy time</li>
+                    </ul>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem);">avg. 12m 14s per deploy</p>
+                </div>
+                <div style="width: 1px; background: linear-gradient(180deg, var(--accent-magenta), var(--accent-cyan)); align-self: stretch; opacity: 0.3;"></div>
+                <div class="neon-card" style="border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); background: rgba(0, 255, 204, 0.03);">
+                    <h3 style="font-size: var(--h3-size); color: var(--accent-cyan); font-family: var(--font-display); font-weight: 600; margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">With Shipfast</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Auto-detected build pipeline</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Git push triggers everything</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Zero config files to maintain</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Auto-provisioned TLS</li>
+                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; 45-second average deploy</li>
+                    </ul>
+                    <p style="font-size: var(--small-size); color: var(--accent-cyan); margin-top: clamp(0.5rem, 1vw, 0.8rem);">avg. 45s per deploy</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: Stats -->
+    <section class="slide scan-lines" aria-label="Impact">
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center;">
+                The Numbers Speak
+            </h2>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter glow-cyan" data-target="3.2" data-suffix="x" data-decimal="true" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--accent-cyan);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vw, 0.3rem);">Faster Deploys</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter glow-magenta" data-target="47" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--accent-magenta);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vw, 0.3rem);">Less Config</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--accent-cyan);">
+                        <span style="font-size: clamp(1rem, 3vw, 2rem); color: var(--text-muted); text-decoration: line-through;">12m</span>
+                        <span class="glow-cyan"> 45s</span>
+                    </div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vw, 0.3rem);">Setup Time</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                Based on internal benchmarks across 1,847 deploys during closed beta (Jan&ndash;Mar 2026)
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: Pricing -->
+    <section class="slide scan-lines" aria-label="Pricing">
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center;">
+                Pricing
+            </h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap);">
+                Launch week special &mdash; lock in these rates forever.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--content-gap); margin-top: var(--content-gap); max-width: min(90vw, 900px);">
+                <div class="reveal neon-card" style="background: var(--surface); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); text-align: center;">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Starter</p>
+                    <p style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; margin: 0.2em 0;">$0</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">per month</p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; 3 projects</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; 100 deploys/mo</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Community support</li>
+                    </ul>
+                </div>
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--accent-cyan); box-shadow: var(--glow-cyan); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); text-align: center; position: relative;">
+                    <span style="position: absolute; top: clamp(-10px, -1vw, -12px); left: 50%; transform: translateX(-50%); background: var(--accent-cyan); color: var(--bg-primary); font-size: var(--small-size); padding: clamp(0.15rem, 0.3vw, 0.2rem) clamp(0.5rem, 1vw, 0.8rem); font-weight: 700; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.05em;">Most Popular</span>
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-cyan);">Pro</p>
+                    <p style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; margin: 0.2em 0;">$29</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);"><s>$39</s> &nbsp;launch price</p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Unlimited projects</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Unlimited deploys</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Preview environments</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Priority support</li>
+                    </ul>
+                </div>
+                <div class="reveal neon-card" style="background: var(--surface); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem); text-align: center;">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Enterprise</p>
+                    <p style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; margin: 0.2em 0;">Custom</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">contact us</p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Everything in Pro</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; SSO &amp; audit logs</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Dedicated support</li>
+                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; SLA guarantee</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: CTA -->
+    <section class="slide scan-lines bracket-frame" aria-label="Get Started">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <div class="reveal" style="display: inline-block; border: 1px solid var(--accent-magenta); padding: clamp(0.2rem, 0.5vw, 0.35rem) clamp(0.6rem, 1.2vw, 1rem); font-size: var(--small-size); color: var(--accent-magenta); letter-spacing: 0.1em; text-transform: uppercase;">
+                Available Now
+            </div>
+            <h2 class="reveal gradient-text" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--content-gap); line-height: 1.1;">
+                Start Shipping Faster
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(70vw, 550px); line-height: 1.5;">
+                Free tier. No credit card. Deploy your first project in under a minute.
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap);">
+                <div style="border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem); font-family: var(--font-display); font-weight: 600; font-size: var(--body-size); cursor: pointer; box-shadow: var(--glow-cyan);">
+                    shipfast.dev/start
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                Launch date: April 15, 2026 &nbsp;&bull;&nbsp; Product Hunt featured
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); width: clamp(60px, 8vw, 100px); height: clamp(60px, 8vw, 100px); border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: var(--small-size); color: var(--text-muted);">
+                QR
+            </div>
+            <p class="reveal" style="font-size: clamp(0.55rem, 0.8vw, 0.7rem); color: var(--text-muted); margin-top: var(--content-gap); max-width: min(80vw, 600px);">
+                <sup>1</sup> Stack Overflow Developer Survey 2025, "Time Spent on DevOps vs Feature Work", n=48,231 respondents. Shipfast benchmarks from closed beta with 312 teams.
+            </p>
+        </div>
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+
+        /* Counter animation */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const isDecimal = el.dataset.decimal === 'true';
+                    const duration = 1500;
+                    const start = performance.now();
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const value = target * eased;
+                        el.textContent = prefix + (isDecimal ? value.toFixed(1) : Math.round(value).toLocaleString()) + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+    </script>
+</body>
+</html>

@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山隐 — 一盏茶，半山闲</title>
+
+    <!-- Fonts: LXGW WenKai (display/calligraphic) + Noto Serif SC (display fallback) + Noto Sans SC (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Cormorant:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — 东方墨韵 (Ink Wash)
+           =========================================== */
+        :root {
+            /* --- Color Palette: Ink & Rice Paper --- */
+            --bg-primary: #f7f4ef;
+            --bg-scroll: #efe8dc;
+            --ink-black: #1a1a1a;
+            --ink-gray: #4a4a4a;
+            --ink-wash: rgba(26, 26, 26, 0.08);
+            --accent-red: #c53d43;
+            --accent-gold: #b8860b;
+            --accent-gold-light: rgba(184, 134, 11, 0.15);
+            --text-primary: #1a1a1a;
+            --text-secondary: #8a8070;
+            --text-muted: #b0a898;
+            --border-subtle: rgba(26, 26, 26, 0.1);
+            --surface: rgba(26, 26, 26, 0.03);
+
+            /* --- Typography --- */
+            --font-display: 'LXGW WenKai', 'Noto Serif SC', serif;
+            --font-body: 'Noto Sans SC', 'Noto Serif SC', sans-serif;
+            --font-latin: 'Cormorant', serif;
+            --font-mono: 'Noto Sans SC', monospace;
+
+            --title-size: clamp(2.5rem, 7vw, 6rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-ink: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.8s;
+            --duration-slow: 1.2s;
+            --duration-dramatic: 2s;
+
+            /* --- Ink Accent Colors --- */
+            --accent: var(--accent-red);
+            --accent-secondary: var(--accent-gold);
+            --accent-glow: rgba(197, 61, 67, 0.2);
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size-base: clamp(1.5rem, 5vw, 4rem);
+            --h2-size-base: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size-base: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size-base: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size-base: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size-base: clamp(2rem, 8vw, 6rem);
+            --slide-padding-base: clamp(1rem, 4vw, 4rem);
+            --content-gap-base: clamp(0.5rem, 2vw, 2rem);
+            --element-gap-base: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
+            line-height: 1.8;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.8rem, 5vw, 3.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.5rem, 4vw, 2.5rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.8rem, 9vw, 3rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           BODY & GLOBAL STYLES — Ink Wash Theme
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        /* ===========================================
+           RICE PAPER TEXTURE BACKGROUND
+           Subtle warm gradient simulating Xuan paper
+           =========================================== */
+        .slide {
+            background:
+                /* Subtle fiber texture */
+                radial-gradient(ellipse at 20% 50%, rgba(200, 185, 160, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(180, 165, 140, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(190, 175, 150, 0.06) 0%, transparent 45%),
+                /* Base paper color */
+                linear-gradient(175deg, #f7f4ef 0%, #f2ece3 30%, #efe8dc 70%, #ebe3d5 100%);
+        }
+
+        /* ===========================================
+           ANIMATIONS — Ink dissolving into paper
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(clamp(15px, 2vh, 30px));
+            transition: opacity var(--duration-slow) var(--ease-ink),
+                        transform var(--duration-slow) var(--ease-ink);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered children */
+        .reveal:nth-child(1) { transition-delay: 0.15s; }
+        .reveal:nth-child(2) { transition-delay: 0.35s; }
+        .reveal:nth-child(3) { transition-delay: 0.55s; }
+        .reveal:nth-child(4) { transition-delay: 0.75s; }
+        .reveal:nth-child(5) { transition-delay: 0.95s; }
+        .reveal:nth-child(6) { transition-delay: 1.15s; }
+        .reveal:nth-child(7) { transition-delay: 1.35s; }
+        .reveal:nth-child(8) { transition-delay: 1.55s; }
+
+        /* Ink fade-in — slower, more elegant */
+        .reveal-ink {
+            opacity: 0;
+            filter: blur(8px);
+            transition: opacity var(--duration-dramatic) var(--ease-ink),
+                        filter var(--duration-dramatic) var(--ease-ink);
+        }
+        .slide.visible .reveal-ink {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        /* ===========================================
+           PROGRESS BAR — thin ink line
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--ink-black), var(--accent-red));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.5s var(--ease-ink);
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS — ink dots
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 0.8vh, 10px);
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: clamp(5px, 0.6vw, 8px);
+            height: clamp(5px, 0.6vw, 8px);
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.5s var(--ease-ink);
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent-red);
+            transform: scale(1.5);
+            box-shadow: 0 0 6px rgba(197, 61, 67, 0.3);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER — calligraphic feel
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+            letter-spacing: 0.1em;
+        }
+
+        /* ===========================================
+           INK WASH DECORATIVE ELEMENTS
+           =========================================== */
+        .ink-wash-bg {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.06;
+            background: var(--ink-black);
+            pointer-events: none;
+        }
+
+        /* Red seal / stamp mark */
+        .seal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: clamp(40px, 5vw, 60px);
+            height: clamp(40px, 5vw, 60px);
+            border: 2px solid var(--accent-red);
+            color: var(--accent-red);
+            font-family: var(--font-display);
+            font-size: clamp(0.6rem, 1.2vw, 1rem);
+            font-weight: 700;
+            transform: rotate(-3deg);
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        /* Brush stroke divider */
+        .brush-divider {
+            width: clamp(40px, 8vw, 80px);
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--ink-black) 20%, var(--ink-black) 80%, transparent);
+            opacity: 0.3;
+        }
+
+        /* ===========================================
+           MOUNTAIN CSS ART for brand story slide
+           =========================================== */
+        .mountain-scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: clamp(150px, 25vh, 300px);
+            overflow: hidden;
+        }
+
+        .mountain-scene .mist {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(30px);
+            pointer-events: none;
+        }
+
+        .mountain-scene .peak {
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: 标题页 =================== -->
+    <section class="slide title-slide" aria-label="标题">
+        <!-- Ink wash background blobs -->
+        <div class="ink-wash-bg" style="width: 50vw; height: 50vw; top: -10%; right: -15%;"></div>
+        <div class="ink-wash-bg" style="width: 35vw; height: 35vw; bottom: -5%; left: -10%; opacity: 0.04;"></div>
+        <div class="ink-wash-bg" style="width: 20vw; height: 20vw; top: 40%; left: 20%; opacity: 0.03;"></div>
+
+        <!-- Ink splash wash effect -->
+        <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: radial-gradient(ellipse at 80% 30%, rgba(26,26,26,0.05) 0%, transparent 60%); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: 0; left: 0; width: 40%; height: 50%; background: radial-gradient(ellipse at 20% 80%, rgba(26,26,26,0.03) 0%, transparent 50%); pointer-events: none;"></div>
+
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative; z-index: 1;">
+            <!-- Brand name in large calligraphic style -->
+            <h1 class="reveal-ink" style="font-size: clamp(4rem, 12vw, 10rem); font-family: var(--font-display); font-weight: 700; letter-spacing: clamp(0.3em, 2vw, 0.5em); color: var(--ink-black); line-height: 1;">
+                山隐
+            </h1>
+
+            <!-- Thin brush divider -->
+            <div class="reveal brush-divider" style="margin-top: clamp(1rem, 2vh, 2rem); transition-delay: 0.6s;"></div>
+
+            <!-- Slogan -->
+            <p class="reveal" style="font-size: clamp(1rem, 2.5vw, 1.6rem); font-family: var(--font-display); color: var(--ink-gray); margin-top: clamp(0.8rem, 1.5vh, 1.5rem); letter-spacing: 0.15em; transition-delay: 0.9s;">
+                一盏茶，半山闲
+            </p>
+
+            <!-- Seal stamp -->
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 3rem); transition-delay: 1.3s;">
+                <div class="seal">山隐<br>茶号</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: 引言/金句 =================== -->
+    <section class="slide" aria-label="引言">
+        <!-- Subtle ink wash in corner -->
+        <div class="ink-wash-bg" style="width: 40vw; height: 40vw; top: -15%; left: -10%; opacity: 0.05;"></div>
+
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(85vw, 900px); margin: 0 auto;">
+            <!-- Large quotation mark -->
+            <div class="reveal" style="font-size: clamp(3rem, 8vw, 7rem); color: var(--accent-red); line-height: 1; opacity: 0.25; font-family: var(--font-display);">
+                &ldquo;
+            </div>
+
+            <!-- The tea classic quote -->
+            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 3rem); font-family: var(--font-display); font-weight: 400; line-height: 1.6; margin-top: clamp(-0.5rem, -0.5vh, -0.3rem); color: var(--ink-black); letter-spacing: 0.08em;">
+                茶者，南方之嘉木也
+            </blockquote>
+
+            <!-- Attribution -->
+            <cite class="reveal" style="display: block; margin-top: clamp(1rem, 2vh, 2rem); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; font-family: var(--font-display); letter-spacing: 0.1em;">
+                &mdash;&ensp;陆羽&ensp;《茶经》
+            </cite>
+
+            <!-- Decorative brush divider -->
+            <div class="reveal brush-divider" style="margin-top: clamp(1.5rem, 3vh, 3rem);"></div>
+
+            <!-- Supplementary text -->
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(1rem, 2vh, 1.5rem); max-width: min(70vw, 500px); line-height: 2;">
+                一千二百年前，陆羽写下这句话的时候，武夷山的茶树已经在云雾间生长了数百年。今天，山隐从同一片土地出发，延续这份与山林的约定。
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: 双栏 — 品牌故事 =================== -->
+    <section class="slide" aria-label="品牌故事">
+        <div class="ink-wash-bg" style="width: 30vw; height: 30vw; bottom: -10%; right: -5%; opacity: 0.04;"></div>
+
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
+            <!-- Left: Brand story text -->
+            <div style="flex: 1; min-width: 0;">
+                <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.2em; text-transform: uppercase; font-family: var(--font-display);">
+                    品牌溯源
+                </p>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1.4;">
+                    三代茶人，一座山
+                </h2>
+                <div class="reveal brush-divider" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem);"></div>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--ink-gray); margin-top: clamp(0.8rem, 1.5vh, 1.5rem); line-height: 2;">
+                    山隐始于武夷山桐木关，海拔一千一百米的茶园里，林家三代人守着同一片山场。祖父林守山在1960年代开始种茶，父亲林志远在80年代将手艺传承精炼，到了第三代林见山，决定让好茶走出深山。
+                </p>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--ink-gray); margin-top: clamp(0.5rem, 1vh, 0.8rem); line-height: 2;">
+                    "山隐"二字，取自祖父的一句话：<span style="color: var(--ink-black); font-family: var(--font-display);">"好茶隐于山，不必争于市。"</span>
+                </p>
+            </div>
+
+            <!-- Right: CSS mountain scene art -->
+            <div style="flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center;">
+                <div class="reveal" style="position: relative; width: min(100%, 400px); height: clamp(200px, 35vh, 350px); overflow: hidden; border-radius: 4px;">
+                    <!-- Sky gradient -->
+                    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #f0ebe2 0%, #e8e0d3 40%, #ddd4c4 100%);"></div>
+
+                    <!-- Far mountain -->
+                    <div style="position: absolute; bottom: 20%; left: -5%; width: 60%; height: 55%; background: linear-gradient(160deg, rgba(26,26,26,0.08) 0%, rgba(26,26,26,0.04) 100%); clip-path: polygon(0% 100%, 30% 15%, 55% 35%, 75% 10%, 100% 100%); filter: blur(2px);"></div>
+
+                    <!-- Mid mountain -->
+                    <div style="position: absolute; bottom: 15%; right: -5%; width: 70%; height: 50%; background: linear-gradient(170deg, rgba(26,26,26,0.12) 0%, rgba(26,26,26,0.06) 100%); clip-path: polygon(0% 100%, 20% 40%, 45% 15%, 70% 30%, 90% 5%, 100% 100%); filter: blur(1px);"></div>
+
+                    <!-- Near mountain -->
+                    <div style="position: absolute; bottom: 0; left: 10%; width: 80%; height: 40%; background: linear-gradient(175deg, rgba(26,26,26,0.18) 0%, rgba(26,26,26,0.1) 100%); clip-path: polygon(0% 100%, 15% 50%, 40% 20%, 60% 40%, 85% 10%, 100% 100%);"></div>
+
+                    <!-- Mist layers -->
+                    <div style="position: absolute; bottom: 30%; left: 0; width: 100%; height: 20%; background: linear-gradient(180deg, transparent, rgba(240,235,226,0.7), transparent); filter: blur(8px);"></div>
+                    <div style="position: absolute; bottom: 15%; left: 0; width: 100%; height: 15%; background: linear-gradient(180deg, transparent, rgba(240,235,226,0.5), transparent); filter: blur(6px);"></div>
+
+                    <!-- Tea trees silhouette at bottom -->
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 12%; background: linear-gradient(180deg, rgba(26,26,26,0.15), rgba(26,26,26,0.08));"></div>
+
+                    <!-- Floating seal in corner -->
+                    <div style="position: absolute; bottom: clamp(8px, 1.5vh, 16px); right: clamp(8px, 1.5vw, 16px);">
+                        <div class="seal" style="width: clamp(28px, 3.5vw, 40px); height: clamp(28px, 3.5vw, 40px); font-size: clamp(0.45rem, 0.8vw, 0.65rem); border-width: 1.5px;">山隐</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: 卡片网格 — 核心产品 =================== -->
+    <section class="slide" aria-label="核心产品">
+        <div class="ink-wash-bg" style="width: 25vw; height: 25vw; top: 10%; left: -8%; opacity: 0.03;"></div>
+
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.2em; font-family: var(--font-display); text-align: center;">
+                甄选茶品
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap);">
+                三款经典，各有山意
+            </h2>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 2rem); margin-top: clamp(1.5rem, 3vh, 2.5rem); max-width: min(90vw, 900px); width: 100%;">
+
+                <!-- Card 1: 正山小种 -->
+                <div class="reveal" style="background: linear-gradient(175deg, rgba(197,61,67,0.04) 0%, rgba(197,61,67,0.01) 100%); border: 1px solid rgba(197,61,67,0.12); border-radius: 4px; padding: clamp(1rem, 2vw, 1.8rem); text-align: center; position: relative;">
+                    <!-- Tea type icon — simplified circle -->
+                    <div style="width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); border-radius: 50%; border: 1.5px solid var(--accent-red); margin: 0 auto; display: flex; align-items: center; justify-content: center; opacity: 0.6;">
+                        <div style="width: 60%; height: 60%; border-radius: 50%; background: radial-gradient(circle, rgba(197,61,67,0.2), transparent);"></div>
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.6rem, 1vh, 1rem); color: var(--ink-black);">正山小种</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-display);">传统红茶&ensp;|&ensp;松烟香</p>
+                    <div class="brush-divider" style="margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
+                    <p style="font-size: var(--body-size); color: var(--ink-gray); line-height: 1.8;">桐木关原产地，百年老枞，松针烟熏工艺。汤色琥珀，入口桂圆甜香。</p>
+                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem);">&#165;298<span style="font-size: var(--small-size); color: var(--text-muted);">&ensp;/ 50g</span></p>
+                </div>
+
+                <!-- Card 2: 白毫银针 -->
+                <div class="reveal" style="background: linear-gradient(175deg, rgba(184,134,11,0.04) 0%, rgba(184,134,11,0.01) 100%); border: 1px solid rgba(184,134,11,0.12); border-radius: 4px; padding: clamp(1rem, 2vw, 1.8rem); text-align: center; position: relative;">
+                    <div style="width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); border-radius: 50%; border: 1.5px solid var(--accent-gold); margin: 0 auto; display: flex; align-items: center; justify-content: center; opacity: 0.6;">
+                        <div style="width: 60%; height: 60%; border-radius: 50%; background: radial-gradient(circle, rgba(184,134,11,0.2), transparent);"></div>
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.6rem, 1vh, 1rem); color: var(--ink-black);">白毫银针</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-display);">头采白茶&ensp;|&ensp;毫香蜜韵</p>
+                    <div class="brush-divider" style="margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
+                    <p style="font-size: var(--body-size); color: var(--ink-gray); line-height: 1.8;">清明前三天采摘，全芽头制作。银毫密覆，汤色杏黄透亮，清甜回甘。</p>
+                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem);">&#165;528<span style="font-size: var(--small-size); color: var(--text-muted);">&ensp;/ 50g</span></p>
+                </div>
+
+                <!-- Card 3: 大红袍 -->
+                <div class="reveal" style="background: linear-gradient(175deg, rgba(26,26,26,0.04) 0%, rgba(26,26,26,0.01) 100%); border: 1px solid rgba(26,26,26,0.1); border-radius: 4px; padding: clamp(1rem, 2vw, 1.8rem); text-align: center; position: relative;">
+                    <div style="width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); border-radius: 50%; border: 1.5px solid var(--ink-black); margin: 0 auto; display: flex; align-items: center; justify-content: center; opacity: 0.4;">
+                        <div style="width: 60%; height: 60%; border-radius: 50%; background: radial-gradient(circle, rgba(26,26,26,0.15), transparent);"></div>
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.6rem, 1vh, 1rem); color: var(--ink-black);">大红袍</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-display);">岩茶之王&ensp;|&ensp;岩骨花香</p>
+                    <div class="brush-divider" style="margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
+                    <p style="font-size: var(--body-size); color: var(--ink-gray); line-height: 1.8;">三坑两涧核心产区，传统炭焙。七泡有余香，岩韵深沉，饮后齿颊留芳。</p>
+                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem);">&#165;888<span style="font-size: var(--small-size); color: var(--text-muted);">&ensp;/ 50g</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: 时间线 — 制茶工艺 =================== -->
+    <section class="slide" aria-label="制茶工艺">
+        <div class="ink-wash-bg" style="width: 45vw; height: 45vw; top: -20%; right: -15%; opacity: 0.04;"></div>
+
+        <div class="slide-content">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.2em; font-family: var(--font-display); text-align: center;">
+                传统工艺
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap);">
+                从叶到茶，四步成韵
+            </h2>
+
+            <div style="display: flex; align-items: flex-start; gap: 0; margin-top: clamp(2rem, 4vh, 3.5rem); position: relative; max-width: min(90vw, 900px); margin-left: auto; margin-right: auto;">
+                <!-- Connecting line — ink brush style -->
+                <div style="position: absolute; top: clamp(18px, 2.5vw, 28px); left: clamp(18px, 2.5vw, 28px); right: clamp(18px, 2.5vw, 28px); height: 1px; background: linear-gradient(90deg, transparent 0%, var(--ink-black) 10%, var(--ink-black) 90%, transparent 100%); opacity: 0.15;"></div>
+
+                <!-- Step 1: 采摘 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
+                        一
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">采摘</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent-red); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display);">清明前后</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">
+                        晨露未干时，手工采一芽一叶。每斤干茶需鲜叶四万余颗。
+                    </p>
+                </div>
+
+                <!-- Step 2: 萎凋 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
+                        二
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">萎凋</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent-red); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display);">日光自然萎凋</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">
+                        竹匾摊晾，借阳光与微风，让叶片缓慢失水，香气初现。
+                    </p>
+                </div>
+
+                <!-- Step 3: 揉捻 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
+                        三
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">揉捻</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent-red); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display);">手工慢揉</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">
+                        掌心与茶叶对话。轻揉使细胞破壁，茶汁渗出，成型塑韵。
+                    </p>
+                </div>
+
+                <!-- Step 4: 烘焙 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
+                        四
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">烘焙</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent-red); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display);">炭火低温</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">
+                        荔枝炭慢焙八小时，火候全凭经验。去青气，定香型，锁住山场之味。
+                    </p>
+                </div>
+            </div>
+
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: clamp(1.5rem, 2.5vh, 2rem); font-style: italic;">
+                注：工艺以正山小种为例，不同茶类略有差异
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: 数据统计 =================== -->
+    <section class="slide" aria-label="品牌数据">
+        <div class="ink-wash-bg" style="width: 50vw; height: 50vw; bottom: -20%; left: -15%; opacity: 0.05;"></div>
+        <div class="ink-wash-bg" style="width: 25vw; height: 25vw; top: 10%; right: 10%; opacity: 0.03;"></div>
+
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.2em; font-family: var(--font-display); text-align: center;">
+                山隐之本
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap);">
+                数字背后，是土地与人
+            </h2>
+
+            <div style="display: flex; justify-content: center; gap: clamp(3rem, 8vw, 8rem); margin-top: clamp(2rem, 5vh, 4rem); flex-wrap: wrap;">
+                <!-- Stat 1: 茶园面积 -->
+                <div class="reveal" style="text-align: center;">
+                    <div style="position: relative; display: inline-block;">
+                        <!-- Ink splash behind number -->
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(80px, 12vw, 140px); height: clamp(80px, 12vw, 140px); border-radius: 50%; background: radial-gradient(circle, rgba(26,26,26,0.06) 0%, transparent 70%); filter: blur(10px);"></div>
+                        <div class="counter" data-target="2400" data-suffix="" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--ink-black); position: relative; letter-spacing: -0.02em;">0</div>
+                    </div>
+                    <div style="font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.5rem); font-family: var(--font-display); letter-spacing: 0.1em;">亩茶园</div>
+                    <div class="brush-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">武夷山核心产区</div>
+                </div>
+
+                <!-- Stat 2: 合作茶农 -->
+                <div class="reveal" style="text-align: center;">
+                    <div style="position: relative; display: inline-block;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(80px, 12vw, 140px); height: clamp(80px, 12vw, 140px); border-radius: 50%; background: radial-gradient(circle, rgba(197,61,67,0.05) 0%, transparent 70%); filter: blur(10px);"></div>
+                        <div class="counter" data-target="187" data-suffix="" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--ink-black); position: relative; letter-spacing: -0.02em;">0</div>
+                    </div>
+                    <div style="font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.5rem); font-family: var(--font-display); letter-spacing: 0.1em;">户茶农</div>
+                    <div class="brush-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">长期合作&ensp;共同成长</div>
+                </div>
+
+                <!-- Stat 3: 年产量 -->
+                <div class="reveal" style="text-align: center;">
+                    <div style="position: relative; display: inline-block;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(80px, 12vw, 140px); height: clamp(80px, 12vw, 140px); border-radius: 50%; background: radial-gradient(circle, rgba(184,134,11,0.05) 0%, transparent 70%); filter: blur(10px);"></div>
+                        <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--ink-black); position: relative; letter-spacing: -0.02em;">12.6<span style="font-size: clamp(1rem, 3vw, 2rem);">吨</span></div>
+                    </div>
+                    <div style="font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.5rem); font-family: var(--font-display); letter-spacing: 0.1em;">年产量</div>
+                    <div class="brush-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">不求量大&ensp;只求精良</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: 内容+要点 — 品牌理念 =================== -->
+    <section class="slide" aria-label="品牌理念">
+        <div class="ink-wash-bg" style="width: 35vw; height: 35vw; top: -10%; right: -10%; opacity: 0.04;"></div>
+
+        <div class="slide-content" style="max-width: min(85vw, 800px); margin-left: auto; margin-right: auto;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.2em; font-family: var(--font-display);">
+                我们相信
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1.4;">
+                好茶不需要讲故事，<br>但值得被好好对待
+            </h2>
+
+            <div class="reveal brush-divider" style="margin-top: clamp(1rem, 2vh, 1.5rem);"></div>
+
+            <ul style="margin-top: clamp(1.5rem, 3vh, 2.5rem); list-style: none; padding: 0;">
+                <!-- Point 1 -->
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(26,26,26,0.06);">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-red); min-width: 1.5em; opacity: 0.7;">一</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black); font-weight: 500;">生态种植</span>
+                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;不施化肥、不打农药。茶树与山林共生，虫鸟是天然的守护者。</span>
+                    </div>
+                </li>
+                <!-- Point 2 -->
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(26,26,26,0.06);">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-red); min-width: 1.5em; opacity: 0.7;">二</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black); font-weight: 500;">手工制茶</span>
+                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;从采摘到成品，关键工序全部手工完成。机器代替不了师傅的手感与判断。</span>
+                    </div>
+                </li>
+                <!-- Point 3 -->
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(26,26,26,0.06);">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-red); min-width: 1.5em; opacity: 0.7;">三</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black); font-weight: 500;">极简包装</span>
+                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;拒绝过度包装。竹盒、棉纸、手写批次号。把成本留给茶叶本身。</span>
+                    </div>
+                </li>
+                <!-- Point 4 -->
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0;">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-red); min-width: 1.5em; opacity: 0.7;">四</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black); font-weight: 500;">直达茶客</span>
+                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;没有中间商、没有经销层级。茶农到茶客，一条路走到底。</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: 结尾页 =================== -->
+    <section class="slide closing-slide" aria-label="结尾">
+        <!-- Ink wash atmosphere -->
+        <div class="ink-wash-bg" style="width: 60vw; height: 60vw; top: -25%; left: -20%; opacity: 0.05;"></div>
+        <div class="ink-wash-bg" style="width: 40vw; height: 40vw; bottom: -15%; right: -10%; opacity: 0.04;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 50%, rgba(239,232,220,0.3) 0%, transparent 60%); pointer-events: none;"></div>
+
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative; z-index: 1;">
+            <!-- Brand name -->
+            <h2 class="reveal-ink" style="font-size: clamp(3rem, 8vw, 6rem); font-family: var(--font-display); font-weight: 700; letter-spacing: 0.3em; color: var(--ink-black); line-height: 1;">
+                山隐
+            </h2>
+
+            <!-- Brush divider -->
+            <div class="reveal brush-divider" style="margin-top: clamp(1rem, 2vh, 1.5rem); transition-delay: 0.5s;"></div>
+
+            <!-- Closing message -->
+            <p class="reveal" style="font-size: clamp(1rem, 2vw, 1.4rem); font-family: var(--font-display); color: var(--ink-gray); margin-top: clamp(0.8rem, 1.5vh, 1.2rem); letter-spacing: 0.12em; transition-delay: 0.8s;">
+                让好茶回归本真
+            </p>
+
+            <!-- Contact info -->
+            <div class="reveal" style="margin-top: clamp(2rem, 4vh, 3.5rem); transition-delay: 1.1s;">
+                <div style="display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vh, 0.5rem); font-size: var(--body-size); color: var(--text-secondary);">
+                    <span>shanyin.tea.com</span>
+                    <span>service@shanyin.tea.com</span>
+                    <span style="font-family: var(--font-display); letter-spacing: 0.05em;">福建省南平市武夷山桐木关</span>
+                </div>
+            </div>
+
+            <!-- Seal -->
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 2.5rem); transition-delay: 1.4s;">
+                <div class="seal">山隐<br>茶号</div>
+            </div>
+        </div>
+
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4; font-family: var(--font-body);">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Full-featured, production-ready
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                // Mark first slide visible
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            /* --- Intersection Observer: triggers .visible on scroll --- */
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            /* --- Keyboard: arrows, space, pgup/pgdown, home/end --- */
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            /* --- Touch: swipe up/down with 50px threshold --- */
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            /* --- Mouse wheel with debounce --- */
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            /* --- Progress bar --- */
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            /* --- Navigation dots --- */
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `\u8DF3\u8F6C\u5230\u7B2C ${i + 1} \u9875`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            /* --- Slide counter --- */
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            /* --- Navigation core --- */
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 800);
+            }
+
+            /* --- Update all UI indicators --- */
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           Animate numbers when slide becomes visible
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 2000; /* Slower for elegance */
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        /* Ease-out cubic */
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        /* Initialize on DOM ready */
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

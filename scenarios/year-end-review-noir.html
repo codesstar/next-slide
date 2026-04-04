@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025年度工作总结 — 星辰科技市场部</title>
+
+    <!-- Fonts: Inter Tight + Inter for Keynote Noir, Noto Sans SC for Chinese -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Keynote Noir
+           Cinematic, minimal, authoritative — Apple keynote energy
+           =========================================== */
+        :root {
+            /* --- Color Palette (Keynote Noir) --- */
+            --bg-primary: #000000;
+            --bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+            --bg-card: #1d1d1f;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #1d1d1f;
+            --text-primary: #ffffff;
+            --text-secondary: #86868b;
+            --text-muted: #6e6e73;
+            --accent: #2997ff;
+            --accent-secondary: #30d158;
+            --accent-glow: rgba(41, 151, 255, 0.3);
+            --accent-glow-secondary: rgba(48, 209, 88, 0.2);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --surface: #1d1d1f;
+            --surface-hover: #2c2c2e;
+
+            /* --- Typography --- */
+            --font-display: 'Inter Tight', 'Noto Sans SC', sans-serif;
+            --font-body: 'Inter', 'Noto Sans SC', sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+
+            /* --- ALL sizes use clamp() --- */
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+            --duration-dramatic: 1.5s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+
+        /* 1. Lock html/body to viewport */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* 2. Each slide = exact viewport height */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 3. Content container */
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        /* 5. Cards/containers */
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        /* 6. Lists */
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        /* 7. Grids */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        /* 8. Images */
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        /* 9. CJK typography */
+        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
+            line-height: 1.8;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        /* 10. Text overflow */
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           THEME: Keynote Noir body styles
+           Pure black, cinematic, minimal
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        /* ===========================================
+           ANIMATIONS — Fade-in only (Keynote style)
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--duration-slow) ease,
+                        transform var(--duration-slow) ease;
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+        .reveal:nth-child(7) { transition-delay: 0.7s; }
+        .reveal:nth-child(8) { transition-delay: 0.8s; }
+
+        /* ===========================================
+           PROGRESS BAR — Subtle blue on pure black
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.5);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+            font-weight: 300;
+        }
+
+        /* ===========================================
+           KEYNOTE NOIR SIGNATURE ELEMENTS
+           Pure black, no texture, one idea per slide,
+           massive display type, subtle blue accent
+           =========================================== */
+
+        /* Stat change badges */
+        .stat-change {
+            font-size: clamp(0.65rem, 1.2vw, 1rem);
+            font-weight: 500;
+            margin-top: clamp(0.15rem, 0.4vw, 0.3rem);
+        }
+        .stat-change.positive { color: var(--accent-secondary); }
+        .stat-change.neutral { color: var(--text-secondary); }
+
+        /* Data table — minimal Keynote style */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--body-size);
+        }
+        .data-table thead th {
+            text-align: left;
+            padding: clamp(0.4rem, 1vw, 0.8rem);
+            border-bottom: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+        .data-table tbody td {
+            padding: clamp(0.5rem, 1vw, 0.8rem);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Status badges */
+        .badge-green {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+        .badge-yellow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            color: #ffd60a;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDES =================== -->
+
+    <!-- SLIDE 1: 标题页 -->
+    <section class="slide title-slide" aria-label="标题">
+        <div class="slide-content" style="align-items: center; text-align: center; justify-content: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); letter-spacing: 0.3em; text-transform: uppercase; font-weight: 300;">
+                星辰科技 · 市场部
+            </p>
+            <h1 class="reveal" style="font-size: clamp(2.5rem, 8vw, 6rem); font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; margin-top: var(--element-gap);">
+                2025年度工作总结
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300; line-height: 1.8;">
+                稳步增长，深耕价值，面向未来
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted); font-weight: 300;">
+                <span>张明远</span>
+                <span style="margin: 0 0.5em; opacity: 0.3;">|</span>
+                <span>市场部总监</span>
+                <span style="margin: 0 0.5em; opacity: 0.3;">|</span>
+                <span>2026年1月</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: 目录/议程 -->
+    <section class="slide" aria-label="议程">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center; margin-bottom: var(--content-gap);">
+                汇报提纲
+            </h2>
+            <div style="max-width: min(70vw, 550px); width: 100%;">
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem); padding: clamp(0.8rem, 1.5vw, 1.2rem) 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <span style="font-size: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-display); color: var(--accent); font-weight: 800; opacity: 0.6;">01</span>
+                    <div>
+                        <span style="font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">年度回顾</span>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.15em; font-weight: 300;">四个季度关键里程碑与成果</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem); padding: clamp(0.8rem, 1.5vw, 1.2rem) 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <span style="font-size: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-display); color: var(--accent); font-weight: 800; opacity: 0.6;">02</span>
+                    <div>
+                        <span style="font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">核心数据</span>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.15em; font-weight: 300;">营收、客户、续约、满意度全面复盘</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem); padding: clamp(0.8rem, 1.5vw, 1.2rem) 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <span style="font-size: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-display); color: var(--accent); font-weight: 800; opacity: 0.6;">03</span>
+                    <div>
+                        <span style="font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">重点项目</span>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.15em; font-weight: 300;">三大战略项目进展与成效</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem); padding: clamp(0.8rem, 1.5vw, 1.2rem) 0;">
+                    <span style="font-size: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-display); color: var(--accent); font-weight: 800; opacity: 0.6;">04</span>
+                    <div>
+                        <span style="font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">2026展望</span>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.15em; font-weight: 300;">新一年战略方向与重点规划</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: 章节分隔 — 年度回顾 -->
+    <section class="slide section-divider" aria-label="章节：年度回顾">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em; text-transform: uppercase; font-weight: 500;">
+                Part 01
+            </span>
+            <h2 class="reveal" style="font-size: clamp(2.5rem, 8vw, 6rem); font-family: var(--font-display); margin-top: var(--element-gap); font-weight: 800; letter-spacing: -0.03em;">
+                年度回顾
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300;">
+                从启动到冲刺，步步为营
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: 时间线 — 四季度里程碑 -->
+    <section class="slide" aria-label="季度里程碑">
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
+                2025 关键里程碑
+            </h2>
+            <div style="display: flex; align-items: flex-start; gap: 0; margin-top: var(--content-gap); position: relative; max-width: min(92vw, 1000px); width: 100%;">
+                <!-- Connecting line -->
+                <div style="position: absolute; top: 18px; left: 20px; right: 20px; height: 1px; background: rgba(255,255,255,0.08);"></div>
+
+                <!-- Q1 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--accent); color: #000; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size); font-family: var(--font-display);">Q1</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); font-weight: 700;">新品上线</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 clamp(0.3rem, 0.8vw, 0.6rem); line-height: 1.8; font-weight: 300;">StellarCRM 3.0 发布，首月获客 312 家，媒体覆盖 47 篇</p>
+                </div>
+                <!-- Q2 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--accent); color: #000; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size); font-family: var(--font-display);">Q2</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); font-weight: 700;">渠道拓展</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 clamp(0.3rem, 0.8vw, 0.6rem); line-height: 1.8; font-weight: 300;">新增 6 家渠道合作伙伴，渠道贡献营收占比提升至 28%</p>
+                </div>
+                <!-- Q3 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--accent); color: #000; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size); font-family: var(--font-display);">Q3</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); font-weight: 700;">品牌升级</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 clamp(0.3rem, 0.8vw, 0.6rem); line-height: 1.8; font-weight: 300;">品牌视觉全面焕新，行业峰会主题演讲 3 场，NPS 突破 70</p>
+                </div>
+                <!-- Q4 -->
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--accent-secondary); color: #000; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size); font-family: var(--font-display);">Q4</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); font-weight: 700;">冲刺收官</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 clamp(0.3rem, 0.8vw, 0.6rem); line-height: 1.8; font-weight: 300;">年度营收目标达成 106%，东南亚试点启动，团队扩充至 23 人</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: 数据统计 — 4个核心KPI -->
+    <section class="slide" aria-label="核心数据">
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
+                核心业绩指标
+            </h2>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap); font-weight: 300;">
+                数据截至 2025年12月31日
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 3vw, 3rem); margin-top: var(--content-gap); max-width: min(92vw, 1000px); width: 100%;">
+                <!-- 营收 -->
+                <div class="reveal" style="text-align: center; padding: clamp(1rem, 2vw, 2rem) clamp(0.5rem, 1vw, 1rem);">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: 0.5em; font-weight: 300;">年度营收</div>
+                    <div style="display: flex; align-items: baseline; justify-content: center; gap: 0.1em;">
+                        <span style="font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">&#165;</span>
+                        <span class="counter" data-target="4730" data-suffix="万" style="font-size: clamp(1.8rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);">0</span>
+                    </div>
+                    <div class="stat-change positive">同比 +34%</div>
+                </div>
+                <!-- 新增客户 -->
+                <div class="reveal" style="text-align: center; padding: clamp(1rem, 2vw, 2rem) clamp(0.5rem, 1vw, 1rem);">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: 0.5em; font-weight: 300;">新增客户</div>
+                    <div>
+                        <span class="counter" data-target="1847" data-suffix="家" style="font-size: clamp(1.8rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);">0</span>
+                    </div>
+                    <div class="stat-change positive">同比 +52%</div>
+                </div>
+                <!-- 续约率 -->
+                <div class="reveal" style="text-align: center; padding: clamp(1rem, 2vw, 2rem) clamp(0.5rem, 1vw, 1rem);">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: 0.5em; font-weight: 300;">客户续约率</div>
+                    <div>
+                        <span class="counter" data-target="91.3" data-suffix="%" data-decimals="1" style="font-size: clamp(1.8rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent-secondary);">0</span>
+                    </div>
+                    <div class="stat-change positive">+3.1pp</div>
+                </div>
+                <!-- NPS -->
+                <div class="reveal" style="text-align: center; padding: clamp(1rem, 2vw, 2rem) clamp(0.5rem, 1vw, 1rem);">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-bottom: 0.5em; font-weight: 300;">NPS 评分</div>
+                    <div>
+                        <span class="counter" data-target="72" data-suffix="分" style="font-size: clamp(1.8rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent-secondary);">0</span>
+                    </div>
+                    <div class="stat-change positive">行业前 10%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: 对比表 — 年度目标 vs 实际完成 -->
+    <section class="slide" aria-label="目标达成">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
+                年度目标达成情况
+            </h2>
+            <div class="reveal" style="margin-top: var(--content-gap); overflow-x: auto; max-width: min(92vw, 900px); margin-left: auto; margin-right: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 120px;">指标</th>
+                            <th style="text-align: center;">年初目标</th>
+                            <th style="text-align: center;">实际完成</th>
+                            <th style="text-align: center;">达成率</th>
+                            <th style="text-align: center;">状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 500;">年度营收</td>
+                            <td style="text-align: center; color: var(--text-secondary);">&#165;4,500万</td>
+                            <td style="text-align: center; font-weight: 600;">&#165;4,730万</td>
+                            <td style="text-align: center; color: var(--accent-secondary); font-weight: 600;">105.1%</td>
+                            <td style="text-align: center;"><span class="badge-green">&#10003; 超额</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">新增客户数</td>
+                            <td style="text-align: center; color: var(--text-secondary);">1,500家</td>
+                            <td style="text-align: center; font-weight: 600;">1,847家</td>
+                            <td style="text-align: center; color: var(--accent-secondary); font-weight: 600;">123.1%</td>
+                            <td style="text-align: center;"><span class="badge-green">&#10003; 超额</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">客户续约率</td>
+                            <td style="text-align: center; color: var(--text-secondary);">90%</td>
+                            <td style="text-align: center; font-weight: 600;">91.3%</td>
+                            <td style="text-align: center; color: var(--accent-secondary); font-weight: 600;">101.4%</td>
+                            <td style="text-align: center;"><span class="badge-green">&#10003; 超额</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">品牌曝光量</td>
+                            <td style="text-align: center; color: var(--text-secondary);">2,000万次</td>
+                            <td style="text-align: center; font-weight: 600;">1,870万次</td>
+                            <td style="text-align: center; color: #ffd60a; font-weight: 600;">93.5%</td>
+                            <td style="text-align: center;"><span class="badge-yellow">&#9679; 接近</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">获客成本 (CAC)</td>
+                            <td style="text-align: center; color: var(--text-secondary);">&#165;2,800</td>
+                            <td style="text-align: center; font-weight: 600;">&#165;2,560</td>
+                            <td style="text-align: center; color: var(--accent-secondary); font-weight: 600;">109.4%</td>
+                            <td style="text-align: center;"><span class="badge-green">&#10003; 超额</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap); text-align: right; max-width: min(92vw, 900px); margin-left: auto; margin-right: auto; font-weight: 300;">
+                * CAC 达成率以低于目标为优；品牌曝光受 Q2 媒体策略调整影响，已在 Q4 回升
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: 章节分隔 — 重点项目 -->
+    <section class="slide section-divider" aria-label="章节：重点项目">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em; text-transform: uppercase; font-weight: 500;">
+                Part 02
+            </span>
+            <h2 class="reveal" style="font-size: clamp(2.5rem, 8vw, 6rem); font-family: var(--font-display); margin-top: var(--element-gap); font-weight: 800; letter-spacing: -0.03em;">
+                重点项目
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300;">
+                技术驱动增长，产品定义未来
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: 卡片网格 — 3个重点项目 -->
+    <section class="slide" aria-label="重点项目详情">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
+                三大战略项目
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); max-width: min(92vw, 1000px); margin-left: auto; margin-right: auto;">
+                <!-- 项目1 -->
+                <div class="reveal" style="padding: clamp(1rem, 2vw, 1.5rem); border-left: 2px solid var(--accent);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">智能推荐系统</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; margin-bottom: clamp(0.6rem, 1vw, 1rem); font-weight: 300;">
+                        基于客户行为数据的 AI 推荐引擎，实现精准内容推送与交叉销售
+                    </p>
+                    <div>
+                        <span style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);">+23%</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: 0.3em; font-weight: 300;">转化率提升</span>
+                    </div>
+                </div>
+                <!-- 项目2 -->
+                <div class="reveal" style="padding: clamp(1rem, 2vw, 1.5rem); border-left: 2px solid var(--accent-secondary);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">客户自助平台</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; margin-bottom: clamp(0.6rem, 1vw, 1rem); font-weight: 300;">
+                        一站式客户服务门户，覆盖知识库、工单提交、账户管理全流程
+                    </p>
+                    <div>
+                        <span style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-family: var(--font-display); font-weight: 800; color: var(--accent-secondary);">-41%</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: 0.3em; font-weight: 300;">工单量下降</span>
+                    </div>
+                </div>
+                <!-- 项目3 -->
+                <div class="reveal" style="padding: clamp(1rem, 2vw, 1.5rem); border-left: 2px solid var(--accent);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">出海计划 · 东南亚试点</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; margin-bottom: clamp(0.6rem, 1vw, 1rem); font-weight: 300;">
+                        Q4 启动新加坡、泰国、马来西亚三国试点，本地化团队就绪
+                    </p>
+                    <div>
+                        <span style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);">3国</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: 0.3em; font-weight: 300;">3个月覆盖</span>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--content-gap); font-weight: 300;">
+                * 智能推荐系统由市场部与技术部联合推进，Q3 上线后持续迭代优化
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: 2026年重点方向 -->
+    <section class="slide" aria-label="2026展望">
+        <div class="slide-content" style="align-items: center;">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em; text-transform: uppercase; font-weight: 500;">Part 04</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap);">2026年重点方向</h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8; font-weight: 300;">
+                从 "做大规模" 到 "做深价值"，聚焦四个核心方向。
+            </p>
+            <div style="margin-top: var(--content-gap); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.6rem, 1.5vw, 1.2rem); max-width: min(92vw, 900px);">
+                <div class="reveal" style="padding: clamp(0.8rem, 1.5vw, 1.2rem); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <div style="display: flex; align-items: center; gap: 0.6em; margin-bottom: 0.4em;">
+                        <span style="font-size: var(--small-size); font-family: var(--font-display); color: var(--accent); font-weight: 800;">01</span>
+                        <h3 style="font-size: var(--body-size); font-weight: 600; font-family: var(--font-display);">深耕客户成功体系</h3>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; font-weight: 300;">搭建客户健康度评分模型，将续约率目标提升至 93%</p>
+                </div>
+                <div class="reveal" style="padding: clamp(0.8rem, 1.5vw, 1.2rem); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <div style="display: flex; align-items: center; gap: 0.6em; margin-bottom: 0.4em;">
+                        <span style="font-size: var(--small-size); font-family: var(--font-display); color: var(--accent-secondary); font-weight: 800;">02</span>
+                        <h3 style="font-size: var(--body-size); font-weight: 600; font-family: var(--font-display);">东南亚全面拓展</h3>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; font-weight: 300;">在试点基础上扩展至印尼与越南，目标海外营收占比达 8%</p>
+                </div>
+                <div class="reveal" style="padding: clamp(0.8rem, 1.5vw, 1.2rem); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <div style="display: flex; align-items: center; gap: 0.6em; margin-bottom: 0.4em;">
+                        <span style="font-size: var(--small-size); font-family: var(--font-display); color: var(--accent); font-weight: 800;">03</span>
+                        <h3 style="font-size: var(--body-size); font-weight: 600; font-family: var(--font-display);">AI 驱动的营销自动化</h3>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; font-weight: 300;">引入大模型能力，实现内容生产、线索评分、投放优化的自动化闭环</p>
+                </div>
+                <div class="reveal" style="padding: clamp(0.8rem, 1.5vw, 1.2rem); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <div style="display: flex; align-items: center; gap: 0.6em; margin-bottom: 0.4em;">
+                        <span style="font-size: var(--small-size); font-family: var(--font-display); color: var(--accent-secondary); font-weight: 800;">04</span>
+                        <h3 style="font-size: var(--body-size); font-weight: 600; font-family: var(--font-display);">团队能力升级</h3>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; font-weight: 300;">引入增长负责人与数据分析岗，建设市场部数据中台能力</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: 结尾页 -->
+    <section class="slide closing-slide" aria-label="结尾">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <h2 class="reveal" style="font-size: clamp(2.5rem, 8vw, 6rem); font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em;">
+                感谢聆听
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); line-height: 1.8; max-width: min(70vw, 600px); font-weight: 300;">
+                2025 是打基础的一年，2026 是见成效的一年。<br>
+                愿星辰不负赶路人。
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vw, 0.5rem); font-size: var(--small-size); color: var(--text-muted); font-weight: 300;">
+                <span>张明远 | 市场部总监</span>
+                <span>mingyuan.zhang@stellartech.cn</span>
+                <span>星辰科技 Stellar Tech</span>
+            </div>
+        </div>
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: clamp(0.55rem, 0.8vw, 0.75rem); color: var(--text-muted); opacity: 0.3; font-weight: 300;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: none;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Full-featured, production-ready
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `跳转到第 ${i + 1} 页`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const decimals = parseInt(el.dataset.decimals) || 0;
+                    const duration = 1500;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const value = target * eased;
+                        if (decimals > 0) {
+                            el.textContent = prefix + value.toFixed(decimals) + suffix;
+                        } else {
+                            el.textContent = prefix + Math.round(value).toLocaleString() + suffix;
+                        }
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

@@ -9,6 +9,7 @@
   "instructions": "./SKILL.md",
   "assets": [
     "STYLE_PRESETS.md",
+    "SCENARIO_TEMPLATES.md",
     "viewport-base.css",
     "html-template.md",
     "animation-patterns.md",

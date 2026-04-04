@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于大语言模型的代码审查自动化研究 — 硕士论文答辩</title>
+
+    <!-- Fonts: Noto Sans SC (body/display) + JetBrains Mono (code/data) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Swiss Modern (Academic)
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f5;
+            --bg-tertiary: #eeede9;
+            --text-primary: #0a0a0a;
+            --text-secondary: #555555;
+            --text-muted: #888888;
+            --accent: #cc2200;
+            --accent-light: rgba(204, 34, 0, 0.08);
+            --accent-border: rgba(204, 34, 0, 0.2);
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --border-medium: rgba(0, 0, 0, 0.15);
+            --surface: rgba(0, 0, 0, 0.03);
+            --grid-line: rgba(0, 0, 0, 0.06);
+
+            /* --- Typography — ALL sizes use clamp() --- */
+            --font-display: 'Noto Sans SC', sans-serif;
+            --font-body: 'Noto Sans SC', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(1.6rem, 4.5vw, 3.2rem);
+            --h2-size: clamp(1.2rem, 3vw, 2.2rem);
+            --h3-size: clamp(0.95rem, 2.2vw, 1.5rem);
+            --subtitle-size: clamp(0.85rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+
+            /* --- Spacing — ALL use clamp() --- */
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.6s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size-vb: clamp(1.5rem, 5vw, 4rem);
+            --h2-size-vb: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size-vb: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size-vb: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size-vb: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size-vb: clamp(2rem, 8vw, 6rem);
+            --slide-padding-vb: clamp(1rem, 4vw, 4rem);
+            --content-gap-vb: clamp(0.5rem, 2vw, 2rem);
+            --element-gap-vb: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
+            line-height: 1.8;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        /* --- Responsive Breakpoints --- */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4vw, 2.5rem);
+                --h2-size: clamp(1rem, 2.8vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 3.5vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           THEME — Swiss Modern Academic
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* --- Red accent bar on left of slides --- */
+        .slide::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: clamp(3px, 0.4vw, 5px);
+            height: 100%;
+            background: var(--accent);
+            z-index: 2;
+        }
+
+        /* Title slide has no left bar */
+        .slide.title-slide::before,
+        .slide.closing-slide::before {
+            display: none;
+        }
+
+        /* --- Slide number badge (top-right academic style) --- */
+        .slide-number-badge {
+            position: absolute;
+            top: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-medium);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.4);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           ACADEMIC-SPECIFIC STYLES
+           =========================================== */
+
+        /* Footnote styling */
+        .footnote {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-subtle);
+            padding-top: clamp(0.4rem, 1vw, 0.8rem);
+            margin-top: auto;
+        }
+
+        /* Section label */
+        .section-label {
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: clamp(0.3rem, 0.8vw, 0.6rem);
+        }
+
+        /* Academic table */
+        .academic-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--body-size);
+        }
+        .academic-table thead th {
+            text-align: left;
+            padding: clamp(0.4rem, 1vw, 0.8rem);
+            border-bottom: 2px solid var(--text-primary);
+            font-weight: 700;
+            font-size: var(--small-size);
+            letter-spacing: 0.03em;
+        }
+        .academic-table tbody td {
+            padding: clamp(0.4rem, 1vw, 0.8rem);
+            border-bottom: 1px solid var(--border-subtle);
+            line-height: 1.6;
+        }
+        .academic-table tbody tr:last-child td {
+            border-bottom: 2px solid var(--text-primary);
+        }
+
+        /* Highlight row */
+        .academic-table .highlight-row td {
+            background: var(--accent-light);
+            font-weight: 600;
+        }
+
+        /* Architecture flow node */
+        .arch-node {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-medium);
+            border-radius: clamp(6px, 1vw, 10px);
+            padding: clamp(0.5rem, 1.2vw, 1rem);
+            text-align: center;
+            min-width: clamp(70px, 11vw, 130px);
+        }
+        .arch-node.primary {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+        .arch-arrow {
+            font-size: var(--body-size);
+            color: var(--accent);
+            padding: 0 clamp(0.2rem, 0.6vw, 0.5rem);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Stat card */
+        .stat-card {
+            text-align: center;
+            padding: clamp(0.8rem, 2vw, 1.5rem);
+        }
+        .stat-value {
+            font-size: var(--stat-size);
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            margin-top: clamp(0.3rem, 0.8vw, 0.6rem);
+        }
+        .stat-sub {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            margin-top: clamp(0.15rem, 0.4vw, 0.3rem);
+        }
+
+        /* Bullet with accent dot */
+        .accent-bullet {
+            display: flex;
+            align-items: baseline;
+            gap: clamp(0.5em, 1vw, 0.75em);
+            padding: clamp(0.3em, 0.6vw, 0.5em) 0;
+            font-size: var(--body-size);
+            line-height: 1.8;
+        }
+        .accent-bullet .dot {
+            color: var(--accent);
+            font-size: 0.5em;
+            flex-shrink: 0;
+            margin-top: 0.4em;
+        }
+
+        /* Innovation number */
+        .innovation-num {
+            font-family: var(--font-mono);
+            font-size: var(--h3-size);
+            font-weight: 700;
+            color: var(--accent);
+            min-width: clamp(1.5rem, 3vw, 2.5rem);
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDES =================== -->
+
+    <!-- SLIDE 1: 标题页 -->
+    <section class="slide title-slide" aria-label="标题">
+        <div class="slide-content" style="align-items: flex-start; justify-content: center;">
+            <!-- 学校标识占位 -->
+            <div class="reveal" style="width: clamp(120px, 18vw, 220px); height: clamp(28px, 3.5vw, 48px); background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-bottom: clamp(1rem, 3vw, 2.5rem);">
+                <span style="font-size: var(--small-size); color: var(--text-muted); letter-spacing: 0.1em;">复旦大学</span>
+            </div>
+
+            <!-- 红色装饰线 -->
+            <div class="reveal" style="width: clamp(40px, 6vw, 80px); height: 3px; background: var(--accent); margin-bottom: clamp(0.8rem, 2vw, 1.5rem);"></div>
+
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; line-height: 1.4; max-width: min(85vw, 800px);">
+                基于大语言模型的<br>代码审查自动化研究
+            </h1>
+
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.8rem, 2vw, 1.5rem); line-height: 1.8;">
+                硕士学位论文答辩
+            </p>
+
+            <div class="reveal" style="margin-top: clamp(1.5rem, 4vw, 3rem); font-size: var(--body-size); color: var(--text-secondary); line-height: 2.2;">
+                <p>答辩人：<span style="color: var(--text-primary); font-weight: 500;">李思源</span></p>
+                <p>指导教师：<span style="color: var(--text-primary); font-weight: 500;">王建华 教授</span></p>
+                <p>计算机科学与技术学院 &middot; 2026届</p>
+            </div>
+
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1rem, 2.5vw, 2rem);">
+                2026年5月
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: 目录/议程 -->
+    <section class="slide" aria-label="目录">
+        <div class="slide-content">
+            <div class="section-label reveal">CONTENTS</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                汇报提纲
+            </h2>
+
+            <div style="margin-top: var(--content-gap); max-width: min(85vw, 650px);">
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">01</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">研究背景与动机</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">02</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">相关工作</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">03</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">研究方法与系统架构</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">04</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">实验设计与结果分析</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">05</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">主要贡献</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">06</span>
+                    <span style="font-size: var(--body-size); color: var(--text-primary);">总结与展望</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: 研究背景与动机 -->
+    <section class="slide" aria-label="研究背景">
+        <div class="slide-content">
+            <div class="section-label reveal">01 / 研究背景</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                研究背景与动机
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;">
+                代码审查是软件质量保障的核心环节，但传统人工审查面临效率和一致性的双重挑战。
+            </p>
+
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal accent-bullet">
+                    <span class="dot">&#9679;</span>
+                    <span><strong>审查耗时长</strong> — 工业界统计表明，一次 Pull Request 的平均审查时间为 <span style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">4.2 小时</span>，大型项目中审查积压已成为开发瓶颈</span>
+                </li>
+                <li class="reveal accent-bullet">
+                    <span class="dot">&#9679;</span>
+                    <span><strong>人工审查一致性低</strong> — 不同审查者对同一段代码的反馈差异率高达 38%，审查质量受个人经验和精力状态影响显著</span>
+                </li>
+                <li class="reveal accent-bullet">
+                    <span class="dot">&#9679;</span>
+                    <span><strong>现有工具的局限</strong> — 传统静态分析工具（SonarQube、ESLint）仅覆盖规则匹配层面，无法理解代码语义、设计意图及上下文逻辑</span>
+                </li>
+            </ul>
+
+            <p class="reveal footnote">
+                * 数据来源：SmartBear, "2024 State of Code Review", N=3,200; Microsoft Research, "Code Reviewer Recommendations", ICSE 2023
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: 相关工作（双栏） -->
+    <section class="slide" aria-label="相关工作">
+        <div class="slide-content">
+            <div class="section-label reveal">02 / 相关工作</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                相关工作
+            </h2>
+
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch;">
+                <!-- 左侧：传统方法 -->
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: clamp(6px, 1vw, 12px); padding: clamp(0.8rem, 2vw, 1.5rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.4rem, 1vw, 0.8rem);">传统方法</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        <li style="padding: 0.3em 0;">&#9642; 静态分析（AST 模式匹配）</li>
+                        <li style="padding: 0.3em 0;">&#9642; 规则引擎（CheckStyle, PMD）</li>
+                        <li style="padding: 0.3em 0;">&#9642; 基于度量的代码异味检测</li>
+                        <li style="padding: 0.3em 0; color: var(--accent); font-weight: 500; margin-top: 0.3em;">局限：仅捕捉表层问题，缺乏语义理解</li>
+                    </ul>
+                </div>
+
+                <!-- 分隔线 -->
+                <div style="width: 2px; background: var(--border-subtle); align-self: stretch;"></div>
+
+                <!-- 右侧：LLM方法 -->
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: clamp(6px, 1vw, 12px); padding: clamp(0.8rem, 2vw, 1.5rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.4rem, 1vw, 0.8rem);">LLM 方法</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        <li style="padding: 0.3em 0;">&#9642; CodeBERT / GraphCodeBERT</li>
+                        <li style="padding: 0.3em 0;">&#9642; GPT 系列（Prompt 工程）</li>
+                        <li style="padding: 0.3em 0;">&#9642; Code Llama / StarCoder</li>
+                        <li style="padding: 0.3em 0; color: var(--accent); font-weight: 500; margin-top: 0.3em;">局限：通用模型缺乏领域适配，上下文窗口有限</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="reveal" style="margin-top: var(--content-gap); background: var(--accent-light); border-left: 3px solid var(--accent); padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.8rem, 1.5vw, 1.2rem); font-size: var(--body-size); line-height: 1.8;">
+                <strong>研究空白：</strong>如何结合领域知识进行自适应微调，同时在有限上下文中实现跨文件级别的审查理解？
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: 系统架构图 -->
+    <section class="slide" aria-label="系统架构">
+        <div class="slide-content">
+            <div class="section-label reveal">03 / 研究方法</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                系统架构
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;">
+                端到端的自动化代码审查流水线
+            </p>
+
+            <div class="reveal" style="display: flex; align-items: center; justify-content: center; gap: 0; margin-top: var(--content-gap); flex-wrap: wrap;">
+                <!-- 代码输入 -->
+                <div class="arch-node">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em;">&#128196;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600;">代码输入</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">Git Diff / PR</p>
+                </div>
+                <div class="arch-arrow">&#8594;</div>
+                <!-- 预处理 -->
+                <div class="arch-node">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em;">&#9881;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600;">预处理</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">AST 解析</p>
+                </div>
+                <div class="arch-arrow">&#8594;</div>
+                <!-- LLM推理 (primary) -->
+                <div class="arch-node primary">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em;">&#129302;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600;">LLM 推理</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">微调模型</p>
+                </div>
+                <div class="arch-arrow">&#8594;</div>
+                <!-- 报告生成 -->
+                <div class="arch-node">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em;">&#128203;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600;">审查报告</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">结构化输出</p>
+                </div>
+                <div class="arch-arrow">&#8594;</div>
+                <!-- 人工确认 -->
+                <div class="arch-node">
+                    <div style="font-size: clamp(0.9rem, 1.8vw, 1.3rem); margin-bottom: 0.2em;">&#128100;</div>
+                    <p style="font-size: var(--body-size); font-weight: 600;">人工确认</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">审查 / 采纳</p>
+                </div>
+            </div>
+
+            <!-- 底部注释行 -->
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1rem, 3vw, 3rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="font-size: var(--small-size); color: var(--text-muted); display: flex; align-items: center; gap: 0.5em;">
+                    <span style="width: 10px; height: 10px; border: 1px solid var(--accent); background: var(--accent-light); border-radius: 2px; display: inline-block;"></span>
+                    核心创新模块
+                </div>
+                <div style="font-size: var(--small-size); color: var(--text-muted);">
+                    领域自适应微调 &middot; 上下文感知窗口 &middot; 置信度评分机制
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: 实验结果对比表 -->
+    <section class="slide" aria-label="实验结果">
+        <div class="slide-content">
+            <div class="section-label reveal">04 / 实验结果</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                方法对比
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;">
+                在 CodeReviewNet 数据集（12,847 个审查样本）上的评测结果
+            </p>
+
+            <div class="reveal" style="margin-top: var(--content-gap); overflow-x: auto;">
+                <table class="academic-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width: clamp(80px, 12vw, 150px);">方法</th>
+                            <th style="text-align: center;">准确率</th>
+                            <th style="text-align: center;">召回率</th>
+                            <th style="text-align: center;">F1 值</th>
+                            <th style="text-align: center;">平均耗时</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: var(--text-secondary);">CodeBERT</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.743</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.681</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.711</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">1.8s</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-secondary);">GPT-4 (zero-shot)</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.812</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.776</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.794</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">8.4s</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-secondary);">人工审查</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.891</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.824</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.856</td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">4.2h</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td style="color: var(--accent);">本方法 (Ours)</td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">0.867</td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">0.829</td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">0.847</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">3.1s</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="reveal footnote">
+                * 人工审查数据基于 5 位具备 5 年以上经验的高级工程师的平均表现；所有自动化方法均在相同测试集（2,569 样本）上评测
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: 核心指标（数据统计） -->
+    <section class="slide" aria-label="核心指标">
+        <div class="slide-content" style="align-items: center;">
+            <div class="section-label reveal" style="text-align: center;">04 / 核心指标</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center;">
+                关键性能指标
+            </h2>
+
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
+                <div class="reveal stat-card">
+                    <div class="stat-value counter" data-target="847" data-prefix="0." style="font-size: var(--stat-size);">0</div>
+                    <div class="stat-label">F1 Score</div>
+                    <div class="stat-sub">接近人工审查水平 (0.856)</div>
+                </div>
+                <div class="reveal stat-card">
+                    <div class="stat-value counter" data-target="67" data-suffix="%" style="font-size: var(--stat-size);">0</div>
+                    <div class="stat-label">审查耗时降低</div>
+                    <div class="stat-sub">从平均 4.2h 降至 1.4h</div>
+                </div>
+                <div class="reveal stat-card">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-mono); font-weight: 700; color: var(--accent); line-height: 1;">&lt;8.3%</div>
+                    <div class="stat-label">误报率</div>
+                    <div class="stat-sub">低于行业可接受阈值 (10%)</div>
+                </div>
+            </div>
+
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: clamp(1.5rem, 3vw, 2.5rem);">
+                评测基于 CodeReviewNet 数据集 &middot; 12,847 个审查样本 &middot; 覆盖 Java / Python / TypeScript 三种语言
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: 主要贡献 -->
+    <section class="slide" aria-label="主要贡献">
+        <div class="slide-content">
+            <div class="section-label reveal">05 / 贡献</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                主要贡献
+            </h2>
+
+            <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.8rem, 2vw, 1.5rem);">
+                <!-- 贡献1 -->
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div class="innovation-num">01</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700;">领域自适应微调策略</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em; line-height: 1.8;">
+                            提出基于项目编码规范和历史审查记录的两阶段微调方法，使模型能够学习特定团队的审查偏好和代码风格，在领域适配后 F1 值提升 <span style="color: var(--accent); font-weight: 700;">6.7%</span>
+                        </p>
+                    </div>
+                </div>
+                <!-- 贡献2 -->
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div class="innovation-num">02</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700;">上下文感知的审查框架</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em; line-height: 1.8;">
+                            设计基于 AST 依赖关系的上下文选择算法，在有限的 token 窗口内最大化相关代码覆盖率，解决跨文件审查理解的关键瓶颈
+                        </p>
+                    </div>
+                </div>
+                <!-- 贡献3 -->
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div class="innovation-num">03</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700;">大规模代码审查数据集</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em; line-height: 1.8;">
+                            构建并开源 CodeReviewNet 数据集，包含 12,847 个经标注的审查样本（来自 1,463 个开源项目），为后续研究提供基准
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: 不足与展望 -->
+    <section class="slide" aria-label="总结与展望">
+        <div class="slide-content">
+            <div class="section-label reveal">06 / 展望</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                不足与展望
+            </h2>
+
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <!-- 当前不足 -->
+                <div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.4rem, 1vw, 0.8rem); color: var(--text-secondary);">当前局限</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); line-height: 1.8;">
+                        <li class="accent-bullet" style="padding: 0.3em 0;">
+                            <span style="color: var(--text-muted); font-size: 0.8em;">&#9670;</span>
+                            <span>多语言支持有限，目前仅覆盖 Java、Python 和 TypeScript</span>
+                        </li>
+                        <li class="accent-bullet" style="padding: 0.3em 0;">
+                            <span style="color: var(--text-muted); font-size: 0.8em;">&#9670;</span>
+                            <span>长文件（>500 行）场景下性能下降约 15%</span>
+                        </li>
+                        <li class="accent-bullet" style="padding: 0.3em 0;">
+                            <span style="color: var(--text-muted); font-size: 0.8em;">&#9670;</span>
+                            <span>对架构级别的设计问题识别能力仍然不足</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 未来方向 -->
+                <div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.4rem, 1vw, 0.8rem); color: var(--accent);">未来方向</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); line-height: 1.8;">
+                        <li class="accent-bullet" style="padding: 0.3em 0;">
+                            <span class="dot">&#9679;</span>
+                            <span><strong>增量学习机制</strong> — 从审查者反馈中持续优化</span>
+                        </li>
+                        <li class="accent-bullet" style="padding: 0.3em 0;">
+                            <span class="dot">&#9679;</span>
+                            <span><strong>IDE 深度集成</strong> — 编码阶段实时审查建议</span>
+                        </li>
+                        <li class="accent-bullet" style="padding: 0.3em 0;">
+                            <span class="dot">&#9679;</span>
+                            <span><strong>多语言扩展</strong> — 引入语言无关的中间表示</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="reveal footnote">
+                相关成果已发表于 ICSE 2026 Workshop (1篇) 及 IEEE TSE (在审)
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: 结尾页 -->
+    <section class="slide closing-slide" aria-label="致谢">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <!-- 红色装饰线 -->
+            <div class="reveal" style="width: clamp(40px, 6vw, 80px); height: 3px; background: var(--accent); margin-bottom: clamp(1rem, 2.5vw, 2rem);"></div>
+
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; line-height: 1.6;">
+                感谢各位老师指导
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;">
+                敬请批评指正
+            </p>
+
+            <div class="reveal" style="margin-top: clamp(2rem, 5vw, 4rem); font-size: var(--body-size); color: var(--text-muted); line-height: 2.2;">
+                <p>李思源 &middot; 复旦大学计算机科学与技术学院</p>
+                <p style="font-family: var(--font-mono); font-size: var(--small-size);">lisiyuan26@m.fudan.edu.cn</p>
+            </div>
+        </div>
+
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <!-- ===========================================
+         JAVASCRIPT — Slide Presentation Controller
+         =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                // Mark first slide visible
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            /* --- Intersection Observer: triggers .visible on scroll --- */
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            /* --- Keyboard: arrows, space, pgup/pgdown, home/end --- */
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            /* --- Touch: swipe up/down with 50px threshold --- */
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            /* --- Mouse wheel with debounce --- */
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            /* --- Progress bar --- */
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            /* --- Navigation dots --- */
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `跳转至第 ${i + 1} 页`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            /* --- Slide counter --- */
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            /* --- Navigation core --- */
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            /* --- Update all UI indicators --- */
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           Animate numbers when slide becomes visible
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 1500;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>
