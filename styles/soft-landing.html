@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soft Landing</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf9f7;--card:#ffffff;--text:#1a1a2e;
+  --text-muted:#71717a;--accent:#6366f1;--accent-light:#ede9fe;
+  --emerald:#10b981;--border:#e4e4e7;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.06),0 2px 6px rgba(0,0,0,0.04);
+}
+body{font-family:'Figtree',sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+.slide{
+  position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-inner{position:relative;z-index:2;width:min(88vw,960px);padding:clamp(2rem,4vw,4rem)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--emerald));z-index:100;transition:width 0.4s cubic-bezier(0.16,1,0.3,1)}
+.page-counter{position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);font-size:clamp(0.75rem,1vw,0.85rem);color:var(--text-muted);opacity:0.5;z-index:100}
+
+h1{font-size:clamp(2.4rem,5.5vw,4.5rem);font-weight:700;line-height:1.1;color:var(--text)}
+h2{font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:700;line-height:1.2;margin-bottom:clamp(1rem,2vw,1.5rem)}
+h3{font-size:clamp(1rem,1.4vw,1.15rem);font-weight:600;margin-bottom:0.3rem}
+p,.body-text{font-size:clamp(0.9rem,1.3vw,1.1rem);line-height:1.75;color:var(--text)}
+.subtitle{font-size:clamp(0.85rem,1.2vw,1rem);font-weight:500;color:var(--text-muted)}
+
+.badge{display:inline-block;padding:0.3em 0.9em;border-radius:100px;font-size:clamp(0.7rem,0.9vw,0.8rem);font-weight:600}
+.badge-accent{background:var(--accent-light);color:var(--accent)}
+.badge-green{background:rgba(16,185,129,0.1);color:var(--emerald)}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.1s}
+.active .fade-up.d2{transition-delay:0.2s}
+.active .fade-up.d3{transition-delay:0.3s}
+.active .fade-up.d4{transition-delay:0.4s}
+.active .fade-up.d5{transition-delay:0.5s}
+
+.card{background:var(--card);border-radius:16px;padding:clamp(1.2rem,2.5vw,2rem);box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(0.8rem,1.5vw,1.2rem);margin-top:clamp(1rem,2vw,1.5rem)}
+.card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:0.8rem;background:var(--accent-light);color:var(--accent)}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(0.8rem,1.5vw,1.2rem);margin-top:clamp(1.5rem,3vw,2rem)}
+.stat-card{background:var(--card);border-radius:16px;padding:clamp(1rem,2vw,1.5rem);box-shadow:var(--shadow);border:1px solid var(--border);text-align:center}
+.stat-num{font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.1;color:var(--accent)}
+.stat-desc{font-size:clamp(0.8rem,1vw,0.9rem);color:var(--text-muted);margin-top:0.3rem}
+
+.hero-card{background:var(--card);border-radius:20px;padding:clamp(2rem,4vw,3.5rem);box-shadow:var(--shadow-md);border:1px solid var(--border);text-align:center;max-width:640px;margin:0 auto}
+
+.feature-list{list-style:none;margin-top:clamp(1rem,2vw,1.5rem)}
+.feature-list li{display:flex;align-items:flex-start;gap:0.8rem;padding:clamp(0.6rem,1vw,0.8rem) 0;border-bottom:1px solid var(--border)}
+.feature-list li:last-child{border-bottom:none}
+.feature-check{width:22px;height:22px;border-radius:50%;background:var(--emerald);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;margin-top:2px}
+
+.cta-btn{display:inline-block;padding:clamp(0.7rem,1.2vw,0.9rem) clamp(1.5rem,2.5vw,2rem);border-radius:100px;background:linear-gradient(135deg,var(--accent),#818cf8);color:#fff;font-weight:600;font-size:clamp(0.9rem,1.2vw,1rem);text-decoration:none;box-shadow:0 4px 14px rgba(99,102,241,0.3);border:none;cursor:pointer}
+
+@media(max-width:640px){.card-grid{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title / Hero -->
+<div class="slide active" id="slide-0">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="fade-up d1"><span class="badge badge-accent">Launching Q2 2026</span></div>
+    <div style="height:clamp(1.2rem,2vw,1.5rem)"></div>
+    <h1 class="fade-up d2">Your Second Brain,<br>Actually Useful</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <p class="fade-up d3 subtitle" style="max-width:480px;margin:0 auto;">An AI memory layer that remembers what matters, forgets what doesn't, and keeps you moving forward.</p>
+    <div style="height:clamp(1.5rem,3vw,2rem)"></div>
+    <div class="fade-up d4"><button class="cta-btn">Get Early Access</button></div>
+  </div>
+</div>
+
+<!-- Slide 2: Stats / Social Proof -->
+<div class="slide" id="slide-1">
+  <div class="slide-inner">
+    <div style="text-align:center" class="fade-up d1">
+      <span class="badge badge-green">Traction</span>
+      <div style="height:clamp(0.5rem,1vw,0.8rem)"></div>
+      <h2>Growing Fast</h2>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card fade-up d2">
+        <div class="stat-num">12k</div>
+        <div class="stat-desc">Waitlist signups</div>
+      </div>
+      <div class="stat-card fade-up d3">
+        <div class="stat-num">94%</div>
+        <div class="stat-desc">Weekly retention</div>
+      </div>
+      <div class="stat-card fade-up d4">
+        <div class="stat-num">4.8</div>
+        <div class="stat-desc">Star rating</div>
+      </div>
+      <div class="stat-card fade-up d5">
+        <div class="stat-num">$0</div>
+        <div class="stat-desc">CAC (organic growth)</div>
+      </div>
+    </div>
+    <p class="fade-up d5 body-text" style="text-align:center;margin-top:clamp(1.5rem,2vw,2rem);max-width:440px;margin-left:auto;margin-right:auto;color:var(--text-muted);">"I stopped losing ideas the day I started using this." — Beta user</p>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div style="text-align:center" class="fade-up d1">
+      <span class="badge badge-accent">Features</span>
+      <div style="height:clamp(0.5rem,1vw,0.8rem)"></div>
+      <h2>Built for How You Think</h2>
+    </div>
+    <div class="card-grid">
+      <div class="card fade-up d2">
+        <div class="card-icon">&#9672;</div>
+        <h3>Auto-Capture</h3>
+        <p class="body-text" style="color:var(--text-muted);">Conversations become structured memory. No manual note-taking required.</p>
+      </div>
+      <div class="card fade-up d3">
+        <div class="card-icon" style="background:rgba(16,185,129,0.1);color:var(--emerald)">&#9733;</div>
+        <h3>Smart Recall</h3>
+        <p class="body-text" style="color:var(--text-muted);">Ask a question, get the answer from your own past thinking. Context-aware retrieval.</p>
+      </div>
+      <div class="card fade-up d4">
+        <div class="card-icon">&#9881;</div>
+        <h3>Cross-Project Sync</h3>
+        <p class="body-text" style="color:var(--text-muted);">Insights from one project surface where they're needed in another. Automatic.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Feature List / Checklist -->
+<div class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,3rem);align-items:center;">
+      <div>
+        <span class="badge badge-accent fade-up d1">Why Us</span>
+        <div style="height:clamp(0.5rem,1vw,0.8rem)"></div>
+        <h2 class="fade-up d1">Not Another Note App</h2>
+        <p class="fade-up d2 body-text" style="color:var(--text-muted);max-width:380px;">We don't give you a blank page and wish you luck. We structure your thinking automatically.</p>
+      </div>
+      <div class="card fade-up d2">
+        <ul class="feature-list">
+          <li class="fade-up d2"><span class="feature-check">&#10003;</span><div><h3>Local-first architecture</h3><p class="body-text" style="color:var(--text-muted);font-size:clamp(0.8rem,1vw,0.9rem)">Your data never leaves your machine unless you want it to.</p></div></li>
+          <li class="fade-up d3"><span class="feature-check">&#10003;</span><div><h3>Works with any AI tool</h3><p class="body-text" style="color:var(--text-muted);font-size:clamp(0.8rem,1vw,0.9rem)">Claude, GPT, Cursor, Windsurf — one memory for all.</p></div></li>
+          <li class="fade-up d4"><span class="feature-check">&#10003;</span><div><h3>Zero config</h3><p class="body-text" style="color:var(--text-muted);font-size:clamp(0.8rem,1vw,0.9rem)">Run the install script. Start talking. That's it.</p></div></li>
+          <li class="fade-up d5"><span class="feature-check">&#10003;</span><div><h3>Open source</h3><p class="body-text" style="color:var(--text-muted);font-size:clamp(0.8rem,1vw,0.9rem)">Fully transparent. Fork it, extend it, own it.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing / CTA -->
+<div class="slide" id="slide-4">
+  <div class="slide-inner" style="display:flex;justify-content:center;">
+    <div class="hero-card">
+      <span class="badge badge-green fade-up d1">Free During Beta</span>
+      <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+      <h1 class="fade-up d2" style="font-size:clamp(1.8rem,4vw,3.2rem);">Remember<br>Everything</h1>
+      <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+      <p class="fade-up d3 body-text" style="color:var(--text-muted);max-width:380px;margin:0 auto;">Join 12,000+ people who stopped losing their best ideas.</p>
+      <div style="height:clamp(1.5rem,3vw,2rem)"></div>
+      <div class="fade-up d4"><button class="cta-btn">Get Started Free</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide'),total=slides.length,c=0;
+  var progress=document.getElementById('progress'),counter=document.getElementById('counter');
+  function go(n){if(n>=0&&n<total){c=n;slides.forEach(function(s,i){s.classList.toggle('active',i===c)});progress.style.width=((c+1)/total*100)+'%';counter.textContent=(c+1)+' / '+total;}}
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?go(c+1):go(c-1)}},{passive:true});
+  go(0);
+})();
+</script>
+</body>
+</html>

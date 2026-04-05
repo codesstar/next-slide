@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midnight Corporate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0f1219;
+  --card: #171c26;
+  --text: #f0f0f0;
+  --secondary: #8891a4;
+  --accent: #3d7cf5;
+  --teal: #2dd4bf;
+  --border: #252b38;
+  --hover: #1e2433;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--accent); z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 600;
+  color: var(--secondary);
+  z-index: 1000;
+  letter-spacing: 0.05em;
+}
+.page-counter .current { color: var(--text); }
+
+/* Watermark */
+.watermark {
+  position: fixed;
+  top: clamp(24px, 3vh, 40px);
+  left: clamp(32px, 4vw, 64px);
+  font-size: clamp(12px, 1vw, 16px);
+  font-weight: 700;
+  color: var(--text);
+  opacity: 0.08;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  z-index: 998;
+}
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+.divider-v {
+  position: absolute;
+  top: 15%; bottom: 15%;
+  width: 1px;
+  background: var(--border);
+}
+
+.section-label {
+  font-size: clamp(11px, 0.9vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.title-huge {
+  font-weight: 700;
+  font-size: clamp(42px, 7vw, 110px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+.title-huge .accent { color: var(--accent); }
+
+.subtitle {
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--secondary);
+  font-weight: 300;
+  max-width: 55ch;
+  line-height: 1.5;
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(32px, 5vw, 80px);
+  align-items: flex-start;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: clamp(24px, 3vh, 40px) clamp(24px, 2.5vw, 40px);
+  min-width: clamp(140px, 15vw, 220px);
+}
+.stat-card .number {
+  font-weight: 700;
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.stat-card .number .unit { color: var(--accent); font-size: 0.5em; }
+.stat-card .label {
+  font-size: clamp(12px, 1.1vw, 16px);
+  color: var(--secondary);
+  margin-top: clamp(8px, 1vh, 16px);
+  font-weight: 500;
+}
+.stat-card .trend {
+  font-size: clamp(11px, 0.9vw, 14px);
+  color: var(--teal);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2vw, 32px);
+  max-width: 900px;
+}
+.feature-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: clamp(20px, 2.5vh, 36px) clamp(20px, 2vw, 32px);
+}
+.feature-card h3 {
+  font-weight: 600;
+  font-size: clamp(18px, 1.8vw, 26px);
+  margin-bottom: clamp(8px, 1vh, 14px);
+}
+.feature-card p {
+  font-size: clamp(13px, 1.2vw, 17px);
+  color: var(--secondary);
+  line-height: 1.6;
+}
+
+.data-list {
+  display: flex; flex-direction: column;
+  max-width: 700px;
+}
+.data-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: clamp(16px, 2vh, 28px) 0;
+  border-bottom: 1px solid var(--border);
+}
+.data-row .metric {
+  font-weight: 500;
+  font-size: clamp(15px, 1.4vw, 20px);
+}
+.data-row .value {
+  font-weight: 700;
+  font-size: clamp(15px, 1.4vw, 20px);
+  color: var(--accent);
+}
+.data-row .bar-wrap {
+  flex: 1;
+  margin: 0 clamp(16px, 2vw, 32px);
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+}
+.data-row .bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--teal));
+  border-radius: 2px;
+}
+
+.close-title {
+  font-weight: 700;
+  font-size: clamp(40px, 7vw, 110px);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.close-sub {
+  font-size: clamp(16px, 1.8vw, 26px);
+  color: var(--secondary);
+  font-weight: 300;
+}
+
+.reveal { opacity: 0; transform: translateY(40px); }
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="watermark">Acme Corp</div>
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="slide-inner">
+    <div class="section-label reveal">Q4 2026 &middot; Strategic Review</div>
+    <h1 class="title-huge reveal">Growth<br><span class="accent">Realized.</span></h1>
+    <p class="subtitle reveal">A comprehensive look at performance, market position, and the path forward.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" data-i="1">
+  <div class="slide-inner">
+    <div class="section-label reveal">Key Metrics</div>
+    <div class="stats-row">
+      <div class="stat-card reveal">
+        <div class="number">$48<span class="unit">M</span></div>
+        <div class="label">Annual Revenue</div>
+        <div class="trend">+34% YoY</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="number">2.1<span class="unit">M</span></div>
+        <div class="label">Active Users</div>
+        <div class="trend">+67% YoY</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="number">94<span class="unit">%</span></div>
+        <div class="label">Retention Rate</div>
+        <div class="trend">+8pts QoQ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" data-i="2">
+  <div class="slide-inner">
+    <div class="section-label reveal">Strategic Pillars</div>
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <h3>Enterprise Scale</h3>
+        <p>SOC2 certified infrastructure handling 10M+ requests per second</p>
+      </div>
+      <div class="feature-card reveal">
+        <h3>AI Integration</h3>
+        <p>Native ML pipeline reducing manual workflows by 80%</p>
+      </div>
+      <div class="feature-card reveal">
+        <h3>Global Expansion</h3>
+        <p>Launched in 12 new markets with localized go-to-market</p>
+      </div>
+      <div class="feature-card reveal">
+        <h3>Platform APIs</h3>
+        <p>Developer ecosystem growing 3x with 400+ integration partners</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Data Table -->
+<div class="slide" data-i="3">
+  <div class="slide-inner">
+    <div class="section-label reveal">Market Performance</div>
+    <div class="data-list">
+      <div class="data-row reveal">
+        <span class="metric">North America</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:85%"></div></div>
+        <span class="value">$22.4M</span>
+      </div>
+      <div class="data-row reveal">
+        <span class="metric">Europe</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:52%"></div></div>
+        <span class="value">$13.7M</span>
+      </div>
+      <div class="data-row reveal">
+        <span class="metric">Asia Pacific</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:33%"></div></div>
+        <span class="value">$8.6M</span>
+      </div>
+      <div class="data-row reveal">
+        <span class="metric">Latin America</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:12%"></div></div>
+        <span class="value">$3.3M</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="slide-inner">
+    <div class="close-title reveal">Next<br><span class="accent">Quarter.</span></div>
+    <p class="close-sub reveal">Accelerating growth with disciplined execution. The best is ahead.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

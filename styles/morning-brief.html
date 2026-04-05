@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Brief</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fefdfb;--text:#1c1c1c;--accent:#1a73e8;
+  --text-muted:#6b6b6b;--rule:#1c1c1c;--rule-light:#d4d0c8;
+  --highlight:#fdf6e3;
+}
+body{font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+.slide{
+  position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-inner{position:relative;z-index:2;width:min(88vw,920px);padding:clamp(2rem,4vw,4rem)}
+.progress-bar{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:100;transition:width 0.4s cubic-bezier(0.16,1,0.3,1)}
+.page-counter{position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);font-family:'IBM Plex Sans',sans-serif;font-size:clamp(0.75rem,1vw,0.85rem);color:var(--text-muted);opacity:0.5;z-index:100}
+
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5.5vw,4.5rem);font-weight:800;line-height:1.1;color:var(--text)}
+h2{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:700;line-height:1.2;margin-bottom:clamp(1rem,2vw,1.5rem)}
+p,.body-text{font-size:clamp(0.9rem,1.3vw,1.1rem);line-height:1.8;color:var(--text)}
+.dateline{font-size:clamp(0.75rem,1vw,0.85rem);text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted)}
+.category{font-size:clamp(0.7rem,0.9vw,0.8rem);text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);font-weight:600}
+
+.rule-double{border-top:3px double var(--rule);padding-top:clamp(0.8rem,1.5vw,1.2rem);margin-top:clamp(0.8rem,1.5vw,1.2rem)}
+.rule{border-top:2px solid var(--rule);padding-top:clamp(0.6rem,1vw,0.8rem);margin-top:clamp(0.6rem,1vw,0.8rem)}
+.rule-light{border-top:1px solid var(--rule-light);padding-top:clamp(0.5rem,0.8vw,0.6rem);margin-top:clamp(0.5rem,0.8vw,0.6rem)}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.1s}
+.active .fade-up.d2{transition-delay:0.2s}
+.active .fade-up.d3{transition-delay:0.3s}
+.active .fade-up.d4{transition-delay:0.4s}
+.active .fade-up.d5{transition-delay:0.5s}
+
+.columns{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(1.5rem,3vw,2.5rem);margin-top:clamp(1rem,2vw,1.5rem)}
+.columns-3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2vw,2rem);margin-top:clamp(1rem,2vw,1.5rem)}
+
+.stat-block{text-align:center;padding:clamp(1rem,2vw,1.5rem)}
+.stat-num{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;line-height:1.1;color:var(--accent)}
+.stat-desc{font-size:clamp(0.8rem,1.1vw,0.95rem);color:var(--text-muted);margin-top:0.3rem}
+
+.highlight-box{background:var(--highlight);border-left:3px solid var(--accent);padding:clamp(0.8rem,1.5vw,1.2rem);margin-top:clamp(0.8rem,1.5vw,1rem)}
+
+.masthead{display:flex;justify-content:space-between;align-items:baseline;border-top:3px double var(--rule);border-bottom:3px double var(--rule);padding:clamp(0.5rem,1vw,0.8rem) 0}
+.masthead-title{font-family:'Playfair Display',serif;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:700;letter-spacing:0.05em}
+
+.brief-item{padding-bottom:clamp(0.6rem,1vw,0.8rem)}
+.brief-item+.brief-item{border-top:1px solid var(--rule-light);padding-top:clamp(0.6rem,1vw,0.8rem)}
+.brief-title{font-weight:600;font-size:clamp(0.9rem,1.2vw,1.05rem);margin-bottom:0.2rem}
+
+@media(max-width:640px){.columns,.columns-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title / Masthead -->
+<div class="slide active" id="slide-0">
+  <div class="slide-inner">
+    <div class="masthead fade-up d1">
+      <span class="masthead-title">THE MORNING BRIEF</span>
+      <span class="dateline">April 5, 2026 &middot; Saturday Edition</span>
+    </div>
+    <div style="height:clamp(2rem,4vw,3rem)"></div>
+    <div class="category fade-up d2">Technology & Innovation</div>
+    <div style="height:clamp(0.5rem,1vw,0.8rem)"></div>
+    <h1 class="fade-up d2">The Age of<br>Ambient Computing</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <div class="columns fade-up d3">
+      <p class="body-text">Screens are disappearing. Computing is melting into the walls, the furniture, the air itself. This week's briefing explores what happens when technology becomes invisible.</p>
+      <p class="body-text">From smart surfaces to spatial audio, the next wave of interfaces won't ask for your attention — they'll earn it by staying out of the way.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" id="slide-1">
+  <div class="slide-inner">
+    <div class="masthead fade-up d1">
+      <span class="category">Market Intelligence</span>
+      <span class="dateline">Q1 2026 Data</span>
+    </div>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <h2 class="fade-up d1">Key Indicators</h2>
+    <div class="columns-3">
+      <div class="stat-block rule fade-up d2">
+        <div class="stat-num">$4.7T</div>
+        <div class="stat-desc">Global ambient computing market by 2030</div>
+      </div>
+      <div class="stat-block rule fade-up d3">
+        <div class="stat-num">68%</div>
+        <div class="stat-desc">Of consumers prefer invisible interfaces</div>
+      </div>
+      <div class="stat-block rule fade-up d4">
+        <div class="stat-num">3.2x</div>
+        <div class="stat-desc">YoY growth in spatial computing patents</div>
+      </div>
+    </div>
+    <div class="highlight-box fade-up d5">
+      <p class="body-text" style="margin:0;"><strong>Analyst note:</strong> The inflection point is here. Companies investing in ambient UX today will define the next decade of human-computer interaction.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features / Briefing Items -->
+<div class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="masthead fade-up d1">
+      <span class="category">In This Issue</span>
+      <span class="dateline">Top Stories</span>
+    </div>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <h2 class="fade-up d1">Five Things to Know</h2>
+    <div class="columns fade-up d2">
+      <div>
+        <div class="brief-item fade-up d2">
+          <div class="brief-title">1. Smart Surfaces Ship This Fall</div>
+          <p class="body-text">Samsung's new countertop display embeds into furniture. No screen visible until activated by proximity.</p>
+        </div>
+        <div class="brief-item fade-up d3">
+          <div class="brief-title">2. Voice-First Enterprise Tools</div>
+          <p class="body-text">Slack's ambient mode lets teams communicate via always-on spatial audio in shared workspaces.</p>
+        </div>
+        <div class="brief-item fade-up d4">
+          <div class="brief-title">3. Privacy in the Ambient Era</div>
+          <p class="body-text">EU passes the Ambient Computing Act — consent frameworks for passive data collection.</p>
+        </div>
+      </div>
+      <div>
+        <div class="brief-item fade-up d3">
+          <div class="brief-title">4. The Death of the App Icon</div>
+          <p class="body-text">New interaction paradigm: services surface contextually instead of living behind tappable icons.</p>
+        </div>
+        <div class="brief-item fade-up d4">
+          <div class="brief-title">5. Spatial Audio Goes Mainstream</div>
+          <p class="body-text">Apple, Sony, and Bose align on an open standard for room-scale directional audio.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Analysis / Quote -->
+<div class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="masthead fade-up d1">
+      <span class="category">Analysis</span>
+      <span class="dateline">Opinion</span>
+    </div>
+    <div style="height:clamp(1.5rem,3vw,2.5rem)"></div>
+    <div class="rule-double fade-up d2">
+      <h2 style="font-size:clamp(1.4rem,2.8vw,2.2rem);margin-bottom:clamp(0.8rem,1.5vw,1.2rem);">"The best interface is no interface."</h2>
+      <p class="dateline" style="margin-bottom:clamp(1rem,2vw,1.5rem);">-- Golden Krishna, Author</p>
+    </div>
+    <div class="columns fade-up d3">
+      <div>
+        <p class="body-text">We've spent decades making screens brighter, sharper, and more addictive. The next revolution isn't about a better screen — it's about no screen at all.</p>
+      </div>
+      <div>
+        <p class="body-text">The companies that win won't be the ones with the flashiest displays. They'll be the ones whose technology you never notice — until it's gone.</p>
+      </div>
+    </div>
+    <div class="highlight-box fade-up d4" style="margin-top:clamp(1.5rem,2vw,2rem);">
+      <p class="body-text" style="margin:0"><strong>Key takeaway:</strong> Design for absence, not presence. The interface of the future is the world itself.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" id="slide-4">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="masthead fade-up d1" style="justify-content:center;gap:2rem;">
+      <span class="masthead-title">THE MORNING BRIEF</span>
+    </div>
+    <div style="height:clamp(2.5rem,5vw,4rem)"></div>
+    <h1 class="fade-up d2" style="font-size:clamp(1.8rem,4.5vw,3.5rem);">Stay Informed.<br>Stay Ahead.</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <p class="fade-up d3 body-text">Tomorrow's briefing: The creator economy meets spatial computing.</p>
+    <div class="fade-up d4" style="margin-top:clamp(1.5rem,3vw,2rem);">
+      <span class="dateline">Delivered every morning at 7:00 AM</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide'),total=slides.length,c=0;
+  var progress=document.getElementById('progress'),counter=document.getElementById('counter');
+  function go(n){if(n>=0&&n<total){c=n;slides.forEach(function(s,i){s.classList.toggle('active',i===c)});progress.style.width=((c+1)/total*100)+'%';counter.textContent=(c+1)+' / '+total;}}
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?go(c+1):go(c-1)}},{passive:true});
+  go(0);
+})();
+</script>
+</body>
+</html>

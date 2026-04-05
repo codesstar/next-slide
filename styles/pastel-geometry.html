@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pastel Geometry</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f0e8ff;--text:#2a2a3a;--accent:#7c5cbf;
+  --card:#ffffff;--text-muted:#6b6580;
+  --pink:#f0b4d4;--mint:#a8d4c4;--lavender:#b8a8e0;--peach:#f4c8a8;
+}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+.slide{
+  position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-inner{position:relative;z-index:2;width:min(88vw,960px);padding:clamp(2rem,4vw,4rem)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:100;transition:width 0.4s cubic-bezier(0.16,1,0.3,1)}
+.page-counter{position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);font-family:'DM Sans',sans-serif;font-size:clamp(0.75rem,1vw,0.85rem);color:var(--text-muted);opacity:0.5;z-index:100}
+
+/* Geometric shapes */
+.geo{position:absolute;pointer-events:none;opacity:0.5}
+.geo-circle{border-radius:50%}
+.geo-rect{border-radius:12px}
+.geo-tri{width:0;height:0;background:none!important}
+
+h1{font-size:clamp(2.4rem,5.5vw,4.5rem);font-weight:800;line-height:1.1;color:var(--text)}
+h2{font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:700;line-height:1.2;margin-bottom:clamp(1rem,2vw,1.5rem)}
+p,.body-text{font-size:clamp(0.9rem,1.3vw,1.1rem);line-height:1.75;color:var(--text)}
+.subtitle{font-size:clamp(0.85rem,1.2vw,1rem);font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.1s}
+.active .fade-up.d2{transition-delay:0.2s}
+.active .fade-up.d3{transition-delay:0.3s}
+.active .fade-up.d4{transition-delay:0.4s}
+.active .fade-up.d5{transition-delay:0.5s}
+
+.card{background:var(--card);border-radius:16px;padding:clamp(1.2rem,2.5vw,2rem);box-shadow:0 2px 16px rgba(124,92,191,0.08)}
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(0.8rem,1.5vw,1.2rem);margin-top:clamp(1rem,2vw,1.5rem)}
+.card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:0.6rem}
+.card-title{font-weight:700;font-size:clamp(0.95rem,1.3vw,1.1rem);margin-bottom:0.3rem}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2vw,2rem);margin-top:clamp(1.5rem,3vw,2.5rem)}
+.stat-num{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.1;color:var(--accent)}
+.stat-desc{font-size:clamp(0.8rem,1.1vw,0.95rem);color:var(--text-muted);margin-top:0.3rem}
+
+/* Pills (signature element) */
+.pills{position:absolute;right:clamp(1rem,2vw,2.5rem);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:3}
+.pill{width:8px;border-radius:4px;transition:height 0.5s ease,background 0.5s ease}
+
+.timeline{list-style:none;margin-top:clamp(1rem,2vw,1.5rem)}
+.timeline li{position:relative;padding-left:2rem;padding-bottom:clamp(1rem,1.5vw,1.4rem);border-left:2px solid var(--lavender)}
+.timeline li:last-child{border-left-color:transparent;padding-bottom:0}
+.timeline li::before{content:'';position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.timeline .t-year{font-weight:700;font-size:clamp(0.9rem,1.2vw,1rem);color:var(--accent)}
+.timeline .t-text{font-size:clamp(0.85rem,1.1vw,0.95rem);color:var(--text-muted)}
+
+@media(max-width:640px){.card-grid,.stat-row{grid-template-columns:1fr}.pills{display:none}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" id="slide-0">
+  <div class="geo geo-circle" style="width:30vw;height:30vw;top:-8%;right:-5%;background:var(--pink);opacity:0.3"></div>
+  <div class="geo geo-rect" style="width:18vw;height:18vw;bottom:8%;left:5%;background:var(--mint);opacity:0.25;transform:rotate(15deg)"></div>
+  <div class="geo geo-circle" style="width:12vw;height:12vw;top:60%;right:25%;background:var(--lavender);opacity:0.3"></div>
+  <div class="pills">
+    <div class="pill" style="height:20px;background:var(--pink)"></div>
+    <div class="pill" style="height:36px;background:var(--mint)"></div>
+    <div class="pill" style="height:52px;background:var(--accent)"></div>
+    <div class="pill" style="height:36px;background:var(--lavender)"></div>
+    <div class="pill" style="height:20px;background:var(--peach)"></div>
+  </div>
+  <div class="slide-inner">
+    <div class="subtitle fade-up d1">Design Systems 2026</div>
+    <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+    <h1 class="fade-up d2">Building Blocks<br>of Beautiful UI</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <p class="fade-up d3" style="max-width:460px;">A modular approach to design that scales with your team and your ambition.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" id="slide-1">
+  <div class="geo geo-rect" style="width:25vw;height:20vw;top:5%;left:-5%;background:var(--lavender);opacity:0.2;transform:rotate(-8deg)"></div>
+  <div class="geo geo-circle" style="width:20vw;height:20vw;bottom:-5%;right:10%;background:var(--peach);opacity:0.25"></div>
+  <div class="pills">
+    <div class="pill" style="height:20px;background:var(--pink)"></div>
+    <div class="pill" style="height:36px;background:var(--mint)"></div>
+    <div class="pill" style="height:52px;background:var(--accent)"></div>
+    <div class="pill" style="height:36px;background:var(--lavender)"></div>
+    <div class="pill" style="height:20px;background:var(--peach)"></div>
+  </div>
+  <div class="slide-inner">
+    <h2 class="fade-up d1">By the Numbers</h2>
+    <div class="stat-row">
+      <div class="card fade-up d2">
+        <div class="stat-num">47%</div>
+        <div class="stat-desc">Faster design-to-dev handoff</div>
+      </div>
+      <div class="card fade-up d3">
+        <div class="stat-num">2.4k</div>
+        <div class="stat-desc">Components in the library</div>
+      </div>
+      <div class="card fade-up d4">
+        <div class="stat-num">99.8%</div>
+        <div class="stat-desc">Accessibility compliance rate</div>
+      </div>
+    </div>
+    <p class="fade-up d5 body-text" style="margin-top:clamp(1.5rem,2vw,2rem);max-width:440px;">Consistency isn't a constraint — it's a superpower.</p>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" id="slide-2">
+  <div class="geo geo-circle" style="width:28vw;height:28vw;top:-10%;right:-8%;background:var(--mint);opacity:0.2"></div>
+  <div class="geo geo-rect" style="width:15vw;height:22vw;bottom:5%;left:3%;background:var(--pink);opacity:0.2;transform:rotate(5deg)"></div>
+  <div class="pills">
+    <div class="pill" style="height:20px;background:var(--pink)"></div>
+    <div class="pill" style="height:36px;background:var(--mint)"></div>
+    <div class="pill" style="height:52px;background:var(--accent)"></div>
+    <div class="pill" style="height:36px;background:var(--lavender)"></div>
+    <div class="pill" style="height:20px;background:var(--peach)"></div>
+  </div>
+  <div class="slide-inner">
+    <h2 class="fade-up d1">Core Features</h2>
+    <div class="card-grid">
+      <div class="card fade-up d1">
+        <div class="card-icon" style="background:rgba(240,180,212,0.3)">&#9632;</div>
+        <div class="card-title">Token System</div>
+        <p class="body-text">Design tokens that sync colors, spacing, and type across every platform.</p>
+      </div>
+      <div class="card fade-up d2">
+        <div class="card-icon" style="background:rgba(168,212,196,0.3)">&#9650;</div>
+        <div class="card-title">Auto Layout</div>
+        <p class="body-text">Responsive components that adapt to content without manual resizing.</p>
+      </div>
+      <div class="card fade-up d3">
+        <div class="card-icon" style="background:rgba(184,168,224,0.3)">&#9679;</div>
+        <div class="card-title">Theme Variants</div>
+        <p class="body-text">Switch between light, dark, and branded themes in a single click.</p>
+      </div>
+      <div class="card fade-up d4">
+        <div class="card-icon" style="background:rgba(244,200,168,0.3)">&#9830;</div>
+        <div class="card-title">Live Preview</div>
+        <p class="body-text">See changes reflected instantly across all connected screens and devices.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Timeline -->
+<div class="slide" id="slide-3">
+  <div class="geo geo-circle" style="width:22vw;height:22vw;top:10%;right:5%;background:var(--peach);opacity:0.2"></div>
+  <div class="geo geo-rect" style="width:20vw;height:14vw;bottom:10%;left:-3%;background:var(--lavender);opacity:0.2;transform:rotate(-10deg)"></div>
+  <div class="pills">
+    <div class="pill" style="height:20px;background:var(--pink)"></div>
+    <div class="pill" style="height:36px;background:var(--mint)"></div>
+    <div class="pill" style="height:52px;background:var(--accent)"></div>
+    <div class="pill" style="height:36px;background:var(--lavender)"></div>
+    <div class="pill" style="height:20px;background:var(--peach)"></div>
+  </div>
+  <div class="slide-inner">
+    <h2 class="fade-up d1">Roadmap</h2>
+    <div class="card fade-up d2" style="max-width:560px;">
+      <ul class="timeline">
+        <li class="fade-up d2"><span class="t-year">Q1 2026</span><div class="t-text">Core token system and component library launch</div></li>
+        <li class="fade-up d3"><span class="t-year">Q2 2026</span><div class="t-text">Figma and VS Code plugin integrations</div></li>
+        <li class="fade-up d4"><span class="t-year">Q3 2026</span><div class="t-text">AI-assisted layout generation from wireframes</div></li>
+        <li class="fade-up d5"><span class="t-year">Q4 2026</span><div class="t-text">Multi-brand theme management and enterprise SSO</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" id="slide-4">
+  <div class="geo geo-circle" style="width:35vw;height:35vw;top:-10%;left:-8%;background:var(--lavender);opacity:0.25"></div>
+  <div class="geo geo-circle" style="width:25vw;height:25vw;bottom:-5%;right:-3%;background:var(--mint);opacity:0.2"></div>
+  <div class="geo geo-rect" style="width:14vw;height:14vw;top:50%;left:55%;background:var(--pink);opacity:0.15;transform:rotate(20deg)"></div>
+  <div class="pills">
+    <div class="pill" style="height:20px;background:var(--pink)"></div>
+    <div class="pill" style="height:36px;background:var(--mint)"></div>
+    <div class="pill" style="height:52px;background:var(--accent)"></div>
+    <div class="pill" style="height:36px;background:var(--lavender)"></div>
+    <div class="pill" style="height:20px;background:var(--peach)"></div>
+  </div>
+  <div class="slide-inner" style="text-align:center;">
+    <div class="subtitle fade-up d1">Ready to Build?</div>
+    <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+    <h1 class="fade-up d2" style="font-size:clamp(1.8rem,4.5vw,3.5rem);">Design with<br>Confidence</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <p class="fade-up d3 body-text">Start your design system today. Scale it forever.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide'),total=slides.length,c=0;
+  var progress=document.getElementById('progress'),counter=document.getElementById('counter');
+  function go(n){if(n>=0&&n<total){c=n;slides.forEach(function(s,i){s.classList.toggle('active',i===c)});progress.style.width=((c+1)/total*100)+'%';counter.textContent=(c+1)+' / '+total;}}
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?go(c+1):go(c-1)}},{passive:true});
+  go(0);
+})();
+</script>
+</body>
+</html>

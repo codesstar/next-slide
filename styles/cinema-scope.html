@@ -113,11 +113,11 @@ body::after {
 /* Title slide */
 .cinema-title {
   font-family: 'Bebas Neue', 'Noto Sans SC', sans-serif;
-  font-size: clamp(52px, 9vw, 160px);
+  font-size: clamp(42px, 8vw, 140px);
   line-height: 0.95;
   letter-spacing: 0.04em;
   color: var(--text);
-  margin-bottom: clamp(12px, 2vh, 24px);
+  margin-bottom: clamp(20px, 3vh, 36px);
 }
 
 .cinema-title .gold { color: var(--gold); }
@@ -132,9 +132,7 @@ body::after {
 
 /* Lower third style */
 .lower-third {
-  position: absolute;
-  bottom: clamp(48px, 8vh, 80px);
-  left: clamp(48px, 8vw, 160px);
+  margin-top: auto;
 }
 
 .lower-third .lt-bar {
@@ -267,7 +265,7 @@ body::after {
 
 <!-- Slide 1: Title -->
 <div class="slide active" data-i="0">
-  <div class="slide-inner">
+  <div class="slide-inner" style="justify-content:center;">
     <div class="chapter rv">CHAPTER 01 &mdash; PROLOGUE</div>
     <h1 class="cinema-title rv">AI <span class="gold">DESIGN</span><br>REVOLUTION</h1>
     <div class="lower-third rv">

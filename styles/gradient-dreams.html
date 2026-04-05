@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gradient Dreams</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700;800&family=Figtree:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --grad-1:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  --grad-2:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
+  --grad-3:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
+  --grad-4:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);
+  --glass:rgba(255,255,255,0.12);--glass-border:rgba(255,255,255,0.2);
+  --text:#ffffff;--text-muted:rgba(255,255,255,0.7);
+}
+body{font-family:'Figtree',sans-serif;color:var(--text);overflow:hidden}
+.slide{
+  position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.slide.active{opacity:1;pointer-events:auto}
+
+.slide-bg{position:absolute;inset:0;z-index:0}
+.slide-inner{position:relative;z-index:2;width:min(88vw,920px);padding:clamp(2rem,4vw,4rem)}
+
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:rgba(255,255,255,0.5);z-index:100;transition:width 0.4s cubic-bezier(0.16,1,0.3,1)}
+.page-counter{position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);font-size:clamp(0.75rem,1vw,0.85rem);color:var(--text-muted);z-index:100}
+
+/* Floating orbs */
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:orbFloat 20s ease-in-out infinite alternate}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-15px) scale(1.08)}100%{transform:translate(-15px,20px) scale(0.95)}}
+.orb-2{animation-duration:25s;animation-direction:alternate-reverse}
+.orb-3{animation-duration:18s}
+
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2.4rem,5.5vw,4.5rem);font-weight:800;line-height:1.08;letter-spacing:-0.02em}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:700;line-height:1.15;margin-bottom:clamp(1rem,2vw,1.5rem)}
+h3{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1rem,1.4vw,1.15rem);font-weight:700;margin-bottom:0.3rem}
+p,.body-text{font-size:clamp(0.9rem,1.3vw,1.1rem);line-height:1.75}
+.label{font-size:clamp(0.75rem,1vw,0.85rem);text-transform:uppercase;letter-spacing:0.12em;font-weight:500;color:var(--text-muted)}
+
+.glass{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:20px;padding:clamp(1.2rem,2.5vw,2rem)}
+.glass-sm{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:14px;padding:clamp(0.8rem,1.5vw,1.2rem)}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.1s}
+.active .fade-up.d2{transition-delay:0.2s}
+.active .fade-up.d3{transition-delay:0.3s}
+.active .fade-up.d4{transition-delay:0.4s}
+.active .fade-up.d5{transition-delay:0.5s}
+
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(0.8rem,1.5vw,1.2rem);margin-top:clamp(1rem,2vw,1.5rem)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2vw,1.5rem);margin-top:clamp(1.5rem,3vw,2rem)}
+.stat-num{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,4.5vw,3.5rem);font-weight:800;line-height:1.1}
+.stat-desc{font-size:clamp(0.8rem,1vw,0.9rem);color:var(--text-muted);margin-top:0.3rem}
+
+.badge{display:inline-block;padding:0.3em 1em;border-radius:100px;font-size:clamp(0.7rem,0.9vw,0.8rem);font-weight:500;background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--glass-border)}
+
+.step-list{list-style:none;counter-reset:step;margin-top:clamp(1rem,2vw,1.5rem)}
+.step-list li{counter-increment:step;display:flex;align-items:flex-start;gap:clamp(0.8rem,1.5vw,1.2rem);padding:clamp(0.8rem,1.5vw,1.2rem) 0}
+.step-list li+li{border-top:1px solid rgba(255,255,255,0.1)}
+.step-num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(1.5rem,2.5vw,2rem);opacity:0.4;flex-shrink:0;min-width:2rem}
+.step-num::before{content:counter(step,decimal-leading-zero)}
+
+@media(max-width:640px){.card-grid,.stat-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title — purple-violet gradient -->
+<div class="slide active" id="slide-0">
+  <div class="slide-bg" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)"></div>
+  <div class="orb" style="width:50vw;height:50vw;top:-15%;right:-10%;background:rgba(240,147,251,0.3)"></div>
+  <div class="orb orb-2" style="width:35vw;height:35vw;bottom:-10%;left:-5%;background:rgba(79,172,254,0.2)"></div>
+  <div class="slide-inner" style="text-align:center;">
+    <div class="fade-up d1"><span class="badge">Social Media Strategy 2026</span></div>
+    <div style="height:clamp(1.2rem,2vw,1.5rem)"></div>
+    <h1 class="fade-up d2">Create Without<br>Limits</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <p class="fade-up d3 body-text" style="color:var(--text-muted);max-width:480px;margin:0 auto;">A visual-first approach to content that captures attention and converts followers into fans.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats — pink-red gradient -->
+<div class="slide" id="slide-1">
+  <div class="slide-bg" style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%)"></div>
+  <div class="orb orb-3" style="width:40vw;height:40vw;top:10%;left:-15%;background:rgba(102,126,234,0.25)"></div>
+  <div class="orb" style="width:30vw;height:30vw;bottom:-5%;right:10%;background:rgba(245,87,108,0.3)"></div>
+  <div class="slide-inner">
+    <div class="label fade-up d1">Performance</div>
+    <div style="height:clamp(0.4rem,0.8vw,0.6rem)"></div>
+    <h2 class="fade-up d1">Content That Converts</h2>
+    <div class="stat-row">
+      <div class="glass fade-up d2" style="text-align:center;">
+        <div class="stat-num">8.4x</div>
+        <div class="stat-desc">Higher engagement vs. static posts</div>
+      </div>
+      <div class="glass fade-up d3" style="text-align:center;">
+        <div class="stat-num">2.1M</div>
+        <div class="stat-desc">Average monthly impressions</div>
+      </div>
+      <div class="glass fade-up d4" style="text-align:center;">
+        <div class="stat-num">47%</div>
+        <div class="stat-desc">Follower-to-customer conversion</div>
+      </div>
+    </div>
+    <p class="fade-up d5 body-text" style="color:var(--text-muted);margin-top:clamp(1.5rem,2vw,2rem);max-width:440px;">The brands winning on social aren't posting more. They're posting different.</p>
+  </div>
+</div>
+
+<!-- Slide 3: Features — blue-cyan gradient -->
+<div class="slide" id="slide-2">
+  <div class="slide-bg" style="background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%)"></div>
+  <div class="orb orb-2" style="width:45vw;height:45vw;bottom:-20%;left:-10%;background:rgba(102,126,234,0.2)"></div>
+  <div class="orb orb-3" style="width:25vw;height:25vw;top:5%;right:5%;background:rgba(67,233,123,0.15)"></div>
+  <div class="slide-inner">
+    <div class="label fade-up d1">Our Approach</div>
+    <div style="height:clamp(0.4rem,0.8vw,0.6rem)"></div>
+    <h2 class="fade-up d1">Four Pillars</h2>
+    <div class="card-grid">
+      <div class="glass fade-up d2">
+        <h3>Visual Identity</h3>
+        <p class="body-text" style="color:var(--text-muted);">A cohesive aesthetic system that's instantly recognizable in any feed.</p>
+      </div>
+      <div class="glass fade-up d3">
+        <h3>Story Architecture</h3>
+        <p class="body-text" style="color:var(--text-muted);">Narrative frameworks that turn 15-second clips into memorable moments.</p>
+      </div>
+      <div class="glass fade-up d4">
+        <h3>Community Engine</h3>
+        <p class="body-text" style="color:var(--text-muted);">Build a community that creates content for you. UGC at scale.</p>
+      </div>
+      <div class="glass fade-up d5">
+        <h3>Data Loops</h3>
+        <p class="body-text" style="color:var(--text-muted);">Real-time analytics that feed back into creative decisions automatically.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Process — green-teal gradient -->
+<div class="slide" id="slide-3">
+  <div class="slide-bg" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%)"></div>
+  <div class="orb" style="width:50vw;height:50vw;top:-20%;right:-15%;background:rgba(79,172,254,0.2)"></div>
+  <div class="orb orb-2" style="width:30vw;height:30vw;bottom:10%;left:-5%;background:rgba(240,147,251,0.15)"></div>
+  <div class="slide-inner">
+    <div class="label fade-up d1" style="color:rgba(0,0,0,0.4)">Process</div>
+    <div style="height:clamp(0.4rem,0.8vw,0.6rem)"></div>
+    <h2 class="fade-up d1" style="color:#0a2e1a;">How It Works</h2>
+    <div class="glass fade-up d2" style="background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.1);">
+      <ul class="step-list" style="color:#0a2e1a;">
+        <li class="fade-up d2"><div class="step-num"></div><div><h3 style="color:#0a2e1a;">Discovery & Audit</h3><p class="body-text" style="color:rgba(10,46,26,0.7);">We analyze your current presence, audience, and competitors to find whitespace.</p></div></li>
+        <li class="fade-up d3"><div class="step-num"></div><div><h3 style="color:#0a2e1a;">Creative Strategy</h3><p class="body-text" style="color:rgba(10,46,26,0.7);">A content playbook tailored to your brand voice and platform strengths.</p></div></li>
+        <li class="fade-up d4"><div class="step-num"></div><div><h3 style="color:#0a2e1a;">Production Sprint</h3><p class="body-text" style="color:rgba(10,46,26,0.7);">30 days of content created in one intensive production session.</p></div></li>
+        <li class="fade-up d5"><div class="step-num"></div><div><h3 style="color:#0a2e1a;">Optimize & Scale</h3><p class="body-text" style="color:rgba(10,46,26,0.7);">Measure, learn, iterate. Double down on what works.</p></div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing — back to purple -->
+<div class="slide" id="slide-4">
+  <div class="slide-bg" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)"></div>
+  <div class="orb" style="width:45vw;height:45vw;top:-10%;left:-10%;background:rgba(240,147,251,0.25)"></div>
+  <div class="orb orb-2" style="width:40vw;height:40vw;bottom:-15%;right:-10%;background:rgba(79,172,254,0.2)"></div>
+  <div class="orb orb-3" style="width:25vw;height:25vw;top:40%;right:30%;background:rgba(67,233,123,0.15)"></div>
+  <div class="slide-inner" style="text-align:center;">
+    <div class="glass fade-up d1" style="display:inline-block;max-width:600px;padding:clamp(2.5rem,5vw,4rem);">
+      <h1 class="fade-up d2" style="font-size:clamp(1.8rem,4.5vw,3.5rem);">Make Them<br>Stop Scrolling</h1>
+      <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+      <p class="fade-up d3 body-text" style="color:var(--text-muted);">Ready to stand out? Let's talk.</p>
+      <div style="height:clamp(1.2rem,2vw,1.5rem)"></div>
+      <div class="fade-up d4"><span class="badge" style="font-size:clamp(0.8rem,1vw,0.9rem);padding:0.5em 1.5em;">hello@gradientdreams.co</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide'),total=slides.length,c=0;
+  var progress=document.getElementById('progress'),counter=document.getElementById('counter');
+  function go(n){if(n>=0&&n<total){c=n;slides.forEach(function(s,i){s.classList.toggle('active',i===c)});progress.style.width=((c+1)/total*100)+'%';counter.textContent=(c+1)+' / '+total;}}
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?go(c+1):go(c-1)}},{passive:true});
+  go(0);
+})();
+</script>
+</body>
+</html>

@@ -47,17 +47,17 @@ body {
 
 /* 4. ALL typography uses clamp() for responsive scaling */
 :root {
-    /* --- Titles scale from mobile to desktop --- */
-    --title-size: clamp(1.5rem, 5vw, 4rem);
-    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
-    --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+    /* --- Titles scale from mobile to desktop (generous defaults) --- */
+    --title-size: clamp(2.8rem, 6.5vw, 5.5rem);
+    --h2-size: clamp(1.8rem, 3.8vw, 3.2rem);
+    --h3-size: clamp(1.2rem, 2vw, 1.6rem);
 
     /* --- Body text --- */
-    --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
-    --small-size: clamp(0.65rem, 1vw, 0.875rem);
+    --body-size: clamp(1rem, 1.6vw, 1.25rem);
+    --small-size: clamp(0.8rem, 1.2vw, 1rem);
 
     /* --- Large display numbers (stats slides) --- */
-    --stat-size: clamp(2rem, 8vw, 6rem);
+    --stat-size: clamp(3.5rem, 8vw, 6.5rem);
 
     /* --- Spacing scales with viewport --- */
     --slide-padding: clamp(1rem, 4vw, 4rem);
@@ -97,9 +97,8 @@ img, .image-container {
 
 /* 9. CJK-specific typography adjustments */
 :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
-    line-height: 1.6; /* CJK characters need more line height */
-    word-break: break-all;
-    overflow-wrap: break-word;
+    line-height: 1.8; /* CJK characters need generous line height */
+    overflow-wrap: break-word; /* Safe word wrapping — never use break-all (destroys English words) */
 }
 
 /* 10. Ensure text doesn't overflow containers */

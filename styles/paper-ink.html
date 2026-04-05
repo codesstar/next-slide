@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper &amp; Ink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Literata:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #faf8f5;
+  --text: #1a1a1a;
+  --secondary: #555555;
+  --accent: #c41e3a;
+  --ink: #2c3e50;
+  --rule: #d4d0ca;
+  --pullquote-bg: #f0ede8;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Literata', serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--accent); z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Literata', serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 500;
+  color: var(--secondary);
+  z-index: 1000;
+  font-variant-numeric: oldstyle-nums;
+}
+.page-counter .current { color: var(--text); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(48px, 8vh, 100px) clamp(80px, 14vw, 260px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+.hairline {
+  width: 100%; height: 1px; background: var(--rule);
+  margin: clamp(20px, 3vh, 40px) 0;
+}
+
+.section-label {
+  font-family: 'Literata', serif;
+  font-size: clamp(11px, 0.9vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.drop-cap {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: clamp(64px, 8vw, 120px);
+  float: left;
+  line-height: 0.8;
+  color: var(--accent);
+  margin-right: clamp(8px, 1vw, 16px);
+  margin-top: clamp(4px, 0.5vh, 8px);
+}
+
+.title-huge {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: clamp(42px, 7vw, 110px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+.title-huge .accent { color: var(--accent); }
+
+.subtitle {
+  font-family: 'Literata', serif;
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--secondary);
+  font-weight: 400;
+  max-width: 50ch;
+  line-height: 1.6;
+}
+
+.body-text {
+  font-family: 'Literata', serif;
+  font-size: clamp(16px, 1.5vw, 22px);
+  line-height: 1.8;
+  max-width: 55ch;
+  color: var(--text);
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+  align-items: flex-end;
+}
+.stat-block .number {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: clamp(52px, 9vw, 140px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.stat-block .number .unit {
+  font-size: 0.4em;
+  color: var(--accent);
+}
+.stat-block .label {
+  font-family: 'Literata', serif;
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--secondary);
+  margin-top: clamp(8px, 1vh, 16px);
+  font-style: italic;
+}
+
+.pullquote {
+  background: var(--pullquote-bg);
+  border-left: 3px solid var(--accent);
+  padding: clamp(24px, 3vh, 40px) clamp(28px, 3vw, 48px);
+  margin: clamp(16px, 2vh, 32px) 0;
+  max-width: 600px;
+}
+.pullquote p {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(22px, 3vw, 40px);
+  line-height: 1.35;
+  color: var(--ink);
+}
+.pullquote .attr {
+  font-family: 'Literata', serif;
+  font-size: clamp(12px, 1vw, 16px);
+  color: var(--secondary);
+  margin-top: clamp(12px, 1.5vh, 20px);
+  font-style: normal;
+  font-weight: 400;
+}
+
+.essay-list {
+  display: flex; flex-direction: column;
+  gap: clamp(20px, 2.5vh, 36px);
+  max-width: 600px;
+}
+.essay-item {
+  padding-bottom: clamp(20px, 2.5vh, 36px);
+  border-bottom: 1px solid var(--rule);
+}
+.essay-item h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: clamp(22px, 2.5vw, 36px);
+  margin-bottom: clamp(6px, 0.8vh, 12px);
+}
+.essay-item p {
+  font-family: 'Literata', serif;
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: var(--secondary);
+  line-height: 1.6;
+}
+
+.footnote {
+  font-family: 'Literata', serif;
+  font-size: clamp(11px, 0.9vw, 14px);
+  color: var(--secondary);
+  font-style: italic;
+  position: absolute;
+  bottom: clamp(24px, 3vh, 40px);
+  left: clamp(80px, 14vw, 260px);
+}
+
+.close-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: clamp(42px, 7vw, 110px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.close-sub {
+  font-family: 'Literata', serif;
+  font-size: clamp(16px, 1.8vw, 26px);
+  color: var(--secondary);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.reveal { opacity: 0; transform: translateY(40px); }
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="slide-inner">
+    <div class="section-label reveal">An Essay in Slides</div>
+    <h1 class="title-huge reveal">The Quiet<br>Power of <span class="accent">Words</span></h1>
+    <div class="hairline reveal"></div>
+    <p class="subtitle reveal">On typography, whitespace, and the lost art of reading slowly.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" data-i="1">
+  <div class="slide-inner">
+    <div class="section-label reveal">The Numbers Speak</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">570<span class="unit">yr</span></div>
+        <div class="label">Since movable type</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">130<span class="unit">K</span></div>
+        <div class="label">Typefaces catalogued</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">6<span class="unit">min</span></div>
+        <div class="label">Average reading time</div>
+      </div>
+    </div>
+    <div class="footnote">Sources: Gutenberg Museum, MyFonts catalogue, Medium analytics</div>
+  </div>
+</div>
+
+<!-- Slide 3: Features / Essay List -->
+<div class="slide" data-i="2">
+  <div class="slide-inner">
+    <div class="section-label reveal">Chapters</div>
+    <div class="essay-list">
+      <div class="essay-item reveal">
+        <h3>The Margin as Canvas</h3>
+        <p>Wide margins are not waste. They are the silence between notes in music.</p>
+      </div>
+      <div class="essay-item reveal">
+        <h3>Serif and Soul</h3>
+        <p>Serifs guide the eye. They are the footpaths between letters, worn by centuries of readers.</p>
+      </div>
+      <div class="essay-item reveal">
+        <h3>The Drop Cap</h3>
+        <p>A single letter, oversized and ornate, signals the beginning of something worth your time.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Pull Quote -->
+<div class="slide" data-i="3">
+  <div class="slide-inner">
+    <div class="pullquote reveal">
+      <p>Typography is what language looks like.</p>
+      <div class="attr">Ellen Lupton</div>
+    </div>
+    <div class="hairline reveal"></div>
+    <p class="body-text reveal">Good typography is invisible. Bad typography is everywhere. The best presentations feel like reading a well-set book.</p>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="slide-inner">
+    <div class="hairline reveal"></div>
+    <div class="close-title reveal">Read<br><span class="accent">Slowly.</span></div>
+    <p class="close-sub reveal">The best ideas deserve the patience of ink on paper.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Cyber</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0f1c;
+  --cyan: #00ffcc;
+  --magenta: #ff00aa;
+  --blue: #4466ff;
+  --text: #e0f0ff;
+  --secondary: #5a7a9a;
+  --glow-cyan: 0 0 20px rgba(0, 255, 204, 0.3);
+  --glow-magenta: 0 0 20px rgba(255, 0, 170, 0.3);
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scan line overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 204, 0.015) 2px,
+    rgba(0, 255, 204, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--glow-cyan);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 600;
+  color: var(--secondary);
+  z-index: 1000;
+  letter-spacing: 0.1em;
+}
+.page-counter .current { color: var(--cyan); text-shadow: var(--glow-cyan); }
+
+/* Corner brackets */
+.corner { position: fixed; z-index: 998; color: var(--secondary); opacity: 0.3; font-size: clamp(16px, 2vw, 28px); font-weight: 300; }
+.corner.tl { top: clamp(16px, 2vh, 32px); left: clamp(20px, 2vw, 40px); }
+.corner.tr { top: clamp(16px, 2vh, 32px); right: clamp(20px, 2vw, 40px); }
+.corner.bl { bottom: clamp(16px, 2vh, 32px); left: clamp(20px, 2vw, 40px); }
+.corner.br { bottom: clamp(16px, 2vh, 32px); right: clamp(20px, 2vw, 40px); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  background: radial-gradient(ellipse at 30% 50%, #0d1a2d 0%, #0a0f1c 70%);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+.neon-orb {
+  position: absolute;
+  width: clamp(200px, 30vw, 500px);
+  height: clamp(200px, 30vw, 500px);
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  opacity: 0.4;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -15px) scale(1.05); }
+  66% { transform: translate(-15px, 10px) scale(0.95); }
+}
+
+.badge {
+  display: inline-block; width: fit-content;
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--cyan);
+  border: 1px solid rgba(0, 255, 204, 0.3);
+  border-radius: 2px;
+  padding: clamp(6px, 0.8vh, 10px) clamp(14px, 1.5vw, 24px);
+  margin-bottom: clamp(24px, 4vh, 48px);
+  text-shadow: var(--glow-cyan);
+  box-shadow: inset 0 0 12px rgba(0, 255, 204, 0.05);
+  text-transform: uppercase;
+}
+
+.title-huge {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(42px, 7vw, 120px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+
+.title-huge .gradient-text {
+  background: linear-gradient(135deg, var(--cyan), var(--magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--secondary);
+  font-weight: 400;
+  max-width: 50ch;
+  line-height: 1.5;
+}
+
+.section-label {
+  font-size: clamp(11px, 0.9vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+  align-items: flex-end;
+}
+.stat-block .number {
+  font-weight: 700;
+  font-size: clamp(52px, 9vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-block .number .unit {
+  font-size: 0.45em;
+}
+.stat-block .label {
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--secondary);
+  margin-top: clamp(8px, 1vh, 16px);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 3vw, 48px);
+  max-width: 900px;
+}
+.feature-card {
+  border: 1px solid rgba(0, 255, 204, 0.15);
+  border-radius: 4px;
+  padding: clamp(20px, 2.5vh, 36px) clamp(20px, 2vw, 32px);
+  background: rgba(0, 255, 204, 0.03);
+}
+.feature-card h3 {
+  font-weight: 700;
+  font-size: clamp(18px, 2vw, 28px);
+  margin-bottom: clamp(8px, 1vh, 16px);
+  color: var(--text);
+}
+.feature-card p {
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: var(--secondary);
+  line-height: 1.6;
+}
+
+.list-stack {
+  display: flex; flex-direction: column;
+  gap: clamp(16px, 2vh, 28px);
+  max-width: 700px;
+}
+.list-item {
+  display: flex; align-items: baseline; gap: clamp(16px, 2vw, 32px);
+  padding-bottom: clamp(16px, 2vh, 28px);
+  border-bottom: 1px solid rgba(0, 255, 204, 0.1);
+}
+.list-item .idx {
+  font-weight: 700;
+  font-size: clamp(14px, 1.2vw, 18px);
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  min-width: 2.5em;
+}
+.list-item .content h4 {
+  font-weight: 600;
+  font-size: clamp(16px, 1.5vw, 22px);
+  margin-bottom: 4px;
+}
+.list-item .content p {
+  font-size: clamp(13px, 1.1vw, 16px);
+  color: var(--secondary);
+  line-height: 1.5;
+}
+
+.close-title {
+  font-weight: 700;
+  font-size: clamp(40px, 7vw, 110px);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.close-sub {
+  font-size: clamp(16px, 1.8vw, 26px);
+  color: var(--secondary);
+  font-weight: 400;
+}
+
+.reveal { opacity: 0; transform: translateY(40px); }
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="corner tl">[</div>
+<div class="corner tr">]</div>
+<div class="corner bl">[</div>
+<div class="corner br">]</div>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="neon-orb" style="top: 10%; right: -5%; background: radial-gradient(circle, rgba(0,255,204,0.3), transparent 70%);"></div>
+  <div class="neon-orb" style="bottom: -10%; left: 10%; background: radial-gradient(circle, rgba(255,0,170,0.2), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="badge reveal">System Online &middot; v2.0</div>
+    <h1 class="title-huge reveal"><span class="gradient-text">Neural</span><br>Interface</h1>
+    <p class="subtitle reveal">Where the digital frontier meets human intuition. Built for the next era.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" data-i="1">
+  <div class="neon-orb" style="top: 5%; left: 20%; background: radial-gradient(circle, rgba(68,102,255,0.25), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Performance Metrics</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">0.3<span class="unit">ms</span></div>
+        <div class="label">Response latency</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">99.9<span class="unit">%</span></div>
+        <div class="label">Uptime SLA</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">12<span class="unit">M</span></div>
+        <div class="label">Active nodes</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" data-i="2">
+  <div class="neon-orb" style="bottom: 5%; right: 10%; background: radial-gradient(circle, rgba(0,255,204,0.2), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Core Systems</div>
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <h3>Edge Computing</h3>
+        <p>Process data at the source with zero-latency inference nodes</p>
+      </div>
+      <div class="feature-card reveal">
+        <h3>Quantum Mesh</h3>
+        <p>Distributed network topology that adapts in real-time</p>
+      </div>
+      <div class="feature-card reveal">
+        <h3>Neural Sync</h3>
+        <p>Cross-device state propagation faster than perception</p>
+      </div>
+      <div class="feature-card reveal">
+        <h3>Zero Trust</h3>
+        <p>Every packet verified. Every connection authenticated. Always</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: List -->
+<div class="slide" data-i="3">
+  <div class="neon-orb" style="top: 20%; right: 5%; background: radial-gradient(circle, rgba(255,0,170,0.15), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Protocol Stack</div>
+    <div class="list-stack">
+      <div class="list-item reveal">
+        <span class="idx">01</span>
+        <div class="content">
+          <h4>Initialize</h4>
+          <p>Bootstrap the runtime environment and establish secure channels</p>
+        </div>
+      </div>
+      <div class="list-item reveal">
+        <span class="idx">02</span>
+        <div class="content">
+          <h4>Authenticate</h4>
+          <p>Multi-factor verification with biometric and token-based auth</p>
+        </div>
+      </div>
+      <div class="list-item reveal">
+        <span class="idx">03</span>
+        <div class="content">
+          <h4>Synchronize</h4>
+          <p>State reconciliation across all connected nodes in under 1ms</p>
+        </div>
+      </div>
+      <div class="list-item reveal">
+        <span class="idx">04</span>
+        <div class="content">
+          <h4>Deploy</h4>
+          <p>Push to the edge. Global rollout in seconds, not hours</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="neon-orb" style="bottom: 0; left: 20%; background: radial-gradient(circle, rgba(0,255,204,0.25), transparent 70%);"></div>
+  <div class="neon-orb" style="top: 10%; right: 15%; background: radial-gradient(circle, rgba(255,0,170,0.15), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="close-title reveal">The Future<br>is <span class="gradient-text">Online.</span></div>
+    <p class="close-sub reveal">Jack in. The network is waiting.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

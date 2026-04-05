@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bold Signal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #111111;
+  --bg-gradient: linear-gradient(160deg, #111111 0%, #1e1e1e 50%, #111111 100%);
+  --card: #ff4444;
+  --text: #ffffff;
+  --text-on-card: #111111;
+  --accent2: #FFB300;
+  --secondary: #888888;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--card); z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  color: var(--secondary);
+  z-index: 1000;
+}
+.page-counter .current { color: var(--text); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  background: var(--bg-gradient);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+.slide-number {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(72px, 12vw, 200px);
+  color: rgba(255, 68, 68, 0.08);
+  position: absolute;
+  top: clamp(20px, 4vh, 60px);
+  left: clamp(48px, 8vw, 160px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.nav-dots {
+  position: absolute;
+  top: clamp(40px, 5vh, 70px);
+  right: clamp(48px, 8vw, 160px);
+  display: flex; gap: 8px;
+}
+.nav-dots .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--secondary); opacity: 0.3;
+}
+.nav-dots .dot.active { background: var(--card); opacity: 1; }
+
+.card-block {
+  background: var(--card);
+  color: var(--text-on-card);
+  padding: clamp(32px, 4vh, 56px) clamp(32px, 4vw, 56px);
+  border-radius: 8px;
+  max-width: clamp(400px, 50vw, 700px);
+}
+
+.title-huge {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(42px, 7vw, 120px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+  text-transform: uppercase;
+}
+
+.title-huge .accent { color: var(--card); }
+
+.subtitle {
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--secondary);
+  font-weight: 400;
+  max-width: 50ch;
+  line-height: 1.5;
+}
+
+.section-label {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(11px, 0.9vw, 13px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--card);
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+  align-items: flex-end;
+}
+
+.stat-block .number {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(52px, 9vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.stat-block .number .unit {
+  font-size: 0.45em;
+  color: var(--card);
+}
+.stat-block .label {
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--secondary);
+  margin-top: clamp(8px, 1vh, 16px);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 4vw, 56px) clamp(48px, 6vw, 96px);
+  max-width: 900px;
+}
+.feature-item h3 {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(20px, 2.2vw, 32px);
+  margin-bottom: clamp(8px, 1vh, 16px);
+  text-transform: uppercase;
+}
+.feature-item p {
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: var(--secondary);
+  line-height: 1.6;
+  max-width: 35ch;
+}
+
+.timeline {
+  display: flex; flex-direction: column;
+  gap: clamp(24px, 3vh, 40px);
+  border-left: 3px solid var(--card);
+  padding-left: clamp(24px, 3vw, 48px);
+  max-width: 700px;
+}
+.timeline-item .year {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--card);
+  margin-bottom: 4px;
+}
+.timeline-item .desc {
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: var(--secondary);
+  line-height: 1.5;
+}
+
+.close-title {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(40px, 7vw, 110px);
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  text-transform: uppercase;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.close-sub {
+  font-size: clamp(16px, 1.8vw, 26px);
+  color: var(--secondary);
+  font-weight: 400;
+}
+
+.reveal {
+  opacity: 0; transform: translateY(40px);
+}
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="slide-number">01</div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Bold Signal &middot; Style Demo</div>
+    <h1 class="title-huge reveal">Make<br><span class="accent">Noise.</span></h1>
+    <p class="subtitle reveal">A presentation style that commands the room and refuses to be ignored.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" data-i="1">
+  <div class="slide-number">02</div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Impact Metrics</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">3<span class="unit">s</span></div>
+        <div class="label">Attention captured</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">87<span class="unit">%</span></div>
+        <div class="label">Recall rate</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">2.4<span class="unit">x</span></div>
+        <div class="label">Engagement lift</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" data-i="2">
+  <div class="slide-number">03</div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Core Strengths</div>
+    <div class="feature-grid">
+      <div class="feature-item reveal">
+        <h3>High Contrast</h3>
+        <p>Dark backgrounds with bold colored cards create instant visual hierarchy</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>Heavy Type</h3>
+        <p>Archivo Black at max weight leaves no room for ambiguity</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>Color Blocks</h3>
+        <p>Vibrant accent cards draw the eye exactly where it needs to go</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>Grid System</h3>
+        <p>Precise alignment creates a sense of confidence and control</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Timeline -->
+<div class="slide" data-i="3">
+  <div class="slide-number">04</div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Use Cases</div>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="year">Pitch Decks</div>
+        <div class="desc">When investors need to remember you after 30 back-to-back meetings</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="year">Product Launches</div>
+        <div class="desc">Announce with authority. Bold Signal makes features feel like events</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="year">Brand Reveals</div>
+        <div class="desc">First impressions at maximum volume. Set the tone from slide one</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="year">Conference Talks</div>
+        <div class="desc">Readable from the back row. Impactful on any screen size</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="slide-number">05</div>
+  <div class="slide-inner">
+    <div class="close-title reveal">Be Bold.<br>Be <span style="color:var(--card)">Heard.</span></div>
+    <p class="close-sub reveal">The signal cuts through the noise. Every time.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

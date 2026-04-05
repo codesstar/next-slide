@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus White</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#ffffff;--sidebar-bg:#f5f5f0;--text:#2c2c2c;
+  --text-muted:#6a6a6a;--accent:#2563eb;--accent-gold:#c8a951;
+  --border:#ddd8cf;--highlight:#e8f4f0;--header-bg:#1b3a5c;
+}
+body{font-family:'Atkinson Hyperlegible','Source Serif 4',sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+.slide{
+  position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.slide.active{opacity:1;pointer-events:auto}
+
+.top-bar{background:var(--header-bg);color:#fff;padding:clamp(0.5rem,1vw,0.8rem) clamp(1.5rem,3vw,3rem);display:flex;justify-content:space-between;align-items:center;font-size:clamp(0.75rem,1vw,0.85rem)}
+.top-bar-title{font-family:'Source Serif 4',serif;font-weight:600;letter-spacing:0.05em}
+.top-bar-right{opacity:0.7}
+
+.slide-body{flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(1.5rem,3vw,3rem)}
+.slide-inner{position:relative;z-index:2;width:min(88vw,920px)}
+
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:100;transition:width 0.4s cubic-bezier(0.16,1,0.3,1)}
+.page-counter{position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);font-size:clamp(0.75rem,1vw,0.85rem);color:var(--text-muted);opacity:0.5;z-index:100}
+
+h1{font-family:'Source Serif 4',serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:700;line-height:1.15;color:var(--text)}
+h2{font-family:'Source Serif 4',serif;font-size:clamp(1.5rem,3vw,2.4rem);font-weight:600;line-height:1.25;margin-bottom:clamp(0.8rem,1.5vw,1.2rem)}
+h3{font-family:'Source Serif 4',serif;font-size:clamp(1.1rem,1.8vw,1.4rem);font-weight:600;margin-bottom:0.4rem}
+p,.body-text{font-size:clamp(0.9rem,1.2vw,1.05rem);line-height:1.8;color:var(--text)}
+.caption{font-size:clamp(0.75rem,1vw,0.85rem);color:var(--text-muted)}
+
+.section-badge{display:inline-flex;align-items:center;justify-content:center;width:clamp(1.8rem,2.5vw,2.2rem);height:clamp(1.8rem,2.5vw,2.2rem);border-radius:50%;background:var(--accent);color:#fff;font-family:'Source Serif 4',serif;font-weight:700;font-size:clamp(0.8rem,1.1vw,0.95rem);margin-right:0.6rem}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.1s}
+.active .fade-up.d2{transition-delay:0.2s}
+.active .fade-up.d3{transition-delay:0.3s}
+.active .fade-up.d4{transition-delay:0.4s}
+.active .fade-up.d5{transition-delay:0.5s}
+
+.two-col{display:grid;grid-template-columns:1fr 280px;gap:clamp(1.5rem,3vw,2.5rem);margin-top:clamp(1rem,2vw,1.5rem)}
+.sidebar{background:var(--sidebar-bg);border-radius:8px;padding:clamp(1rem,2vw,1.5rem);border:1px solid var(--border)}
+.sidebar-title{font-family:'Source Serif 4',serif;font-weight:600;font-size:clamp(0.85rem,1.1vw,0.95rem);color:var(--accent);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2vw,2rem);margin-top:clamp(1.5rem,3vw,2rem)}
+.stat-card{background:var(--sidebar-bg);border-radius:8px;padding:clamp(1rem,2vw,1.5rem);border:1px solid var(--border);text-align:center}
+.stat-num{font-family:'Source Serif 4',serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700;line-height:1.1;color:var(--accent)}
+.stat-desc{font-size:clamp(0.8rem,1vw,0.9rem);color:var(--text-muted);margin-top:0.3rem}
+
+.table{width:100%;border-collapse:collapse;margin-top:clamp(0.8rem,1.5vw,1rem)}
+.table th,.table td{text-align:left;padding:clamp(0.4rem,0.8vw,0.6rem) clamp(0.6rem,1vw,0.8rem);font-size:clamp(0.8rem,1.1vw,0.95rem)}
+.table th{font-family:'Source Serif 4',serif;font-weight:600;border-bottom:2px solid var(--text);color:var(--text)}
+.table td{border-bottom:1px solid var(--border)}
+.table tr:nth-child(even) td{background:var(--sidebar-bg)}
+.table .highlight{background:var(--highlight)}
+
+sup{font-size:0.7em;color:var(--accent)}
+
+@media(max-width:640px){.two-col{grid-template-columns:1fr}.stat-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" id="slide-0">
+  <div class="top-bar fade-up">
+    <span class="top-bar-title">Department of Computer Science</span>
+    <span class="top-bar-right">Lecture Series 2026</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-inner">
+      <div class="caption fade-up d1" style="text-transform:uppercase;letter-spacing:0.12em;">CS 4820 &middot; Algorithms &amp; Complexity</div>
+      <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+      <h1 class="fade-up d2">Graph Theory in<br>Modern Computing</h1>
+      <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+      <p class="fade-up d3 body-text" style="max-width:520px;">How network structures power everything from social media to protein folding — a survey of algorithms old and new.</p>
+      <div style="height:clamp(1rem,1.5vw,1.2rem)"></div>
+      <p class="fade-up d4 caption">Prof. Elena Marchetti &middot; Spring 2026</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" id="slide-1">
+  <div class="top-bar fade-up">
+    <span class="top-bar-title">Graph Theory in Modern Computing</span>
+    <span class="top-bar-right">02 / 05</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-inner">
+      <div style="display:flex;align-items:center" class="fade-up d1"><span class="section-badge">1</span><h2 style="margin-bottom:0">Scale of the Problem</h2></div>
+      <div class="stat-row">
+        <div class="stat-card fade-up d2">
+          <div class="stat-num">10<sup>12</sup></div>
+          <div class="stat-desc">Edges in Meta's social graph</div>
+        </div>
+        <div class="stat-card fade-up d3">
+          <div class="stat-num">4.2ms</div>
+          <div class="stat-desc">Avg. shortest-path query time</div>
+        </div>
+        <div class="stat-card fade-up d4">
+          <div class="stat-num">O(n log n)</div>
+          <div class="stat-desc">Best-case community detection</div>
+        </div>
+      </div>
+      <div class="fade-up d5" style="background:var(--highlight);border-radius:8px;padding:clamp(0.8rem,1.5vw,1.2rem);margin-top:clamp(1.5rem,2vw,2rem);border-left:3px solid var(--accent)">
+        <p class="body-text" style="margin:0"><strong>Key insight:</strong> As graphs grow beyond 10<sup>9</sup> nodes, traditional algorithms break down. Approximate methods become not just useful but necessary.<sup>1</sup></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features / Comparison Table -->
+<div class="slide" id="slide-2">
+  <div class="top-bar fade-up">
+    <span class="top-bar-title">Graph Theory in Modern Computing</span>
+    <span class="top-bar-right">03 / 05</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-inner">
+      <div class="two-col">
+        <div>
+          <div style="display:flex;align-items:center" class="fade-up d1"><span class="section-badge">2</span><h2 style="margin-bottom:0">Algorithm Comparison</h2></div>
+          <table class="table fade-up d2">
+            <thead><tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Use Case</th></tr></thead>
+            <tbody>
+              <tr><td>Dijkstra</td><td>O(E log V)</td><td>O(V)</td><td>Routing</td></tr>
+              <tr class="highlight"><td>A*</td><td>O(E)</td><td>O(V)</td><td>Pathfinding</td></tr>
+              <tr><td>PageRank</td><td>O(V+E)</td><td>O(V)</td><td>Ranking</td></tr>
+              <tr><td>Louvain</td><td>O(n log n)</td><td>O(n)</td><td>Community</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="sidebar fade-up d3">
+          <div class="sidebar-title">Key Terms</div>
+          <p class="body-text" style="margin-bottom:0.6rem"><strong>Adjacency matrix:</strong> V x V matrix where entry (i,j) = 1 if edge exists.</p>
+          <p class="body-text" style="margin-bottom:0.6rem"><strong>Betweenness centrality:</strong> Fraction of shortest paths passing through a node.</p>
+          <p class="body-text"><strong>Graph isomorphism:</strong> Whether two graphs are structurally identical.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Timeline / List -->
+<div class="slide" id="slide-3">
+  <div class="top-bar fade-up">
+    <span class="top-bar-title">Graph Theory in Modern Computing</span>
+    <span class="top-bar-right">04 / 05</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-inner">
+      <div class="two-col">
+        <div>
+          <div style="display:flex;align-items:center" class="fade-up d1"><span class="section-badge">3</span><h2 style="margin-bottom:0">Historical Milestones</h2></div>
+          <div style="margin-top:clamp(1rem,2vw,1.5rem)">
+            <div class="fade-up d2" style="padding:clamp(0.5rem,1vw,0.8rem) 0;border-bottom:1px solid var(--border)">
+              <div style="display:flex;justify-content:space-between"><h3 style="margin:0">Euler's Bridges</h3><span class="caption">1736</span></div>
+              <p class="body-text">The founding problem: can you cross all 7 bridges of Konigsberg exactly once?</p>
+            </div>
+            <div class="fade-up d3" style="padding:clamp(0.5rem,1vw,0.8rem) 0;border-bottom:1px solid var(--border)">
+              <div style="display:flex;justify-content:space-between"><h3 style="margin:0">Dijkstra's Algorithm</h3><span class="caption">1956</span></div>
+              <p class="body-text">Shortest-path algorithm that still powers GPS navigation today.</p>
+            </div>
+            <div class="fade-up d4" style="padding:clamp(0.5rem,1vw,0.8rem) 0;border-bottom:1px solid var(--border)">
+              <div style="display:flex;justify-content:space-between"><h3 style="margin:0">PageRank</h3><span class="caption">1998</span></div>
+              <p class="body-text">Graph centrality applied to web pages — the algorithm that built Google.</p>
+            </div>
+            <div class="fade-up d5" style="padding:clamp(0.5rem,1vw,0.8rem) 0">
+              <div style="display:flex;justify-content:space-between"><h3 style="margin:0">GNNs</h3><span class="caption">2017+</span></div>
+              <p class="body-text">Graph neural networks: deep learning meets graph structure.</p>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar fade-up d3">
+          <div class="sidebar-title">Reading List</div>
+          <p class="body-text" style="margin-bottom:0.5rem">Cormen et al., <em>Introduction to Algorithms</em>, Ch. 22-26</p>
+          <p class="body-text" style="margin-bottom:0.5rem">Barabasi, <em>Network Science</em>, Ch. 1-4</p>
+          <p class="body-text">Wu et al., "A Comprehensive Survey on Graph Neural Networks" (2020)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" id="slide-4">
+  <div class="top-bar fade-up">
+    <span class="top-bar-title">Department of Computer Science</span>
+    <span class="top-bar-right">05 / 05</span>
+  </div>
+  <div class="slide-body">
+    <div class="slide-inner" style="text-align:center;">
+      <div style="display:inline-flex;align-items:center;justify-content:center" class="fade-up d1"><span class="section-badge" style="width:clamp(2.2rem,3vw,2.8rem);height:clamp(2.2rem,3vw,2.8rem);font-size:clamp(0.9rem,1.3vw,1.1rem)">4</span></div>
+      <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+      <h1 class="fade-up d2" style="font-size:clamp(1.8rem,4vw,3.2rem);">Graphs Are<br>Everywhere</h1>
+      <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+      <p class="fade-up d3 body-text" style="max-width:480px;margin:0 auto;">Every relationship is an edge. Every entity is a node. The universe is a graph — and we're just learning how to read it.</p>
+      <div style="height:clamp(1.5rem,3vw,2rem)"></div>
+      <p class="fade-up d4 caption">Next lecture: Randomized Graph Algorithms &middot; Thursday 10:00 AM</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide'),total=slides.length,c=0;
+  var progress=document.getElementById('progress'),counter=document.getElementById('counter');
+  function go(n){if(n>=0&&n<total){c=n;slides.forEach(function(s,i){s.classList.toggle('active',i===c)});progress.style.width=((c+1)/total*100)+'%';counter.textContent=(c+1)+' / '+total;}}
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?go(c+1):go(c-1)}},{passive:true});
+  go(0);
+})();
+</script>
+</body>
+</html>

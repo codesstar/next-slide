@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notebook Tabs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-outer: #2d2d2d;
+  --bg-page: #f5f3ee;
+  --text: #1a1a1a;
+  --secondary: #5a5a5a;
+  --tab1: #4a90d9;
+  --tab2: #c7b8ea;
+  --tab3: #f4b8c5;
+  --tab4: #a8d8ea;
+  --tab5: #ffe6a7;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg-outer); color: var(--text); }
+
+body {
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--tab1); z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(12px, 2vh, 24px);
+  right: clamp(16px, 2vw, 32px);
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  z-index: 1000;
+}
+.page-counter .current { color: rgba(255,255,255,0.7); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Paper card */
+.paper {
+  position: relative;
+  width: clamp(320px, 75vw, 1000px);
+  height: clamp(400px, 78vh, 680px);
+  background: var(--bg-page);
+  border-radius: 4px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.15);
+  display: flex;
+}
+
+/* Binder holes */
+.binder {
+  width: clamp(28px, 3vw, 44px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: clamp(32px, 5vh, 56px);
+  flex-shrink: 0;
+  padding: clamp(16px, 2vh, 28px) 0;
+  border-right: 1px solid rgba(0,0,0,0.06);
+}
+.binder .hole {
+  width: clamp(10px, 1.2vw, 16px);
+  height: clamp(10px, 1.2vw, 16px);
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: var(--bg-outer);
+}
+
+/* Tabs on right edge */
+.tabs {
+  position: absolute;
+  right: clamp(-28px, -3vw, -20px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column;
+  gap: clamp(4px, 0.5vh, 8px);
+  z-index: 10;
+}
+.tab {
+  width: clamp(24px, 2.8vw, 36px);
+  border-radius: 0 6px 6px 0;
+  opacity: 0.5;
+  transition: opacity 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+.tab.active { opacity: 1; transform: translateX(4px); }
+.tab:nth-child(1) { height: clamp(36px, 5vh, 52px); background: var(--tab1); }
+.tab:nth-child(2) { height: clamp(48px, 6.5vh, 68px); background: var(--tab2); }
+.tab:nth-child(3) { height: clamp(56px, 7.5vh, 80px); background: var(--tab3); }
+.tab:nth-child(4) { height: clamp(48px, 6.5vh, 68px); background: var(--tab4); }
+.tab:nth-child(5) { height: clamp(36px, 5vh, 52px); background: var(--tab5); }
+
+.paper-content {
+  flex: 1;
+  padding: clamp(28px, 4vh, 56px) clamp(28px, 4vw, 56px);
+  display: flex; flex-direction: column; justify-content: center;
+  overflow: hidden;
+}
+
+.section-label {
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-size: clamp(10px, 0.85vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tab1);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+
+.title-huge {
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 72px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: clamp(12px, 2vh, 24px);
+  color: var(--text);
+}
+
+.subtitle {
+  font-size: clamp(14px, 1.5vw, 22px);
+  color: var(--secondary);
+  font-weight: 400;
+  max-width: 45ch;
+  line-height: 1.5;
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(28px, 4vw, 64px);
+  align-items: flex-end;
+}
+.stat-block .number {
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 700;
+  font-size: clamp(36px, 5.5vw, 80px);
+  line-height: 1;
+  color: var(--text);
+}
+.stat-block .number .unit {
+  font-size: 0.45em;
+  color: var(--tab1);
+}
+.stat-block .label {
+  font-size: clamp(11px, 1vw, 15px);
+  color: var(--secondary);
+  margin-top: clamp(6px, 0.8vh, 12px);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2vw, 28px);
+}
+.feature-card {
+  padding: clamp(14px, 2vh, 24px) clamp(14px, 1.5vw, 24px);
+  background: rgba(0,0,0,0.03);
+  border-radius: 6px;
+  border-left: 3px solid var(--tab1);
+}
+.feature-card h3 {
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 700;
+  font-size: clamp(15px, 1.5vw, 22px);
+  margin-bottom: clamp(4px, 0.5vh, 8px);
+}
+.feature-card p {
+  font-size: clamp(12px, 1.1vw, 16px);
+  color: var(--secondary);
+  line-height: 1.5;
+}
+
+.checklist {
+  display: flex; flex-direction: column;
+  gap: clamp(12px, 1.5vh, 20px);
+  max-width: 500px;
+}
+.check-item {
+  display: flex; align-items: flex-start; gap: clamp(10px, 1.2vw, 18px);
+  padding-bottom: clamp(12px, 1.5vh, 20px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.check-box {
+  width: clamp(16px, 1.5vw, 22px);
+  height: clamp(16px, 1.5vw, 22px);
+  border: 2px solid var(--tab1);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.check-box.done {
+  background: var(--tab1);
+  position: relative;
+}
+.check-box.done::after {
+  content: '';
+  position: absolute;
+  left: 25%; top: 45%;
+  width: 45%; height: 25%;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg) translateY(-50%);
+}
+.check-item h4 {
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 700;
+  font-size: clamp(14px, 1.3vw, 20px);
+  margin-bottom: 2px;
+}
+.check-item p {
+  font-size: clamp(12px, 1vw, 15px);
+  color: var(--secondary);
+  line-height: 1.4;
+}
+
+.close-title {
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 72px);
+  line-height: 1.1;
+  margin-bottom: clamp(12px, 2vh, 24px);
+}
+.close-sub {
+  font-size: clamp(14px, 1.5vw, 22px);
+  color: var(--secondary);
+  font-weight: 400;
+}
+
+.reveal { opacity: 0; transform: translateY(30px); }
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="paper">
+    <div class="binder">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="0"></div>
+      <div class="tab" data-tab="1"></div>
+      <div class="tab" data-tab="2"></div>
+      <div class="tab" data-tab="3"></div>
+      <div class="tab" data-tab="4"></div>
+    </div>
+    <div class="paper-content">
+      <div class="section-label reveal">Workshop Guide</div>
+      <h1 class="title-huge reveal">Design<br>Thinking<br>Playbook</h1>
+      <p class="subtitle reveal">A tactile approach to structured creativity. Five sections, one notebook.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" data-i="1">
+  <div class="paper">
+    <div class="binder">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-tab="0"></div>
+      <div class="tab active" data-tab="1"></div>
+      <div class="tab" data-tab="2"></div>
+      <div class="tab" data-tab="3"></div>
+      <div class="tab" data-tab="4"></div>
+    </div>
+    <div class="paper-content">
+      <div class="section-label reveal">Research Findings</div>
+      <div class="stats-row">
+        <div class="stat-block reveal">
+          <div class="number">85<span class="unit">%</span></div>
+          <div class="label">Teams improved</div>
+        </div>
+        <div class="stat-block reveal">
+          <div class="number">4.2<span class="unit">x</span></div>
+          <div class="label">Idea generation</div>
+        </div>
+        <div class="stat-block reveal">
+          <div class="number">12<span class="unit">wk</span></div>
+          <div class="label">Avg. sprint cycle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" data-i="2">
+  <div class="paper">
+    <div class="binder">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-tab="0"></div>
+      <div class="tab" data-tab="1"></div>
+      <div class="tab active" data-tab="2"></div>
+      <div class="tab" data-tab="3"></div>
+      <div class="tab" data-tab="4"></div>
+    </div>
+    <div class="paper-content">
+      <div class="section-label reveal">Methods</div>
+      <div class="feature-grid">
+        <div class="feature-card reveal">
+          <h3>Empathize</h3>
+          <p>Deep user interviews and observation to uncover real needs</p>
+        </div>
+        <div class="feature-card reveal">
+          <h3>Define</h3>
+          <p>Synthesize insights into clear problem statements</p>
+        </div>
+        <div class="feature-card reveal">
+          <h3>Ideate</h3>
+          <p>Divergent brainstorming with structured constraints</p>
+        </div>
+        <div class="feature-card reveal">
+          <h3>Prototype</h3>
+          <p>Rapid low-fidelity builds to test assumptions fast</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Checklist -->
+<div class="slide" data-i="3">
+  <div class="paper">
+    <div class="binder">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-tab="0"></div>
+      <div class="tab" data-tab="1"></div>
+      <div class="tab" data-tab="2"></div>
+      <div class="tab active" data-tab="3"></div>
+      <div class="tab" data-tab="4"></div>
+    </div>
+    <div class="paper-content">
+      <div class="section-label reveal">Sprint Checklist</div>
+      <div class="checklist">
+        <div class="check-item reveal">
+          <div class="check-box done"></div>
+          <div><h4>Stakeholder Alignment</h4><p>Get buy-in from all team leads before kickoff</p></div>
+        </div>
+        <div class="check-item reveal">
+          <div class="check-box done"></div>
+          <div><h4>User Research Complete</h4><p>Minimum 8 interviews with target demographic</p></div>
+        </div>
+        <div class="check-item reveal">
+          <div class="check-box"></div>
+          <div><h4>Prototype Review</h4><p>Test with 5 users, iterate on critical friction points</p></div>
+        </div>
+        <div class="check-item reveal">
+          <div class="check-box"></div>
+          <div><h4>Final Presentation</h4><p>Synthesize learnings into actionable next steps</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="paper">
+    <div class="binder">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-tab="0"></div>
+      <div class="tab" data-tab="1"></div>
+      <div class="tab" data-tab="2"></div>
+      <div class="tab" data-tab="3"></div>
+      <div class="tab active" data-tab="4"></div>
+    </div>
+    <div class="paper-content">
+      <div class="close-title reveal">Think.<br>Make.<br>Learn.</div>
+      <p class="close-sub reveal">The best ideas start in notebooks. This one is yours.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+    // Update progress bar color to match active tab
+    const colors = ['#4a90d9','#c7b8ea','#f4b8c5','#a8d8ea','#ffe6a7'];
+    bar.style.background = colors[c] || colors[0];
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

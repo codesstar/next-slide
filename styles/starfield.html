@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starfield</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700;800&family=Lexend:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #05051a;
+  --text: #e8eaff;
+  --secondary: #6a6a9a;
+  --purple: #8855ff;
+  --blue: #44aaff;
+  --pink: #ff66aa;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Lexend', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Star particles via CSS */
+.stars {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 40% 15%, rgba(255,255,255,0.7) 50%, transparent 100%),
+    radial-gradient(1px 1px at 55% 75%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 70% 35%, rgba(255,255,255,0.5) 50%, transparent 100%),
+    radial-gradient(1px 1px at 85% 65%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.6) 50%, transparent 100%),
+    radial-gradient(1px 1px at 60% 45%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.8) 50%, transparent 100%),
+    radial-gradient(1px 1px at 35% 90%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 30%, rgba(136,85,255,0.8) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 75% 50%, rgba(68,170,255,0.6) 50%, transparent 100%),
+    radial-gradient(1px 1px at 5% 45%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 95% 85%, rgba(255,255,255,0.5) 50%, transparent 100%),
+    radial-gradient(1px 1px at 45% 5%, #fff 50%, transparent 100%);
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--blue), var(--pink));
+  z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Exo 2', sans-serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 700;
+  color: var(--secondary);
+  z-index: 1000;
+}
+.page-counter .current { color: var(--purple); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  background: radial-gradient(ellipse at 50% 50%, #0d0d3a 0%, #05051a 70%);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; text-align: center;
+  position: relative; z-index: 1;
+}
+
+.nebula {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15px, -10px) scale(1.03); }
+  66% { transform: translate(-10px, 8px) scale(0.97); }
+}
+
+.orbit-ring {
+  position: absolute;
+  border: 1px solid rgba(136, 85, 255, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.section-label {
+  font-family: 'Exo 2', sans-serif;
+  font-size: clamp(11px, 0.9vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.title-huge {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 800;
+  font-size: clamp(42px, 7vw, 120px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+.title-huge .gradient-text {
+  background: linear-gradient(135deg, var(--purple), var(--blue), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--secondary);
+  font-weight: 300;
+  max-width: 50ch;
+  line-height: 1.5;
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+  align-items: center;
+}
+.stat-block { text-align: center; }
+.stat-block .number {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 800;
+  font-size: clamp(52px, 9vw, 140px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(180deg, var(--text) 30%, var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-block .number .unit {
+  font-size: 0.45em;
+}
+.stat-block .label {
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--secondary);
+  margin-top: clamp(8px, 1vh, 16px);
+  font-weight: 400;
+}
+
+.feature-row {
+  display: flex;
+  gap: clamp(24px, 3vw, 48px);
+  max-width: 1000px;
+}
+.feature-orb {
+  flex: 1;
+  text-align: center;
+  padding: clamp(24px, 3vh, 40px) clamp(16px, 2vw, 28px);
+  border: 1px solid rgba(136, 85, 255, 0.15);
+  border-radius: 16px;
+  background: rgba(136, 85, 255, 0.04);
+}
+.feature-orb .icon {
+  width: clamp(48px, 5vw, 72px);
+  height: clamp(48px, 5vw, 72px);
+  border-radius: 50%;
+  margin: 0 auto clamp(12px, 1.5vh, 24px);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 800;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.feature-orb h3 {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: clamp(16px, 1.5vw, 22px);
+  margin-bottom: clamp(6px, 0.8vh, 12px);
+}
+.feature-orb p {
+  font-size: clamp(13px, 1.1vw, 16px);
+  color: var(--secondary);
+  line-height: 1.5;
+}
+
+.quote-text {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 4.5vw, 68px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+  margin-bottom: clamp(24px, 3vh, 40px);
+}
+
+.close-title {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 7vw, 110px);
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.close-sub {
+  font-size: clamp(16px, 1.8vw, 26px);
+  color: var(--secondary);
+  font-weight: 300;
+}
+
+.reveal { opacity: 0; transform: translateY(40px); }
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="nebula" style="width:clamp(300px,40vw,600px); height:clamp(300px,40vw,600px); top:5%; right:-10%; background:radial-gradient(circle, rgba(136,85,255,0.2), transparent 70%);"></div>
+  <div class="nebula" style="width:clamp(250px,30vw,450px); height:clamp(250px,30vw,450px); bottom:-5%; left:5%; background:radial-gradient(circle, rgba(68,170,255,0.15), transparent 70%);"></div>
+  <div class="orbit-ring" style="width:clamp(400px,50vw,800px); height:clamp(400px,50vw,800px); top:50%; left:50%; transform:translate(-50%,-50%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Beyond the Horizon</div>
+    <h1 class="title-huge reveal"><span class="gradient-text">Explore</span><br>the Infinite</h1>
+    <p class="subtitle reveal">A vision deck for ideas that stretch beyond the atmosphere.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" data-i="1">
+  <div class="nebula" style="width:clamp(350px,40vw,600px); height:clamp(350px,40vw,600px); top:10%; left:15%; background:radial-gradient(circle, rgba(255,102,170,0.12), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Scale of Discovery</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">400<span class="unit">B</span></div>
+        <div class="label">Stars in our galaxy</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">13.8<span class="unit">Bn</span></div>
+        <div class="label">Years of cosmic history</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">5K<span class="unit">+</span></div>
+        <div class="label">Exoplanets confirmed</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" data-i="2">
+  <div class="nebula" style="width:clamp(280px,30vw,500px); height:clamp(280px,30vw,500px); bottom:5%; right:5%; background:radial-gradient(circle, rgba(136,85,255,0.15), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Mission Capabilities</div>
+    <div class="feature-row">
+      <div class="feature-orb reveal">
+        <div class="icon" style="background:rgba(136,85,255,0.15); color:var(--purple);">I</div>
+        <h3>Deep Scan</h3>
+        <p>Multi-spectrum analysis of distant star systems</p>
+      </div>
+      <div class="feature-orb reveal">
+        <div class="icon" style="background:rgba(68,170,255,0.15); color:var(--blue);">II</div>
+        <h3>Warp Grid</h3>
+        <p>Faster-than-light communication relay network</p>
+      </div>
+      <div class="feature-orb reveal">
+        <div class="icon" style="background:rgba(255,102,170,0.15); color:var(--pink);">III</div>
+        <h3>Bio Dome</h3>
+        <p>Self-sustaining habitats for extended missions</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="nebula" style="width:clamp(400px,45vw,700px); height:clamp(400px,45vw,700px); top:20%; right:10%; background:radial-gradient(circle, rgba(68,170,255,0.1), transparent 70%);"></div>
+  <div class="orbit-ring" style="width:clamp(300px,35vw,550px); height:clamp(300px,35vw,550px); top:50%; left:50%; transform:translate(-50%,-50%);"></div>
+  <div class="slide-inner">
+    <div class="quote-text reveal">The cosmos is within us. We are made of star-stuff.</div>
+    <p class="subtitle reveal" style="font-style:italic;">Carl Sagan</p>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="nebula" style="width:clamp(350px,40vw,600px); height:clamp(350px,40vw,600px); bottom:0; left:20%; background:radial-gradient(circle, rgba(136,85,255,0.18), transparent 70%);"></div>
+  <div class="nebula" style="width:clamp(250px,25vw,400px); height:clamp(250px,25vw,400px); top:10%; right:15%; background:radial-gradient(circle, rgba(255,102,170,0.12), transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="close-title reveal">Launch<br><span class="gradient-text">Sequence</span></div>
+    <p class="close-sub reveal">The stars are not the limit. They are the beginning.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

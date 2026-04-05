@@ -55,12 +55,13 @@ body {
 }
 .hero-top {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 48px;
+  width: 100%;
 }
 .hero-left {
-  flex: 1.2;
+  flex: 1;
   min-width: 0;
 }
 .hero-eyebrow {
@@ -88,6 +89,9 @@ body {
   color: var(--text-secondary);
   line-height: 1.7;
   max-width: 420px;
+}
+.hero-right {
+  flex-shrink: 0;
 }
 .hero-actions {
   display: flex;
@@ -148,67 +152,10 @@ body {
   gap: 16px;
   margin-top: 16px;
 }
-.hero-browse {
-  color: var(--accent);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.hero-browse:hover {
-  color: var(--accent-hover);
-}
 .hero-compat {
   font-size: 12px;
   color: var(--text-muted);
 }
-.hero-right {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-}
-.hero-preview-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--bg-surface);
-  box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.hero-preview-frame:hover {
-  transform: translateY(-4px);
-}
-.hero-preview-frame iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-}
-.hero-preview-frame .fade-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  background: var(--bg);
-  transition: opacity 0.6s ease;
-  z-index: 2;
-}
-.hero-preview-frame .fade-overlay.fading {
-  opacity: 1;
-}
-.hero-preview-meta {
-  margin-top: 14px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-muted);
-  transition: opacity 0.4s;
-  letter-spacing: 0.02em;
-}
-.hero-preview-meta span { color: var(--text-secondary); font-weight: 500; }
 
 /* ═══════════════════════════════════════
    2. UNIFIED FILTER BAR
@@ -236,6 +183,7 @@ body {
   align-items: center;
   padding: 0 64px;
   max-width: 100%;
+  overflow: hidden;
 }
 .filter-categories {
   display: flex;
@@ -252,6 +200,7 @@ body {
   color: var(--text-muted);
   border: 1px solid transparent;
   padding: 6px 14px;
+  flex-shrink: 0;
   border-radius: 6px;
   font-size: 13px;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -313,9 +262,47 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer;
   transition: all 0.25s;
+  flex-shrink: 0;
 }
 .style-chip:hover { color: var(--text-secondary); border-color: rgba(255,245,230,0.2); }
 .style-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.style-search-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.style-search {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,245,230,0.12);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 5px 28px 5px 10px;
+  border-radius: 6px;
+  outline: none;
+  width: 120px;
+  transition: border-color 0.25s, width 0.25s;
+}
+.style-search::placeholder { color: var(--text-muted); opacity: 0.6; }
+.style-search:focus { border-color: rgba(255,245,230,0.3); width: 160px; }
+.style-search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  display: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.style-search-clear:hover { opacity: 1; }
+.style-search-wrap.has-text .style-search-clear { display: block; }
 .styles-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -362,6 +349,27 @@ body {
 @media (max-width: 600px) {
   .styles-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════
+   2b. RECOMMENDATION SECTION
+   ═══════════════════════════════════════ */
+.rec-section { display: none; margin-bottom: 3rem; background: linear-gradient(135deg, rgba(232,100,58,0.06) 0%, rgba(232,100,58,0.02) 100%); border: 1px solid rgba(232,100,58,0.12); border-radius: 20px; padding: 2rem 2.2rem 2.2rem; }
+.rec-section.visible { display: block; }
+.rec-header { margin-bottom: 1.8rem; }
+.rec-label { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); background: rgba(232,100,58,0.1); padding: 0.3em 0.8em; border-radius: 6px; margin-bottom: 0.6rem; }
+.rec-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem; }
+.rec-meta { font-size: 0.82rem; color: var(--text-muted); }
+.rec-meta span { display: inline-block; background: var(--bg-card); border: 1px solid var(--border); padding: 0.2rem 0.6rem; border-radius: 99px; margin-left: 0.4rem; font-size: 0.72rem; }
+.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.rec-card { background: var(--bg-card); border: 1px solid rgba(232,100,58,0.15); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
+.rec-card:hover { transform: translateY(-6px) scale(1.01); border-color: var(--accent); box-shadow: 0 16px 48px rgba(232,100,58,0.15); }
+.rec-card .style-card-preview { width: 100%; aspect-ratio: 16/10; overflow: hidden; font-size: 14px; }
+.rec-info { padding: 1.1rem 1.2rem; }
+.rec-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+.rec-reason { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+.rec-divider { border: none; margin-bottom: 2rem; }
+@media (max-width: 900px) { .rec-grid { grid-template-columns: 1fr 1fr; } .rec-section { padding: 1.5rem 1.5rem 1.8rem; } }
+@media (max-width: 600px) { .rec-grid { grid-template-columns: 1fr; } .rec-section { padding: 1.2rem 1rem 1.5rem; } .rec-title { font-size: 1.5rem; } }
 
 /* ═══════════════════════════════════════
    3. TEMPLATE GRID
@@ -445,50 +453,32 @@ body {
 .tpl-card-hover-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 3;
-  padding: 20px;
+  pointer-events: none;
 }
 .tpl-card:hover .tpl-card-hover-overlay {
   opacity: 1;
 }
-.tpl-hover-preview {
-  background: #fff;
-  color: #000;
-  border: none;
-  padding: 8px 24px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  cursor: pointer;
-  pointer-events: auto;
-  transition: transform 0.2s;
-}
-.tpl-hover-preview:hover {
-  transform: scale(1.05);
-}
 .tpl-hover-copy {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
-  color: #fff;
-  padding: 6px 18px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer;
   pointer-events: auto;
   transition: background 0.2s;
 }
 .tpl-hover-copy:hover {
-  background: rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
 }
 .tpl-card-body {
   padding: 14px 16px 12px;
@@ -595,23 +585,51 @@ body {
   }
   .hero-headline { font-size: 36px; }
   .hero-right { width: 100%; }
-  .hero-actions { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 16px; }
+  .install-cmd { max-width: 100%; }
   .view-toggle-row { padding: 20px 20px 0; }
   .filter-bar { padding: 0 20px; }
+  .filter-pill { padding: 10px 14px; min-height: 44px; font-size: 14px; }
+  .style-chip { padding: 10px 14px; min-height: 44px; font-size: 13px; }
+  .style-search { font-size: 14px; padding: 10px 32px 10px 12px; min-height: 44px; width: 110px; }
+  .style-search:focus { width: 140px; }
+  .view-tab { padding: 10px 24px; min-height: 44px; }
   .grid-section { padding: 32px 20px 48px; }
   .featured-row { grid-template-columns: repeat(2, 1fr); }
   .tpl-grid { grid-template-columns: repeat(2, 1fr); }
   .site-footer { padding: 24px 20px; }
+  /* Show hover overlay on mobile (no hover available) */
+  .tpl-card .tpl-card-hover-overlay { opacity: 1; }
+  .tpl-hover-preview { padding: 10px 24px; min-height: 44px; font-size: 14px; }
+  .tpl-hover-copy { padding: 8px 18px; min-height: 44px; font-size: 13px; }
+  /* Preview overlay nav buttons */
+  .preview-nav { padding: 10px 20px; min-height: 44px; font-size: 14px; }
+  .preview-bottombar { height: 52px; }
 }
 @media (max-width: 520px) {
-  .hero-headline { font-size: 30px; }
+  .hero-headline { font-size: 28px; }
   .hero-subheadline { font-size: 15px; }
+  .hero-eyebrow { font-size: 12px; }
+  .install-cmd { font-size: 12px; padding: 10px 12px; gap: 8px; }
+  .install-text { font-size: 12px; }
   .featured-row { grid-template-columns: 1fr; }
   .tpl-grid { grid-template-columns: 1fr; }
+  .styles-grid { grid-template-columns: 1fr; }
+  .rec-grid { grid-template-columns: 1fr; }
   .view-toggle-row { padding: 16px 12px 0; }
-  .view-tab { padding: 8px 20px; font-size: 14px; }
+  .view-tab { padding: 10px 18px; font-size: 14px; min-height: 44px; }
   .filter-bar { padding: 0 12px; }
+  .filter-pill { padding: 10px 12px; min-height: 44px; }
+  .style-chip { padding: 10px 12px; min-height: 44px; }
+  .style-search { width: 90px; font-size: 13px; }
+  .style-search:focus { width: 120px; }
   .grid-section { padding: 24px 12px 40px; }
+  .hero-meta { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .site-footer { padding: 20px 16px; font-size: 12px; }
+  /* Sticky install bar: prevent overflow */
+  .sticky-install { gap: 8px; padding: 0 12px; }
+  .sticky-cmd { font-size: 11px; padding: 6px 10px; overflow: hidden; }
+  .sticky-cmd span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 /* ═══════════════════════════════════════
@@ -1295,12 +1313,19 @@ body {
 @media (max-width: 768px) {
   .preview-iframe-wrap { padding: 0 8px 4px; }
   .preview-iframe-wrap iframe { border-radius: 4px; }
-  .preview-close { width: 44px; height: 44px; }
-  .preview-strip-item { width: 100px; height: 42px; }
+  .preview-close { width: 44px; height: 44px; font-size: 22px; }
+  .preview-strip-item { width: 120px; height: 56px; }
+  .preview-strip-wrap { padding: 0 8px; }
+  .preview-strip { gap: 6px; padding: 8px 0; }
+  .preview-topbar { padding: 0 12px; gap: 8px; }
+  .preview-title { font-size: 13px; }
+  .preview-newtab { font-size: 12px; padding: 8px 12px; min-height: 44px; }
 }
 @media (max-width: 520px) {
   .sticky-label { display: none; }
-  .sticky-cmd { font-size: 11px; }
+  .preview-strip-wrap { display: none; }
+  .preview-newtab { display: none; }
+  .preview-nav { padding: 10px 16px; min-height: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1326,32 +1351,35 @@ body {
       <div class="hero-eyebrow hero-reveal hero-reveal-1">Next Slide</div>
       <h1 class="hero-headline hero-reveal hero-reveal-2">你的下一个 PPT，<br><em>何必是 PPT</em></h1>
       <p class="hero-subheadline hero-reveal hero-reveal-3">描述内容，选择风格，生成零依赖的 HTML 演示文稿。在浏览器里直接打开，比任何模板都好看。</p>
-      <div class="hero-actions hero-reveal hero-reveal-4">
-        <div class="install-cmd" id="installCmd">
-          <span class="install-dollar">$</span>
-          <span class="install-text">npx skills add codesstar/next-slide</span>
-          <button class="install-copy" id="installCopy" onclick="copyInstall(this)">复制</button>
-        </div>
-        <div class="hero-meta">
-          <a href="#grid" class="hero-browse">浏览模板 ↓</a>
-          <span class="hero-compat">适用于 Claude Code / Cursor</span>
-        </div>
-      </div>
     </div>
-    <div class="hero-right">
-      <div class="hero-preview-frame" id="heroPreviewFrame">
-        <iframe id="heroIframe" src="" loading="eager"></iframe>
-        <div class="fade-overlay" id="heroFadeOverlay"></div>
+    <div class="hero-right hero-reveal hero-reveal-4">
+      <div class="install-cmd" id="installCmd">
+        <span class="install-dollar">$</span>
+        <span class="install-text">npx skills add codesstar/next-slide</span>
+        <button class="install-copy" id="installCopy" onclick="copyInstall(this)">复制</button>
       </div>
-      <div class="hero-preview-meta" id="heroMeta">
-        <span id="heroTemplateName"></span> <span id="heroStyleName"></span>
+      <div class="hero-meta">
+        <span class="hero-compat">适用于 Claude Code / Cursor</span>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════ -->
-<!-- 2. UNIFIED FILTER BAR                       -->
+<!-- 2A. AI RECOMMENDATION (above tabs)           -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="rec-section" id="recSection">
+  <div class="rec-header">
+    <div class="rec-label">AI Picked</div>
+    <div class="rec-title">为你推荐</div>
+    <div class="rec-meta" id="recMeta"></div>
+  </div>
+  <div class="rec-grid" id="recGrid"></div>
+</div>
+<hr class="rec-divider" id="recDivider" style="display:none">
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 2B. UNIFIED FILTER BAR                       -->
 <!-- ═══════════════════════════════════════════ -->
 <div class="view-toggle-row">
   <div class="view-toggle">
@@ -1386,6 +1414,10 @@ body {
       <button class="style-chip" data-scat="artistic">Artistic</button>
       <button class="style-chip" data-scat="cultural">Cultural</button>
       <button class="style-chip" data-scat="all">全部</button>
+      <div class="style-search-wrap" id="styleSearchWrap">
+        <input type="text" class="style-search" id="styleSearchInput" placeholder="搜索风格…" autocomplete="off">
+        <button class="style-search-clear" id="styleSearchClear">&times;</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1441,6 +1473,7 @@ body {
   </div>
   <div class="preview-bottombar">
     <button class="preview-nav" id="previewPrev">&larr; 上一个</button>
+    <button class="preview-nav preview-copy-btn" id="previewCopy">复制指令</button>
     <button class="preview-nav" id="previewNext">下一个 &rarr;</button>
   </div>
 </div>
@@ -1452,24 +1485,24 @@ body {
 const STYLES = [
   // ── Dark (11) ──
   { id: 'keynote-noir', name: 'Keynote Noir', cat: 'dark', num: 1, demo: 'styles/keynote-noir.html' },
-  { id: 'bold-signal', name: 'Bold Signal', cat: 'dark', num: 2 },
-  { id: 'neon-cyber', name: 'Neon Cyber', cat: 'dark', num: 3 },
+  { id: 'bold-signal', name: 'Bold Signal', cat: 'dark', num: 2, demo: 'styles/bold-signal.html' },
+  { id: 'neon-cyber', name: 'Neon Cyber', cat: 'dark', num: 3, demo: 'styles/neon-cyber.html' },
   { id: 'terminal-green', name: 'Terminal Green', cat: 'dark', num: 4, demo: 'styles/terminal-green.html' },
-  { id: 'midnight-corporate', name: 'Midnight Corporate', cat: 'dark', num: 5 },
+  { id: 'midnight-corporate', name: 'Midnight Corporate', cat: 'dark', num: 5, demo: 'styles/midnight-corporate.html' },
   { id: 'cinema-scope', name: 'Cinema Scope', cat: 'dark', num: 6, demo: 'styles/cinema-scope.html' },
   { id: 'dark-botanical', name: 'Dark Botanical', cat: 'dark', num: 7, demo: 'styles/dark-botanical.html' },
-  { id: 'starfield', name: 'Starfield', cat: 'dark', num: 8 },
+  { id: 'starfield', name: 'Starfield', cat: 'dark', num: 8, demo: 'styles/starfield.html' },
   { id: 'dark-premium', name: 'Dark Premium', cat: 'dark', num: 9, demo: 'styles/dark-premium.html' },
   { id: 'dark-cinema', name: 'Dark Cinema', cat: 'dark', num: 10, demo: 'styles/dark-cinema.html' },
   { id: 'futuristic-blue', name: 'Futuristic Blue', cat: 'dark', num: 11, demo: 'styles/futuristic-blue.html' },
   // ── Light (14) ──
-  { id: 'swiss-modern', name: 'Swiss Modern', cat: 'light', num: 12 },
-  { id: 'paper-ink', name: 'Paper & Ink', cat: 'light', num: 13 },
-  { id: 'notebook-tabs', name: 'Notebook Tabs', cat: 'light', num: 14 },
-  { id: 'pastel-geometry', name: 'Pastel Geometry', cat: 'light', num: 15 },
-  { id: 'morning-brief', name: 'Morning Brief', cat: 'light', num: 16 },
-  { id: 'campus-white', name: 'Campus White', cat: 'light', num: 17 },
-  { id: 'soft-landing', name: 'Soft Landing', cat: 'light', num: 18 },
+  { id: 'swiss-modern', name: 'Swiss Modern', cat: 'light', num: 12, demo: 'styles/swiss-modern.html' },
+  { id: 'paper-ink', name: 'Paper & Ink', cat: 'light', num: 13, demo: 'styles/paper-ink.html' },
+  { id: 'notebook-tabs', name: 'Notebook Tabs', cat: 'light', num: 14, demo: 'styles/notebook-tabs.html' },
+  { id: 'pastel-geometry', name: 'Pastel Geometry', cat: 'light', num: 15, demo: 'styles/pastel-geometry.html' },
+  { id: 'morning-brief', name: 'Morning Brief', cat: 'light', num: 16, demo: 'styles/morning-brief.html' },
+  { id: 'campus-white', name: 'Campus White', cat: 'light', num: 17, demo: 'styles/campus-white.html' },
+  { id: 'soft-landing', name: 'Soft Landing', cat: 'light', num: 18, demo: 'styles/soft-landing.html' },
   { id: 'watercolor', name: 'Watercolor Wash', cat: 'light', num: 19, demo: 'styles/watercolor.html' },
   { id: 'korean-soft', name: 'Korean Soft', cat: 'light', num: 20, demo: 'styles/korean-soft.html' },
   { id: 'claymorphism-3d', name: 'Claymorphism 3D', cat: 'light', num: 21, demo: 'styles/claymorphism-3d.html' },
@@ -1483,7 +1516,7 @@ const STYLES = [
   { id: 'newsprint-broadsheet', name: 'Newsprint Broadsheet', cat: 'editorial', num: 28, demo: 'styles/newsprint-broadsheet.html' },
   { id: 'vintage-editorial', name: 'Vintage Editorial', cat: 'editorial', num: 29, demo: 'styles/vintage-editorial.html' },
   // ── Bold (7) ──
-  { id: 'electric-studio', name: 'Electric Studio', cat: 'bold', num: 30 },
+  { id: 'electric-studio', name: 'Electric Studio', cat: 'bold', num: 30, demo: 'styles/electric-studio.html' },
   { id: 'creative-voltage', name: 'Creative Voltage', cat: 'bold', num: 31, demo: 'styles/creative-voltage.html' },
   { id: 'split-pastel', name: 'Split Pastel', cat: 'bold', num: 32, demo: 'styles/split-pastel.html' },
   { id: 'pop-art', name: 'Pop Art', cat: 'bold', num: 33, demo: 'styles/pop-art.html' },
@@ -1507,7 +1540,7 @@ const STYLES = [
   // ── Cultural (8) ──
   { id: 'ink-wash', name: '东方墨韵', cat: 'cultural', num: 49, demo: 'styles/ink-wash.html' },
   { id: 'nihon-modern', name: '和風', cat: 'cultural', num: 50, demo: 'styles/nihon-modern.html' },
-  { id: 'gradient-dreams', name: 'Gradient Dreams', cat: 'cultural', num: 51 },
+  { id: 'gradient-dreams', name: 'Gradient Dreams', cat: 'cultural', num: 51, demo: 'styles/gradient-dreams.html' },
   { id: 'blueprint-tech', name: 'Blueprint', cat: 'cultural', num: 52, demo: 'styles/blueprint-tech.html' },
   { id: 'bauhaus-primary', name: 'Bauhaus Primary', cat: 'cultural', num: 53, demo: 'styles/bauhaus-primary.html' },
   { id: 'swiss-grid', name: 'Swiss Grid', cat: 'cultural', num: 54, demo: 'styles/swiss-grid.html' },
@@ -1696,44 +1729,6 @@ var CURATED_IDS = [
   'chinese-brand-wine', 'ecommerce-beauty', 'job-promotion-cto'
 ];
 
-// ══════════════════════════════════════
-// HERO AUTO-CYCLE
-// ══════════════════════════════════════
-var HERO_SCENARIOS = [
-  { name: '产品发布 — DJI Mini 5', style: 'Cinema Scope', file: 'scenarios/product-launch-dji.html' },
-  { name: '中国风品牌 — 宁夏酒庄', style: '东方墨韵', file: 'scenarios/chinese-brand-wine-ink.html' },
-  { name: '教学课件 — Python 入门', style: 'Campus White', file: 'scenarios/teaching-python.html' },
-  { name: '电商产品 — 花西子', style: '东方墨韵', file: 'scenarios/ecommerce-beauty.html' }
-];
-var heroIndex = 0;
-var heroTimer = null;
-
-function initHero() {
-  heroGoTo(0);
-  heroStartTimer();
-}
-
-function heroGoTo(idx) {
-  var overlay = document.getElementById('heroFadeOverlay');
-  overlay.classList.add('fading');
-  setTimeout(function() {
-    heroIndex = idx;
-    var s = HERO_SCENARIOS[idx];
-    document.getElementById('heroIframe').src = s.file;
-    document.getElementById('heroTemplateName').textContent = s.name;
-    document.getElementById('heroStyleName').textContent = ' · ' + s.style;
-    setTimeout(function() { overlay.classList.remove('fading'); }, 300);
-  }, 400);
-}
-
-function heroNext() {
-  heroGoTo((heroIndex + 1) % HERO_SCENARIOS.length);
-}
-
-function heroStartTimer() {
-  if (heroTimer) clearInterval(heroTimer);
-  heroTimer = setInterval(heroNext, 5000);
-}
 
 // ══════════════════════════════════════
 // FILTER STATE
@@ -2479,9 +2474,114 @@ document.querySelectorAll('#styleCategories .style-chip').forEach(function(chip)
     document.querySelectorAll('#styleCategories .style-chip').forEach(function(c) { c.classList.remove('active'); });
     chip.classList.add('active');
     activeStyleCat = chip.dataset.scat;
+    // Clear search when switching category
+    var searchInput = document.getElementById('styleSearchInput');
+    var searchWrap = document.getElementById('styleSearchWrap');
+    searchInput.value = '';
+    searchWrap.classList.remove('has-text');
     renderStylesGrid(activeStyleCat);
   });
 });
+
+// Style search
+(function() {
+  var searchInput = document.getElementById('styleSearchInput');
+  var searchClear = document.getElementById('styleSearchClear');
+  var searchWrap = document.getElementById('styleSearchWrap');
+  var searchTimeout;
+
+  searchInput.addEventListener('input', function() {
+    var query = searchInput.value.trim().toLowerCase();
+    clearTimeout(searchTimeout);
+    searchWrap.classList.toggle('has-text', query.length > 0);
+    searchTimeout = setTimeout(function() {
+      if (query.length > 0) {
+        renderStylesGridSearch(query);
+      } else {
+        restoreRecSection();
+        renderStylesGrid(activeStyleCat);
+      }
+    }, 150);
+  });
+
+  searchClear.addEventListener('click', function() {
+    searchInput.value = '';
+    searchWrap.classList.remove('has-text');
+    searchInput.focus();
+    restoreRecSection();
+    renderStylesGrid(activeStyleCat);
+  });
+
+  function restoreRecSection() {
+    var recSection = document.getElementById('recSection');
+    var recDivider = document.getElementById('recDivider');
+    var recGrid = document.getElementById('recGrid');
+    // Restore if it has content (was populated by URL params)
+    if (recGrid && recGrid.children.length > 0) {
+      if (recSection) recSection.classList.add('visible');
+      if (recDivider) recDivider.style.display = '';
+    }
+  }
+
+  // Render styles filtered by search query (overrides category)
+  window.renderStylesGridSearch = function(query) {
+    var grid = document.getElementById('stylesGrid');
+    var stylesView = document.getElementById('stylesView');
+    stylesView.classList.add('grid-fade-out');
+    stylesView.classList.remove('grid-fade-in');
+    setTimeout(function() {
+      grid.innerHTML = '';
+      var filtered = STYLES.filter(function(s) {
+        return s.name.toLowerCase().indexOf(query) !== -1 || s.id.toLowerCase().indexOf(query) !== -1;
+      });
+      // Hide recommendation section during search
+      var recSection = document.getElementById('recSection');
+      var recDivider = document.getElementById('recDivider');
+      if (recSection) recSection.classList.remove('visible');
+      if (recDivider) recDivider.style.display = 'none';
+      filtered.forEach(function(s, idx) {
+        var card = document.createElement('div');
+        card.className = 'style-card appear';
+        var previewFn = STYLE_PREVIEWS[s.id];
+        var previewHtml = previewFn ? previewFn() : '<div style="background:#111;height:100%;"></div>';
+        card.innerHTML =
+          '<div class="style-card-preview">' + previewHtml + '</div>' +
+          '<div class="style-card-info">' +
+            '<span class="style-card-name">' + s.name + '</span>' +
+            '<span class="style-card-cat">' + (CAT_LABELS_STYLE[s.cat] || '') + '</span>' +
+          '</div>';
+        card.style.cursor = 'pointer';
+        if (s.demo) {
+          (function(style, filteredArr, styleIdx) {
+            card.addEventListener('click', function() {
+              var list = filteredArr.filter(function(fs) { return fs.demo; }).map(function(fs) {
+                return { url: fs.demo, title: fs.name };
+              });
+              var idx = 0;
+              for (var i = 0; i < list.length; i++) { if (list[i].url === style.demo) { idx = i; break; } }
+              openPreview(style.demo, style.name, list, idx);
+            });
+          })(s, filtered, idx);
+        }
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(16px)';
+        grid.appendChild(card);
+        setTimeout(function() {
+          card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 40 + idx * 50);
+      });
+      stylesView.classList.remove('grid-fade-out');
+      stylesView.classList.add('grid-fade-in');
+      if (window._appearObserver) {
+        grid.querySelectorAll('.appear').forEach(function(el) {
+          window._appearObserver.observe(el);
+        });
+      }
+    }, 200);
+  };
+})();
 
 // ══════════════════════════════════════
 // CATEGORY PILLS
@@ -2560,7 +2660,6 @@ function createCard(t, variantIdx) {
     '<div class="tpl-card-preview">' +
       enhancedBadge +
       '<div class="tpl-card-hover-overlay">' +
-        '<button class="tpl-hover-preview">预览全屏</button>' +
         '<button class="tpl-hover-copy" data-style="' + styleName + '">复制指令</button>' +
       '</div>' +
     '</div>' +
@@ -2747,6 +2846,54 @@ function copyInstall(btn) {
 }
 
 // ══════════════════════════════════════
+// RECOMMENDATION SECTION
+// ══════════════════════════════════════
+(function(){
+var params=new URLSearchParams(window.location.search);
+var recParam=params.get('recommend');
+var recReason=params.get('reason')||'';
+if(!recParam)return;
+var recIds=recParam.split(',').map(function(s){return s.trim();}).filter(Boolean);
+if(!recIds.length)return;
+var recReasons={};
+recIds.forEach(function(id){
+var r=params.get('reason_'+id);
+if(r)recReasons[id]=decodeURIComponent(r);
+});
+var recSection=document.getElementById('recSection');
+var recGrid=document.getElementById('recGrid');
+var recMeta=document.getElementById('recMeta');
+var recDivider=document.getElementById('recDivider');
+recSection.classList.add('visible');
+recDivider.style.display='';
+if(recReason)recMeta.innerHTML='推荐依据：'+decodeURIComponent(recReason).split(',').map(function(t){return '<span>'+t.trim()+'</span>';}).join('');
+recIds.forEach(function(rid){
+var styleData=null;
+for(var i=0;i<STYLES.length;i++){if(STYLES[i].id===rid){styleData=STYLES[i];break;}}
+if(!styleData)return;
+var previewFn=STYLE_PREVIEWS[rid];
+var previewHTML=previewFn?previewFn():'<div style="background:#222;height:100%;"></div>';
+var reason=recReasons[rid]||'';
+var card=document.createElement('div');
+card.className='rec-card';
+if(styleData.demo){card.dataset.url=styleData.demo;card.dataset.name=styleData.name;}
+card.innerHTML='<div class="style-card-preview">'+previewHTML+'</div><div class="rec-info"><div class="rec-name">'+styleData.name+'</div><div class="rec-reason">'+reason+'</div></div>';
+recGrid.appendChild(card);
+});
+recGrid.addEventListener('click',function(e){
+var card=e.target.closest('.rec-card');
+if(!card||!card.dataset.url)return;
+var list=[];var idx=0;
+recGrid.querySelectorAll('.rec-card').forEach(function(c,i){
+if(c.dataset.url)list.push({url:c.dataset.url,title:c.dataset.name});
+if(c===card)idx=list.length-1;
+});
+openPreview(card.dataset.url,card.dataset.name,list,idx);
+});
+// Auto-scroll to recommendation section
+setTimeout(function(){ recSection.scrollIntoView({behavior:'smooth',block:'start'}); },300);
+})();
+
 // PREVIEW OVERLAY
 // ══════════════════════════════════════
 var previewOverlay = document.getElementById('previewOverlay');
@@ -2833,6 +2980,13 @@ function previewNav(dir) {
 document.getElementById('previewClose').addEventListener('click', closePreview);
 document.getElementById('previewPrev').addEventListener('click', function() { previewNav(-1); });
 document.getElementById('previewNext').addEventListener('click', function() { previewNav(1); });
+document.getElementById('previewCopy').addEventListener('click', function() {
+  var title = previewTitle.textContent || '';
+  navigator.clipboard.writeText('用 ' + title + ' 风格做一个关于[你的主题]的演示文稿');
+  this.textContent = '已复制';
+  var btn = this;
+  setTimeout(function() { btn.textContent = '复制指令'; }, 1500);
+});
 previewOverlay.addEventListener('click', function(e) {
   if (e.target === previewOverlay) closePreview();
 });
@@ -2883,13 +3037,6 @@ var stickyObserver = new IntersectionObserver(function(entries) {
 }, { threshold: 0 });
 stickyObserver.observe(heroEl);
 
-// ══════════════════════════════════════
-// SMOOTH SCROLL
-// ══════════════════════════════════════
-document.querySelector('.hero-browse').addEventListener('click', function(e) {
-  e.preventDefault();
-  document.getElementById('grid').scrollIntoView({ behavior: 'smooth' });
-});
 
 // ══════════════════════════════════════
 // PREMIUM INTERACTIONS
@@ -2956,7 +3103,6 @@ document.querySelector('.hero-browse').addEventListener('click', function(e) {
 // INIT
 // ══════════════════════════════════════
 (function init() {
-  initHero();
   renderGrid();
 })();
 </script>

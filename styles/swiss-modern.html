@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Modern</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;800;900&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #ffffff;
+  --text: #0a0a0a;
+  --secondary: #666666;
+  --accent: #ff0000;
+  --grid-line: rgba(0, 0, 0, 0.06);
+  --border: #0a0a0a;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 4px;
+  background: var(--accent); z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 900;
+  color: var(--secondary);
+  z-index: 1000;
+}
+.page-counter .current { color: var(--text); }
+
+/* Red left bar */
+.left-bar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: clamp(4px, 0.5vw, 8px);
+  background: var(--accent);
+  z-index: 999;
+}
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(56px, 9vw, 180px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+/* Grid background */
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: clamp(40px, 5vw, 80px) clamp(40px, 5vw, 80px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.section-label {
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(11px, 0.9vw, 13px);
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.title-huge {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(48px, 8vw, 130px);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+  text-transform: uppercase;
+}
+.title-huge .accent { color: var(--accent); }
+
+.subtitle {
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--secondary);
+  font-weight: 400;
+  max-width: 50ch;
+  line-height: 1.5;
+}
+
+.red-block {
+  width: clamp(40px, 4vw, 64px);
+  height: clamp(40px, 4vw, 64px);
+  background: var(--accent);
+  margin-bottom: clamp(24px, 3vh, 40px);
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+  align-items: flex-end;
+}
+.stat-block { position: relative; }
+.stat-block::before {
+  content: '';
+  display: block;
+  width: clamp(32px, 3vw, 48px);
+  height: 4px;
+  background: var(--accent);
+  margin-bottom: clamp(12px, 1.5vh, 20px);
+}
+.stat-block .number {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(52px, 9vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.stat-block .number .unit {
+  font-size: 0.4em;
+  color: var(--accent);
+}
+.stat-block .label {
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--secondary);
+  margin-top: clamp(8px, 1vh, 16px);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.feature-list {
+  display: flex; flex-direction: column;
+  max-width: 800px;
+}
+.feature-row {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(24px, 3vw, 48px);
+  padding: clamp(20px, 2.5vh, 36px) 0;
+  border-top: 2px solid var(--text);
+}
+.feature-row:last-child { border-bottom: 2px solid var(--text); }
+.feature-row .num {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(28px, 3.5vw, 52px);
+  color: var(--accent);
+  min-width: 2em;
+}
+.feature-row h3 {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: clamp(18px, 2vw, 28px);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.feature-row p {
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: var(--secondary);
+  line-height: 1.5;
+  max-width: 40ch;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(48px, 6vw, 96px);
+  max-width: 900px;
+}
+.col h3 {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(14px, 1.2vw, 18px);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: clamp(16px, 2vh, 28px);
+  color: var(--accent);
+}
+.col p {
+  font-size: clamp(15px, 1.4vw, 20px);
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.close-title {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(44px, 8vw, 120px);
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  text-transform: uppercase;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.close-sub {
+  font-size: clamp(16px, 1.8vw, 26px);
+  color: var(--secondary);
+  font-weight: 400;
+}
+
+.reveal { opacity: 0; transform: translateY(40px); }
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="left-bar"></div>
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="red-block reveal"></div>
+    <h1 class="title-huge reveal">The Art of<br><span class="accent">Precision</span></h1>
+    <p class="subtitle reveal">Swiss design principles applied to modern presentation. Less is more.</p>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide" data-i="1">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">By The Numbers</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">12<span class="unit">col</span></div>
+        <div class="label">Grid System</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">2<span class="unit">px</span></div>
+        <div class="label">Rule Weight</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">0<span class="unit"></span></div>
+        <div class="label">Decorations</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Features -->
+<div class="slide" data-i="2">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Principles</div>
+    <div class="feature-list">
+      <div class="feature-row reveal">
+        <span class="num">01</span>
+        <div>
+          <h3>Grid Discipline</h3>
+          <p>Every element snaps to a strict column system. Alignment is non-negotiable.</p>
+        </div>
+      </div>
+      <div class="feature-row reveal">
+        <span class="num">02</span>
+        <div>
+          <h3>Type Hierarchy</h3>
+          <p>One size per level. Display, body, caption. No exceptions.</p>
+        </div>
+      </div>
+      <div class="feature-row reveal">
+        <span class="num">03</span>
+        <div>
+          <h3>Asymmetry</h3>
+          <p>Content placed off-center creates dynamic tension and visual interest.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Two Column -->
+<div class="slide" data-i="3">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Philosophy</div>
+    <div class="two-col">
+      <div class="col reveal">
+        <h3>Form</h3>
+        <p>Typography is the skeleton. Color is the muscle. Whitespace is the breath. Together they create rhythm without ornament.</p>
+      </div>
+      <div class="col reveal">
+        <h3>Function</h3>
+        <p>Every element must earn its place. If it doesn't communicate, it doesn't belong. Clarity above all.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="red-block reveal"></div>
+    <div class="close-title reveal">Less.<br><span class="accent">More.</span></div>
+    <p class="close-sub reveal">Design that respects your audience's intelligence.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

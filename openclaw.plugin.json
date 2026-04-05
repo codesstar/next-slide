@@ -14,6 +14,7 @@
     "html-template.md",
     "animation-patterns.md",
     "style-gallery.html",
+    "styles/",
     "scripts/extract-pptx.py"
   ],
   "triggers": [

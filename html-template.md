@@ -144,7 +144,11 @@ Detect the user's language from conversation context. Set `<html lang="...">` ac
             flex-direction: column;
             gap: 8px;
             z-index: 9998;
+            max-height: 80vh;
+            overflow-y: auto;
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
         }
+        .nav-dots::-webkit-scrollbar { display: none; }
         .nav-dot {
             width: 8px;
             height: 8px;
@@ -383,9 +387,16 @@ Detect the user's language from conversation context. Set `<html lang="...">` ac
         }
 
         // Initialize on DOM ready
+        let presentation;
         document.addEventListener('DOMContentLoaded', () => {
-            new SlidePresentation();
+            presentation = new SlidePresentation();
         });
+
+        // Expose global go() for Phase 7 comparison sync
+        // The parent comparison page calls iframe.contentWindow.go(index)
+        window.go = function(index) {
+            if (presentation) presentation.goToSlide(index);
+        };
     </script>
 </body>
 </html>

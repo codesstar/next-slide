@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electric Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--bg-white:#ffffff;--accent:#4361ee;
+  --text-dark:#0a0a0a;--text-light:#ffffff;--text-muted:#888;
+  --text-muted-light:#555;
+}
+body{font-family:'Manrope',sans-serif;color:var(--text-light);background:var(--bg);overflow:hidden}
+.slide{
+  position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;
+  display:flex;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.slide.active{opacity:1;pointer-events:auto}
+
+/* Split panel layouts */
+.split{display:flex;width:100%;height:100%}
+.split-dark{background:var(--bg);flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(2rem,4vw,4rem)}
+.split-white{background:var(--bg-white);flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(2rem,4vw,4rem)}
+.split-accent{background:var(--accent);flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(2rem,4vw,4rem)}
+.full-dark{background:var(--bg);width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:clamp(2rem,4vw,4rem)}
+.full-white{background:var(--bg-white);width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:clamp(2rem,4vw,4rem)}
+
+.accent-bar-left{border-left:4px solid var(--accent)}
+.accent-bar-right{border-right:4px solid var(--accent)}
+.accent-bar-top{border-top:4px solid var(--accent)}
+
+.slide-inner{position:relative;z-index:2;max-width:480px;width:100%}
+.slide-inner-wide{position:relative;z-index:2;max-width:880px;width:min(88vw,880px)}
+
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:100;transition:width 0.4s cubic-bezier(0.16,1,0.3,1)}
+.page-counter{position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);font-size:clamp(0.75rem,1vw,0.85rem);color:var(--text-muted);opacity:0.5;z-index:100}
+
+h1{font-size:clamp(2.4rem,5.5vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.02em}
+h2{font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:800;line-height:1.1;letter-spacing:-0.01em;margin-bottom:clamp(1rem,2vw,1.5rem)}
+h3{font-size:clamp(1rem,1.5vw,1.2rem);font-weight:700;margin-bottom:0.3rem}
+p,.body-text{font-size:clamp(0.9rem,1.3vw,1.1rem);line-height:1.75;font-weight:400}
+.label{font-size:clamp(0.7rem,0.9vw,0.8rem);text-transform:uppercase;letter-spacing:0.15em;font-weight:700}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.1s}
+.active .fade-up.d2{transition-delay:0.2s}
+.active .fade-up.d3{transition-delay:0.3s}
+.active .fade-up.d4{transition-delay:0.4s}
+.active .fade-up.d5{transition-delay:0.5s}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,3vw,2.5rem);margin-top:clamp(1.5rem,3vw,2rem)}
+.stat-num{font-size:clamp(2rem,4.5vw,3.5rem);font-weight:800;line-height:1.1}
+.stat-desc{font-size:clamp(0.8rem,1vw,0.9rem);margin-top:0.3rem}
+
+.service-list{list-style:none;margin-top:clamp(1rem,2vw,1.5rem)}
+.service-list li{padding:clamp(0.7rem,1.2vw,1rem) 0;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center}
+.service-list li:last-child{border-bottom:none}
+.service-name{font-weight:700;font-size:clamp(0.95rem,1.3vw,1.1rem)}
+.service-tag{font-size:clamp(0.7rem,0.9vw,0.8rem);color:var(--accent);font-weight:500}
+
+.service-list-dark li{border-bottom-color:rgba(0,0,0,0.1)}
+
+.brand-mark{font-weight:800;font-size:clamp(0.8rem,1.1vw,0.95rem);letter-spacing:0.1em;text-transform:uppercase}
+
+@media(max-width:640px){.split{flex-direction:column}.stat-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title — white top, dark bottom split -->
+<div class="slide active" id="slide-0">
+  <div class="split" style="flex-direction:column;">
+    <div class="split-white accent-bar-bottom" style="flex:1;border-bottom:4px solid var(--accent);">
+      <div class="slide-inner" style="max-width:600px;">
+        <div class="brand-mark fade-up d1" style="color:var(--accent);">Electric Studio</div>
+        <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+        <h1 class="fade-up d2" style="color:var(--text-dark);">We Build<br>Bold Brands</h1>
+      </div>
+    </div>
+    <div class="split-dark" style="flex:0.6;">
+      <div class="slide-inner" style="max-width:600px;">
+        <p class="fade-up d3 body-text" style="color:var(--text-muted);max-width:400px;">Strategy, identity, and digital experiences for companies that refuse to blend in.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Stats — full dark -->
+<div class="slide" id="slide-1">
+  <div class="full-dark">
+    <div class="slide-inner-wide">
+      <div class="label fade-up d1" style="color:var(--accent);">By the Numbers</div>
+      <div style="height:clamp(0.5rem,1vw,0.8rem)"></div>
+      <h2 class="fade-up d1">Decade of Impact</h2>
+      <div class="stat-row">
+        <div class="fade-up d2" style="border-left:4px solid var(--accent);padding-left:clamp(1rem,2vw,1.5rem);">
+          <div class="stat-num" style="color:var(--text-light);">340+</div>
+          <div class="stat-desc" style="color:var(--text-muted);">Brands launched</div>
+        </div>
+        <div class="fade-up d3" style="border-left:4px solid var(--accent);padding-left:clamp(1rem,2vw,1.5rem);">
+          <div class="stat-num" style="color:var(--text-light);">92%</div>
+          <div class="stat-desc" style="color:var(--text-muted);">Client retention rate</div>
+        </div>
+        <div class="fade-up d4" style="border-left:4px solid var(--accent);padding-left:clamp(1rem,2vw,1.5rem);">
+          <div class="stat-num" style="color:var(--text-light);">18</div>
+          <div class="stat-desc" style="color:var(--text-muted);">Industry awards this year</div>
+        </div>
+      </div>
+      <p class="fade-up d5 body-text" style="color:var(--text-muted);margin-top:clamp(2rem,3vw,2.5rem);max-width:420px;">We don't just make things look good. We make them unmistakable.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Services — dark left, white right split -->
+<div class="slide" id="slide-2">
+  <div class="split">
+    <div class="split-dark accent-bar-right" style="flex:1;">
+      <div class="slide-inner">
+        <div class="label fade-up d1" style="color:var(--accent);">What We Do</div>
+        <div style="height:clamp(0.5rem,1vw,0.8rem)"></div>
+        <h2 class="fade-up d1">Services</h2>
+        <ul class="service-list">
+          <li class="fade-up d2"><span class="service-name">Brand Strategy</span><span class="service-tag">01</span></li>
+          <li class="fade-up d3"><span class="service-name">Visual Identity</span><span class="service-tag">02</span></li>
+          <li class="fade-up d4"><span class="service-name">Digital Product</span><span class="service-tag">03</span></li>
+          <li class="fade-up d5"><span class="service-name">Motion & Film</span><span class="service-tag">04</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="split-white" style="flex:1;">
+      <div class="slide-inner" style="color:var(--text-dark);">
+        <p class="fade-up d3 body-text" style="color:var(--text-muted-light);font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.8;">Every project starts with one question:<br><br><strong style="color:var(--text-dark);font-size:clamp(1.2rem,2vw,1.6rem);">"What should this feel like?"</strong><br><br>We work backwards from emotion to execution.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote — full accent -->
+<div class="slide" id="slide-3">
+  <div style="width:100%;height:100%;background:var(--accent);display:flex;align-items:center;justify-content:center;padding:clamp(2rem,4vw,4rem)">
+    <div class="slide-inner-wide" style="text-align:center;">
+      <div style="font-size:clamp(3rem,6vw,5rem);opacity:0.3;line-height:0.5;" class="fade-up d1">"</div>
+      <h1 class="fade-up d2" style="font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:700;max-width:640px;margin:clamp(0.5rem,1vw,1rem) auto 0;">Design is not what it looks like. Design is how it works.</h1>
+      <p class="fade-up d3 body-text" style="opacity:0.7;margin-top:clamp(1rem,2vw,1.5rem);">-- Steve Jobs</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing — white top, dark bottom -->
+<div class="slide" id="slide-4">
+  <div class="split" style="flex-direction:column;">
+    <div class="split-dark" style="flex:0.5;">
+      <div class="slide-inner" style="max-width:600px;">
+        <div class="brand-mark fade-up d1" style="color:var(--accent);">Electric Studio</div>
+      </div>
+    </div>
+    <div class="split-white accent-bar-top" style="flex:1;">
+      <div class="slide-inner" style="max-width:600px;text-align:center;">
+        <h1 class="fade-up d2" style="color:var(--text-dark);font-size:clamp(1.8rem,4.5vw,3.5rem);">Let's Build<br>Something Bold</h1>
+        <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+        <p class="fade-up d3 body-text" style="color:var(--text-muted-light);">hello@electricstudio.co</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide'),total=slides.length,c=0;
+  var progress=document.getElementById('progress'),counter=document.getElementById('counter');
+  function go(n){if(n>=0&&n<total){c=n;slides.forEach(function(s,i){s.classList.toggle('active',i===c)});progress.style.width=((c+1)/total*100)+'%';counter.textContent=(c+1)+' / '+total;}}
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?go(c+1):go(c-1)}},{passive:true});
+  go(0);
+})();
+</script>
+</body>
+</html>
