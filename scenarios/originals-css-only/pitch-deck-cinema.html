@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melo — AI Fitness Coaching That Actually Sticks</title>
+
+    <!-- Fonts: Bebas Neue (display) + Lato (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Cinema Scope
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #0a0a0a;
+            --letterbox: #000000;
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --text-muted: #666666;
+            --accent: #d4a843;
+            --accent-secondary: #b22234;
+            --accent-glow: rgba(212, 168, 67, 0.3);
+            --overlay: rgba(0, 0, 0, 0.6);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --surface: rgba(255, 255, 255, 0.05);
+
+            /* --- Typography --- */
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Lato', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+
+            --title-size: clamp(2.5rem, 8vw, 7rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Letterbox --- */
+            --letterbox-height: 8vh;
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           CINEMA SCOPE — THEME STYLES
+           Cinematic letterbox, dramatic, warm tones
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* --- Letterbox Bars --- */
+        .letterbox-top, .letterbox-bottom {
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: var(--letterbox-height);
+            background: var(--letterbox);
+            z-index: 9990;
+            pointer-events: none;
+        }
+        .letterbox-top { top: 0; }
+        .letterbox-bottom { bottom: 0; }
+
+        /* --- Chapter label (lower-third style) --- */
+        .chapter-label {
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        /* ===========================================
+           REVEAL ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--duration-slow) var(--ease-out-expo),
+                        transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.25s; }
+        .reveal:nth-child(3) { transition-delay: 0.4s; }
+        .reveal:nth-child(4) { transition-delay: 0.55s; }
+        .reveal:nth-child(5) { transition-delay: 0.7s; }
+        .reveal:nth-child(6) { transition-delay: 0.85s; }
+        .reveal:nth-child(7) { transition-delay: 1.0s; }
+        .reveal:nth-child(8) { transition-delay: 1.15s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.5);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: calc(var(--letterbox-height) + clamp(8px, 1vw, 16px));
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           CINEMA SCOPE — SLIDE-SPECIFIC STYLES
+           =========================================== */
+        .slide-content {
+            padding-top: calc(var(--letterbox-height) + var(--slide-padding));
+            padding-bottom: calc(var(--letterbox-height) + var(--slide-padding));
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--body-size);
+        }
+        .comparison-table th {
+            text-align: center;
+            padding: clamp(0.4rem, 1vw, 0.8rem);
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 400;
+            font-family: var(--font-display);
+        }
+        .comparison-table th:first-child { text-align: left; }
+        .comparison-table th.highlight {
+            border-bottom-color: var(--accent);
+            color: var(--accent);
+        }
+        .comparison-table td {
+            padding: clamp(0.4rem, 1vw, 0.8rem);
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        .comparison-table td:first-child {
+            text-align: left;
+            color: var(--text-primary);
+        }
+        .comparison-table .check { color: var(--accent); }
+        .comparison-table .cross { color: var(--text-muted); opacity: 0.4; }
+    </style>
+</head>
+<body>
+    <!-- Letterbox bars -->
+    <div class="letterbox-top"></div>
+    <div class="letterbox-bottom"></div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDES =================== -->
+
+    <!-- SLIDE 1: Title -->
+    <section class="slide" aria-label="Title">
+        <div class="slide-content" style="align-items: center; justify-content: flex-end; text-align: left; padding-left: clamp(3rem, 8vw, 8rem);">
+            <span class="chapter-label reveal">CHAPTER 01</span>
+            <h1 class="reveal" style="font-size: clamp(4rem, 12vw, 10rem); font-family: var(--font-display); font-weight: 400; letter-spacing: 0.05em; line-height: 0.95; margin-top: var(--element-gap);">
+                MELO
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300;">
+                AI fitness coaching that actually sticks.
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1.5rem, 3vw, 3rem);">
+                Series A  |  April 2026  |  Confidential
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: Quote / Problem -->
+    <section class="slide" aria-label="The Problem">
+        <div class="slide-content" style="align-items: flex-start; justify-content: flex-end; padding-left: clamp(3rem, 8vw, 8rem); max-width: min(90vw, 900px);">
+            <span class="chapter-label reveal">THE PROBLEM</span>
+            <blockquote class="reveal" style="font-size: clamp(1.5rem, 4vw, 3.5rem); font-family: var(--font-display); font-weight: 400; line-height: 1.1; margin-top: var(--element-gap); letter-spacing: 0.02em;">
+                87% OF FITNESS APPS ARE ABANDONED WITHIN 14 DAYS.
+            </blockquote>
+            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal;">
+                Flurry Analytics, Mobile Retention Study 2025
+            </cite>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: The Solution -->
+    <section class="slide" aria-label="The Solution">
+        <div class="slide-content" style="justify-content: flex-end; padding-left: clamp(3rem, 8vw, 8rem);">
+            <span class="chapter-label reveal">THE SOLUTION</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; margin-top: var(--element-gap);">
+                MELO ADAPTS TO YOU &mdash; NOT THE OTHER WAY AROUND.
+            </h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(65vw, 550px); line-height: 1.7; font-weight: 300;">
+                Our AI coach learns your schedule, equipment, energy levels, and goals to build plans that evolve in real time.
+            </p>
+            <ul style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
+                    <span style="color: var(--accent);">&mdash;</span>
+                    <span><strong style="color: var(--text-primary); font-weight: 700;">Adaptive Programming</strong> &mdash; Workouts reshape daily based on sleep, soreness, and recovery</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
+                    <span style="color: var(--accent);">&mdash;</span>
+                    <span><strong style="color: var(--text-primary); font-weight: 700;">Voice Coaching</strong> &mdash; Real-time form cues and motivation through AirPods</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
+                    <span style="color: var(--accent);">&mdash;</span>
+                    <span><strong style="color: var(--text-primary); font-weight: 700;">Accountability Engine</strong> &mdash; Behavioral nudges timed to your habit patterns</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: Market Size -->
+    <section class="slide" aria-label="Market Size">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <span class="chapter-label reveal">MARKET OPPORTUNITY</span>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent); letter-spacing: 0.03em;">$47B</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; text-transform: uppercase; letter-spacing: 0.1em;">TAM &mdash; Global Fitness App</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent); letter-spacing: 0.03em;">$6.2B</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; text-transform: uppercase; letter-spacing: 0.1em;">SAM &mdash; AI-Powered Coaching</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent); letter-spacing: 0.03em;">$840M</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; text-transform: uppercase; letter-spacing: 0.1em;">SOM &mdash; US + UK Premium</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                Source: Grand View Research, Digital Fitness &amp; Wellness Market, 2025
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: Business Model -->
+    <section class="slide" aria-label="Business Model">
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
+            <div style="flex: 1; min-width: 0;">
+                <span class="chapter-label reveal">BUSINESS MODEL</span>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; margin-top: var(--element-gap);">
+                    HOW WE MAKE MONEY
+                </h2>
+                <ul style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
+                        <span style="color: var(--accent);">&mdash;</span>
+                        <span><strong style="color: var(--text-primary); font-weight: 700;">Melo Pro</strong> &mdash; $14.99/mo subscription (78% of revenue)</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
+                        <span style="color: var(--accent);">&mdash;</span>
+                        <span><strong style="color: var(--text-primary); font-weight: 700;">Melo Teams</strong> &mdash; B2B corporate wellness, $8/seat/mo (16%)</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
+                        <span style="color: var(--accent);">&mdash;</span>
+                        <span><strong style="color: var(--text-primary); font-weight: 700;">Equipment Partners</strong> &mdash; Rev-share with Rogue, Hyperice (6%)</span>
+                    </li>
+                </ul>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: clamp(1rem, 2vw, 1.5rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.5rem, 1vw, 1rem); letter-spacing: 0.1em;">UNIT ECONOMICS</h3>
+                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--body-size);">
+                        <span style="color: var(--text-secondary); font-weight: 300;">LTV</span>
+                        <span style="color: var(--text-primary); font-weight: 700;">$312</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--body-size);">
+                        <span style="color: var(--text-secondary); font-weight: 300;">CAC</span>
+                        <span style="color: var(--text-primary); font-weight: 700;">$38</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--body-size);">
+                        <span style="color: var(--text-secondary); font-weight: 300;">LTV:CAC</span>
+                        <span style="color: var(--accent); font-weight: 700;">8.2x</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; font-size: var(--body-size);">
+                        <span style="color: var(--text-secondary); font-weight: 300;">Payback</span>
+                        <span style="color: var(--text-primary); font-weight: 700;">2.6 months</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: Competitive Landscape -->
+    <section class="slide" aria-label="Competitive Landscape">
+        <div class="slide-content">
+            <span class="chapter-label reveal">COMPETITIVE LANDSCAPE</span>
+            <div class="reveal" style="margin-top: var(--content-gap); overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Feature</th>
+                            <th class="highlight">Melo</th>
+                            <th>Peloton</th>
+                            <th>Fitbod</th>
+                            <th>Future</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: var(--text-primary);">AI-adaptive programming</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                            <td style="color: var(--text-muted);">Partial</td>
+                            <td class="cross">&#10007;</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-primary);">Real-time voice coaching</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="cross">&#10007;</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-primary);">Recovery integration</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td style="color: var(--text-muted);">Partial</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-primary);">No hardware required</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-primary);">Price per month</td>
+                            <td style="color: var(--accent); font-weight: 700;">$14.99</td>
+                            <td style="color: var(--text-muted);">$44</td>
+                            <td style="color: var(--text-muted);">$12.99</td>
+                            <td style="color: var(--text-muted);">$199</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap); text-align: right;">
+                Source: Internal analysis, Q1 2026
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: Traction & Milestones -->
+    <section class="slide" aria-label="Traction">
+        <div class="slide-content">
+            <span class="chapter-label reveal">TRACTION &amp; MILESTONES</span>
+            <div style="display: flex; align-items: flex-start; gap: 0; margin-top: var(--content-gap); position: relative;">
+                <div style="position: absolute; top: 20px; left: 20px; right: 20px; height: 1px; background: var(--border-subtle);"></div>
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 1px solid var(--text-muted); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size);">1</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); letter-spacing: 0.05em;">FOUNDED</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Jan 2024</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em; font-weight: 300;">YC W24 batch<br>$2.5M seed from a16z</p>
+                </div>
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 1px solid var(--text-muted); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size);">2</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); letter-spacing: 0.05em;">BETA</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Aug 2024</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em; font-weight: 300;">3,200 testers<br>4.8 App Store rating</p>
+                </div>
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 1px solid var(--text-muted); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size);">3</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); letter-spacing: 0.05em;">LAUNCH</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Feb 2025</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em; font-weight: 300;">iOS + Android<br>TechCrunch coverage</p>
+                </div>
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--accent); color: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size);">4</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); letter-spacing: 0.05em;">TODAY</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Apr 2026</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em; font-weight: 300;">147K MAU<br>$4.2M ARR</p>
+                </div>
+                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 1px dashed var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size);">5</div>
+                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display); letter-spacing: 0.05em;">NEXT</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Q4 2026</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em; font-weight: 300;">Melo Teams launch<br>UK market expansion</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: Team -->
+    <section class="slide" aria-label="The Team">
+        <div class="slide-content" style="align-items: center;">
+            <span class="chapter-label reveal">THE TEAM</span>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 18vw, 180px), 1fr)); gap: var(--content-gap); margin-top: var(--content-gap); max-width: min(90vw, 820px);">
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(50px, 8vw, 72px); height: clamp(50px, 8vw, 72px); border-radius: 50%; background: linear-gradient(135deg, var(--accent), #8a6b20); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1rem, 2.5vw, 1.5rem); color: #000; font-family: var(--font-display); letter-spacing: 0.05em;">
+                        NS
+                    </div>
+                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); letter-spacing: 0.05em;">NADIA SINGH</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent);">CEO &amp; Co-founder</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; font-weight: 300;">Ex-Peloton Product Lead<br>Stanford CS '18</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(50px, 8vw, 72px); height: clamp(50px, 8vw, 72px); border-radius: 50%; background: linear-gradient(135deg, var(--accent), #8a6b20); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1rem, 2.5vw, 1.5rem); color: #000; font-family: var(--font-display); letter-spacing: 0.05em;">
+                        JK
+                    </div>
+                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); letter-spacing: 0.05em;">JAMES KOVACS</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent);">CTO &amp; Co-founder</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; font-weight: 300;">Ex-Apple ML team<br>PhD Robotics, CMU</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(50px, 8vw, 72px); height: clamp(50px, 8vw, 72px); border-radius: 50%; background: linear-gradient(135deg, var(--accent), #8a6b20); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1rem, 2.5vw, 1.5rem); color: #000; font-family: var(--font-display); letter-spacing: 0.05em;">
+                        RM
+                    </div>
+                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); letter-spacing: 0.05em;">RACHEL MORENO</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent);">Head of Science</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; font-weight: 300;">NSCA-CSCS, 12yr trainer<br>Exercise physiology, UCLA</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(50px, 8vw, 72px); height: clamp(50px, 8vw, 72px); border-radius: 50%; background: linear-gradient(135deg, var(--accent), #8a6b20); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1rem, 2.5vw, 1.5rem); color: #000; font-family: var(--font-display); letter-spacing: 0.05em;">
+                        DL
+                    </div>
+                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); letter-spacing: 0.05em;">DAVID LIU</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent);">Head of Growth</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; font-weight: 300;">Scaled Calm to 8M users<br>Ex-Google, Wharton MBA</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: Financial Highlights -->
+    <section class="slide" aria-label="Financial Highlights">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <span class="chapter-label reveal">FINANCIAL HIGHLIGHTS</span>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="4200000" data-prefix="$" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent); letter-spacing: 0.03em;">$0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; text-transform: uppercase; letter-spacing: 0.1em;">ARR</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="23" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent); letter-spacing: 0.03em;">0%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; text-transform: uppercase; letter-spacing: 0.1em;">MoM Growth</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent); letter-spacing: 0.03em;">18<span style="font-size: 0.5em; vertical-align: baseline; margin-left: 0.1em;">MO</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; text-transform: uppercase; letter-spacing: 0.1em;">Runway Remaining</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                As of March 2026. MoM calculated on trailing 6-month average.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: The Ask / Closing -->
+    <section class="slide" aria-label="The Ask">
+        <div class="slide-content" style="align-items: flex-start; justify-content: flex-end; padding-left: clamp(3rem, 8vw, 8rem);">
+            <span class="chapter-label reveal">THE ASK</span>
+            <h2 class="reveal" style="font-size: clamp(3rem, 8vw, 6rem); font-family: var(--font-display); font-weight: 400; margin-top: var(--element-gap); letter-spacing: 0.03em;">
+                RAISING $18M
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(65vw, 550px); line-height: 1.7; font-weight: 300;">
+                To scale Melo Teams internationally, triple our ML infrastructure, and reach 1M MAU by end of 2027.
+            </p>
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3vw, 3rem);">
+                <p style="font-size: var(--body-size); color: var(--text-primary); font-weight: 700;">
+                    nadia@getmelo.com
+                </p>
+                <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em;">
+                    getmelo.com  |  @getmelo
+                </p>
+            </div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(1.5rem, 3vw, 3rem); font-style: italic; max-width: min(65vw, 500px); font-weight: 300;">
+                "Fitness isn't a feature &mdash; it's a daily habit. We're building the AI that makes it effortless."
+            </p>
+        </div>
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: calc(var(--letterbox-height) + clamp(4px, 0.5vw, 8px)); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+
+        /* ===========================================
+           COUNTER ANIMATION
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 1500;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const value = Math.round(target * eased);
+
+                        let display;
+                        if (target >= 1000000) {
+                            display = prefix + '$' + (value / 1000000).toFixed(1) + 'M';
+                            if (progress >= 1) display = prefix + '$4.2M';
+                        } else {
+                            display = prefix + value.toLocaleString() + suffix;
+                        }
+                        el.textContent = display;
+
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+    </script>
+</body>
+</html>

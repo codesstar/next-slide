@@ -1,6 +1,6 @@
-# Next Slide 🦞
+# Next Slide
 
-### 你的下个 slide，何必是 PPT
+### 你的下个 ppt，何必是 PPT
 
 > Describe what you want. Pick a style. Get a beautiful HTML presentation. No PowerPoint, no build tools, no dependencies.
 
@@ -13,7 +13,7 @@ You talk to your AI assistant in natural language. Next Slide turns your words i
 ```
 You: "帮我做一个 AI agents 的演讲，10 页左右，科技感强一点"
 
-→ AI asks you to pick a style (26 options with live preview)
+→ AI asks you to pick a style (50+ options with live preview)
 → Generates a complete HTML presentation
 → Opens in your browser, ready to present
 ```
@@ -23,38 +23,53 @@ You: "帮我做一个 AI agents 的演讲，10 页左右，科技感强一点"
 
 ---
 
-## 30-Second Demo
+## Quick Start
 
-```
-# 1. Install
-clawhub install next-slide          # OpenClaw
-# or
-git clone https://github.com/codesstar/next-slide ~/.claude/skills/next-slide  # Claude Code
+```bash
+# 1. Install as Claude Code skill
+git clone https://github.com/codesstar/next-slide ~/.claude/skills/next-slide
 
-# 2. Use
+# 2. Use — just talk naturally
+# "Make me a presentation about..."
+# "帮我做个关于 XX 的 slide"
+# or invoke directly:
 /next-slide
-# or just say: "Make me a presentation about..."
 
 # 3. Present
-open my-presentation.html           # That's it. One file. Zero dependencies.
+open my-presentation.html    # One file. Zero dependencies.
 ```
+
+### Also works with
+
+| Platform | Install |
+|----------|---------|
+| **OpenClaw** | `clawhub install next-slide` |
+| **Claude Code** | `git clone https://github.com/codesstar/next-slide ~/.claude/skills/next-slide` |
+| **Any AI tool** | Paste `SKILL.md` as system prompt + reference the support files |
+
+No runtime, no API keys, no vendor lock-in. Just markdown instructions + CSS/HTML references.
 
 ---
 
-## 26 Styles, 5 Categories
+## 50+ Styles, 7 Categories
 
-| Category | Styles | Vibe |
-|----------|--------|------|
-| **Dark** (8) | Keynote Noir, Bold Signal, Neon Cyber, Terminal Green, Midnight Corporate, Cinema Scope, Dark Botanical, Starfield | Conferences, launches, tech talks |
-| **Light** (8) | Swiss Modern, Paper & Ink, Notebook Tabs, Pastel Geometry, Morning Brief, Campus White, Soft Landing, Watercolor Wash | Academic, business, teaching |
-| **Bold** (5) | Electric Studio, Creative Voltage, Split Pastel, Vintage Editorial, Pop Art | Startups, creative pitches |
-| **Cultural** (5) | 东方墨韵, 和風, Gradient Dreams, Retro Arcade, Blueprint | Cultural events, themed talks |
+| Category | Count | Styles | Vibe |
+|----------|-------|--------|------|
+| **Dark** | 11 | Keynote Noir, Bold Signal, Neon Cyber, Terminal Green, Midnight Corporate, Cinema Scope, Dark Botanical, Starfield, Dark Premium, Dark Cinema, Futuristic Blue | Conferences, launches, tech talks |
+| **Light** | 11 | Swiss Modern, Paper & Ink, Notebook Tabs, Pastel Geometry, Morning Brief, Campus White, Soft Landing, Watercolor Wash, Korean Soft, Claymorphism 3D, Wabi-Sabi Zen | Academic, business, teaching |
+| **Editorial** | 4 | Editorial Serif, Fashion Editorial, Newsprint Broadsheet, Vintage Editorial | Magazine layouts, thought leadership |
+| **Bold** | 7 | Electric Studio, Creative Voltage, Split Pastel, Pop Art, Bold Typography, Neon Brutalism, Memphis Pop | Startups, creative pitches |
+| **Retro** | 5 | Grainy Retro, Art Deco Gatsby, Risograph Overprint, Vintage Poster, Retro Arcade | Nostalgic, stylized |
+| **Artistic** | 7 | Surrealism Gallery, Scrapbook Portfolio, Blue Collage, Pink Handwritten, Art Nouveau Botanical, Soft Dreamy, Terracotta Earth | Art, design, portfolio |
+| **Cultural** | 8 | 东方墨韵, 和風, Gradient Dreams, Blueprint, Bauhaus Primary, Swiss Grid, Aurora Mesh, Chinese Ink Wash | Cultural events, themed talks |
 
 Each style is a complete design system: curated typography, color palette, layout patterns, signature animations, and responsive breakpoints.
 
+**Browse all styles:** [Style Gallery](https://next-slide.vercel.app/gallery) or run `open style-gallery.html` locally after installing.
+
 ---
 
-## How The Flow Works
+## How It Works
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -63,12 +78,13 @@ Each style is a complete design system: curated typography, color palette, layou
 │     or drop a .pptx file                            │
 ├─────────────────────────────────────────────────────┤
 │  2. STYLE                                           │
-│     Pick a mood → see 3 live previews → choose one  │
+│     Browse 50+ styles → pick a mood →               │
+│     see 3 live previews → choose one                │
 │     (or say "match this screenshot")                │
 ├─────────────────────────────────────────────────────┤
 │  3. GENERATE                                        │
-│     AI builds the full deck with proper layout,     │
-│     animations, responsive CSS, and navigation      │
+│     AI builds the full deck: proper layout,         │
+│     animations, responsive CSS, navigation          │
 ├─────────────────────────────────────────────────────┤
 │  4. DELIVER                                         │
 │     Opens in browser. Press E to edit inline.       │
@@ -80,7 +96,7 @@ Each style is a complete design system: curated typography, color palette, layou
 
 ## Features
 
-- **26+ curated styles** — not just color swaps, each is a distinct design language
+- **50+ curated styles** — not just color swaps, each is a distinct design language with Layout DNA
 - **Zero dependencies** — single HTML file, all CSS/JS inline
 - **Bilingual native** — English + Chinese with proper CJK font support
 - **5 input modes** — new from scratch, markdown, PPT conversion, enhancement, reference match
@@ -89,6 +105,7 @@ Each style is a complete design system: curated typography, color palette, layou
 - **Inline editing** — press `E` to edit text directly in the browser
 - **One-click deploy** — `npx vercel --prod` and you have a live URL
 - **Quality assurance** — auto-checks overflow, fonts, density after generation
+- **Typography precision** — every style has exact clamp() values extracted from hand-crafted references
 
 ---
 
@@ -104,15 +121,15 @@ Each style is a complete design system: curated typography, color palette, layou
 
 ---
 
-## Works Everywhere
+## Design Philosophy
 
-| Platform | Install |
-|----------|---------|
-| **OpenClaw** | `clawhub install next-slide` |
-| **Claude Code** | `git clone https://github.com/codesstar/next-slide ~/.claude/skills/next-slide` |
-| **Any AI tool** | Paste `SKILL.md` as system prompt + reference the support files |
+Next Slide isn't a template engine. It's an opinionated design system that teaches AI to think like a designer:
 
-The core is just markdown instructions + CSS/HTML references. No runtime, no API keys, no vendor lock-in.
+1. **No AI Slop** — Every style is hand-crafted with intentional typography, spacing, and motion. The AI follows exact specifications, not vibes.
+2. **Layout DNA** — Each style defines its structural patterns: slide mechanism, title alignment, navigation style, background treatment, animation approach, and component structure.
+3. **Typography Scale** — Precise `clamp()` values for every element ensure the AI reproduces exact font sizes, weights, line-heights, and letter-spacing.
+4. **Viewport First** — Every slide fits exactly in 100vh. No scrolling. Content too long? Split into multiple slides automatically.
+5. **Zero Dependencies** — One HTML file. Open it anywhere. No npm, no build step, no CDN that might go down.
 
 ---
 
@@ -146,10 +163,12 @@ Every presentation uses CSS custom properties. Override in `:root`:
 ```
 next-slide/
 ├── SKILL.md               # AI instructions (the brain)
-├── STYLE_PRESETS.md        # 26 style definitions
+├── STYLE_PRESETS.md        # 50+ style definitions with Layout DNA
+├── style-gallery.html      # Local style browser (lightweight)
 ├── viewport-base.css       # Responsive CSS (included in every deck)
 ├── html-template.md        # HTML architecture reference
 ├── animation-patterns.md   # Animation snippets by mood
+├── styles/                 # Reference presentations for each style
 ├── scripts/extract-pptx.py # PPT content extraction
 ├── openclaw.plugin.json    # OpenClaw plugin manifest
 └── install.sh              # Auto-detect & install
@@ -160,5 +179,3 @@ next-slide/
 ## License
 
 MIT. Copyright 2026 Callum.
-
-Made with 🦞

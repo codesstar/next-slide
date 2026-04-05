@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vintage Editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Work+Sans:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f5f3ee;
+  --text: #1a1a1a;
+  --orange: #e07a3a;
+  --warm-bg: #e8d4c0;
+  --dim: #706560;
+  --border: #1a1a1a;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Work Sans', 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--orange);
+  z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Fraunces', 'Noto Sans SC', serif;
+  font-size: clamp(14px, 1.3vw, 18px);
+  font-weight: 700;
+  color: var(--dim);
+  z-index: 1000;
+}
+
+.page-counter .current { color: var(--orange); }
+
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  padding: clamp(48px, 7vh, 96px) clamp(56px, 9vw, 180px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* Geometric decorations */
+.geo-circle {
+  position: absolute;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.geo-line {
+  position: absolute;
+  background: var(--text);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.geo-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Stamp / seal element */
+.stamp {
+  position: absolute;
+  width: clamp(80px, 9vw, 140px);
+  height: clamp(80px, 9vw, 140px);
+  border: 2px solid var(--orange);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.stamp-text {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(9px, 0.85vw, 12px);
+  font-weight: 700;
+  color: var(--orange);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transform: rotate(-12deg);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Typography */
+.ed-title {
+  font-family: 'Fraunces', 'Noto Sans SC', serif;
+  font-weight: 900;
+  font-size: clamp(44px, 7.5vw, 128px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+
+.ed-title .orange { color: var(--orange); }
+
+.ed-sub {
+  font-size: clamp(15px, 1.6vw, 22px);
+  color: var(--dim);
+  line-height: 1.6;
+  max-width: 42ch;
+  font-weight: 400;
+}
+
+.ed-label {
+  font-family: 'Work Sans', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 0.9vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: clamp(28px, 4vh, 52px);
+}
+
+/* Bordered callout box */
+.callout-box {
+  border: 3px solid var(--text);
+  padding: clamp(20px, 2.5vh, 36px) clamp(24px, 3vw, 40px);
+  max-width: fit-content;
+  margin-bottom: clamp(20px, 3vh, 36px);
+}
+
+.callout-box .inner-label {
+  font-family: 'Work Sans', sans-serif;
+  font-size: clamp(10px, 0.85vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: clamp(8px, 1vh, 14px);
+}
+
+.callout-box .inner-text {
+  font-family: 'Fraunces', 'Noto Sans SC', serif;
+  font-weight: 700;
+  font-size: clamp(20px, 2.5vw, 36px);
+  line-height: 1.2;
+}
+
+/* Features */
+.feat-editorial {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3.5vh, 44px);
+  max-width: 700px;
+}
+
+.feat-ed-row {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(16px, 2vw, 32px);
+}
+
+.feat-ed-num {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: clamp(32px, 4vw, 56px);
+  color: var(--orange);
+  flex-shrink: 0;
+  width: clamp(48px, 5vw, 72px);
+  line-height: 1;
+}
+
+.feat-ed-content h3 {
+  font-family: 'Fraunces', 'Noto Sans SC', serif;
+  font-weight: 700;
+  font-size: clamp(20px, 2.2vw, 32px);
+  margin-bottom: clamp(4px, 0.5vh, 8px);
+}
+
+.feat-ed-content p {
+  font-size: clamp(13px, 1.15vw, 16px);
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+/* Stats */
+.stats-ed {
+  display: flex;
+  gap: clamp(40px, 6vw, 100px);
+}
+
+.st-ed-item {
+  border: 3px solid var(--text);
+  padding: clamp(20px, 2.5vh, 36px) clamp(24px, 3vw, 40px);
+}
+
+.st-ed-item .val {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: clamp(40px, 6vw, 96px);
+  line-height: 1;
+  color: var(--text);
+}
+
+.st-ed-item .val .accent { color: var(--orange); }
+
+.st-ed-item .lbl {
+  font-size: clamp(12px, 1.1vw, 16px);
+  color: var(--dim);
+  margin-top: clamp(8px, 1vh, 14px);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* Quote */
+.ed-quote {
+  font-family: 'Fraunces', 'Noto Sans SC', serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(30px, 5vw, 80px);
+  line-height: 1.15;
+  max-width: 16ch;
+  margin-bottom: clamp(20px, 3vh, 36px);
+}
+
+.ed-quote-bar {
+  width: clamp(48px, 5vw, 72px);
+  height: 3px;
+  background: var(--orange);
+  margin-bottom: clamp(20px, 3vh, 36px);
+}
+
+.ed-attr {
+  font-size: clamp(14px, 1.3vw, 20px);
+  color: var(--orange);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+/* Close */
+.ed-close {
+  font-family: 'Fraunces', 'Noto Sans SC', serif;
+  font-weight: 900;
+  font-size: clamp(40px, 7vw, 110px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(14px, 2vh, 28px);
+}
+
+.ed-close-sub {
+  font-size: clamp(15px, 1.6vw, 22px);
+  color: var(--dim);
+  font-weight: 400;
+}
+
+/* Stamp rotation classes */
+.stamp-r15 { transform: rotate(15deg); }
+.stamp-r-8 { transform: rotate(-8deg); }
+.stamp-r10 { transform: rotate(10deg); }
+
+/* Reveal */
+.rv {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.slide.active .rv {
+  animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .rv:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .rv:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .rv:nth-child(3) { animation-delay: 0.3s; }
+.slide.active .rv:nth-child(4) { animation-delay: 0.42s; }
+.slide.active .rv:nth-child(5) { animation-delay: 0.54s; }
+.slide.active .rv:nth-child(6) { animation-delay: 0.66s; }
+
+/* Stamp animation */
+.stamp { opacity: 0; }
+.slide.active .stamp {
+  animation: stampIn 0.6s 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes stampIn {
+  0% { opacity: 0; scale: 1.3; }
+  70% { opacity: 0.7; scale: 0.96; }
+  100% { opacity: 0.6; scale: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="geo-circle" style="width:clamp(160px,18vw,280px);height:clamp(160px,18vw,280px);top:12%;right:18%;"></div>
+  <div class="geo-circle" style="width:clamp(80px,9vw,140px);height:clamp(80px,9vw,140px);bottom:25%;right:35%;"></div>
+  <div class="geo-line" style="width:1px;height:40%;top:10%;left:10%;"></div>
+  <div class="geo-dot" style="top:20%;left:10%;"></div>
+  <div class="geo-dot" style="bottom:30%;right:25%;"></div>
+  <div class="stamp stamp-r15" style="top:15%;right:22%;">
+    <div class="stamp-text">Design<br>Frontier<br>2026</div>
+  </div>
+  <div class="slide-inner">
+    <div class="callout-box rv">
+      <div class="inner-label">AI-Driven Design</div>
+      <div class="inner-text">设计前沿 &middot; 2026</div>
+    </div>
+    <h1 class="ed-title rv">AI 驱动的<br><span class="orange">设计革命</span></h1>
+    <p class="ed-sub rv">从像素到体验，重新定义创造力的边界</p>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="geo-circle" style="width:clamp(200px,22vw,340px);height:clamp(200px,22vw,340px);bottom:8%;right:8%;"></div>
+  <div class="geo-line" style="width:30%;height:1px;top:20%;right:0;"></div>
+  <div class="geo-dot" style="top:20%;right:30%;"></div>
+  <div class="geo-line" style="width:1px;height:50%;bottom:0;left:15%;"></div>
+  <div class="slide-inner">
+    <div class="ed-label rv">Core Capabilities</div>
+    <div class="feat-editorial">
+      <div class="feat-ed-row rv">
+        <div class="feat-ed-num">01</div>
+        <div class="feat-ed-content">
+          <h3>智能布局</h3>
+          <p>AI 理解内容语义，自动生成符合视觉层次的排版方案</p>
+        </div>
+      </div>
+      <div class="feat-ed-row rv">
+        <div class="feat-ed-num">02</div>
+        <div class="feat-ed-content">
+          <h3>风格迁移</h3>
+          <p>一键将任意参考图的视觉语言迁移到你的设计中</p>
+        </div>
+      </div>
+      <div class="feat-ed-row rv">
+        <div class="feat-ed-num">03</div>
+        <div class="feat-ed-content">
+          <h3>实时协作</h3>
+          <p>多人同步编辑，AI 实时调和不同设计师的修改意图</p>
+        </div>
+      </div>
+      <div class="feat-ed-row rv">
+        <div class="feat-ed-num">04</div>
+        <div class="feat-ed-content">
+          <h3>自适应排版</h3>
+          <p>一次设计，自动适配从手表到巨幕的所有尺寸</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="geo-circle" style="width:clamp(120px,14vw,200px);height:clamp(120px,14vw,200px);top:15%;left:55%;"></div>
+  <div class="geo-line" style="width:1px;height:60%;top:5%;right:25%;"></div>
+  <div class="geo-dot" style="top:5%;right:25%;"></div>
+  <div class="stamp stamp-r-8" style="bottom:18%;right:12%;">
+    <div class="stamp-text">Proven<br>Results</div>
+  </div>
+  <div class="slide-inner">
+    <div class="ed-label rv">By The Numbers</div>
+    <div class="stats-ed">
+      <div class="st-ed-item rv">
+        <div class="val">10<span class="accent">x</span></div>
+        <div class="lbl">效率提升</div>
+      </div>
+      <div class="st-ed-item rv">
+        <div class="val">93<span class="accent">%</span></div>
+        <div class="lbl">用户满意度</div>
+      </div>
+      <div class="st-ed-item rv">
+        <div class="val">50<span class="accent">M+</span></div>
+        <div class="lbl">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="geo-circle" style="width:clamp(240px,28vw,400px);height:clamp(240px,28vw,400px);top:5%;right:5%;"></div>
+  <div class="geo-line" style="width:25%;height:1px;bottom:35%;left:0;"></div>
+  <div class="geo-dot" style="bottom:35%;left:25%;"></div>
+  <div class="slide-inner">
+    <div class="ed-quote-bar rv"></div>
+    <div class="ed-quote rv">好的设计不是装饰，是沟通。</div>
+    <div class="ed-attr rv">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="geo-circle" style="width:clamp(180px,20vw,300px);height:clamp(180px,20vw,300px);bottom:10%;right:15%;"></div>
+  <div class="geo-circle" style="width:clamp(100px,11vw,180px);height:clamp(100px,11vw,180px);top:20%;right:30%;"></div>
+  <div class="geo-line" style="width:1px;height:45%;top:0;left:20%;"></div>
+  <div class="geo-dot" style="top:45%;left:20%;"></div>
+  <div class="stamp stamp-r10" style="top:12%;right:15%;">
+    <div class="stamp-text">The Future<br>Is Now</div>
+  </div>
+  <div class="slide-inner">
+    <div class="ed-close rv">重新定义<br><span class="orange">创造力</span></div>
+    <p class="ed-close-sub rv">AI + 人类直觉，设计的下一个十年从这里开始</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.rv').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

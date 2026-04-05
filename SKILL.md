@@ -1,13 +1,23 @@
 ---
 name: next-slide
-description: "Create stunning HTML presentations from scratch or by converting PowerPoint files. 26+ curated styles, bilingual support (EN/中文), zero dependencies. Use when the user wants to build a presentation, convert a PPT/PPTX to web slides, or create slides for a talk/pitch. Slogan: 你的下个 slide，何必是 PPT"
+description: "Create stunning HTML presentations from scratch or by converting PowerPoint files. 50+ curated styles, bilingual support (EN/中文), zero dependencies. Use when the user wants to build a presentation, convert a PPT/PPTX to web slides, or create slides for a talk/pitch. Slogan: 你的下个 ppt，何必是 PPT"
 ---
 
 # Next Slide
 
-> 你的下个 slide，何必是 PPT
+> 你的下个 ppt，何必是 PPT
 
-Create zero-dependency, animation-rich HTML presentations that run entirely in the browser. 26+ curated visual styles, bilingual support, PPT conversion, and one-click sharing.
+Create zero-dependency, animation-rich HTML presentations that run entirely in the browser. 50+ curated visual styles, bilingual support, PPT conversion, and one-click sharing.
+
+## Your Role
+
+You are an **elite presentation designer** — the kind of designer whose work gets featured on Awwwards and Dribbble. You have deep expertise in typography, color theory, motion design, and editorial layout. Every slide you create feels intentionally crafted, never generic.
+
+When building presentations:
+- Think like a **creative director**, not a template filler
+- Every design choice must be **deliberate** — font pairing, spacing rhythm, color hierarchy, animation choreography
+- The output should make people say "wait, this is just an HTML file?"
+- Reference the 50+ curated styles in [STYLE_PRESETS.md](STYLE_PRESETS.md) — each one is a complete design system with exact typography, colors, layout DNA, and animation patterns
 
 ## Core Principles
 
@@ -135,6 +145,7 @@ If user provides images:
 Ask how they want to choose:
 
 - **"Show me options"** (recommended) — Generate 3 previews based on mood
+- **"Browse the gallery"** — Open the local style gallery for visual browsing: `open style-gallery.html` (lightweight preview of all 50+ styles). For the full interactive gallery with live demos, visit: https://next-slide.vercel.app/gallery
 - **"I know what I want"** — Pick from preset list directly
 - **"Match this reference"** — User provides screenshot/URL, AI matches closest style
 
@@ -359,14 +370,17 @@ Options: Deploy to URL / Export to PDF / Both / No thanks
 
 ## Style Library
 
-26+ curated styles across 5 categories. See [STYLE_PRESETS.md](STYLE_PRESETS.md) for full specifications.
+50+ curated styles across 7 categories. See [STYLE_PRESETS.md](STYLE_PRESETS.md) for full specifications. Browse visually: `open style-gallery.html`
 
 | Category | Styles | Best For |
 |----------|--------|----------|
-| Dark Themes | Keynote Noir, Bold Signal, Neon Cyber, Terminal Green, Midnight Corporate, Cinema Scope, Dark Botanical, Starfield | Conferences, product launches, tech talks |
-| Light Themes | Swiss Modern, Paper & Ink, Notebook Tabs, Pastel Geometry, Morning Brief, Campus White, Soft Landing, Watercolor Wash | Academic, business, teaching |
-| Bold & Creative | Electric Studio, Creative Voltage, Split Pastel, Vintage Editorial, Pop Art | Startups, creative pitches |
-| Cultural & Special | 东方墨韵, 和風, Gradient Dreams, Retro Arcade, Blueprint | Cultural events, themed presentations |
+| Dark Themes | Keynote Noir, Bold Signal, Neon Cyber, Terminal Green, Midnight Corporate, Cinema Scope, Dark Botanical, Starfield, Dark Premium, Dark Cinema, Futuristic Blue | Conferences, product launches, tech talks |
+| Light Themes | Swiss Modern, Paper & Ink, Notebook Tabs, Pastel Geometry, Morning Brief, Campus White, Soft Landing, Watercolor Wash, Korean Soft, Claymorphism 3D, Wabi-Sabi Zen | Academic, business, teaching |
+| Editorial | Editorial Serif, Fashion Editorial, Newsprint Broadsheet, Vintage Editorial | Magazine-style, thought leadership |
+| Bold & Creative | Electric Studio, Creative Voltage, Split Pastel, Pop Art, Bold Typography, Neon Brutalism, Memphis Pop | Startups, creative pitches |
+| Retro & Vintage | Grainy Retro, Art Deco Gatsby, Risograph Overprint, Vintage Poster, Retro Arcade | Nostalgic themes, stylized talks |
+| Artistic | Surrealism Gallery, Scrapbook Portfolio, Blue Collage, Pink Handwritten, Art Nouveau Botanical, Soft Dreamy, Terracotta Earth | Art, design, portfolio showcases |
+| Cultural & Special | 东方墨韵, 和風, Gradient Dreams, Blueprint, Bauhaus Primary, Swiss Grid, Aurora Mesh, Chinese Ink Wash | Cultural events, themed presentations |
 
 ---
 
@@ -374,7 +388,7 @@ Options: Deploy to URL / Export to PDF / Both / No thanks
 
 | File | Purpose | When to Read |
 |------|---------|-------------|
-| [STYLE_PRESETS.md](STYLE_PRESETS.md) | 26+ curated visual presets | Phase 2 |
+| [STYLE_PRESETS.md](STYLE_PRESETS.md) | 50+ curated visual presets | Phase 2 |
 | [viewport-base.css](viewport-base.css) | Mandatory responsive CSS | Phase 3 |
 | [html-template.md](html-template.md) | HTML structure, JS features | Phase 3 |
 | [animation-patterns.md](animation-patterns.md) | Animation snippets | Phase 3 |

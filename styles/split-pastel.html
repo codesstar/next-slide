@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Split Pastel -- AI 驱动的设计革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --peach: #f5e6dc;
+  --lavender: #e4dff0;
+  --text: #1a1a1a;
+  --mint: #c8f0d8;
+  --pink: #f0d4e0;
+  --text-soft: #4a4a4a;
+  --text-muted: #5a5a5a;
+}
+
+body {
+  font-family: 'Noto Sans SC', 'Outfit', sans-serif;
+  background: var(--peach);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 4px;
+  background: var(--text); z-index: 100;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed; bottom: 2rem; right: 2.5rem;
+  font-family: 'Outfit', sans-serif; font-weight: 700;
+  font-size: clamp(0.7rem, 1vw, 0.85rem);
+  color: var(--text-muted); z-index: 100;
+}
+
+.split {
+  display: grid; grid-template-columns: 1fr 1fr; height: 100%;
+}
+.p-peach { background: var(--peach); position: relative; }
+.p-lavender { background: var(--lavender); position: relative; }
+
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.pill {
+  display: inline-block;
+  background: var(--pink);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.6rem, 0.85vw, 0.75rem);
+  padding: 0.4em 1.2em;
+  border-radius: 100px;
+  letter-spacing: 0.03em;
+}
+.pill.mint { background: var(--mint); }
+.pill.lavender { background: var(--lavender); }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anim { opacity: 0; }
+.slide.active .a-up1 { animation: slideUp 0.65s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up2 { animation: slideUp 0.65s 0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up3 { animation: slideUp 0.65s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up4 { animation: slideUp 0.65s 0.55s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-left1 { animation: slideLeft 0.6s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-left2 { animation: slideLeft 0.6s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-left3 { animation: slideLeft 0.6s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-left4 { animation: slideLeft 0.6s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-pop1 { animation: popIn 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-pop2 { animation: popIn 0.5s 0.22s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-pop3 { animation: popIn 0.5s 0.34s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-pop4 { animation: popIn 0.5s 0.46s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* ===== SLIDE 1 ===== */
+.s1 .p-peach {
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 4.5rem 4rem;
+}
+.s1 .p-lavender {
+  display: flex; flex-direction: column; justify-content: center; padding: 4rem;
+}
+.s1 .title {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: clamp(2.8rem, 5.5vw, 5rem); line-height: 1.08; color: var(--text); margin-bottom: 1.5rem;
+}
+.s1 .subtitle {
+  font-weight: 300; font-size: clamp(1rem, 1.5vw, 1.25rem);
+  color: var(--text-soft); line-height: 1.7; max-width: 380px;
+}
+.s1 .deco-circle {
+  width: clamp(120px, 18vw, 200px); height: clamp(120px, 18vw, 200px);
+  border-radius: 50%; background: var(--mint); position: absolute;
+  top: 3rem; right: 3rem; opacity: 0.5;
+}
+.s1 .deco-circle-2 {
+  width: clamp(80px, 10vw, 120px); height: clamp(80px, 10vw, 120px);
+  border-radius: 50%; background: var(--pink); position: absolute;
+  bottom: 5rem; left: 2rem; opacity: 0.4;
+}
+
+/* ===== SLIDE 2 ===== */
+.s2-grid {
+  height: 100%; display: grid; grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr; background: var(--peach);
+}
+.s2-header {
+  grid-column: 1 / -1; padding: 3.5rem 4rem 2rem; background: var(--lavender);
+}
+.s2-header h2 {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem); color: var(--text);
+}
+.s2-left { padding: 2rem 3rem 3rem 4rem; background: var(--lavender); }
+.s2-right { padding: 2rem 4rem 3rem 3rem; background: var(--peach); }
+
+.feature-item {
+  display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.8rem;
+}
+.feature-item .dot {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; margin-top: 0.15rem;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: clamp(0.7rem, 0.9vw, 0.8rem);
+  color: var(--text);
+}
+.feature-item:nth-child(1) .dot { background: var(--mint); }
+.feature-item:nth-child(2) .dot { background: var(--pink); }
+.feature-item:nth-child(3) .dot { background: var(--peach); }
+.feature-item:nth-child(4) .dot { background: var(--lavender); }
+.feature-item .info h3 {
+  font-family: 'Outfit', sans-serif; font-weight: 700;
+  font-size: clamp(1rem, 1.5vw, 1.25rem); margin-bottom: 0.25rem;
+}
+.feature-item .info p {
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem); color: var(--text-soft); font-weight: 300; line-height: 1.5;
+}
+
+.s2-right .blurb {
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem); color: var(--text-soft); line-height: 1.8;
+  font-weight: 300; padding-top: 1rem;
+}
+
+/* ===== SLIDE 3 ===== (mint/peach split for variety) */
+.s3-wrap {
+  height: 100%; display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--mint);
+}
+.stat-block {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 3rem; position: relative;
+}
+.stat-block:nth-child(1) { background: var(--mint); }
+.stat-block:nth-child(2) { background: var(--peach); }
+.stat-block:nth-child(3) { background: var(--pink); }
+.stat-block .big {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: clamp(3.5rem, 7vw, 6rem); color: var(--text); line-height: 1; margin-bottom: 0.5rem;
+}
+.stat-block .desc {
+  font-weight: 400; font-size: clamp(0.9rem, 1.2vw, 1.05rem); color: var(--text-soft);
+}
+.stat-block .pill { margin-top: 1.5rem; }
+
+/* ===== SLIDE 4 ===== (reversed: peach left, lavender right -- 60/40) */
+.s4 .split { grid-template-columns: 1fr 1.6fr; }
+.s4 .p-peach {
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 4rem 3rem;
+  background: var(--lavender);
+}
+.s4 .p-lavender {
+  display: flex; flex-direction: column; justify-content: center; padding: 5rem;
+  background: var(--peach);
+}
+.s4 .quote-mark {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: clamp(5rem, 10vw, 8rem); color: var(--pink); line-height: 0.8;
+}
+.s4 .quote-text {
+  font-family: 'Outfit', sans-serif; font-weight: 700;
+  font-size: clamp(1.5rem, 2.6vw, 2.3rem); color: var(--text); line-height: 1.5;
+  margin: 1rem 0 1.5rem;
+}
+.s4 .quote-author {
+  font-size: clamp(0.8rem, 1vw, 0.9rem); color: var(--text-muted); font-weight: 400;
+}
+.s4 .side-label {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: clamp(0.7rem, 0.9vw, 0.8rem); letter-spacing: 0.2em; color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ===== SLIDE 5 ===== (diagonal gradient, centered with badge pills) */
+.s5-wrap {
+  height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(150deg, var(--mint) 0%, var(--peach) 35%, var(--lavender) 70%, var(--pink) 100%);
+  text-align: center; position: relative;
+}
+.s5-content {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 4rem 5rem; max-width: 800px; position: relative; z-index: 1;
+}
+.s5-content .closing-title {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4.2rem); color: var(--text); line-height: 1.1; margin-bottom: 1.5rem;
+}
+.s5-content .closing-sub {
+  font-weight: 300; font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+  color: var(--text-soft); line-height: 1.7; margin-bottom: 2rem; max-width: 560px;
+}
+.s5-pills { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+.s5-deco {
+  position: absolute; border-radius: 50%; opacity: 0.3; pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter">01 / 05</div>
+
+<!-- SLIDE 1 -->
+<div class="slide active" data-slide="0">
+  <div class="split s1">
+    <div class="p-peach">
+      <span class="pill anim a-up1" style="width:fit-content;margin-bottom:1.5rem">AI DESIGN</span>
+      <div class="title anim a-up2">AI 驱动的<br>设计革命</div>
+    </div>
+    <div class="p-lavender dot-grid">
+      <div class="deco-circle"></div>
+      <div class="deco-circle-2"></div>
+      <div class="subtitle anim a-up3" style="position:relative;z-index:1">
+        从像素到体验，<br>重新定义创造力的边界
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" data-slide="1">
+  <div class="s2-grid">
+    <div class="s2-header">
+      <span class="pill mint anim a-up1" style="margin-bottom:1rem">CORE FEATURES</span>
+      <h2 class="anim a-up2">核心能力</h2>
+    </div>
+    <div class="s2-left">
+      <div class="feature-item anim a-left1">
+        <div class="dot">01</div>
+        <div class="info"><h3>智能布局</h3><p>AI 驱动的自适应排版引擎</p></div>
+      </div>
+      <div class="feature-item anim a-left2">
+        <div class="dot">02</div>
+        <div class="info"><h3>风格迁移</h3><p>一键转换视觉风格与品牌调性</p></div>
+      </div>
+      <div class="feature-item anim a-left3">
+        <div class="dot">03</div>
+        <div class="info"><h3>实时协作</h3><p>多人同步编辑，智能冲突解决</p></div>
+      </div>
+      <div class="feature-item anim a-left4">
+        <div class="dot">04</div>
+        <div class="info"><h3>自适应排版</h3><p>跨设备完美呈现，零手动调整</p></div>
+      </div>
+    </div>
+    <div class="s2-right dot-grid">
+      <div class="blurb anim a-up3">AI 不是替代创意，而是放大创意。每一个功能都围绕「让设计师做更重要的事」而构建。</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide" data-slide="2">
+  <div class="s3-wrap">
+    <div class="stat-block anim a-pop1">
+      <div class="big">10x</div>
+      <div class="desc">效率提升</div>
+      <span class="pill">EFFICIENCY</span>
+    </div>
+    <div class="stat-block anim a-pop2">
+      <div class="big">93%</div>
+      <div class="desc">用户满意度</div>
+      <span class="pill mint">SATISFACTION</span>
+    </div>
+    <div class="stat-block anim a-pop3">
+      <div class="big">50M+</div>
+      <div class="desc">设计生成</div>
+      <span class="pill lavender">GENERATED</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide" data-slide="3">
+  <div class="split s4">
+    <div class="p-peach dot-grid">
+      <div class="side-label">DESIGN PHILOSOPHY</div>
+    </div>
+    <div class="p-lavender">
+      <div class="quote-mark anim a-up1">"</div>
+      <div class="quote-text anim a-up2">好的设计不是装饰，<br>是沟通。</div>
+      <div class="quote-author anim a-up3">-- Dieter Rams</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide" data-slide="4">
+  <div class="s5-wrap">
+    <div class="s5-deco" style="width:clamp(160px,25vw,300px);height:clamp(160px,25vw,300px);background:var(--mint);top:8%;right:10%;"></div>
+    <div class="s5-deco" style="width:clamp(100px,15vw,200px);height:clamp(100px,15vw,200px);background:var(--pink);bottom:12%;left:8%;"></div>
+    <div class="s5-deco" style="width:clamp(80px,12vw,160px);height:clamp(80px,12vw,160px);background:var(--lavender);top:50%;right:5%;"></div>
+    <div class="s5-content">
+      <div class="closing-title anim a-up1">创造力，<br>没有边界</div>
+      <div class="closing-sub anim a-up2">加入 AI 设计革命的浪潮，让每一个想法都能以最美的方式呈现。未来已来，而你就是未来的一部分。</div>
+      <div class="s5-pills anim a-up3">
+        <span class="pill mint">智能布局</span>
+        <span class="pill">风格迁移</span>
+        <span class="pill lavender">实时协作</span>
+        <span class="pill mint">自适应排版</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+let current = 0;
+const total = slides.length;
+
+function goTo(n) {
+  if (n < 0 || n >= total) return;
+  slides[current].classList.remove('active');
+  current = n;
+  slides[current].classList.add('active');
+  progress.style.width = ((current + 1) / total * 100) + '%';
+  counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+goTo(0);
+</script>
+</body>
+</html>

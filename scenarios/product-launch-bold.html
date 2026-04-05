@@ -3,35 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shipfast — From Commit to Production in 45 Seconds</title>
+    <title>Sonance Arc — Bold Signal</title>
 
-    <!-- Fonts: Bold Signal — Archivo Black + Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* ===========================================
-           CSS CUSTOM PROPERTIES — Bold Signal
-           Dark gradient + bold orange card accent
+           BOLD SIGNAL — Confident, bold, high-impact
            =========================================== */
         :root {
-            /* --- Color Palette --- */
             --bg-primary: #111111;
             --bg-gradient: linear-gradient(160deg, #111111 0%, #1e1e1e 50%, #111111 100%);
-            --card-bg: #FF5722;
-            --card-bg-dim: rgba(255, 87, 34, 0.12);
+            --card-bg: #E64A19;
+            --card-bg-alt: #FF8A65;
             --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666666;
             --text-on-card: #111111;
-            --accent: #FF5722;
+            --text-secondary: #aaaaaa;
+            --text-muted: #878787;
+            --accent: #E64A19;
             --accent-secondary: #FFB300;
             --accent-glow: rgba(255, 87, 34, 0.3);
             --border-subtle: rgba(255, 255, 255, 0.08);
-            --surface: rgba(255, 255, 255, 0.04);
+            --surface: rgba(255, 255, 255, 0.05);
 
-            /* --- Typography — ALL sizes use clamp() --- */
             --font-display: 'Archivo Black', sans-serif;
             --font-body: 'Space Grotesk', sans-serif;
             --font-mono: 'Space Grotesk', monospace;
@@ -43,14 +39,11 @@
             --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
             --small-size: clamp(0.65rem, 1vw, 0.875rem);
             --stat-size: clamp(2rem, 8vw, 6rem);
-            --number-size: clamp(1.5rem, 4vw, 3rem);
 
-            /* --- Spacing — ALL use clamp() --- */
             --slide-padding: clamp(1.5rem, 4vw, 4rem);
             --content-gap: clamp(1rem, 2vw, 2rem);
             --element-gap: clamp(0.25rem, 1vw, 1rem);
 
-            /* --- Animation --- */
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
             --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -60,864 +53,272 @@
             --duration-dramatic: 1.5s;
         }
 
-        /* ===========================================
-           BASE RESET
-           =========================================== */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        img { max-width: 100%; object-fit: contain; }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
 
-        /* ===========================================
-           VIEWPORT FITTING: MANDATORY BASE STYLES
-           Include this ENTIRE block in every presentation.
-           These styles ensure slides fit exactly in the viewport
-           with no overflow, on any screen size.
-           =========================================== */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --title-size: clamp(1rem, 3.5vw, 1.5rem); } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } .two-col { flex-direction: column !important; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-scale, .reveal-left, .reveal-right, .reveal-wipe { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; } .visible .reveal, .visible .reveal-scale, .visible .reveal-left, .visible .reveal-right, .visible .reveal-wipe { opacity: 1; } }
 
-        /* 1. Lock html/body to viewport */
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-        }
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .reveal-scale { opacity: 0; transform: scale(0.85); transition: opacity var(--duration-slow) ease, transform var(--duration-slow) var(--ease-out-expo); }
+        .reveal-left { opacity: 0; transform: translateX(-50px); transition: opacity var(--duration-normal) ease, transform var(--duration-normal) var(--ease-out-expo); }
+        .reveal-wipe { clip-path: inset(0 50% 0 50%); opacity: 0; transition: clip-path 1s var(--ease-out-expo), opacity 0.6s ease; }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+        .slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+        .slide.visible .reveal-wipe { clip-path: inset(0 0 0 0); opacity: 1; }
+        .reveal:nth-child(1){transition-delay:.05s}.reveal:nth-child(2){transition-delay:.15s}.reveal:nth-child(3){transition-delay:.25s}.reveal:nth-child(4){transition-delay:.35s}.reveal:nth-child(5){transition-delay:.45s}.reveal:nth-child(6){transition-delay:.55s}.reveal:nth-child(7){transition-delay:.65s}.reveal:nth-child(8){transition-delay:.75s}
 
-        html {
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
-        }
+        /* Bold Signal signature */
+        .section-num { font-family: var(--font-display); font-size: clamp(4rem, 12vw, 10rem); color: rgba(255,255,255,0.08); position: absolute; top: var(--slide-padding); left: var(--slide-padding); line-height: 1; pointer-events: none; }
+        .bold-card { background: var(--card-bg); color: var(--text-on-card); padding: clamp(1.5rem, 3vw, 2.5rem); position: relative; overflow: hidden; }
+        .bold-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); pointer-events: none; }
+        .bold-card-alt { background: linear-gradient(135deg, var(--accent-secondary) 0%, #FF6F00 100%); color: var(--text-on-card); padding: clamp(1.5rem, 3vw, 2.5rem); }
+        .feature-strip { display: flex; gap: 0; }
+        .feature-strip-item { flex: 1; padding: clamp(1rem, 2vw, 1.5rem); border-right: 1px solid var(--border-subtle); text-align: center; }
+        .feature-strip-item:last-child { border-right: none; }
+        .review-card { background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1rem, 2vw, 1.5rem); border-top: 3px solid var(--accent); }
+        .stars { color: #FFB300; letter-spacing: 2px; }
+        .price-big { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6rem); line-height: 1; }
 
-        body {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-        }
+        /* Bar chart */
+        .bar-chart-row { display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem); }
+        .bar-label { font-size: var(--small-size); width: clamp(60px, 10vw, 100px); flex-shrink: 0; text-align: right; color: var(--text-secondary); }
+        .bar-track { flex: 1; height: clamp(20px, 3vw, 32px); background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 1.2s var(--ease-out-expo); display: flex; align-items: center; padding-left: clamp(0.4rem, 0.8vw, 0.6rem); font-size: var(--small-size); font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .bar-fill.arc { background: var(--accent); color: var(--text-on-card); }
+        .bar-fill.comp { background: rgba(255,255,255,0.15); color: var(--text-secondary); }
+        .slide.visible .bar-fill { width: var(--bar-w); }
 
-        /* 2. Each slide = exact viewport height */
-        .slide {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            scroll-snap-align: start;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* 3. Content container — flex centering with overflow protection */
-        .slide-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-height: 100%;
-            overflow: hidden;
-            padding: var(--slide-padding);
-        }
-
-        /* 4. ALL typography uses clamp() for responsive scaling */
-        /* (defined in :root above) */
-
-        /* 5. Cards/containers use viewport-relative max sizes */
-        .card, .container, .content-box {
-            max-width: min(90vw, 1000px);
-            max-height: min(80vh, 700px);
-        }
-
-        /* 6. Lists auto-scale with viewport */
-        .feature-list, .bullet-list {
-            gap: clamp(0.4rem, 1vh, 1rem);
-        }
-
-        .feature-list li, .bullet-list li {
-            font-size: var(--body-size);
-            line-height: 1.5;
-        }
-
-        /* 7. Grids adapt to available space */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-            gap: clamp(0.5rem, 1.5vw, 1rem);
-        }
-
-        /* 8. Images constrained to viewport */
-        img, .image-container {
-            max-width: 100%;
-            max-height: min(50vh, 400px);
-            object-fit: contain;
-        }
-
-        /* 9. CJK-specific typography adjustments */
-        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
-            line-height: 1.6;
-            word-break: break-all;
-            overflow-wrap: break-word;
-        }
-
-        /* 10. Ensure text doesn't overflow containers */
-        h1, h2, h3, h4, h5, h6 {
-            overflow-wrap: break-word;
-            hyphens: auto;
-        }
-
-        p, li, blockquote {
-            overflow-wrap: break-word;
-        }
-
-        /* ===========================================
-           RESPONSIVE BREAKPOINTS
-           Aggressive scaling for smaller viewports
-           =========================================== */
-
-        /* Short viewports (< 700px height) — laptops, split-screen */
-        @media (max-height: 700px) {
-            :root {
-                --slide-padding: clamp(0.75rem, 3vw, 2rem);
-                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
-                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
-                --h2-size: clamp(1rem, 3vw, 1.75rem);
-            }
-        }
-
-        /* Very short viewports (< 600px height) — compact displays */
-        @media (max-height: 600px) {
-            :root {
-                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
-                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
-                --title-size: clamp(1.1rem, 4vw, 2rem);
-                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
-            }
-
-            .nav-dots, .keyboard-hint, .decorative {
-                display: none;
-            }
-        }
-
-        /* Extremely short (landscape phones, < 500px height) */
-        @media (max-height: 500px) {
-            :root {
-                --slide-padding: clamp(0.4rem, 2vw, 1rem);
-                --title-size: clamp(1rem, 3.5vw, 1.5rem);
-                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
-                --body-size: clamp(0.65rem, 1vw, 0.85rem);
-            }
-
-            .grid {
-                grid-template-columns: 1fr !important;
-            }
-        }
-
-        /* Narrow viewports (< 600px width) — phones in portrait */
-        @media (max-width: 600px) {
-            :root {
-                --title-size: clamp(1.25rem, 7vw, 2.5rem);
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .slide-content[style*="flex-direction: row"] {
-                flex-direction: column !important;
-            }
-
-            .slide-counter {
-                display: none;
-            }
-        }
-
-        /* Tall narrow viewports (phones) — optimize vertical space */
-        @media (max-width: 600px) and (min-height: 700px) {
-            :root {
-                --slide-padding: clamp(1.5rem, 6vw, 3rem);
-                --content-gap: clamp(1rem, 3vw, 2rem);
-            }
-        }
-
-        /* Ultra-wide screens (> 2000px) — prevent content from becoming too sparse */
-        @media (min-width: 2000px) {
-            .slide-content {
-                max-width: 1600px;
-                margin: 0 auto;
-            }
-        }
-
-        /* ===========================================
-           HIGH DPI / RETINA
-           =========================================== */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .card, .content-box {
-                border-width: 0.5px;
-            }
-        }
-
-        /* ===========================================
-           REDUCED MOTION
-           =========================================== */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.2s !important;
-                scroll-behavior: auto !important;
-            }
-
-            html {
-                scroll-behavior: auto;
-                scroll-snap-type: none;
-            }
-
-            .reveal, .reveal-scale, .reveal-left, .reveal-right,
-            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
-            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
-            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
-                opacity: 0;
-                transform: none !important;
-                filter: none !important;
-                clip-path: none !important;
-                transition: opacity 0.2s ease !important;
-            }
-
-            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
-            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
-            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
-            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
-            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
-            .visible .reveal-quote {
-                opacity: 1;
-            }
-        }
-
-        /* ===========================================
-           PRINT STYLES
-           =========================================== */
-        @media print {
-            html {
-                scroll-snap-type: none;
-            }
-
-            .slide {
-                height: auto;
-                min-height: 100vh;
-                overflow: visible;
-                page-break-after: always;
-                page-break-inside: avoid;
-            }
-
-            .progress-bar, .nav-dots, .slide-counter,
-            .edit-hotzone, .edit-toggle {
-                display: none !important;
-            }
-
-            .reveal, [class*="reveal-"] {
-                opacity: 1 !important;
-                transform: none !important;
-                filter: none !important;
-                clip-path: none !important;
-            }
-        }
-
-        /* ===========================================
-           BODY & GLOBAL — Bold Signal
-           =========================================== */
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
-
-        /* ===========================================
-           ANIMATIONS
-           Triggered by .visible class (added by JS)
-           =========================================== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity var(--duration-normal) var(--ease-out-expo),
-                        transform var(--duration-normal) var(--ease-out-expo);
-        }
-        .slide.visible .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Staggered children — up to 8 elements */
-        .reveal:nth-child(1) { transition-delay: 0.08s; }
-        .reveal:nth-child(2) { transition-delay: 0.16s; }
-        .reveal:nth-child(3) { transition-delay: 0.24s; }
-        .reveal:nth-child(4) { transition-delay: 0.32s; }
-        .reveal:nth-child(5) { transition-delay: 0.40s; }
-        .reveal:nth-child(6) { transition-delay: 0.48s; }
-        .reveal:nth-child(7) { transition-delay: 0.56s; }
-        .reveal:nth-child(8) { transition-delay: 0.64s; }
-
-        /* ===========================================
-           PROGRESS BAR
-           =========================================== */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            width: 0%;
-            z-index: 9999;
-            transition: width 0.3s ease;
-        }
-
-        /* ===========================================
-           NAVIGATION DOTS
-           =========================================== */
-        .nav-dots {
-            position: fixed;
-            right: clamp(12px, 2vw, 24px);
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 9998;
-        }
-        .nav-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 0;
-        }
-        .nav-dot.active {
-            background: var(--accent);
-            transform: scale(1.4);
-            box-shadow: 0 0 8px var(--accent-glow);
-        }
-
-        /* ===========================================
-           SLIDE COUNTER
-           =========================================== */
-        .slide-counter {
-            position: fixed;
-            bottom: clamp(12px, 2vw, 24px);
-            right: clamp(12px, 2vw, 24px);
-            font-family: var(--font-body);
-            font-size: var(--small-size);
-            color: var(--text-muted);
-            z-index: 9998;
-        }
-
-        /* ===========================================
-           BOLD SIGNAL — Signature Elements
-           =========================================== */
-
-        /* Slide number — large, top-left, compressed */
-        .slide-number {
-            position: absolute;
-            top: clamp(16px, 3vw, 32px);
-            left: clamp(16px, 3vw, 32px);
-            font-family: var(--font-display);
-            font-size: var(--number-size);
-            color: rgba(255, 255, 255, 0.12);
-            letter-spacing: -0.03em;
-            z-index: 2;
-            line-height: 1;
-        }
-
-        /* Bold colored card accent */
-        .accent-card {
-            background: var(--card-bg);
-            color: var(--text-on-card);
-            padding: clamp(1.5rem, 3vw, 2.5rem);
-            position: relative;
-        }
-
-        /* Accent strip — horizontal bar */
-        .accent-strip {
-            width: clamp(40px, 6vw, 80px);
-            height: 4px;
-            background: var(--accent);
-            margin-bottom: clamp(0.8rem, 1.5vw, 1.2rem);
-        }
-
-        /* Grid-based precise alignment */
-        .bold-grid {
-            display: grid;
-            gap: clamp(0.5rem, 1.5vw, 1.5rem);
-        }
-
-        /* All slides — dark gradient background */
-        .slide {
-            background: var(--bg-gradient);
-        }
-
-        /* Override specific slide backgrounds */
-        .slide-accent-bg {
-            background: var(--card-bg);
-        }
-
+        /* UI */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-secondary)); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; position: relative; }
+        .nav-dot::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.4); box-shadow: 0 0 8px var(--accent-glow); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-body); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+        @media (hover: hover) { .bold-card:hover, .review-card:hover { transform: translateY(-2px); } }
+        @media (max-width: 600px) { .bar-chart-row { flex-direction: column; gap: 0.25rem; } .bar-label { text-align: left; width: auto; } .section-num { display: none; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; clip-path: none !important; } .bar-fill { width: var(--bar-w) !important; } }
+        /* CTA button */
+        .cta-btn { display: inline-block; padding: clamp(0.75rem, 1.5vw, 1rem) clamp(2rem, 4vw, 3rem); background: var(--accent); color: var(--text-on-card); font-family: var(--font-display); font-size: var(--body-size); font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; min-height: 44px; transition: background 0.3s ease, transform 0.3s ease; }
+        @media (hover: hover) { .cta-btn:hover { background: var(--accent-secondary); transform: translateY(-2px); } }
     </style>
 </head>
 <body>
-    <!-- Progress bar -->
     <div class="progress-bar" id="progressBar"></div>
-
-    <!-- Navigation dots -->
     <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
-
-    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
 
-    <!-- =================== SLIDES =================== -->
-
-    <!-- SLIDE 1: Title — Product name + launch date -->
-    <section class="slide" aria-label="Title">
-        <span class="slide-number">01</span>
+    <!-- SLIDE 1: HERO -->
+    <section class="slide" aria-label="Hero" style="background: var(--bg-gradient);">
+        <div class="section-num">01</div>
         <div class="slide-content" style="justify-content: flex-end; padding-bottom: clamp(3rem, 8vh, 6rem);">
-            <div class="reveal" style="margin-bottom: clamp(1rem, 2vw, 1.5rem);">
-                <span style="display: inline-block; background: var(--accent); color: var(--text-on-card); font-family: var(--font-display); font-size: var(--small-size); padding: clamp(0.3rem, 0.6vw, 0.5rem) clamp(0.8rem, 1.5vw, 1.2rem); letter-spacing: 0.05em;">
-                    PUBLIC LAUNCH &mdash; APRIL 15, 2026
-                </span>
+            <div class="bold-card reveal-scale" style="max-width: min(90vw, 600px); display: inline-block;">
+                <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7;">Sonance Audio Presents</p>
+                <h1 style="font-size: var(--title-size); font-family: var(--font-display); margin-top: 0.3rem; line-height: 1.05;">SONANCE ARC</h1>
+                <p style="font-size: var(--subtitle-size); margin-top: 0.5rem; opacity: 0.8;">Sound Without Boundaries</p>
+                <div style="width: 60px; height: 4px; background: var(--text-on-card); margin-top: var(--content-gap); opacity: 0.5;"></div>
+                <p style="font-size: var(--body-size); margin-top: 0.75rem; opacity: 0.7;">Wireless Earbuds Reimagined &mdash; Starting at $179</p>
             </div>
-            <h1 class="reveal" style="font-size: clamp(3rem, 10vw, 8rem); font-family: var(--font-display); line-height: 0.9; letter-spacing: -0.03em; text-transform: uppercase;">
-                Ship<br>fast
-            </h1>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.8rem, 1.5vw, 1.2rem); max-width: min(60vw, 450px); line-height: 1.5; font-weight: 300;">
-                From commit to production in 45 seconds.
-            </p>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1.5rem, 3vw, 2.5rem);">
-                scroll to begin &darr;
-            </p>
-        </div>
-        <!-- Decorative large accent block in top-right -->
-        <div style="position: absolute; top: 0; right: 0; width: clamp(120px, 25vw, 350px); height: clamp(120px, 25vh, 350px); background: var(--card-bg); z-index: 0;"></div>
-    </section>
-
-    <!-- SLIDE 2: Section Divider — "The Problem" -->
-    <section class="slide slide-accent-bg" aria-label="The Problem">
-        <span class="slide-number" style="color: rgba(0, 0, 0, 0.15);">02</span>
-        <div class="slide-content" style="align-items: flex-start; justify-content: center;">
-            <span class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-on-card); opacity: 0.6; font-weight: 500;">
-                Part 01
-            </span>
-            <h2 class="reveal" style="font-size: clamp(3rem, 10vw, 8rem); font-family: var(--font-display); margin-top: var(--element-gap); color: var(--text-on-card); line-height: 0.9; text-transform: uppercase;">
-                The<br>Problem
-            </h2>
         </div>
     </section>
 
-    <!-- SLIDE 3: Quote — User pain point -->
-    <section class="slide" aria-label="Quote">
-        <span class="slide-number">03</span>
-        <div class="slide-content" style="justify-content: center; max-width: min(85vw, 900px); margin: 0 auto;">
-            <div class="reveal" style="width: clamp(40px, 6vw, 80px); height: 4px; background: var(--accent); margin-bottom: clamp(1rem, 2vw, 1.5rem);"></div>
-            <blockquote class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); line-height: 1.3; letter-spacing: -0.01em;">
-                &ldquo;I spend more time configuring CI/CD pipelines than writing actual features. Last Tuesday I burned 4 hours debugging a deploy script.&rdquo;
-            </blockquote>
-            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; font-weight: 400;">
-                &mdash; Ava Torres, Senior Engineer at Lattice &nbsp;|&nbsp; Stack Overflow Developer Survey, 2025<sup style="font-size: 0.7em; color: var(--accent);">1</sup>
-            </cite>
-        </div>
-    </section>
-
-    <!-- SLIDE 4: Card Grid — 3 key features -->
-    <section class="slide" aria-label="Features">
-        <span class="slide-number">04</span>
+    <!-- SLIDE 2: PROBLEM -->
+    <section class="slide" aria-label="Problem" style="background: var(--bg-gradient);">
+        <div class="section-num">02</div>
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-transform: uppercase; letter-spacing: -0.01em;">
-                What Shipfast Does
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">The Challenge</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); max-width: 700px; line-height: 1.15;">
+                EARBUDS HAVE BEEN STUCK IN THE SAME PLACE FOR YEARS.
             </h2>
-            <div class="bold-grid reveal" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr);">
-                <!-- Feature 1 -->
-                <div style="background: var(--surface); border-left: 4px solid var(--accent); padding: clamp(1rem, 2vw, 1.5rem);">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#9889;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">Zero-Config Deploy</h3>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; font-weight: 300;">Push to main. That's it. Shipfast detects your framework, builds, and ships automatically.</p>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: 600px; line-height: 1.6;">
+                Weak noise cancellation. Short battery life. Single drivers that can't reproduce the full spectrum. You've been settling.
+            </p>
+            <div class="feature-strip reveal" style="max-width: 700px; margin-top: var(--content-gap); border: 1px solid var(--border-subtle);">
+                <div class="feature-strip-item">
+                    <div style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-family: var(--font-display); color: var(--accent);">6hrs</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3rem;">Avg Battery</div>
                 </div>
-                <!-- Feature 2 -->
-                <div style="background: var(--surface); border-left: 4px solid var(--accent); padding: clamp(1rem, 2vw, 1.5rem);">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#128274;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">Built-in Rollbacks</h3>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; font-weight: 300;">Every deploy is atomic. One-click rollback to any previous version in under 3 seconds.</p>
+                <div class="feature-strip-item">
+                    <div style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-family: var(--font-display); color: var(--accent);">35dB</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3rem;">Avg ANC</div>
                 </div>
-                <!-- Feature 3 -->
-                <div style="background: var(--surface); border-left: 4px solid var(--accent); padding: clamp(1rem, 2vw, 1.5rem);">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#127760;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">Edge-First</h3>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; font-weight: 300;">Deploys to 42 edge locations worldwide. P95 cold start under 18ms. No region config needed.</p>
+                <div class="feature-strip-item">
+                    <div style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-family: var(--font-display); color: var(--accent);">1</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3rem;">Driver Only</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 5: Comparison — Before vs After -->
-    <section class="slide" aria-label="Before vs After">
-        <span class="slide-number">05</span>
+    <!-- SLIDE 3: PRODUCT REVEAL -->
+    <section class="slide" aria-label="Product Reveal" style="background: radial-gradient(ellipse at 50% 50%, #2a1a0a 0%, var(--bg-primary) 70%);">
+        <div class="section-num">03</div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">Introducing</p>
+            <div class="reveal-wipe" style="margin-top: var(--element-gap); max-width: min(80vw, 700px);">
+                <img src="images/arc-exploded-view.webp" alt="Sonance Arc exploded technical view showing dual drivers" style="width: 100%; max-height: min(45vh, 400px); object-fit: contain;">
+            </div>
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); margin-top: var(--content-gap); line-height: 1.05;">ARC</h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); max-width: 500px; margin-top: var(--element-gap);">
+                Dual-driver architecture. 50dB ANC. 12-hour battery. 5.2 grams per earbud.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: AUDIO FEATURES -->
+    <section class="slide" aria-label="Audio Features" style="background: var(--bg-gradient);">
+        <div class="section-num">04</div>
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-transform: uppercase; text-align: center;">
-                Before vs After
-            </h2>
-            <div class="reveal" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch;">
-                <!-- Left: Before -->
-                <div style="background: rgba(255, 87, 34, 0.06); border: 1px solid rgba(255, 87, 34, 0.15); padding: clamp(1rem, 2vw, 1.5rem);">
-                    <h3 style="font-size: var(--h3-size); color: #ff6e40; font-family: var(--font-display); margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">Without Shipfast</h3>
-                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Write Dockerfile manually</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Configure CI/CD from scratch</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Debug YAML indentation errors</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Manually manage SSL certs</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; ~12 min average deploy time</li>
-                    </ul>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem);">avg. 12m 14s per deploy</p>
-                </div>
-                <!-- Divider -->
-                <div style="width: 3px; background: var(--accent); align-self: stretch;"></div>
-                <!-- Right: After -->
-                <div style="background: rgba(255, 179, 0, 0.06); border: 1px solid rgba(255, 179, 0, 0.15); padding: clamp(1rem, 2vw, 1.5rem);">
-                    <h3 style="font-size: var(--h3-size); color: var(--accent-secondary); font-family: var(--font-display); margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">With Shipfast</h3>
-                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Auto-detected build pipeline</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Git push triggers everything</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Zero config files to maintain</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Auto-provisioned TLS</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; 45-second average deploy</li>
-                    </ul>
-                    <p style="font-size: var(--small-size); color: var(--accent-secondary); margin-top: clamp(0.5rem, 1vw, 0.8rem);">avg. 45s per deploy</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SLIDE 6: Stats — Impact numbers -->
-    <section class="slide slide-accent-bg" aria-label="Impact">
-        <span class="slide-number" style="color: rgba(0, 0, 0, 0.15);">06</span>
-        <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; color: var(--text-on-card); text-transform: uppercase;">
-                The Numbers Speak
-            </h2>
-            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="3.2" data-suffix="x" data-decimal="true" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--text-on-card);">0</div>
-                    <div style="font-size: var(--body-size); color: rgba(17, 17, 17, 0.6); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); font-weight: 500;">Faster Deploys</div>
-                </div>
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="47" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--text-on-card);">0</div>
-                    <div style="font-size: var(--body-size); color: rgba(17, 17, 17, 0.6); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); font-weight: 500;">Less Config</div>
-                </div>
-                <div class="reveal" style="text-align: center;">
-                    <div style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--text-on-card);">
-                        <span style="font-size: clamp(1rem, 3vw, 2rem); color: rgba(17, 17, 17, 0.35); text-decoration: line-through;">12m</span>
-                        <span> 45s</span>
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">Audio Engine</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1.1;">HEAR EVERYTHING. MISS NOTHING.</h2>
+            <div style="display: flex; gap: var(--content-gap); margin-top: var(--content-gap); flex-wrap: wrap;" class="two-col">
+                <div style="flex: 1; min-width: 250px;">
+                    <div class="bold-card reveal" style="margin-bottom: var(--content-gap);">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size);">DUAL-DRIVER SYSTEM</h3>
+                        <p style="font-size: var(--body-size); margin-top: 0.5rem; opacity: 0.8;">11mm dynamic + balanced armature. Full-range clarity from sub-bass to crystal highs.</p>
                     </div>
-                    <div style="font-size: var(--body-size); color: rgba(17, 17, 17, 0.6); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); font-weight: 500;">Setup Time</div>
+                    <div class="bold-card-alt reveal">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size);">ADAPTIVE EQ</h3>
+                        <p style="font-size: var(--body-size); margin-top: 0.5rem; opacity: 0.8;">Scans your ear canal and auto-tunes to your unique anatomy.</p>
+                    </div>
                 </div>
-            </div>
-            <p class="reveal" style="font-size: var(--small-size); color: rgba(17, 17, 17, 0.4); margin-top: var(--content-gap); text-align: center;">
-                Based on internal benchmarks across 1,847 deploys during closed beta (Jan&ndash;Mar 2026)
-            </p>
-        </div>
-    </section>
-
-    <!-- SLIDE 7: Pricing — Launch pricing tiers -->
-    <section class="slide" aria-label="Pricing">
-        <span class="slide-number">07</span>
-        <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; text-transform: uppercase;">
-                Pricing
-            </h2>
-            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap); font-weight: 300;">
-                Launch week special &mdash; lock in these rates forever.
-            </p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--content-gap); margin-top: var(--content-gap); max-width: min(90vw, 900px);">
-                <!-- Starter -->
-                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1rem, 2vw, 1.5rem); text-align: center;">
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Starter</p>
-                    <p style="font-size: var(--stat-size); font-family: var(--font-display); margin: 0.2em 0;">$0</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted);">per month</p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; 3 projects</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; 100 deploys/mo</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Community support</li>
-                    </ul>
-                </div>
-                <!-- Pro (highlighted) -->
-                <div class="reveal" style="background: var(--card-bg); border: 2px solid var(--accent); padding: clamp(1rem, 2vw, 1.5rem); text-align: center; position: relative;">
-                    <span style="position: absolute; top: clamp(-10px, -1vw, -12px); left: 50%; transform: translateX(-50%); background: var(--text-on-card); color: var(--accent); font-size: var(--small-size); padding: clamp(0.15rem, 0.3vw, 0.2rem) clamp(0.5rem, 1vw, 0.8rem); font-weight: 700; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.05em;">Most Popular</span>
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-on-card); opacity: 0.7;">Pro</p>
-                    <p style="font-size: var(--stat-size); font-family: var(--font-display); margin: 0.2em 0; color: var(--text-on-card);">$29</p>
-                    <p style="font-size: var(--small-size); color: var(--text-on-card); opacity: 0.6;"><s>$39</s> &nbsp;launch price</p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-on-card); text-align: left; opacity: 0.85;">
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Unlimited projects</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Unlimited deploys</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Preview environments</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Priority support</li>
-                    </ul>
-                </div>
-                <!-- Enterprise -->
-                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1rem, 2vw, 1.5rem); text-align: center;">
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Enterprise</p>
-                    <p style="font-size: var(--stat-size); font-family: var(--font-display); margin: 0.2em 0;">Custom</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted);">contact us</p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Everything in Pro</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; SSO &amp; audit logs</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Dedicated support</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; SLA guarantee</li>
-                    </ul>
+                <div style="flex: 1; min-width: 250px;">
+                    <div style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1rem, 2vw, 1.5rem);" class="reveal">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent);">50dB ANC</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6;">Best-in-class noise cancellation with adaptive transparency.</p>
+                    </div>
+                    <div style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1rem, 2vw, 1.5rem); margin-top: var(--content-gap);" class="reveal">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent);">SPATIAL AUDIO</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6;">Head-tracking spatial audio. 360-degree immersive sound.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 8: CTA / Closing — Try it now -->
-    <section class="slide" aria-label="Get Started">
-        <span class="slide-number">08</span>
-        <!-- Large accent block bottom-left -->
-        <div style="position: absolute; bottom: 0; left: 0; width: clamp(200px, 40vw, 500px); height: clamp(100px, 20vh, 250px); background: var(--card-bg); z-index: 0;"></div>
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; position: relative; z-index: 1;">
-            <div class="reveal">
-                <span style="display: inline-block; background: var(--accent); color: var(--text-on-card); font-family: var(--font-display); font-size: var(--small-size); padding: clamp(0.3rem, 0.6vw, 0.5rem) clamp(0.8rem, 1.5vw, 1.2rem); letter-spacing: 0.05em;">
-                    AVAILABLE NOW
-                </span>
-            </div>
-            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); margin-top: var(--content-gap); line-height: 1.0; text-transform: uppercase;">
-                Start Shipping<br>Faster
-            </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(70vw, 550px); line-height: 1.5; font-weight: 300;">
-                Free tier. No credit card. Deploy your first project in under a minute.
-            </p>
-            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: var(--content-gap); align-items: center; flex-wrap: wrap; justify-content: center;">
-                <div style="background: var(--accent); color: var(--text-on-card); padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem); font-family: var(--font-display); font-size: var(--body-size); text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer;">
-                    shipfast.dev/start
+    <!-- SLIDE 5: LIFESTYLE + STATS -->
+    <section class="slide" aria-label="Lifestyle" style="padding: 0;">
+        <div style="position: absolute; inset: 0;">
+            <img src="images/arc-soundwave.webp" alt="Sound wave visualization" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.35;">
+        </div>
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17,17,17,0.4) 0%, rgba(17,17,17,0.95) 100%);"></div>
+        <div class="slide-content" style="position: relative; z-index: 1; justify-content: flex-end; padding-bottom: clamp(3rem, 8vh, 6rem);">
+            <div class="bold-card reveal-scale" style="max-width: min(90vw, 550px);">
+                <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7;">Performance</p>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: 0.3rem;">BUILT FOR YOUR LIFE</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                    <div><div class="counter" data-target="12" data-suffix=" HRS" style="font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem);">0</div><div style="font-size: var(--small-size); opacity: 0.7;">Earbud Battery</div></div>
+                    <div><div class="counter" data-target="38" data-suffix=" HRS" style="font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem);">0</div><div style="font-size: var(--small-size); opacity: 0.7;">Total w/ Case</div></div>
+                    <div><div style="font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem);">IPX5</div><div style="font-size: var(--small-size); opacity: 0.7;">Water Resistant</div></div>
+                    <div><div class="counter" data-target="5" data-suffix=".2g" style="font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem);">0</div><div style="font-size: var(--small-size); opacity: 0.7;">Per Earbud</div></div>
                 </div>
             </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
-                Launch date: April 15, 2026 &nbsp;&bull;&nbsp; Product Hunt featured
-            </p>
-
-            <!-- QR placeholder -->
-            <div class="reveal" style="margin-top: var(--content-gap); width: clamp(60px, 8vw, 100px); height: clamp(60px, 8vw, 100px); border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); color: rgba(255,255,255,0.3);">
-                QR
-            </div>
-
-            <!-- Footnote -->
-            <p class="reveal" style="font-size: clamp(0.55rem, 0.8vw, 0.7rem); color: rgba(255,255,255,0.25); margin-top: var(--content-gap); max-width: min(80vw, 600px);">
-                <sup>1</sup> Stack Overflow Developer Survey 2025, "Time Spent on DevOps vs Feature Work", n=48,231 respondents. Shipfast benchmarks from closed beta with 312 teams.
-            </p>
         </div>
-        <!-- Watermark -->
-        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5; z-index: 2;">
-            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
-        </p>
+    </section>
+
+    <!-- SLIDE 6: BAR CHART COMPARISON -->
+    <section class="slide" aria-label="Comparison" style="background: var(--bg-gradient);">
+        <div class="section-num">06</div>
+        <div class="slide-content">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">Comparison</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">ARC VS. AIRPODS PRO 2</h2>
+            <div role="img" aria-label="Bar chart comparing Sonance Arc vs AirPods Pro 2 across battery life, noise cancellation, and multi-device support" style="margin-top: var(--content-gap); max-width: 700px;">
+                <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-bottom: 0.5rem;">Battery Life (hours)</p>
+                <div class="bar-chart-row reveal"><span class="bar-label" style="color: var(--accent);">Arc</span><div class="bar-track"><div class="bar-fill arc" style="--bar-w: 85%;">12 hrs</div></div></div>
+                <div class="bar-chart-row reveal"><span class="bar-label">AirPods</span><div class="bar-track"><div class="bar-fill comp" style="--bar-w: 42%;">6 hrs</div></div></div>
+                <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-bottom: 0.5rem; margin-top: var(--content-gap);">Noise Cancellation (dB)</p>
+                <div class="bar-chart-row reveal"><span class="bar-label" style="color: var(--accent);">Arc</span><div class="bar-track"><div class="bar-fill arc" style="--bar-w: 100%;">50 dB</div></div></div>
+                <div class="bar-chart-row reveal"><span class="bar-label">AirPods</span><div class="bar-track"><div class="bar-fill comp" style="--bar-w: 96%;">48 dB</div></div></div>
+                <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-bottom: 0.5rem; margin-top: var(--content-gap);">Multi-Device</p>
+                <div class="bar-chart-row reveal"><span class="bar-label" style="color: var(--accent);">Arc</span><div class="bar-track"><div class="bar-fill arc" style="--bar-w: 100%;">3 devices</div></div></div>
+                <div class="bar-chart-row reveal"><span class="bar-label">AirPods</span><div class="bar-track"><div class="bar-fill comp" style="--bar-w: 33%;">1 device</div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: REVIEWS -->
+    <section class="slide" aria-label="Reviews" style="background: var(--bg-gradient);">
+        <div class="section-num">07</div>
+        <div class="slide-content">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">Press & Reviews</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> 4.8 AVERAGE</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div class="review-card reveal">
+                    <p style="font-size: var(--body-size); font-style: italic; line-height: 1.6; color: var(--text-secondary);">"Best earbuds of 2026. The dual-driver system is a revelation."</p>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.75rem; font-weight: 700;">TechRadar &mdash; Editor's Choice</p>
+                </div>
+                <div class="review-card reveal">
+                    <p style="font-size: var(--body-size); font-style: italic; line-height: 1.6; color: var(--text-secondary);">"The 12-hour battery is real. Tested on a cross-country flight with room to spare."</p>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.75rem; font-weight: 700;">The Verge &mdash; 9.2/10</p>
+                </div>
+                <div class="review-card reveal">
+                    <p style="font-size: var(--body-size); font-style: italic; line-height: 1.6; color: var(--text-secondary);">"Better ANC, better battery, better price. No compromises."</p>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.75rem; font-weight: 700;">Wired &mdash; Recommended</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: PRICING -->
+    <section class="slide" aria-label="Pricing" style="background: var(--bg-gradient);">
+        <div class="section-num">08</div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">Pricing</p>
+            <div style="display: flex; gap: var(--content-gap); margin-top: var(--content-gap); flex-wrap: wrap; justify-content: center; align-items: stretch;">
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1.5rem, 3vw, 2.5rem); flex: 1; min-width: 220px; max-width: 320px;">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-secondary);">Standard</p>
+                    <div class="price-big" style="margin-top: 0.3rem;">$179</div>
+                    <ul style="list-style: none; text-align: left; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary);"><li style="padding: 0.3em 0;">&#10003; Arc Earbuds</li><li style="padding: 0.3em 0;">&#10003; USB-C Charging Case</li><li style="padding: 0.3em 0;">&#10003; 3 Ear Tip Sizes</li><li style="padding: 0.3em 0;">&#10003; USB-C Cable</li></ul>
+                </div>
+                <div class="reveal" style="position: relative; overflow: hidden; padding: clamp(1.5rem, 3vw, 2.5rem); flex: 1; min-width: 220px; max-width: 320px;">
+                    <div style="position: absolute; inset: 0; background: var(--card-bg);"></div>
+                    <div style="position: relative; z-index: 1; color: var(--text-on-card);">
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; background: var(--text-on-card); color: var(--accent); display: inline-block; padding: 0.2em 0.6em; font-weight: 700;">BEST VALUE</p>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7; margin-top: 0.5rem;">Pro</p>
+                        <div class="price-big" style="margin-top: 0.3rem;">$249</div>
+                        <ul style="list-style: none; text-align: left; margin-top: var(--content-gap); font-size: var(--body-size); opacity: 0.85;"><li style="padding: 0.3em 0;">&#10003; Everything in Standard</li><li style="padding: 0.3em 0;">&#10003; Wireless Charging Case</li><li style="padding: 0.3em 0;">&#10003; Memory Foam Tips</li><li style="padding: 0.3em 0;">&#10003; 2-Year Warranty</li></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: CTA -->
+    <section class="slide" aria-label="CTA" style="background: var(--bg-gradient);">
+        <div class="section-num">09</div>
+        <div class="slide-content" style="justify-content: flex-end; padding-bottom: clamp(3rem, 8vh, 6rem);">
+            <div class="bold-card reveal-scale" style="max-width: min(90vw, 600px);">
+                <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7;">Available Now</p>
+                <h2 style="font-size: var(--title-size); font-family: var(--font-display); margin-top: 0.3rem; line-height: 1.05;">PRE-ORDER TODAY</h2>
+                <p style="font-size: var(--subtitle-size); margin-top: 0.75rem; opacity: 0.8;">Shipping March 2026. Starting at $179.</p>
+                <a href="https://sonance.audio/arc" class="cta-btn" style="margin-top: var(--content-gap); background: var(--text-on-card); color: var(--card-bg);">Pre-Order Now &rarr;</a>
+                <p style="font-size: var(--body-size); margin-top: 0.75rem; opacity: 0.7;">sonance.audio/arc</p>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
     </section>
 
     <script>
-        /* ===========================================
-           SLIDE PRESENTATION CONTROLLER
-           Full-featured, production-ready
-           =========================================== */
-        class SlidePresentation {
-            constructor() {
-                this.slides = [...document.querySelectorAll('.slide')];
-                this.currentSlide = 0;
-                this.isAnimating = false;
-                this.touchStartY = 0;
-                this.touchStartX = 0;
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init()}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible')}setupIntersectionObserver(){const o=new IntersectionObserver(e=>{e.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const i=this.slides.indexOf(entry.target);if(i!==-1){this.currentSlide=i;this.updateUI()}}})},{threshold:0.5});this.slides.forEach(s=>o.observe(s))}setupKeyboardNav(){document.addEventListener('keydown',e=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break}})}setupTouchNav(){document.addEventListener('touchstart',e=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1)},{passive:true})}setupWheelNav(){let t;document.addEventListener('wheel',e=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1)},50)},{passive:true})}setupProgressBar(){this.progressBar=document.getElementById('progressBar')}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d)})}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI()}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false},600)}updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>new SlidePresentation());
 
-                this.init();
-            }
-
-            init() {
-                this.setupIntersectionObserver();
-                this.setupKeyboardNav();
-                this.setupTouchNav();
-                this.setupWheelNav();
-                this.setupProgressBar();
-                this.setupNavDots();
-                this.setupSlideCounter();
-
-                // Mark first slide visible
-                if (this.slides[0]) {
-                    this.slides[0].classList.add('visible');
-                }
-            }
-
-            /* --- Intersection Observer: triggers .visible on scroll --- */
-            setupIntersectionObserver() {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            const idx = this.slides.indexOf(entry.target);
-                            if (idx !== -1) {
-                                this.currentSlide = idx;
-                                this.updateUI();
-                            }
-                        }
-                    });
-                }, { threshold: 0.5 });
-
-                this.slides.forEach(slide => observer.observe(slide));
-            }
-
-            /* --- Keyboard: arrows, space, pgup/pgdown, home/end --- */
-            setupKeyboardNav() {
-                document.addEventListener('keydown', (e) => {
-                    // Skip if user is editing text
-                    if (e.target.getAttribute('contenteditable')) return;
-
-                    switch (e.key) {
-                        case 'ArrowDown':
-                        case 'ArrowRight':
-                        case ' ':
-                        case 'PageDown':
-                            e.preventDefault();
-                            this.goToSlide(this.currentSlide + 1);
-                            break;
-                        case 'ArrowUp':
-                        case 'ArrowLeft':
-                        case 'PageUp':
-                            e.preventDefault();
-                            this.goToSlide(this.currentSlide - 1);
-                            break;
-                        case 'Home':
-                            e.preventDefault();
-                            this.goToSlide(0);
-                            break;
-                        case 'End':
-                            e.preventDefault();
-                            this.goToSlide(this.slides.length - 1);
-                            break;
-                    }
-                });
-            }
-
-            /* --- Touch: swipe up/down with 50px threshold --- */
-            setupTouchNav() {
-                document.addEventListener('touchstart', (e) => {
-                    this.touchStartY = e.touches[0].clientY;
-                    this.touchStartX = e.touches[0].clientX;
-                }, { passive: true });
-
-                document.addEventListener('touchend', (e) => {
-                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
-                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
-
-                    // Only respond to vertical swipes (ignore horizontal)
-                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
-
-                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
-                    else this.goToSlide(this.currentSlide - 1);
-                }, { passive: true });
-            }
-
-            /* --- Mouse wheel with debounce --- */
-            setupWheelNav() {
-                let wheelTimeout;
-                document.addEventListener('wheel', (e) => {
-                    clearTimeout(wheelTimeout);
-                    wheelTimeout = setTimeout(() => {
-                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
-                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
-                    }, 50);
-                }, { passive: true });
-            }
-
-            /* --- Progress bar --- */
-            setupProgressBar() {
-                this.progressBar = document.getElementById('progressBar');
-            }
-
-            /* --- Navigation dots --- */
-            setupNavDots() {
-                const container = document.getElementById('navDots');
-                if (!container) return;
-
-                this.slides.forEach((_, i) => {
-                    const dot = document.createElement('button');
-                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-                    dot.addEventListener('click', () => this.goToSlide(i));
-                    container.appendChild(dot);
-                });
-            }
-
-            /* --- Slide counter --- */
-            setupSlideCounter() {
-                this.counter = document.getElementById('slideCounter');
-                this.updateUI();
-            }
-
-            /* --- Navigation core --- */
-            goToSlide(index) {
-                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
-                this.isAnimating = true;
-                this.currentSlide = index;
-                this.slides[index].scrollIntoView({ behavior: 'smooth' });
-                this.updateUI();
-                setTimeout(() => { this.isAnimating = false; }, 600);
-            }
-
-            /* --- Update all UI indicators --- */
-            updateUI() {
-                const total = this.slides.length;
-                const current = this.currentSlide;
-
-                // Progress bar
-                if (this.progressBar) {
-                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
-                }
-
-                // Nav dots
-                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-                    dot.classList.toggle('active', i === current);
-                });
-
-                // Counter
-                if (this.counter) {
-                    this.counter.textContent = `${current + 1} / ${total}`;
-                }
-            }
-        }
-
-        // Initialize on DOM ready
-        document.addEventListener('DOMContentLoaded', () => {
-            new SlidePresentation();
-        });
-
-        /* ===========================================
-           COUNTER ANIMATION
-           Animate numbers when slide becomes visible
-           =========================================== */
-        const counters = document.querySelectorAll('.counter');
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const target = parseFloat(el.dataset.target);
-                    const suffix = el.dataset.suffix || '';
-                    const prefix = el.dataset.prefix || '';
-                    const isDecimal = el.dataset.decimal === 'true';
-                    const duration = 1500;
-                    const start = performance.now();
-
-                    function tick(now) {
-                        const elapsed = now - start;
-                        const progress = Math.min(elapsed / duration, 1);
-                        // Ease-out cubic
-                        const eased = 1 - Math.pow(1 - progress, 3);
-                        const value = target * eased;
-                        el.textContent = prefix + (isDecimal ? value.toFixed(1) : Math.round(value).toLocaleString()) + suffix;
-                        if (progress < 1) requestAnimationFrame(tick);
-                    }
-                    requestAnimationFrame(tick);
-                    counterObserver.unobserve(el);
-                }
-            });
-        }, { threshold: 0.5 });
-        counters.forEach(c => counterObserver.observe(c));
+        /* Counter animation */
+        const counters=document.querySelectorAll('.counter');const cObs=new IntersectionObserver(e=>{e.forEach(entry=>{if(entry.isIntersecting){const el=entry.target;const target=parseFloat(el.dataset.target);const suffix=el.dataset.suffix||'';const prefix=el.dataset.prefix||'';const duration=1500;const start=performance.now();function tick(now){const elapsed=now-start;const progress=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-progress,3);const val=target*eased;el.textContent=prefix+(Number.isInteger(target)?Math.round(val):val.toFixed(1))+suffix;if(progress<1)requestAnimationFrame(tick)}requestAnimationFrame(tick);cObs.unobserve(el)}})},{threshold:0.5});counters.forEach(c=>cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
     </script>
 </body>
 </html>

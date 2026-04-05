@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计革命 — Pink Handwritten</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   VIEWPORT FITTING: MANDATORY BASE STYLES
+   =========================================== */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding);
+}
+:root {
+    --title-size: clamp(1.5rem, 5vw, 4rem);
+    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+    --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+    --small-size: clamp(0.65rem, 1vw, 0.875rem);
+    --stat-size: clamp(2rem, 8vw, 6rem);
+    --slide-padding: clamp(1rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 2vw, 2rem);
+    --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box {
+    max-width: min(90vw, 1000px);
+    max-height: min(80vh, 700px);
+}
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.5; }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+:lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
+    line-height: 1.6; word-break: break-all; overflow-wrap: break-word;
+}
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+@media (max-height: 700px) {
+    :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+}
+@media (max-height: 600px) {
+    :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+    .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+    :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+    .slide-counter { display: none; }
+}
+@media (max-width: 600px) and (min-height: 700px) {
+    :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); }
+}
+@media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; }
+    html { scroll-behavior: auto; scroll-snap-type: none; }
+    .reveal, .reveal-bounce, .reveal-pop, .reveal-washi, [class*="reveal-"] { opacity: 0; transform: none !important; filter: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; }
+    .slide.active .reveal, .slide.active .reveal-bounce, .slide.active .reveal-pop, .slide.active .reveal-washi, .slide.active [class*="reveal-"] { opacity: 1; }
+}
+@media print {
+    html { scroll-snap-type: none; }
+    .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; position: relative !important; opacity: 1 !important; pointer-events: auto !important; }
+    .progress-bar, .nav-dots, .slide-counter, .page-counter { display: none !important; }
+    .reveal, .reveal-bounce, .reveal-pop, .reveal-washi, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
+}
+
+/* ===========================================
+   PINK HANDWRITTEN THEME
+   =========================================== */
+
+:root {
+  --pink: #e85d75;
+  --pink-light: #fce4e8;
+  --yellow: #f5c842;
+  --yellow-light: #fef7d8;
+  --mint: #7ecba1;
+  --mint-light: #dcf5e7;
+  --lavender: #b8a9d4;
+  --lavender-light: #e8dff5;
+  --paper: #ede5d8;
+  --paper-dark: #c4b9a8;
+  --ink: #2a2a2a;
+  --muted: #777;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: var(--paper); color: var(--ink); }
+body { font-family: 'Inter', 'Noto Sans SC', sans-serif; font-weight: 400; }
+
+.handwritten { font-family: 'Caveat', cursive; }
+.bold-sans { font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif; font-weight: 700; }
+
+/* --- Progress & Navigation --- */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: clamp(2px, 0.4vh, 4px);
+  background: var(--pink); z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 3vh, 36px);
+  right: clamp(20px, 3vw, 44px);
+  font-family: 'Caveat', cursive;
+  font-size: clamp(14px, 1.6vw, 22px);
+  font-weight: 600;
+  color: var(--muted);
+  z-index: 1000;
+}
+.page-counter .current { color: var(--pink); }
+
+/* --- Slide System --- */
+.slide {
+  position: fixed; inset: 0;
+  width: 100vw;
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
+  background: var(--paper);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(36px, 6vh, 72px) clamp(40px, 7vw, 120px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; overflow: hidden;
+}
+
+/* --- Paper Texture Overlay --- */
+.paper-texture {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(232,93,117,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(245,200,66,0.04) 0%, transparent 50%);
+}
+
+/* --- Washi Tape --- */
+.washi {
+  position: absolute;
+  height: clamp(10px, 1.5vh, 18px);
+  border-radius: 1px;
+  opacity: 0.55;
+}
+.washi-pink { background: var(--pink); }
+.washi-yellow { background: var(--yellow); }
+.washi-mint { background: var(--mint); }
+.washi-lavender { background: var(--lavender); }
+
+/* --- CSS Star --- */
+.star-6 {
+  position: absolute;
+  width: 0; height: 0;
+  border-left: clamp(5px, 0.6vw, 8px) solid transparent;
+  border-right: clamp(5px, 0.6vw, 8px) solid transparent;
+  border-bottom: clamp(9px, 1vw, 14px) solid var(--pink);
+}
+.star-6::after {
+  content: '';
+  position: absolute;
+  top: clamp(2px, 0.3vw, 4px);
+  left: calc(-1 * clamp(5px, 0.6vw, 8px));
+  width: 0; height: 0;
+  border-left: clamp(5px, 0.6vw, 8px) solid transparent;
+  border-right: clamp(5px, 0.6vw, 8px) solid transparent;
+  border-top: clamp(9px, 1vw, 14px) solid var(--pink);
+}
+
+/* --- CSS Heart --- */
+.heart {
+  position: absolute;
+  width: clamp(10px, 1.2vw, 14px);
+  height: clamp(9px, 1.1vw, 13px);
+}
+.heart::before, .heart::after {
+  content: '';
+  position: absolute; top: 0;
+  width: clamp(5px, 0.6vw, 7px);
+  height: clamp(8px, 0.9vw, 11px);
+  border-radius: 50% 50% 0 0;
+  background: var(--pink);
+}
+.heart::before { left: 0; transform: rotate(-45deg); transform-origin: bottom right; }
+.heart::after { right: 0; transform: rotate(45deg); transform-origin: bottom left; }
+
+/* --- Squiggly Line --- */
+.squiggle {
+  position: absolute;
+  height: clamp(5px, 0.7vw, 8px);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='8'%3E%3Cpath d='M0 4 Q5 0 10 4 Q15 8 20 4 Q25 0 30 4 Q35 8 40 4' stroke='%23e85d75' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") repeat-x;
+}
+
+/* --- Confetti --- */
+.confetti {
+  position: absolute;
+  width: clamp(4px, 0.5vw, 6px);
+  height: clamp(4px, 0.5vw, 6px);
+  opacity: 0;
+}
+.confetti.circle { border-radius: 50%; }
+.confetti.triangle {
+  width: 0; height: 0;
+  border-left: clamp(3px, 0.35vw, 4px) solid transparent;
+  border-right: clamp(3px, 0.35vw, 4px) solid transparent;
+  border-bottom: clamp(5px, 0.55vw, 7px) solid currentColor;
+  background: none;
+}
+.confetti.square { border-radius: 1px; }
+
+/* --- Sticky Notes --- */
+.sticky {
+  padding: clamp(12px, 2vh, 18px) clamp(14px, 2vw, 22px);
+  font-size: clamp(11px, 1.2vw, 14px);
+  line-height: 1.75; color: #444;
+  border-radius: 2px;
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.06);
+}
+.sticky.white { background: #fff; }
+.sticky.pink { background: var(--pink-light); }
+.sticky.yellow { background: var(--yellow-light); }
+.sticky.mint { background: var(--mint-light); }
+.sticky.lavender { background: var(--lavender-light); }
+.sticky h3 {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(20px, 2.8vw, 32px);
+  color: var(--pink);
+  margin-bottom: clamp(6px, 0.8vh, 10px);
+}
+
+/* --- Polaroid --- */
+.polaroid {
+  position: absolute;
+  width: clamp(60px, 7vw, 88px);
+  height: clamp(70px, 8vw, 100px);
+  background: #fff;
+  padding: clamp(4px, 0.5vw, 6px) clamp(4px, 0.5vw, 6px) clamp(14px, 1.8vw, 22px) clamp(4px, 0.5vw, 6px);
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.08);
+}
+.polaroid-inner { width: 100%; height: 100%; border-radius: 2px; }
+.polaroid-inner.stripes { background: repeating-linear-gradient(45deg, var(--pink), var(--pink) 4px, #f0a0b0 4px, #f0a0b0 8px); }
+.polaroid-inner.dots { background: var(--yellow); background-image: radial-gradient(#fff 2px, transparent 2px); background-size: 8px 8px; }
+.polaroid-inner.squiggles { background: var(--mint); }
+.polaroid-inner.checker { background: repeating-conic-gradient(var(--lavender) 0% 25%, #d0c5e8 0% 50%) 0 0 / 12px 12px; }
+
+/* --- Skill Pill --- */
+.skill-pill {
+  display: inline-block;
+  padding: clamp(6px, 0.8vh, 10px) clamp(14px, 1.8vw, 22px);
+  border-radius: 24px;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-size: clamp(11px, 1.2vw, 14px);
+  font-weight: 500;
+  color: var(--ink);
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.08);
+  margin: clamp(3px, 0.4vh, 5px) clamp(4px, 0.5vw, 6px);
+}
+
+/* --- Sticker Tag --- */
+.sticker-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(5px, 0.6vw, 8px);
+  padding: clamp(6px, 0.8vh, 9px) clamp(12px, 1.5vw, 18px);
+  border-radius: 20px;
+  font-size: clamp(10px, 1.1vw, 13px);
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 clamp(4px, 0.5vw, 6px) clamp(6px, 0.8vh, 10px) 0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+}
+.sticker-dot {
+  width: clamp(7px, 0.8vw, 10px);
+  height: clamp(7px, 0.8vw, 10px);
+  border-radius: 50%;
+}
+
+/* --- Stat Circle --- */
+.stat-circle {
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.06);
+}
+.stat-circle .pct {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: #fff;
+}
+.stat-circle .label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+}
+
+/* --- Ribbon --- */
+.ribbon {
+  display: inline-block;
+  padding: clamp(8px, 1vh, 12px) clamp(20px, 2.5vw, 30px) clamp(8px, 1vh, 12px) clamp(14px, 1.8vw, 20px);
+  background: var(--pink);
+  color: #fff;
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(12px, 1.3vw, 16px);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+}
+
+/* --- Envelope --- */
+.envelope {
+  position: relative;
+  width: clamp(140px, 16vw, 200px);
+  height: clamp(90px, 10vw, 130px);
+}
+.env-body {
+  width: 100%; height: 100%;
+  background: var(--pink);
+  border-radius: 8px;
+  position: relative; overflow: hidden;
+  box-shadow: 6px 6px 0 rgba(232,93,117,0.25);
+}
+.env-flap {
+  position: absolute; top: 0; left: 0;
+  width: 0; height: 0;
+  border-left: calc(clamp(140px, 16vw, 200px) / 2) solid transparent;
+  border-right: calc(clamp(140px, 16vw, 200px) / 2) solid transparent;
+  border-top: calc(clamp(90px, 10vw, 130px) / 2) solid #d4495f;
+}
+.env-inner {
+  position: absolute; bottom: 0; left: 0;
+  width: 0; height: 0;
+  border-left: calc(clamp(140px, 16vw, 200px) / 2) solid transparent;
+  border-right: calc(clamp(140px, 16vw, 200px) / 2) solid transparent;
+  border-bottom: calc(clamp(90px, 10vw, 130px) * 0.58) solid #f0728a;
+}
+.env-paper {
+  position: absolute;
+  top: clamp(-18px, -2vw, -26px);
+  left: 25%;
+  width: 50%;
+  height: clamp(48px, 5.5vw, 70px);
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.env-paper::before {
+  content: '';
+  position: absolute;
+  top: 30%; left: 12%; right: 12%;
+  height: 1px;
+  background: #ddd;
+  box-shadow: 0 clamp(7px, 0.8vw, 10px) 0 #ddd, 0 clamp(14px, 1.6vw, 20px) 0 #ddd;
+}
+
+/* --- Lined Note --- */
+.lined-note {
+  background: #fff;
+  padding: clamp(10px, 1.5vh, 16px) clamp(14px, 1.8vw, 22px);
+  border-radius: 4px;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(16px, 1.8vw, 22px);
+  color: #555;
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.05);
+  transform: rotate(-1deg);
+  background-image: repeating-linear-gradient(transparent, transparent 27px, #eee 27px, #eee 28px);
+  background-position: 0 8px;
+}
+
+/* --- Mood Board Grid --- */
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(2, clamp(50px, 6vw, 80px));
+  grid-template-rows: repeat(2, clamp(50px, 6vw, 80px));
+  gap: clamp(3px, 0.4vw, 6px);
+}
+.mood-cell {
+  border-radius: 4px;
+  border: 2px solid #fff;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.06);
+}
+
+/* --- Browser Mockup --- */
+.browser-box {
+  width: clamp(260px, 34vw, 430px);
+  height: clamp(180px, 24vw, 300px);
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  border: 1px solid #e0d8cc;
+  flex-shrink: 0;
+}
+.browser-bar {
+  height: clamp(22px, 2.8vw, 36px);
+  background: #f5f0ea;
+  border-bottom: 1px solid #e0d8cc;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(8px, 1.1vw, 14px);
+  gap: clamp(4px, 0.5vw, 7px);
+}
+.browser-dot {
+  width: clamp(6px, 0.7vw, 9px);
+  height: clamp(6px, 0.7vw, 9px);
+  border-radius: 50%;
+}
+.browser-dot:nth-child(1) { background: #ff5f57; }
+.browser-dot:nth-child(2) { background: #ffbd2e; }
+.browser-dot:nth-child(3) { background: #28ca41; }
+.browser-url {
+  margin-left: clamp(6px, 0.9vw, 12px);
+  background: #fff;
+  border-radius: 6px;
+  padding: clamp(2px, 0.3vw, 3px) clamp(8px, 1vw, 12px);
+  font-size: clamp(7px, 0.8vw, 10px);
+  color: #999;
+  border: 1px solid #e0d8cc;
+}
+.browser-banner {
+  height: clamp(50px, 7vw, 90px);
+  background: linear-gradient(135deg, var(--pink), var(--yellow), var(--mint), var(--lavender));
+}
+.browser-vids {
+  display: flex;
+  gap: clamp(4px, 0.5vw, 8px);
+  padding: 0 clamp(10px, 1.4vw, 18px);
+  margin-top: clamp(6px, 0.8vw, 10px);
+}
+.browser-vid {
+  width: clamp(55px, 7.5vw, 95px);
+  height: clamp(34px, 4.4vw, 56px);
+  border-radius: 6px;
+}
+.browser-vid:nth-child(1) { background: linear-gradient(135deg, var(--pink), #f0728a); }
+.browser-vid:nth-child(2) { background: linear-gradient(135deg, var(--yellow), #f7d96e); }
+.browser-vid:nth-child(3) { background: linear-gradient(135deg, var(--mint), #a8dfc0); }
+.browser-vid:nth-child(4) { background: linear-gradient(135deg, var(--lavender), #d0c5e8); }
+
+/* --- Phone Mockup --- */
+.phone-mockup {
+  position: absolute;
+  bottom: clamp(20px, 4vh, 30px);
+  right: clamp(50px, 7vw, 90px);
+  width: clamp(110px, 13vw, 170px);
+  height: clamp(210px, 25vw, 320px);
+  background: var(--ink);
+  border-radius: clamp(16px, 2.2vw, 28px);
+  padding: clamp(6px, 0.8vw, 10px);
+  box-shadow: 8px 8px 0 rgba(232,93,117,0.2);
+}
+.phone-notch {
+  width: clamp(34px, 4.3vw, 55px);
+  height: clamp(3px, 0.4vw, 5px);
+  background: #1a1a1a;
+  border-radius: 3px;
+  margin: clamp(2px, 0.3vw, 3px) auto clamp(3px, 0.4vw, 6px);
+}
+.phone-screen {
+  width: 100%;
+  height: calc(100% - clamp(10px, 1.3vw, 18px));
+  border-radius: clamp(10px, 1.4vw, 18px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.phone-header {
+  height: clamp(36px, 4.5vw, 60px);
+  background: linear-gradient(135deg, var(--pink), var(--yellow));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(12px, 1.5vw, 18px);
+  color: #fff;
+}
+.phone-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2px, 0.3vw, 4px);
+  padding: clamp(2px, 0.3vw, 4px);
+  background: #faf6f0;
+}
+.phone-cell { border-radius: 4px; }
+.phone-cell:nth-child(1) { background: linear-gradient(135deg, var(--pink), #f0728a); }
+.phone-cell:nth-child(2) { background: linear-gradient(135deg, var(--yellow), #f7d96e); }
+.phone-cell:nth-child(3) { background: linear-gradient(135deg, var(--mint), #a8dfc0); }
+.phone-cell:nth-child(4) { background: linear-gradient(135deg, var(--lavender), #d0c5e8); }
+.phone-cell:nth-child(5) { background: linear-gradient(135deg, var(--yellow), var(--pink)); }
+.phone-cell:nth-child(6) { background: linear-gradient(135deg, var(--mint), var(--lavender)); }
+
+/* Annotation handwriting */
+.annotation {
+  font-family: 'Caveat', cursive;
+  color: #999;
+  position: absolute;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+/* Basic reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.slide.active .reveal {
+  animation: revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Bouncy reveal */
+.reveal-bounce {
+  opacity: 0;
+  transform: translateY(50px) scale(0.9);
+}
+.slide.active .reveal-bounce {
+  animation: bounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes bounceIn {
+  0% { opacity: 0; transform: translateY(50px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(-8px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Sticker pop-in */
+.reveal-pop {
+  opacity: 0;
+  transform: scale(0);
+}
+.slide.active .reveal-pop {
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0) rotate(-15deg); }
+  60% { opacity: 1; transform: scale(1.15) rotate(3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Washi tape slide-in */
+.reveal-washi {
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.slide.active .reveal-washi {
+  animation: washiSlide 0.5s ease-out forwards;
+}
+@keyframes washiSlide {
+  to { opacity: 0.55; transform: scaleX(1); }
+}
+
+/* Float drift for decorative elements */
+@keyframes gentleDrift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(3px, -5px) rotate(2deg); }
+  50% { transform: translate(-2px, -8px) rotate(-1deg); }
+  75% { transform: translate(5px, -3px) rotate(1.5deg); }
+}
+
+/* Confetti fall */
+@keyframes confettiFall {
+  0% { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+  20% { opacity: 0.6; }
+  100% { opacity: 0.4; transform: translateY(0) rotate(360deg); }
+}
+.slide.active .confetti-anim {
+  animation: confettiFall 1.2s ease-out forwards;
+}
+
+/* Stagger delay classes */
+.d1 { animation-delay: 0.1s !important; }
+.d2 { animation-delay: 0.2s !important; }
+.d3 { animation-delay: 0.3s !important; }
+.d4 { animation-delay: 0.4s !important; }
+.d5 { animation-delay: 0.5s !important; }
+.d6 { animation-delay: 0.6s !important; }
+.d7 { animation-delay: 0.7s !important; }
+.d8 { animation-delay: 0.8s !important; }
+.d9 { animation-delay: 0.9s !important; }
+.d10 { animation-delay: 1.0s !important; }
+.d11 { animation-delay: 1.1s !important; }
+.d12 { animation-delay: 1.2s !important; }
+
+/* ===========================================
+   SLIDE-SPECIFIC LAYOUT
+   =========================================== */
+
+/* --- Slide 1 --- */
+.s1-title {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(56px, 10vw, 160px);
+  letter-spacing: clamp(2px, 0.4vw, 6px);
+  color: var(--pink);
+  line-height: 0.95;
+}
+.s1-subtitle {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(46px, 8.5vw, 140px);
+  letter-spacing: clamp(4px, 0.8vw, 12px);
+  color: var(--ink);
+  line-height: 0.95;
+}
+.s1-tagline {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 1.2vw, 15px);
+  letter-spacing: clamp(2px, 0.4vw, 5px);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.s1-intro {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(18px, 2.5vw, 28px);
+  color: var(--ink);
+  line-height: 1.5;
+}
+.s1-intro span {
+  display: block;
+  font-size: clamp(14px, 1.8vw, 22px);
+  color: var(--muted);
+}
+
+/* CSS Avatar */
+.avatar-wrap {
+  position: absolute;
+  top: clamp(120px, 18vh, 200px);
+  right: clamp(60px, 9vw, 120px);
+  width: clamp(120px, 15vw, 200px);
+  height: clamp(120px, 15vw, 200px);
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--ink);
+  box-shadow: clamp(3px, 0.4vw, 6px) clamp(3px, 0.4vw, 6px) 0 var(--pink);
+}
+.av-eye {
+  position: absolute;
+  width: clamp(6px, 0.8vw, 10px);
+  height: clamp(6px, 0.8vw, 10px);
+  border-radius: 50%;
+  background: var(--ink);
+  top: 38%;
+}
+.av-eye.l { left: 31%; }
+.av-eye.r { left: 59%; }
+.av-lash {
+  position: absolute;
+  width: clamp(8px, 1.1vw, 14px);
+  height: clamp(4px, 0.55vw, 7px);
+  border-top: 2px solid var(--ink);
+  border-radius: 50% 50% 0 0;
+  top: 34%;
+}
+.av-lash.l { left: 30%; }
+.av-lash.r { left: 58%; }
+.av-smile {
+  position: absolute;
+  top: 54%; left: 36%;
+  width: 23%; height: 10%;
+  border-bottom: 3px solid var(--ink);
+  border-radius: 0 0 50% 50%;
+}
+.av-blush {
+  position: absolute;
+  width: clamp(12px, 1.7vw, 22px);
+  height: clamp(6px, 0.9vw, 12px);
+  border-radius: 50%;
+  background: rgba(232,93,117,0.25);
+  top: 50%;
+}
+.av-blush.l { left: 21%; }
+.av-blush.r { left: 63%; }
+.av-hair {
+  position: absolute;
+  top: -4%; left: 15%;
+  width: 70%; height: 28%;
+  background: var(--ink);
+  border-radius: 70px 70px 0 0;
+}
+.av-hair-side {
+  position: absolute;
+  top: 15%; left: 11%;
+  width: 10%; height: 35%;
+  background: var(--ink);
+  border-radius: 10px 0 0 10px;
+}
+.av-hair-side.r {
+  left: auto; right: 11%;
+  border-radius: 0 10px 10px 0;
+}
+
+/* --- Slide 3 --- */
+.s3-create-text {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(60px, 11vw, 150px);
+  letter-spacing: clamp(3px, 0.5vw, 8px);
+  -webkit-text-stroke: clamp(1.5px, 0.2vw, 3px) var(--pink);
+  color: transparent;
+  line-height: 1;
+}
+
+/* --- Slide 4 --- */
+.s4-top-text {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-size: clamp(14px, 1.8vw, 22px);
+  font-weight: 400;
+  color: var(--muted);
+}
+.s4-big-text {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 5.5vw, 70px);
+  line-height: 1.1;
+  color: var(--ink);
+}
+.s4-big-text .accent { color: var(--pink); }
+
+/* --- Slide 5 --- */
+.s5-split {
+  display: flex; height: 100%; width: 100%;
+}
+.s5-left {
+  flex: 0 0 clamp(200px, 38%, 480px);
+  padding: clamp(36px, 6vh, 65px) clamp(28px, 4vw, 55px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.s5-left h2 {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(36px, 5.5vw, 72px);
+  color: var(--pink);
+  line-height: 1.05;
+  margin-bottom: clamp(18px, 3vh, 35px);
+}
+.s5-divider {
+  width: 1px;
+  background: #d4c0b0;
+  opacity: 0.6;
+  align-self: stretch;
+  margin: clamp(30px, 5vh, 55px) 0;
+}
+.s5-right {
+  flex: 1;
+  padding: clamp(36px, 6vh, 55px) clamp(40px, 6vw, 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.s5-right h2 {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 4.2vw, 52px);
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: clamp(16px, 2.5vh, 30px);
+}
+.s5-contact {
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: #555;
+  line-height: 1.8;
+}
+.s5-contact strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .s5-split { flex-direction: column; }
+  .s5-left { flex: 0 0 auto; }
+  .s5-divider { width: 80%; height: 1px; align-self: center; margin: 0; }
+  .avatar-wrap { display: none; }
+  .phone-mockup { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- ==================== SLIDE 1: COVER ==================== -->
+<div class="slide active" data-i="0">
+  <div class="paper-texture"></div>
+  <div class="slide-inner">
+
+    <!-- Washi tape strips -->
+    <div class="washi washi-pink reveal-washi d1" style="top:3vh; right:5vw; width:clamp(50px,6vw,80px); transform:rotate(-12deg);"></div>
+    <div class="washi washi-yellow reveal-washi d3" style="bottom:5vh; left:3vw; width:clamp(40px,5vw,65px); transform:rotate(8deg);"></div>
+    <div class="washi washi-mint reveal-washi d2" style="top:22vh; right:27vw; width:clamp(30px,4vw,50px); transform:rotate(-5deg);"></div>
+
+    <!-- Stars scattered -->
+    <div class="star-6 reveal-pop d5" style="top:6vh; right:14vw; transform:scale(0.7);"></div>
+    <div class="star-6 reveal-pop d7" style="bottom:13vh; right:8vw; transform:scale(0.5); opacity:0.4;"></div>
+    <div class="star-6 reveal-pop d9" style="top:72vh; left:5vw; transform:scale(0.6); opacity:0.5;"></div>
+
+    <!-- Handwritten intro -->
+    <div class="s1-intro reveal-bounce d1" style="position:absolute; top:clamp(30px,7vh,52px); left:clamp(50px,7vw,90px);">
+      当传统遇见未来
+      <span>这是一场关于设计的探索之旅</span>
+    </div>
+
+    <!-- Big Title -->
+    <div class="s1-title reveal-bounce d2" style="position:absolute; top:clamp(110px,18vh,180px); left:clamp(50px,7vw,90px);">设计</div>
+    <div class="s1-subtitle reveal-bounce d3" style="position:absolute; top:clamp(190px,32vh,330px); left:clamp(54px,7.3vw,94px);">革命</div>
+
+    <div class="s1-tagline reveal d4" style="position:absolute; top:clamp(280px,48vh,475px); left:clamp(56px,7.5vw,96px);">
+      Design Revolution &middot; 2026
+    </div>
+
+    <!-- CSS Avatar -->
+    <div class="avatar-wrap reveal-pop d5">
+      <div class="av-hair"></div>
+      <div class="av-hair-side"></div>
+      <div class="av-hair-side r"></div>
+      <div class="av-lash l"></div>
+      <div class="av-lash r"></div>
+      <div class="av-eye l"></div>
+      <div class="av-eye r"></div>
+      <div class="av-blush l"></div>
+      <div class="av-blush r"></div>
+      <div class="av-smile"></div>
+    </div>
+
+    <!-- Annotation -->
+    <div class="annotation reveal d7" style="top:clamp(260px,42vh,415px); right:clamp(100px,12vw,150px); font-size:clamp(13px,1.5vw,18px); transform:rotate(3deg);">
+      这就是设计的力量!
+    </div>
+
+    <!-- Wavy line at bottom -->
+    <svg class="reveal d6" style="position:absolute; bottom:clamp(30px,6vh,50px); left:clamp(50px,7vw,80px); width:clamp(300px,40vw,500px);" height="12" viewBox="0 0 500 12" fill="none">
+      <path d="M0 6 Q25 0 50 6 Q75 12 100 6 Q125 0 150 6 Q175 12 200 6 Q225 0 250 6 Q275 12 300 6 Q325 0 350 6 Q375 12 400 6 Q425 0 450 6 Q475 12 500 6" stroke="#e85d75" stroke-width="1.5" fill="none" opacity="0.4"/>
+    </svg>
+
+    <!-- Hearts -->
+    <div class="heart reveal-pop d8" style="top:70vh; right:27vw; transform:scale(0.7); opacity:0.4;"></div>
+    <div class="heart reveal-pop d10" style="top:10vh; left:25vw; transform:scale(0.5); opacity:0.3;"></div>
+
+    <!-- Byline -->
+    <div class="annotation reveal d6" style="bottom:clamp(24px,4vh,38px); right:clamp(40px,6vw,80px); font-size:clamp(12px,1.4vw,17px); color:#aaa;">
+      设计革命 2026
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: THE STORY ==================== -->
+<div class="slide" data-i="1">
+  <div class="paper-texture"></div>
+  <div class="slide-inner" style="flex-direction:row; align-items:center; gap:clamp(20px,4vw,40px);">
+
+    <!-- Sticky notes column -->
+    <div style="display:flex; flex-direction:column; gap:clamp(10px,1.5vh,16px); max-width:clamp(280px,35vw,420px); flex-shrink:0;">
+      <div class="sticky white reveal-bounce d1" style="transform:rotate(-0.5deg);">
+        <h3>为什么需要设计革命?</h3>
+        <p>传统设计流程耗时耗力，80% 的时间花在重复性排版上。AI 正在改变这一切 -- 让创意回归创意本身。</p>
+      </div>
+      <div class="sticky pink reveal-bounce d3" style="transform:rotate(0.8deg);">
+        <p>从手动调整每个像素，到 AI 理解你的设计意图并自动生成方案。设计师终于可以把精力放在真正重要的事情上：<strong style="color:var(--pink);">讲好故事。</strong></p>
+      </div>
+      <div class="sticky yellow reveal-bounce d5" style="transform:rotate(-0.4deg);">
+        <p>这不是取代设计师，而是解放设计师。</p>
+        <p style="font-family:'Caveat',cursive; font-size:clamp(16px,1.8vw,20px); color:var(--pink); margin-top:clamp(5px,0.7vh,8px);">当工具足够聪明，创意才能足够自由。</p>
+      </div>
+    </div>
+
+    <!-- Browser mockup -->
+    <div class="browser-box reveal-bounce d4">
+      <div class="browser-bar">
+        <div class="browser-dot"></div>
+        <div class="browser-dot"></div>
+        <div class="browser-dot"></div>
+        <div class="browser-url">design-revolution.ai</div>
+      </div>
+      <div class="browser-banner"></div>
+      <div style="padding:clamp(8px,1.2vw,14px) clamp(10px,1.4vw,18px); display:flex; gap:clamp(6px,0.8vw,12px); align-items:flex-start;">
+        <div style="width:clamp(22px,3vw,36px); height:clamp(22px,3vw,36px); border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--yellow)); flex-shrink:0;"></div>
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(10px,1.1vw,13px); color:var(--ink);">设计革命</div>
+          <div style="font-size:clamp(7px,0.8vw,10px); color:#999; margin-top:2px;">12.4K 关注者</div>
+        </div>
+      </div>
+      <div class="browser-vids">
+        <div class="browser-vid"></div>
+        <div class="browser-vid"></div>
+        <div class="browser-vid"></div>
+        <div class="browser-vid"></div>
+      </div>
+    </div>
+
+    <!-- Handwritten annotation -->
+    <div class="annotation reveal d6" style="top:clamp(24px,4vh,38px); right:clamp(200px,38vw,510px); font-size:clamp(13px,1.4vw,18px); color:var(--pink); transform:rotate(-5deg);">
+      我们的平台 -->
+    </div>
+
+    <!-- Polaroids at bottom -->
+    <div class="polaroid reveal-pop d6" style="bottom:clamp(24px,5vh,40px); right:clamp(200px,27vw,340px); transform:rotate(-4deg);">
+      <div class="polaroid-inner stripes"></div>
+    </div>
+    <div class="polaroid reveal-pop d7" style="bottom:clamp(30px,6vh,50px); right:clamp(130px,19vw,235px); transform:rotate(2deg);">
+      <div class="polaroid-inner dots"></div>
+    </div>
+    <div class="polaroid reveal-pop d8" style="bottom:clamp(20px,4vh,35px); right:clamp(65px,11vw,130px); transform:rotate(-1deg);">
+      <div class="polaroid-inner squiggles"></div>
+    </div>
+    <div class="polaroid reveal-pop d9" style="bottom:clamp(28px,5.5vh,48px); right:clamp(5px,2vw,25px); transform:rotate(3deg);">
+      <div class="polaroid-inner checker"></div>
+    </div>
+
+    <!-- Washi tape on polaroids -->
+    <div class="washi washi-pink reveal-washi d7" style="bottom:clamp(80px,13vh,130px); right:clamp(220px,28vw,360px); width:clamp(28px,3.5vw,44px); transform:rotate(-15deg);"></div>
+    <div class="washi washi-yellow reveal-washi d8" style="bottom:clamp(88px,14vh,140px); right:clamp(150px,20vw,255px); width:clamp(25px,3.2vw,40px); transform:rotate(10deg);"></div>
+    <div class="washi washi-mint reveal-washi d9" style="bottom:clamp(78px,12vh,125px); right:clamp(88px,12vw,148px); width:clamp(26px,3.3vw,42px); transform:rotate(-8deg);"></div>
+
+    <!-- Annotation -->
+    <div class="annotation reveal d10" style="bottom:clamp(100px,16vh,155px); right:clamp(88px,12vw,150px); font-size:clamp(11px,1.2vw,16px); transform:rotate(2deg);">
+      灵感瞬间
+    </div>
+
+    <!-- Stars -->
+    <div class="star-6 reveal-pop d5" style="top:5vh; right:3vw; transform:scale(0.5); opacity:0.3;"></div>
+    <div class="star-6 reveal-pop d7" style="bottom:26vh; left:37vw; transform:scale(0.45); opacity:0.35;"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: WHAT WE CREATE ==================== -->
+<div class="slide" data-i="2">
+  <div class="paper-texture"></div>
+  <div class="slide-inner">
+
+    <!-- Giant outlined text -->
+    <div class="s3-create-text reveal-bounce d1" style="position:absolute; top:clamp(30px,7vh,60px); left:clamp(40px,5.5vw,70px);">
+      CREATE
+    </div>
+
+    <!-- Skill pills floating -->
+    <div class="skill-pill reveal-pop d2" style="position:absolute; top:clamp(130px,22vh,210px); left:clamp(50px,7vw,90px); background:var(--pink-light);">智能布局</div>
+    <div class="skill-pill reveal-pop d3" style="position:absolute; top:clamp(170px,28vh,260px); left:clamp(140px,17vw,220px); background:var(--yellow-light);">风格迁移</div>
+    <div class="skill-pill reveal-pop d4" style="position:absolute; top:clamp(130px,22vh,210px); left:clamp(250px,31vw,400px); background:var(--mint-light);">动态排版</div>
+    <div class="skill-pill reveal-pop d5" style="position:absolute; top:clamp(200px,33vh,310px); left:clamp(60px,8vw,100px); background:var(--lavender-light);">实时协作</div>
+    <div class="skill-pill reveal-pop d6" style="position:absolute; top:clamp(200px,33vh,310px); left:clamp(190px,24vw,310px); background:var(--pink-light);">自适应设计</div>
+    <div class="skill-pill reveal-pop d7" style="position:absolute; top:clamp(170px,28vh,260px); left:clamp(370px,44vw,570px); background:var(--yellow-light);">品牌系统</div>
+    <div class="skill-pill reveal-pop d8" style="position:absolute; top:clamp(240px,39vh,360px); left:clamp(120px,15vw,200px); background:var(--mint-light);">视觉叙事</div>
+
+    <!-- Phone mockup -->
+    <div class="phone-mockup reveal-bounce d6">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-header">作品集</div>
+        <div class="phone-grid">
+          <div class="phone-cell"></div>
+          <div class="phone-cell"></div>
+          <div class="phone-cell"></div>
+          <div class="phone-cell"></div>
+          <div class="phone-cell"></div>
+          <div class="phone-cell"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini sticker strip -->
+    <div style="position:absolute; left:clamp(16px,2.5vw,35px); top:clamp(160px,26vh,250px); display:flex; flex-direction:column; gap:clamp(6px,0.8vw,10px);">
+      <div class="reveal-pop d3" style="width:clamp(18px,2.2vw,28px); height:clamp(18px,2.2vw,28px); border-radius:50%; border:2px solid #fff; box-shadow:1px 2px 4px rgba(0,0,0,0.08); background:repeating-linear-gradient(45deg,var(--pink),var(--pink) 3px,#f0a0b0 3px,#f0a0b0 6px);"></div>
+      <div class="reveal-pop d4" style="width:clamp(18px,2.2vw,28px); height:clamp(18px,2.2vw,28px); border-radius:50%; border:2px solid #fff; box-shadow:1px 2px 4px rgba(0,0,0,0.08); background:radial-gradient(#fff 2px, var(--yellow) 2px); background-size:6px 6px;"></div>
+      <div class="reveal-pop d5" style="width:clamp(18px,2.2vw,28px); height:clamp(18px,2.2vw,28px); border-radius:50%; border:2px solid #fff; box-shadow:1px 2px 4px rgba(0,0,0,0.08); background:var(--mint);"></div>
+      <div class="reveal-pop d6" style="width:clamp(18px,2.2vw,28px); height:clamp(18px,2.2vw,28px); border-radius:50%; border:2px solid #fff; box-shadow:1px 2px 4px rgba(0,0,0,0.08); background:linear-gradient(135deg,var(--pink),var(--yellow));"></div>
+    </div>
+
+    <!-- Follower ribbon -->
+    <div class="ribbon reveal-bounce d8" style="position:absolute; bottom:clamp(50px,9vh,80px); left:clamp(36px,5vw,60px);">
+      50M+ 设计方案已生成
+    </div>
+
+    <!-- Decorations -->
+    <div class="star-6 reveal-pop d7" style="top:clamp(260px,42vh,400px); left:clamp(340px,43vw,550px); transform:scale(0.6); opacity:0.4;"></div>
+    <div class="heart reveal-pop d9" style="top:clamp(270px,44vh,420px); left:clamp(290px,37vw,480px); transform:scale(0.6); opacity:0.35;"></div>
+
+    <!-- Arrow from pills to phone -->
+    <svg class="reveal d7" style="position:absolute; top:clamp(200px,32vh,300px); right:clamp(170px,21vw,270px);" width="60" height="60" viewBox="0 0 60 60" fill="none">
+      <path d="M0 10 Q30 5 50 45" stroke="#e85d75" stroke-width="1.5" stroke-dasharray="5 3" fill="none"/>
+      <polygon points="46,42 54,48 47,50" fill="#e85d75"/>
+    </svg>
+
+    <!-- Annotation -->
+    <div class="annotation reveal d5" style="top:clamp(100px,16vh,168px); right:clamp(50px,7.5vw,95px); font-size:clamp(12px,1.4vw,17px); transform:rotate(-3deg);">
+      看看这些能力!
+    </div>
+
+    <!-- Washi -->
+    <div class="washi washi-mint reveal-washi d4" style="bottom:3vh; right:4vw; width:clamp(34px,4.3vw,55px); transform:rotate(7deg);"></div>
+    <div class="washi washi-yellow reveal-washi d2" style="top:4vh; left:16vw; width:clamp(28px,3.5vw,45px); transform:rotate(-10deg);"></div>
+
+    <!-- Squiggly line -->
+    <div class="squiggle reveal d8" style="bottom:clamp(18px,3.5vh,30px); left:28vw; width:clamp(100px,13vw,160px); opacity:0.3;"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: DATA / VIBE ==================== -->
+<div class="slide" data-i="3">
+  <div class="paper-texture"></div>
+  <div class="slide-inner">
+
+    <div class="s4-top-text reveal d1" style="position:absolute; top:clamp(40px,8vh,70px); left:clamp(44px,6vw,80px);">
+      这不仅仅是工具升级,
+    </div>
+    <div class="s4-big-text reveal-bounce d2" style="position:absolute; top:clamp(68px,12vh,110px); left:clamp(44px,6vw,80px); right:clamp(44px,6vw,80px);">
+      是设计思维的<br><span class="accent">范式转换。</span>
+    </div>
+
+    <!-- Overlapping stat circles -->
+    <div class="stat-circle reveal-pop d3" style="position:absolute; bottom:clamp(70px,13vh,120px); left:clamp(44px,6vw,80px); width:clamp(110px,14vw,180px); height:clamp(110px,14vw,180px); background:var(--pink);">
+      <span class="pct" style="font-size:clamp(26px,3.3vw,42px);">10x</span>
+      <span class="label" style="font-size:clamp(9px,1vw,13px);">效率提升</span>
+    </div>
+    <div class="stat-circle reveal-pop d5" style="position:absolute; bottom:clamp(100px,16vh,160px); left:clamp(140px,17vw,220px); width:clamp(80px,10vw,130px); height:clamp(80px,10vw,130px); background:var(--yellow);">
+      <span class="pct" style="font-size:clamp(20px,2.5vw,32px); color:var(--ink);">93%</span>
+      <span class="label" style="font-size:clamp(8px,0.9vw,11px); color:rgba(42,42,42,0.7);">满意度</span>
+    </div>
+    <div class="stat-circle reveal-pop d7" style="position:absolute; bottom:clamp(130px,20vh,200px); left:clamp(210px,26vw,330px); width:clamp(56px,7vw,90px); height:clamp(56px,7vw,90px); background:var(--mint);">
+      <span class="pct" style="font-size:clamp(15px,1.9vw,24px);">50M</span>
+      <span class="label" style="font-size:clamp(7px,0.8vw,10px);">生成量</span>
+    </div>
+    <div class="stat-circle reveal-pop d9" style="position:absolute; bottom:clamp(155px,24vh,240px); left:clamp(260px,32vw,410px); width:clamp(38px,4.7vw,60px); height:clamp(38px,4.7vw,60px); background:var(--lavender);">
+      <span class="pct" style="font-size:clamp(11px,1.4vw,18px);">24h</span>
+    </div>
+
+    <!-- Annotation -->
+    <div class="annotation reveal d4" style="bottom:clamp(50px,9vh,90px); left:clamp(70px,9vw,120px); font-size:clamp(14px,1.6vw,20px); color:#fff; transform:rotate(-3deg);">
+      数据说话
+    </div>
+
+    <!-- Chart label -->
+    <div class="annotation reveal d3" style="bottom:clamp(200px,32vh,310px); left:clamp(44px,6vw,80px); font-size:clamp(15px,1.8vw,22px); color:var(--ink);">
+      核心数据
+    </div>
+
+    <!-- Mood board bottom right -->
+    <div class="mood-grid reveal-bounce d6" style="position:absolute; bottom:clamp(36px,6vh,60px); right:clamp(44px,6vw,80px); transform:rotate(3deg);">
+      <div class="mood-cell" style="background:repeating-linear-gradient(45deg,var(--pink),var(--pink) 5px,#f0a0b0 5px,#f0a0b0 10px);"></div>
+      <div class="mood-cell" style="background:var(--yellow); background-image:radial-gradient(#fff 2.5px, transparent 2.5px); background-size:10px 10px;"></div>
+      <div class="mood-cell" style="background:linear-gradient(135deg,var(--mint),var(--lavender));"></div>
+      <div class="mood-cell" style="background:repeating-conic-gradient(var(--lavender) 0% 25%, #e8dff5 0% 50%) 0 0/14px 14px;"></div>
+    </div>
+    <!-- Tape on mood board -->
+    <div class="washi washi-pink reveal-washi d7" style="bottom:clamp(140px,22vh,220px); right:clamp(60px,8vw,100px); width:clamp(30px,4vw,50px); transform:rotate(-18deg);"></div>
+
+    <!-- Decorations -->
+    <div class="squiggle reveal d5" style="top:clamp(180px,30vh,290px); left:clamp(340px,42vw,530px); width:clamp(74px,10vw,120px); opacity:0.25;"></div>
+    <div class="heart reveal-pop d6" style="top:clamp(180px,30vh,290px); right:32vw; transform:scale(0.7); opacity:0.35;"></div>
+    <div class="heart reveal-pop d8" style="bottom:clamp(30px,5vh,50px); left:clamp(230px,30vw,380px); transform:scale(0.5); opacity:0.3;"></div>
+
+    <div class="star-6 reveal-pop d4" style="top:8vh; right:6vw; transform:scale(0.6); opacity:0.3;"></div>
+    <div class="star-6 reveal-pop d8" style="bottom:6vh; left:41vw; transform:scale(0.5); opacity:0.25;"></div>
+
+    <!-- Stat note -->
+    <div class="reveal d7" style="position:absolute; bottom:clamp(36px,6vh,60px); right:clamp(180px,22vw,280px); width:clamp(170px,22vw,280px); font-size:clamp(10px,1.1vw,13px); color:#555; line-height:1.6;">
+      AI 驱动的设计工具将效率提升 <strong style="color:var(--pink);">10 倍</strong>，用户满意度达到 <strong style="color:var(--pink);">93%</strong>，已生成超过 <strong style="color:var(--pink);">5000 万</strong>份设计方案。
+    </div>
+
+    <!-- Washi -->
+    <div class="washi washi-yellow reveal-washi d2" style="top:4vh; left:4vw; width:clamp(38px,4.7vw,60px); transform:rotate(6deg);"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: CONNECT / CLOSING ==================== -->
+<div class="slide" data-i="4">
+  <div class="paper-texture"></div>
+  <div class="s5-split">
+
+    <!-- Left: Skills & Works -->
+    <div class="s5-left">
+      <h2 class="reveal-bounce d1">核心<br>能力</h2>
+
+      <div style="display:flex; flex-wrap:wrap;">
+        <span class="sticker-tag reveal-pop d2" style="background:var(--pink-light); border:2px dashed var(--pink);">
+          <span class="sticker-dot" style="background:var(--pink);"></span>智能排版
+        </span>
+        <span class="sticker-tag reveal-pop d3" style="background:var(--yellow-light); border:2px solid var(--yellow);">
+          <span class="sticker-dot" style="background:var(--yellow);"></span>风格迁移
+        </span>
+        <span class="sticker-tag reveal-pop d4" style="background:var(--mint-light); border:2px dotted var(--mint);">
+          <span class="sticker-dot" style="background:var(--mint);"></span>信息设计
+        </span>
+        <span class="sticker-tag reveal-pop d5" style="background:var(--lavender-light); border:2px dashed var(--lavender);">
+          <span class="sticker-dot" style="background:var(--lavender);"></span>动态图形
+        </span>
+        <span class="sticker-tag reveal-pop d6" style="background:#fff; border:2px solid var(--ink);">
+          <span class="sticker-dot" style="background:var(--ink);"></span>自适应系统
+        </span>
+      </div>
+
+      <!-- Washi on left -->
+      <div class="washi washi-mint reveal-washi d8" style="bottom:8vh; left:4vw; width:clamp(34px,4.3vw,55px); transform:rotate(-6deg);"></div>
+      <div class="star-6 reveal-pop d9" style="bottom:11vh; left:16vw; transform:scale(0.5); opacity:0.3;"></div>
+    </div>
+
+    <div class="s5-divider reveal d3"></div>
+
+    <!-- Right: Wrap up -->
+    <div class="s5-right">
+      <h2 class="reveal-bounce d2">设计的未来<br>从这里开始。</h2>
+
+      <!-- Envelope -->
+      <div class="envelope reveal-pop d4" style="margin-bottom:clamp(14px,2vh,24px);">
+        <div class="env-body">
+          <div class="env-inner"></div>
+          <div class="env-flap"></div>
+        </div>
+        <div class="env-paper"></div>
+        <div style="position:absolute; top:clamp(30px,3.8vw,50px); left:50%; transform:translateX(-50%); z-index:2;">
+          <div class="heart" style="transform:scale(1.2);"></div>
+        </div>
+      </div>
+
+      <!-- Thank you note -->
+      <div class="lined-note reveal-bounce d5" style="margin-bottom:clamp(14px,2vh,24px);">
+        感谢观看，让我们一起重新定义设计!
+      </div>
+
+      <div class="s5-contact reveal d6">
+        <strong>设计革命 2026</strong><br>
+        hello@design-revolution.ai<br>
+        @designrevolution<br>
+        design-revolution.ai
+      </div>
+    </div>
+
+    <!-- Annotations -->
+    <div class="annotation reveal d3" style="top:clamp(28px,5vh,46px); left:clamp(36px,5vw,60px); font-size:clamp(12px,1.3vw,17px); color:#c4b0a0; transform:rotate(-3deg);">
+      我们的核心竞争力
+    </div>
+    <div class="annotation reveal d7" style="bottom:clamp(24px,4vh,38px); right:clamp(44px,6vw,80px); font-size:clamp(11px,1.2vw,16px); transform:rotate(2deg);">
+      一起创造吧!
+    </div>
+
+    <!-- Confetti -->
+    <div class="confetti confetti-anim circle d1" style="top:14vh; left:39vw; background:var(--pink);"></div>
+    <div class="confetti confetti-anim square d2" style="top:18vh; left:41vw; background:var(--yellow); transform:rotate(30deg);"></div>
+    <div class="confetti confetti-anim circle d3" style="top:11vh; left:43vw; background:var(--mint);"></div>
+    <div class="confetti confetti-anim triangle d4" style="top:17vh; left:36vw; color:var(--lavender);"></div>
+    <div class="confetti confetti-anim circle d5" style="bottom:14vh; right:4vw; background:var(--pink);"></div>
+    <div class="confetti confetti-anim square d6" style="bottom:11vh; right:7vw; background:var(--yellow); transform:rotate(45deg);"></div>
+    <div class="confetti confetti-anim circle d7" style="bottom:17vh; right:2.5vw; background:var(--mint);"></div>
+    <div class="confetti confetti-anim triangle d8" style="bottom:8vh; right:5.5vw; color:var(--pink);"></div>
+    <div class="confetti confetti-anim circle d9" style="top:8vh; right:10vw; background:var(--lavender);"></div>
+    <div class="confetti confetti-anim square d10" style="top:6vh; right:13vw; background:var(--pink); transform:rotate(15deg);"></div>
+
+    <!-- Washi -->
+    <div class="washi washi-yellow reveal-washi d4" style="top:3vh; right:6vw; width:clamp(38px,4.7vw,60px); transform:rotate(-8deg);"></div>
+    <div class="washi washi-pink reveal-washi d5" style="bottom:4vh; left:10vw; width:clamp(28px,3.5vw,45px); transform:rotate(5deg);"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function resetReveals(slide) {
+    slide.querySelectorAll('.reveal, .reveal-bounce, .reveal-pop, .reveal-washi, .confetti-anim').forEach(function(el) {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+
+  function go(i) {
+    if (i < 0 || i >= total) return;
+    slides[c].classList.remove('active');
+    resetReveals(slides[c]);
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c + 1) / total * 100) + '%';
+    cur.textContent = String(c + 1).padStart(2, '0');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      go(c + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      go(c - 1);
+    }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  var touchStartY = 0, touchStartX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartY = e.changedTouches[0].screenY;
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var dy = e.changedTouches[0].screenY - touchStartY;
+    var dx = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx < -40) go(c + 1);
+      if (dx > 40) go(c - 1);
+    } else {
+      if (dy < -40) go(c + 1);
+      if (dy > 40) go(c - 1);
+    }
+  }, { passive: true });
+
+  bar.style.width = (1 / total * 100) + '%';
+})();
+</script>
+</body>
+</html>

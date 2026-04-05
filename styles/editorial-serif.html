@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editorial Serif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE (inline) === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+  .decorative { display: none; }
+}
+@media (max-height: 500px) {
+  :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+}
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+  .slide-counter { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+  .reveal-mask, .reveal, .reveal-quote, .reveal-left { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal-mask, .slide.active .reveal, .slide.active .reveal-quote, .slide.active .reveal-left { opacity: 1; }
+}
+@media print {
+  .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal-mask, .reveal, .reveal-quote, .reveal-left { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+}
+
+/* === THEME === */
+:root {
+  --bg: #f5f0eb;
+  --bg-alt: #e8e2da;
+  --text: #1a1a1a;
+  --accent: #8b7355;
+  --accent-light: #c4a882;
+  --muted: #999;
+  --border: #e0d5c8;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body { overflow: hidden; background: var(--bg); color: var(--text); }
+body { font-family: 'Inter', 'Noto Serif SC', sans-serif; font-weight: 300; }
+
+/* Progress & Counter */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--accent);
+  z-index: 1000;
+  transition: width 0.5s var(--ease-out-expo);
+}
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 700;
+  color: var(--muted);
+  z-index: 1000;
+}
+.page-counter .current { color: var(--text); }
+
+/* Slide Mechanism */
+.slide {
+  position: fixed; inset: 0;
+  height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 5vh, 80px) clamp(48px, 6vw, 120px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+/* Typography */
+.eyebrow {
+  font-size: clamp(10px, 0.9vw, 12px);
+  font-weight: 500; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--accent);
+}
+.title {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700; color: var(--text);
+  line-height: 1.1; margin: clamp(12px, 2vh, 24px) 0;
+}
+.title em { font-style: italic; color: var(--accent); }
+.subtitle {
+  font-size: var(--body-size);
+  color: #666; line-height: 1.7;
+  max-width: 50ch; font-weight: 300;
+}
+.line-accent { width: 40px; height: 2px; background: var(--accent); margin: clamp(12px, 2vh, 20px) 0; }
+.page-num {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 700; color: var(--border); line-height: 1;
+}
+.brand { font-size: clamp(10px, 0.8vw, 11px); letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+
+/* Animations */
+.reveal-mask {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.7s var(--ease-out-expo);
+}
+.slide.active .reveal-mask { clip-path: inset(0 0 0 0); }
+
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-quote {
+  opacity: 0; transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal-quote { opacity: 1; transform: translateX(0); }
+
+.reveal-left {
+  opacity: 0; transform: translateX(-40px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal-left { opacity: 1; transform: translateX(0); }
+
+/* Stagger delays */
+.slide.active .reveal:nth-child(1), .slide.active .reveal-mask:nth-child(1) { transition-delay: 0.1s; }
+.slide.active .reveal:nth-child(2), .slide.active .reveal-mask:nth-child(2) { transition-delay: 0.2s; }
+.slide.active .reveal:nth-child(3), .slide.active .reveal-mask:nth-child(3) { transition-delay: 0.35s; }
+.slide.active .reveal:nth-child(4), .slide.active .reveal-mask:nth-child(4) { transition-delay: 0.5s; }
+.slide.active .reveal:nth-child(5) { transition-delay: 0.65s; }
+.slide.active .reveal:nth-child(6) { transition-delay: 0.8s; }
+
+/* === SLIDE 1: COVER === */
+.s1-grid {
+  display: grid; grid-template-columns: 1fr 1.2fr;
+  height: 100%; width: 100%;
+}
+.s1-left {
+  padding: clamp(40px, 5vh, 80px) clamp(30px, 4vw, 60px);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.s1-right {
+  position: relative; overflow: hidden;
+}
+.s1-right::before {
+  content: ''; position: absolute;
+  inset: clamp(20px, 3vw, 40px) clamp(20px, 3vw, 40px) clamp(20px, 3vw, 40px) 0;
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+  border-radius: 8px;
+}
+.s1-right::after {
+  content: 'AI'; position: absolute;
+  right: clamp(40px, 5vw, 80px); bottom: clamp(30px, 4vh, 60px);
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(100px, 15vw, 200px);
+  font-weight: 700; color: rgba(245, 240, 235, 0.15); line-height: 1;
+}
+.s1-float-tag {
+  position: absolute; top: clamp(30px, 4vh, 60px); right: clamp(30px, 4vw, 60px);
+  background: var(--bg); padding: 8px 20px; border-radius: 20px;
+  font-size: clamp(10px, 0.9vw, 12px); font-weight: 500;
+  color: var(--accent); letter-spacing: 2px; z-index: 2;
+}
+.s1-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+
+/* === SLIDE 2: FEATURES === */
+.s2-layout {
+  display: grid; grid-template-columns: clamp(200px, 25vw, 340px) 1fr;
+  height: 100%; width: 100%;
+}
+.s2-sidebar {
+  padding: clamp(40px, 5vh, 80px) 0 clamp(40px, 5vh, 80px) clamp(40px, 5vw, 80px);
+  display: flex; flex-direction: column; justify-content: space-between;
+  border-right: 1px solid var(--border);
+}
+.s2-sidebar-title {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(24px, 3vw, 38px); font-weight: 700;
+  color: var(--text); line-height: 1.15; margin-top: clamp(8px, 1.5vh, 16px);
+}
+.s2-sidebar-title em { font-style: italic; color: var(--accent); }
+.s2-content {
+  padding: clamp(40px, 5vh, 80px) clamp(30px, 4vw, 60px);
+  display: flex; flex-direction: column; justify-content: center;
+  gap: clamp(24px, 3vh, 48px);
+}
+.pillar {
+  display: grid; grid-template-columns: clamp(30px, 3vw, 48px) 1fr;
+  gap: clamp(12px, 1.5vw, 24px); align-items: start;
+}
+.pillar-num {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 3vw, 36px); font-weight: 700;
+  color: var(--border); line-height: 1; padding-top: 2px;
+}
+.pillar h3 {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(16px, 1.6vw, 20px); font-weight: 700;
+  color: var(--text); margin-bottom: clamp(4px, 0.8vh, 8px);
+}
+.pillar p {
+  font-size: clamp(12px, 1.1vw, 14px); color: #888;
+  line-height: 1.7; font-weight: 300; max-width: 50ch;
+}
+.pillar + .pillar { padding-top: clamp(24px, 3vh, 48px); border-top: 1px solid var(--bg-alt); }
+
+/* === SLIDE 3: STATS === */
+.s3-layout {
+  height: 100%; width: 100%;
+  padding: clamp(40px, 5vh, 80px);
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative;
+}
+.s3-quote-mark {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(100px, 14vw, 180px);
+  color: var(--border); line-height: 0.6;
+  position: absolute; top: clamp(30px, 4vh, 60px); left: clamp(30px, 4vw, 60px);
+  user-select: none;
+}
+.s3-quote-body {
+  max-width: 900px; margin: 0 auto;
+  text-align: center; padding-top: clamp(30px, 4vh, 60px);
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center; gap: clamp(16px, 2vh, 32px);
+}
+.s3-quote-text {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(24px, 3.5vw, 42px); font-style: italic;
+  font-weight: 400; color: var(--text); line-height: 1.35;
+}
+.s3-quote-text strong { color: var(--accent); font-weight: 700; }
+.s3-quote-attr {
+  font-size: clamp(10px, 0.9vw, 12px); letter-spacing: 3px;
+  text-transform: uppercase; color: var(--accent); font-weight: 500;
+}
+.s3-quote-attr::before {
+  content: ''; display: inline-block; width: 32px; height: 1.5px;
+  background: var(--accent); vertical-align: middle; margin-right: 16px;
+}
+.s3-side-line {
+  position: absolute; right: clamp(40px, 5vw, 80px);
+  top: clamp(40px, 5vh, 80px); bottom: clamp(40px, 5vh, 80px);
+  width: 3px; background: linear-gradient(to bottom, var(--accent-light), var(--accent));
+  border-radius: 2px;
+}
+
+/* === SLIDE 4: PROCESS === */
+.s4-layout {
+  height: 100%; width: 100%;
+  display: grid; grid-template-rows: auto 1fr auto;
+  padding: clamp(40px, 5vh, 80px);
+}
+.s4-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.s4-title {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(24px, 3vw, 38px); font-weight: 700;
+  color: var(--text); margin-top: clamp(8px, 1vh, 12px);
+}
+.s4-title em { font-style: italic; color: var(--accent); }
+.steps {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; align-self: center; position: relative;
+}
+.steps::before {
+  content: ''; position: absolute;
+  top: clamp(16px, 2vh, 24px); left: clamp(30px, 4vw, 60px); right: clamp(30px, 4vw, 60px);
+  height: 1px; background: #d4c9ba;
+}
+.step { text-align: center; padding: 0 clamp(12px, 1.5vw, 24px); position: relative; }
+.step-dot {
+  width: 12px; height: 12px; background: var(--accent);
+  border-radius: 50%; margin: 0 auto clamp(16px, 2vh, 28px);
+  position: relative; z-index: 1; box-shadow: 0 0 0 6px var(--bg);
+}
+.step-num {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(11px, 1vw, 13px); font-weight: 700;
+  color: var(--accent-light); letter-spacing: 2px;
+  margin-bottom: clamp(6px, 1vh, 12px);
+}
+.step h3 {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(14px, 1.5vw, 19px); font-weight: 700;
+  color: var(--text); margin-bottom: clamp(6px, 1vh, 10px);
+}
+.step p {
+  font-size: clamp(10px, 1vw, 12px); color: #888;
+  line-height: 1.7; font-weight: 300; max-width: 220px; margin: 0 auto;
+}
+
+/* === SLIDE 5: CLOSING === */
+.s5-layout {
+  height: 100%; width: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; text-align: center; position: relative;
+}
+.s5-bg-text {
+  position: absolute;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(140px, 22vw, 280px); font-weight: 700;
+  color: #ebe5dd; line-height: 1;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  user-select: none; white-space: nowrap;
+}
+.s5-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; gap: clamp(14px, 2vh, 28px);
+}
+.s5-brand {
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+  font-size: clamp(28px, 4vw, 48px); font-weight: 700;
+  color: var(--text); letter-spacing: 2px;
+}
+.s5-line { width: 60px; height: 2px; background: var(--accent); }
+.s5-tagline {
+  font-size: clamp(11px, 1.1vw, 14px); color: var(--accent);
+  letter-spacing: 4px; text-transform: uppercase; font-weight: 500;
+}
+.s5-details { display: flex; gap: clamp(20px, 3vw, 40px); margin-top: clamp(8px, 1vh, 16px); }
+.s5-details span { font-size: clamp(10px, 0.9vw, 12px); color: var(--muted); font-weight: 300; letter-spacing: 1px; }
+.s5-corner-tl, .s5-corner-br {
+  position: absolute; width: clamp(40px, 5vw, 80px); height: clamp(40px, 5vw, 80px);
+  border-color: #d4c9ba; border-style: solid;
+}
+.s5-corner-tl { top: clamp(30px, 4vh, 60px); left: clamp(30px, 4vw, 60px); border-width: 1.5px 0 0 1.5px; }
+.s5-corner-br { bottom: clamp(30px, 4vh, 60px); right: clamp(30px, 4vw, 60px); border-width: 0 1.5px 1.5px 0; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="s1-grid">
+    <div class="s1-left">
+      <div>
+        <p class="eyebrow reveal">设计前沿 &middot; 2026</p>
+        <h1 class="title reveal-mask">设计的<br><em>革命</em>时代</h1>
+        <div class="line-accent reveal"></div>
+        <p class="subtitle reveal">当人工智能遇上人类直觉，创造力的边界正在被重新定义。这不仅是工具的升级，更是思维方式的革新。</p>
+      </div>
+      <div class="s1-bottom">
+        <span class="page-num reveal">01</span>
+        <span class="brand reveal">Design Revolution</span>
+      </div>
+    </div>
+    <div class="s1-right">
+      <span class="s1-float-tag reveal">2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="s2-layout">
+    <div class="s2-sidebar">
+      <div>
+        <p class="eyebrow reveal">核心能力</p>
+        <h2 class="s2-sidebar-title reveal">我们<br>如何 <em>创造</em></h2>
+        <div class="line-accent reveal"></div>
+      </div>
+      <span class="page-num reveal">02</span>
+    </div>
+    <div class="s2-content">
+      <div class="pillar reveal">
+        <span class="pillar-num">I</span>
+        <div>
+          <h3>智能布局引擎</h3>
+          <p>AI 深度理解内容语义，自动生成符合视觉层次和阅读节奏的排版方案，让每一页都自然流畅。</p>
+        </div>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-num">II</span>
+        <div>
+          <h3>风格基因迁移</h3>
+          <p>一键捕捉任意参考作品的视觉语言 -- 色彩、字体、构图节奏 -- 迁移到你的设计体系中。</p>
+        </div>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-num">III</span>
+        <div>
+          <h3>全尺寸自适应</h3>
+          <p>从手表到巨幕，一次设计即可智能适配所有设备尺寸，保持视觉一致性与内容完整性。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Quote -->
+<div class="slide" data-i="2">
+  <div class="s3-layout">
+    <span class="s3-quote-mark decorative reveal">&ldquo;</span>
+    <div class="s3-side-line decorative"></div>
+    <div class="s3-quote-body">
+      <p class="s3-quote-text reveal-quote">好的设计不是装饰，而是<strong>沟通的艺术</strong>。当 AI 理解了这一点，设计才真正进入了<strong>下一个纪元</strong>。</p>
+      <p class="s3-quote-attr reveal">Dieter Rams &middot; 设计哲学</p>
+    </div>
+    <div class="s1-bottom">
+      <span class="page-num reveal">03</span>
+      <span class="brand reveal">Design Revolution</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Process -->
+<div class="slide" data-i="3">
+  <div class="s4-layout">
+    <div class="s4-header">
+      <div>
+        <p class="eyebrow reveal">设计流程</p>
+        <h2 class="s4-title reveal">从洞察到<em>交付</em></h2>
+      </div>
+      <span class="brand reveal" style="padding-top: 8px;">Design Revolution</span>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-dot"></div>
+        <p class="step-num">Step 01</p>
+        <h3>发现</h3>
+        <p>深入调研阶段：梳理行业脉络，定位差异化机会，定义值得解决的核心问题。</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-dot"></div>
+        <p class="step-num">Step 02</p>
+        <h3>定义</h3>
+        <p>将洞察提炼为清晰的设计策略，确定约束条件、工具选型和团队共识。</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-dot"></div>
+        <p class="step-num">Step 03</p>
+        <h3>创造</h3>
+        <p>AI 增强的快速迭代：设计、原型、测试、优化 -- 在紧密的反馈闭环中推进。</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-dot"></div>
+        <p class="step-num">Step 04</p>
+        <h3>交付</h3>
+        <p>精细打磨的最终产出，配以完善的文档体系和清晰的后续路径规划。</p>
+      </div>
+    </div>
+    <div class="s1-bottom">
+      <span class="page-num reveal">04</span>
+      <span class="brand reveal"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" data-i="4">
+  <div class="s5-layout">
+    <span class="s5-bg-text decorative">DESIGN</span>
+    <div class="s5-corner-tl decorative"></div>
+    <div class="s5-corner-br decorative"></div>
+    <div class="s5-content">
+      <div class="s5-line reveal"></div>
+      <h2 class="s5-brand reveal">设计革命</h2>
+      <p class="s5-tagline reveal">AI + 人类直觉，设计的下一个十年</p>
+      <div class="s5-details reveal">
+        <span>hello@design-revolution.co</span>
+        <span>Shanghai / Sydney</span>
+        <span>design-revolution.co</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total) return;
+    slides[c].classList.remove('active');
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c+1)/total*100)+'%';
+    cur.textContent = String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(c-1);}
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click', function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width = (1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Voltage — AI 驱动的设计革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue: #0066ff;
+  --dark: #1a1a2e;
+  --neon: #d4ff00;
+  --light: #e8edf5;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--dark);
+  color: var(--light);
+  overflow: hidden;
+}
+
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: var(--neon);
+  z-index: 100;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: 2rem;
+  right: 2.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.7rem, 1vw, 0.85rem);
+  color: rgba(212, 255, 0, 0.6);
+  z-index: 100;
+  letter-spacing: 0.05em;
+}
+
+.halftone {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+.halftone-blue {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+}
+
+.panel-blue { background: var(--blue); position: relative; }
+.panel-dark { background: var(--dark); position: relative; }
+
+.sidebar-label {
+  position: absolute;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  opacity: 0.7;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--neon);
+  color: var(--dark);
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: clamp(0.6rem, 0.85vw, 0.75rem);
+  padding: 0.3em 0.8em;
+  letter-spacing: 0.05em;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-25px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.anim { opacity: 0; }
+.slide.active .anim { animation-fill-mode: forwards; }
+.slide.active .a-up1 { animation: slideUp 0.7s 0.15s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up2 { animation: slideUp 0.7s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up3 { animation: slideUp 0.7s 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up4 { animation: slideUp 0.7s 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-right1 { animation: slideRight 0.6s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-right2 { animation: slideRight 0.6s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-right3 { animation: slideRight 0.6s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-right4 { animation: slideRight 0.6s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-scale1 { animation: scaleIn 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-scale2 { animation: scaleIn 0.5s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-scale3 { animation: scaleIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-scale4 { animation: scaleIn 0.5s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* ===== SLIDE 1 ===== */
+.s1 .panel-blue {
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 4rem 3.5rem;
+}
+.s1 .panel-dark {
+  display: flex; flex-direction: column; justify-content: center; padding: 4rem 3.5rem;
+}
+.s1 .title {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(2.8rem, 5.5vw, 5rem); line-height: 1.05; color: #fff; margin-bottom: 2rem;
+}
+.s1 .title span { display: block; }
+.s1 .subtitle {
+  font-weight: 300; font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+  color: rgba(232,237,245,0.65); line-height: 1.7; max-width: 420px;
+}
+.s1 .bg-text {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(8rem, 18vw, 16rem); color: rgba(0,102,255,0.07);
+  position: absolute; top: -2rem; right: -1rem; line-height: 1; pointer-events: none;
+}
+.s1 .sidebar-label { left: 1.5rem; bottom: 4rem; color: rgba(255,255,255,0.25); }
+
+/* ===== SLIDE 2 ===== */
+.s2 .panel-blue {
+  display: flex; flex-direction: column; justify-content: center; padding: 4rem 3.5rem;
+}
+.s2 .panel-dark {
+  display: flex; flex-direction: column; justify-content: center; padding: 4rem 3.5rem;
+}
+.s2 .section-label {
+  font-family: 'Space Mono', monospace; font-size: clamp(0.6rem, 0.85vw, 0.75rem);
+  letter-spacing: 0.25em; color: var(--neon); margin-bottom: 2.5rem; text-transform: uppercase;
+}
+.feature-card { margin-bottom: 2rem; }
+.feature-card .num {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(1.8rem, 3vw, 2.6rem); color: rgba(255,255,255,0.12); line-height: 1; margin-bottom: 0.25rem;
+}
+.feature-card .name {
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: clamp(1.1rem, 1.8vw, 1.45rem); color: #fff; margin-bottom: 0.2rem;
+}
+.feature-card .desc {
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem); color: rgba(232,237,245,0.7); font-weight: 300;
+}
+.s2 .right-content {
+  border-left: 2px solid var(--neon); padding-left: 2.5rem;
+}
+.s2 .right-content p {
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem); color: rgba(232,237,245,0.65);
+  line-height: 1.8; margin-bottom: 1.5rem; font-weight: 300;
+}
+
+/* ===== SLIDE 3 ===== */
+.s3-wrap {
+  height: 100%; display: grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: 1fr 1fr;
+  background: var(--blue);
+}
+.stat-cell {
+  display: flex; flex-direction: column; justify-content: center; padding: 3rem 3.5rem; position: relative;
+}
+.stat-cell:nth-child(1) { border-right: 1px solid rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); }
+.stat-cell:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,0.12); }
+.stat-cell:nth-child(3) { border-right: 1px solid rgba(255,255,255,0.12); }
+.stat-cell .value {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(3rem, 6.5vw, 5.5rem); color: #fff; line-height: 1; margin-bottom: 0.5rem;
+}
+.stat-cell .value .accent { color: var(--neon); }
+.stat-cell .label {
+  font-weight: 300; font-size: clamp(0.85rem, 1.2vw, 1.05rem); color: rgba(255,255,255,0.7);
+}
+.stat-cell.cta-cell {
+  background: var(--neon);
+  align-items: center;
+  text-align: center;
+}
+.stat-cell.cta-cell .cta-headline {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(1.4rem, 2.5vw, 2rem); color: var(--dark); line-height: 1.2; margin-bottom: 0.75rem;
+}
+.stat-cell.cta-cell .cta-sub {
+  font-size: clamp(0.85rem, 1.1vw, 1rem); color: rgba(26,26,46,0.75); line-height: 1.7; font-weight: 400;
+}
+
+/* ===== SLIDE 4 ===== */
+.s4 .split { grid-template-columns: 2fr 1fr; }
+.s4 .panel-dark {
+  display: flex; flex-direction: column; justify-content: center; padding: 5rem 4.5rem;
+}
+.s4 .panel-blue {
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem;
+}
+.s4 .quote-mark {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(6rem, 12vw, 10rem); color: var(--neon); line-height: 0.8;
+}
+.s4 .quote-text {
+  font-weight: 700; font-size: clamp(1.6rem, 2.8vw, 2.5rem);
+  color: #fff; line-height: 1.5; margin: 1.5rem 0 2rem;
+}
+.s4 .quote-author {
+  font-family: 'Space Mono', monospace; font-size: clamp(0.75rem, 1vw, 0.9rem);
+  color: rgba(232,237,245,0.7); letter-spacing: 0.1em;
+}
+.s4 .side-deco {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(1rem, 1.5vw, 1.3rem); color: rgba(255,255,255,0.12);
+  letter-spacing: 0.3em; text-transform: uppercase; line-height: 2;
+}
+
+/* ===== SLIDE 5 ===== */
+.s5 .split { grid-template-columns: 1fr 1.5fr; }
+.s5 .panel-blue {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-end;
+  padding: 4rem 3rem; text-align: right;
+}
+.s5 .panel-dark {
+  display: flex; flex-direction: column; justify-content: center; padding: 4rem 4.5rem;
+}
+.s5 .closing-title {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4.5rem); color: #fff; line-height: 1.1; margin-bottom: 1.5rem;
+}
+.s5 .closing-sub {
+  font-weight: 300; font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+  color: rgba(232,237,245,0.7); line-height: 1.7; max-width: 480px;
+}
+.s5 .cta-badge { margin-top: 2rem; }
+.s5 .side-number {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(5rem, 12vw, 10rem); color: rgba(255,255,255,0.06); line-height: 1;
+}
+.s5 .side-text {
+  font-family: 'Space Mono', monospace; font-size: clamp(0.7rem, 0.9vw, 0.8rem);
+  color: rgba(255,255,255,0.7); letter-spacing: 0.15em; margin-top: 1rem;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter">01 / 05</div>
+
+<!-- SLIDE 1 -->
+<div class="slide active" data-slide="0">
+  <div class="split s1">
+    <div class="panel-blue halftone-blue">
+      <div class="sidebar-label">CREATIVE VOLTAGE 2026</div>
+      <span class="badge anim a-up1" style="width:fit-content;margin-bottom:1.5rem">AI DESIGN REVOLUTION</span>
+      <div class="title anim a-up2">
+        <span>AI 驱动的</span>
+        <span>设计革命</span>
+      </div>
+    </div>
+    <div class="panel-dark halftone">
+      <div class="bg-text">AI</div>
+      <div class="subtitle anim a-up3">
+        从像素到体验，<br>重新定义创造力的边界
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" data-slide="1">
+  <div class="split s2">
+    <div class="panel-blue halftone-blue">
+      <div class="section-label">CORE FEATURES</div>
+      <div class="feature-card anim a-right1">
+        <div class="num">01</div>
+        <div class="name">智能布局</div>
+        <div class="desc">AI 驱动的自适应排版引擎</div>
+      </div>
+      <div class="feature-card anim a-right2">
+        <div class="num">02</div>
+        <div class="name">风格迁移</div>
+        <div class="desc">一键转换视觉风格与品牌调性</div>
+      </div>
+      <div class="feature-card anim a-right3">
+        <div class="num">03</div>
+        <div class="name">实时协作</div>
+        <div class="desc">多人同步编辑，智能冲突解决</div>
+      </div>
+      <div class="feature-card anim a-right4">
+        <div class="num">04</div>
+        <div class="name">自适应排版</div>
+        <div class="desc">跨设备完美呈现，零手动调整</div>
+      </div>
+    </div>
+    <div class="panel-dark halftone">
+      <div class="right-content">
+        <div class="badge" style="margin-bottom:2rem">NEXT-GEN DESIGN</div>
+        <p>我们正在构建下一代设计工具生态。AI 不是替代设计师，而是为每一个创意提供超能力。</p>
+        <p>从概念到交付，效率提升 10 倍以上。每一个像素都经过智能优化。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide" data-slide="2">
+  <div class="s3-wrap halftone-blue">
+    <div class="stat-cell anim a-scale1">
+      <div class="value">10<span class="accent">x</span></div>
+      <div class="label">效率提升</div>
+    </div>
+    <div class="stat-cell anim a-scale2">
+      <div class="value">93<span class="accent">%</span></div>
+      <div class="label">用户满意度</div>
+    </div>
+    <div class="stat-cell anim a-scale3">
+      <div class="value">50<span class="accent">M+</span></div>
+      <div class="label">设计生成</div>
+    </div>
+    <div class="stat-cell cta-cell anim a-scale4">
+      <div class="cta-headline">用数据说话</div>
+      <div class="cta-sub">每一项数据都来自真实用户反馈与生产环境的持续监测。</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide" data-slide="3">
+  <div class="split s4">
+    <div class="panel-dark halftone">
+      <div class="quote-mark anim a-up1">"</div>
+      <div class="quote-text anim a-up2">好的设计不是装饰，<br>是沟通。</div>
+      <div class="quote-author anim a-up3">-- Dieter Rams</div>
+    </div>
+    <div class="panel-blue halftone-blue">
+      <div class="side-deco">Philosophy<br>of<br>Design</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide" data-slide="4">
+  <div class="split s5">
+    <div class="panel-blue halftone-blue">
+      <div class="side-number">05</div>
+      <div class="side-text">THE FUTURE IS NOW</div>
+    </div>
+    <div class="panel-dark halftone">
+      <div class="closing-title anim a-up1">重新定义<br>创造力</div>
+      <div class="closing-sub anim a-up2">AI 与人类设计师的协同，不是未来的愿景，而是今天的现实。加入我们，一起塑造设计的下一个十年。</div>
+      <div class="cta-badge anim a-up3">
+        <span class="badge">START CREATING</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+let current = 0;
+const total = slides.length;
+
+function goTo(n) {
+  if (n < 0 || n >= total) return;
+  slides[current].classList.remove('active');
+  current = n;
+  slides[current].classList.add('active');
+  progress.style.width = ((current + 1) / total * 100) + '%';
+  counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+goTo(0);
+</script>
+</body>
+</html>

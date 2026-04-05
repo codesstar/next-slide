@@ -51,7 +51,7 @@ if [ "$installed" = true ]; then
   echo "  - In Claude Code: say '/next-slide' or '帮我做个演示'"
   echo "  - In OpenClaw:    the skill triggers on presentation-related prompts"
   echo ""
-  echo "26+ styles, zero dependencies, bilingual. 你的下个 slide，何必是 PPT"
+  echo "50+ styles, zero dependencies, bilingual. 你的下个 ppt，何必是 PPT"
 else
   echo "Neither Claude Code nor OpenClaw was detected."
   echo ""

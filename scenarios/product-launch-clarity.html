@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity — AI Writing Assistant</title>
+
+    <!-- Fonts: Manrope (display) + Noto Sans SC (CJK fallback) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Gradient Dreams Theme
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #1a0a2e;
+            --bg-secondary: #0a1628;
+            --bg-tertiary: #12082a;
+            --text-primary: #f0eaff;
+            --text-secondary: #b8a8d9;
+            --text-muted: #7a6b99;
+            --accent: #A78BFA;
+            --accent-rose: #F472B6;
+            --accent-cyan: #67E8F9;
+            --accent-glow: rgba(167, 139, 250, 0.4);
+            --accent-glow-rose: rgba(244, 114, 182, 0.3);
+            --border-subtle: rgba(167, 139, 250, 0.12);
+            --surface: rgba(167, 139, 250, 0.06);
+            --glass: rgba(26, 10, 46, 0.6);
+            --glass-border: rgba(167, 139, 250, 0.18);
+
+            /* --- Typography — ALL sizes use clamp() --- */
+            --font-display: 'Manrope', 'Noto Sans SC', sans-serif;
+            --font-body: 'Manrope', 'Noto Sans SC', sans-serif;
+            --font-mono: 'Courier New', monospace;
+
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===========================================
+           VIEWPORT FITTING (from viewport-base.css)
+           =========================================== */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+            position: relative;
+            z-index: 2;
+        }
+
+        h1, h2, h3 { overflow-wrap: break-word; }
+        p, li { overflow-wrap: break-word; }
+
+        /* ===========================================
+           ANIMATED GRADIENT MESH BACKGROUND
+           Slowly morphing blobs for depth
+           =========================================== */
+        .gradient-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a0a2e 0%, #0a1628 50%, #12082a 100%);
+        }
+
+        .gradient-mesh .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(clamp(60px, 12vw, 140px));
+            opacity: 0.35;
+            will-change: transform;
+        }
+
+        .blob-1 {
+            width: clamp(300px, 50vw, 700px);
+            height: clamp(300px, 50vw, 700px);
+            background: radial-gradient(circle, #A78BFA 0%, transparent 70%);
+            top: -10%;
+            left: -10%;
+            animation: blob-drift-1 20s ease-in-out infinite;
+        }
+
+        .blob-2 {
+            width: clamp(250px, 40vw, 600px);
+            height: clamp(250px, 40vw, 600px);
+            background: radial-gradient(circle, #F472B6 0%, transparent 70%);
+            bottom: -15%;
+            right: -10%;
+            animation: blob-drift-2 25s ease-in-out infinite;
+        }
+
+        .blob-3 {
+            width: clamp(200px, 35vw, 500px);
+            height: clamp(200px, 35vw, 500px);
+            background: radial-gradient(circle, #67E8F9 0%, transparent 70%);
+            top: 40%;
+            right: 20%;
+            animation: blob-drift-3 22s ease-in-out infinite;
+        }
+
+        @keyframes blob-drift-1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(8vw, 12vh) scale(1.1); }
+            66% { transform: translate(-5vw, 5vh) scale(0.95); }
+        }
+        @keyframes blob-drift-2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-10vw, -8vh) scale(1.05); }
+            66% { transform: translate(6vw, -12vh) scale(1.12); }
+        }
+        @keyframes blob-drift-3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(6vw, -10vh) scale(0.9); }
+            66% { transform: translate(-8vw, 6vh) scale(1.08); }
+        }
+
+        /* ===========================================
+           SPARKLE / TWINKLE EFFECT
+           Small CSS dots that randomly appear
+           =========================================== */
+        .sparkle-field {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            background: #fff;
+            animation: twinkle var(--dur, 3s) var(--delay, 0s) ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* ===========================================
+           GLASSMORPHISM CARDS
+           =========================================== */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: clamp(8px, 1.5vw, 16px);
+            padding: clamp(1rem, 2vw, 1.5rem);
+            transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(167, 139, 250, 0.15);
+        }
+
+        /* ===========================================
+           GRADIENT TEXT UTILITY
+           =========================================== */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-rose) 50%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===========================================
+           REVEAL ANIMATIONS — blur-in for headings
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            filter: blur(8px);
+            transition: opacity 0.7s var(--ease-out-expo),
+                        transform 0.7s var(--ease-out-expo),
+                        filter 0.7s var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            filter: blur(4px);
+            transition: opacity 0.7s ease, transform 0.7s var(--ease-out-expo), filter 0.7s ease;
+        }
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+        }
+
+        /* Staggered children */
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS BAR — gradient accent
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-rose), var(--accent-cyan));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.4);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-body);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+            font-weight: 500;
+        }
+
+        /* ===========================================
+           TYPING CURSOR ANIMATION
+           =========================================== */
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.1em;
+            background: var(--accent);
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: cursor-blink 1s step-end infinite;
+        }
+
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* ===========================================
+           TYPEWRITER EFFECT CONTAINER
+           =========================================== */
+        .typewriter-text {
+            font-family: var(--font-body);
+            font-weight: 300;
+            overflow: hidden;
+            white-space: normal;
+        }
+
+        /* ===========================================
+           GRADIENT BORDER FOR TESTIMONIALS / PRICING
+           =========================================== */
+        .gradient-border {
+            position: relative;
+            border-radius: clamp(8px, 1.5vw, 16px);
+            padding: 1px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-rose), var(--accent-cyan));
+        }
+        .gradient-border-inner {
+            background: var(--bg-tertiary);
+            border-radius: calc(clamp(8px, 1.5vw, 16px) - 1px);
+            padding: clamp(1.5rem, 3vw, 2.5rem);
+        }
+
+        /* ===========================================
+           GLOW EFFECT FOR POPULAR PRICING
+           =========================================== */
+        .glow-card {
+            box-shadow: 0 0 40px rgba(167, 139, 250, 0.25),
+                        0 0 80px rgba(167, 139, 250, 0.1);
+            animation: glow-pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(167, 139, 250, 0.25), 0 0 80px rgba(167, 139, 250, 0.1); }
+            50% { box-shadow: 0 0 60px rgba(167, 139, 250, 0.35), 0 0 100px rgba(167, 139, 250, 0.15); }
+        }
+
+        /* ===========================================
+           LABEL / BADGE
+           =========================================== */
+        .label-tag {
+            display: inline-block;
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-rose));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===========================================
+           TRACTION BADGES
+           =========================================== */
+        .traction-badge {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: clamp(0.3em, 0.8vw, 0.5em) clamp(0.6em, 1.2vw, 1em);
+            border-radius: 100px;
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .decorative { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .two-col, .demo-grid { flex-direction: column !important; grid-template-columns: 1fr !important; }
+            .slide-counter { display: none; }
+            .pricing-grid { flex-direction: column !important; align-items: center !important; }
+        }
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); }
+        }
+        @media (min-width: 2000px) {
+            .slide-content { max-width: 1600px; margin: 0 auto; }
+        }
+
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-scale {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .slide.visible .reveal, .slide.visible .reveal-scale { opacity: 1; }
+            .blob, .sparkle { display: none !important; }
+        }
+
+        /* ===========================================
+           PRINT STYLES
+           =========================================== */
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter, .gradient-mesh, .sparkle-field { display: none !important; }
+            .reveal, .reveal-scale { opacity: 1 !important; transform: none !important; filter: none !important; }
+            body { background: #fff; color: #111; }
+        }
+
+        /* ===========================================
+           HIGH DPI
+           =========================================== */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .glass-card { border-width: 0.5px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated gradient mesh background -->
+    <div class="gradient-mesh" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Sparkle field -->
+    <div class="sparkle-field" id="sparkleField" aria-hidden="true"></div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDES =================== -->
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div class="slide-content" style="justify-content: center; align-items: flex-start;">
+            <div class="label-tag reveal">AI Writing Assistant</div>
+            <h1 class="reveal gradient-text" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-top: var(--element-gap);">
+                Clarity
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 500px; line-height: 1.7; font-weight: 300;">
+                Write better. Faster. In any language.<br>
+                <span style="font-size: var(--body-size); color: var(--text-muted);">AI-powered writing assistant for everyone.</span>
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(0.5rem, 1vw, 0.8rem); align-items: center;">
+                <div style="width: clamp(40px, 6vw, 60px); height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-rose));"></div>
+                <span style="font-size: var(--small-size); color: var(--text-muted); font-weight: 300;">Product Launch 2026</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROBLEM -->
+    <section class="slide" aria-label="Problem">
+        <div class="slide-content">
+            <div class="label-tag reveal">The Problem</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; line-height: 1.15; max-width: 700px; margin-top: var(--element-gap);">
+                Writing is the #1 skill at work.<br>
+                <span style="color: var(--text-muted);">Yet most tools make it harder.</span>
+            </h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 550px; line-height: 1.8; font-weight: 300;">
+                Professionals spend 28% of their workday writing emails, docs, and messages. Grammarly is too basic. ChatGPT is too manual. Clarity fits right in the middle.
+            </p>
+            <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent-rose);">28%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">of workday spent writing</div>
+                </div>
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);">3.2hrs</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">avg daily email time</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: PRODUCT -->
+    <section class="slide" aria-label="Product">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="label-tag reveal">The Product</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap);">One tool. Every surface.</h2>
+            <div class="reveal-scale" style="margin-top: var(--content-gap);">
+                <img src="images/clarity-app-ui.webp" alt="Clarity AI writing interface" loading="lazy" style="max-width: min(85vw, 800px); max-height: min(40vh, 350px); object-fit: cover; border-radius: clamp(8px, 1.5vw, 16px); border: 1px solid var(--glass-border); box-shadow: 0 8px 40px rgba(167, 139, 250, 0.2);">
+            </div>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 3rem); margin-top: var(--content-gap); flex-wrap: wrap; font-size: var(--body-size);">
+                <div class="glass-card" style="text-align: center; min-width: clamp(120px, 18vw, 180px);">
+                    <div style="font-family: var(--font-display); font-weight: 800; color: var(--accent);">Browser Extension</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Chrome, Safari, Firefox, Edge</div>
+                </div>
+                <div class="glass-card" style="text-align: center; min-width: clamp(120px, 18vw, 180px);">
+                    <div style="font-family: var(--font-display); font-weight: 800; color: var(--accent-rose);">Desktop App</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">macOS, Windows, Linux</div>
+                </div>
+                <div class="glass-card" style="text-align: center; min-width: clamp(120px, 18vw, 180px);">
+                    <div style="font-family: var(--font-display); font-weight: 800; color: var(--accent-cyan);">Mobile</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">iOS keyboard, Android</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: FEATURES -->
+    <section class="slide" aria-label="Features">
+        <div class="slide-content">
+            <div class="label-tag reveal">Features</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; line-height: 1.15; margin-top: var(--element-gap);">
+                Not just grammar.<br>
+                <span class="gradient-text">Your entire writing workflow.</span>
+            </h2>
+            <div class="reveal" style="display: flex; gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="glass-card" style="flex: 1; min-width: clamp(180px, 25vw, 240px); border-left: 2px solid var(--accent);">
+                    <div style="font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); color: var(--accent);">Smart Rewrite</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; font-weight: 300; line-height: 1.6;">Adjust tone from casual to formal. Switch between 30+ languages instantly.</div>
+                </div>
+                <div class="glass-card" style="flex: 1; min-width: clamp(180px, 25vw, 240px); border-left: 2px solid var(--accent-rose);">
+                    <div style="font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); color: var(--accent-rose);">Context-Aware</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; font-weight: 300; line-height: 1.6;">Learns your voice. Adapts to Slack, Gmail, Notion, or any text field.</div>
+                </div>
+                <div class="glass-card" style="flex: 1; min-width: clamp(180px, 25vw, 240px); border-left: 2px solid var(--accent-cyan);">
+                    <div style="font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); color: var(--accent-cyan);">Team Memory</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; font-weight: 300; line-height: 1.6;">Shared style guide. Brand voice enforcement. Team-wide consistency.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: DEMO — Before/After split-screen with typewriter -->
+    <section class="slide" aria-label="Demo">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">See the difference.</h2>
+            <div class="reveal demo-grid" style="display: grid; grid-template-columns: 1fr 2px 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch; max-width: min(90vw, 850px); width: 100%;">
+                <!-- Before -->
+                <div class="glass-card" style="text-align: left; border-top: 2px solid var(--accent-rose);">
+                    <div style="font-size: var(--small-size); color: var(--accent-rose); font-weight: 700; margin-bottom: 0.8em; text-transform: uppercase; letter-spacing: 0.1em;">Before</div>
+                    <p style="font-size: var(--body-size); color: var(--text-muted); line-height: 1.8; font-style: italic; font-weight: 300;">"Hey, I wanted to touch base about the thing we discussed. Can you send me the stuff when you get a chance? Thanks."</p>
+                </div>
+                <!-- Divider -->
+                <div style="width: 2px; background: linear-gradient(180deg, var(--accent-rose), var(--accent), var(--accent-cyan)); align-self: stretch; border-radius: 2px;"></div>
+                <!-- After -->
+                <div class="glass-card" style="text-align: left; border-top: 2px solid var(--accent-cyan);">
+                    <div style="font-size: var(--small-size); color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.8em; text-transform: uppercase; letter-spacing: 0.1em;">After (Clarity)</div>
+                    <p class="typewriter-text" id="typewriterTarget" style="font-size: var(--body-size); color: var(--text-primary); line-height: 1.8; font-weight: 400;">"Hi Sarah, following up on our Q3 budget discussion. Could you share the updated forecast by Thursday? Happy to jump on a quick call if helpful."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: PRICING -->
+    <section class="slide" aria-label="Pricing">
+        <div class="slide-content" style="align-items: center;">
+            <div class="label-tag reveal" style="text-align: center;">Pricing</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; margin-top: var(--element-gap);">Simple pricing. No surprises.</h2>
+            <div class="reveal pricing-grid" style="display: flex; justify-content: center; gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); flex-wrap: wrap; align-items: stretch;">
+                <!-- Free -->
+                <div class="glass-card" style="text-align: center; width: clamp(160px, 24vw, 230px);">
+                    <div style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);">Free</div>
+                    <div style="font-size: clamp(2rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 800; margin-top: 0.2em; color: var(--text-primary);">$0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">forever</div>
+                    <div style="margin-top: 0.8em; font-size: var(--small-size); color: var(--text-secondary); line-height: 2; font-weight: 300;">Grammar + spelling<br>50 rewrites/mo<br>3 languages</div>
+                </div>
+                <!-- Pro — Popular with gradient border + glow -->
+                <div class="gradient-border glow-card" style="width: clamp(160px, 24vw, 230px);">
+                    <div class="gradient-border-inner" style="text-align: center; position: relative;">
+                        <div style="position: absolute; top: clamp(-10px, -1vw, -12px); left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--accent), var(--accent-rose)); color: #fff; font-size: clamp(0.5rem, 0.8vw, 0.7rem); font-weight: 700; padding: 3px 14px; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 100px;">Popular</div>
+                        <div style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent);">Pro</div>
+                        <div class="gradient-text" style="font-size: clamp(2rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 800; margin-top: 0.2em;">$12</div>
+                        <div style="font-size: var(--small-size); color: var(--text-muted);">/month</div>
+                        <div style="margin-top: 0.8em; font-size: var(--small-size); color: var(--text-secondary); line-height: 2; font-weight: 300;">Unlimited rewrites<br>30+ languages<br>Tone + style control<br>Desktop app</div>
+                    </div>
+                </div>
+                <!-- Team -->
+                <div class="glass-card" style="text-align: center; width: clamp(160px, 24vw, 230px);">
+                    <div style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);">Team</div>
+                    <div style="font-size: clamp(2rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 800; margin-top: 0.2em; color: var(--text-primary);">$29</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">/seat/month</div>
+                    <div style="margin-top: 0.8em; font-size: var(--small-size); color: var(--text-secondary); line-height: 2; font-weight: 300;">Everything in Pro<br>Team style guide<br>Brand voice<br>Admin dashboard<br>SSO</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: TRACTION -->
+    <section class="slide" aria-label="Traction">
+        <div class="slide-content">
+            <div class="label-tag reveal">Traction</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap);">Growing fast.</h2>
+            <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);"><span class="counter" data-target="340" data-suffix="K">0</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">monthly active users</div>
+                </div>
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent-rose);">4.8<span style="font-size: 0.5em; color: var(--text-muted);">/5</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">Chrome Web Store</div>
+                </div>
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--accent-cyan);"><span class="counter" data-target="15" data-suffix="%">0</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">week-over-week growth</div>
+                </div>
+            </div>
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(0.6rem, 1vw, 1rem); flex-wrap: wrap;">
+                <span class="traction-badge">Product Hunt #1 Product of the Day</span>
+                <span class="traction-badge">Featured in TechCrunch, The Verge</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: CTA -->
+    <section class="slide" aria-label="CTA">
+        <div class="slide-content" style="justify-content: center;">
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em;">
+                Write with<br><span class="gradient-text">Clarity.</span>
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 450px; line-height: 1.7; font-weight: 300;">
+                Free forever. Pro when you're ready.<br>Available on every platform today.
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap);">
+                <div style="display: inline-block; background: linear-gradient(135deg, var(--accent), var(--accent-rose)); color: var(--bg-primary); font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem); border-radius: 100px; box-shadow: 0 4px 24px var(--accent-glow);">
+                    clarity.ai/download
+                </div>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4; z-index: 2;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SPARKLE GENERATOR
+           Creates twinkling CSS dots across the viewport
+           =========================================== */
+        (function() {
+            const field = document.getElementById('sparkleField');
+            if (!field) return;
+            const count = 40;
+            for (let i = 0; i < count; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+                s.style.setProperty('--delay', (Math.random() * 5) + 's');
+                s.style.width = s.style.height = (1 + Math.random() * 2) + 'px';
+                field.appendChild(s);
+            }
+        })();
+
+        /* ===========================================
+           TYPEWRITER EFFECT
+           Triggered when demo slide becomes visible
+           =========================================== */
+        (function() {
+            const target = document.getElementById('typewriterTarget');
+            if (!target) return;
+            const fullText = target.textContent;
+            let hasTyped = false;
+
+            const typeObs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !hasTyped) {
+                        hasTyped = true;
+                        target.textContent = '';
+                        const cursor = document.createElement('span');
+                        cursor.className = 'typing-cursor';
+                        target.appendChild(cursor);
+                        let i = 0;
+                        function type() {
+                            if (i < fullText.length) {
+                                target.insertBefore(document.createTextNode(fullText[i]), cursor);
+                                i++;
+                                const delay = fullText[i - 1] === ' ' ? 30 : (20 + Math.random() * 40);
+                                setTimeout(type, delay);
+                            } else {
+                                setTimeout(() => { cursor.style.display = 'none'; }, 2000);
+                            }
+                        }
+                        setTimeout(type, 400);
+                        typeObs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            typeObs.observe(target.closest('.slide'));
+        })();
+
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Navigation, progress, intersection observer
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(s => observer.observe(s));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const dY = this.touchStartY - e.changedTouches[0].clientY;
+                    const dX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return;
+                    if (dY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let t;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+
+            setupNavDots() {
+                const c = document.getElementById('navDots');
+                if (!c) return;
+                this.slides.forEach((_, i) => {
+                    const d = document.createElement('button');
+                    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    d.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    d.addEventListener('click', () => this.goToSlide(i));
+                    c.appendChild(d);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(i) {
+                if (i < 0 || i >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = i;
+                this.slides[i].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const t = this.slides.length, c = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((c + 1) / t) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === c));
+                if (this.counter) this.counter.textContent = `${c + 1} / ${t}`;
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           Animate numbers when slide becomes visible
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const cObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const dur = 1500;
+                    const st = performance.now();
+                    function tick(now) {
+                        const p = Math.min((now - st) / dur, 1);
+                        const eased = 1 - Math.pow(1 - p, 3);
+                        el.textContent = Math.round(target * eased).toLocaleString() + suffix;
+                        if (p < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    cObs.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => cObs.observe(c));
+
+        /* Initialize on DOM ready */
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futuristic Blue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE (INLINE) === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+  .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+  :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+}
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+  .slide-counter { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+  .reveal, .reveal-scale, .reveal-left, .reveal-right { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal, .slide.active .reveal-scale, .slide.active .reveal-left, .slide.active .reveal-right { opacity: 1; }
+}
+@media print {
+  .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; position: relative !important; opacity: 1 !important; pointer-events: auto !important; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+
+/* === STYLE: FUTURISTIC BLUE === */
+:root {
+  --bg: #0a0a12;
+  --text: #c8cce0;
+  --text-bright: #e0e3f0;
+  --accent-blue: #3d5afe;
+  --accent-purple: #7c4dff;
+  --accent-pink: #ff1493;
+  --accent-cyan: #00e5ff;
+  --muted: #4a4e6a;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', 'Noto Sans SC', monospace;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px; z-index: 1000;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+  transition: width 0.5s var(--ease-out-expo);
+  box-shadow: 0 0 8px var(--accent-blue);
+}
+
+.page-counter {
+  position: fixed; bottom: clamp(20px, 3vh, 40px); right: clamp(24px, 3vw, 48px);
+  font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 1vw, 14px); font-weight: 600;
+  color: var(--muted); z-index: 1000; letter-spacing: 0.15em;
+}
+.page-counter .current { color: var(--accent-blue); text-shadow: 0 0 8px rgba(61,90,254,0.5); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex; opacity: 0; pointer-events: none;
+  transition: opacity 0.7s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Grid background */
+.slide::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(61,90,254,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(61,90,254,.06) 1px, transparent 1px);
+  background-size: 40px 40px; pointer-events: none; z-index: 0;
+}
+/* Scan lines */
+.slide::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.1) 2px, rgba(0,0,0,.1) 4px);
+  pointer-events: none; z-index: 100;
+}
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; z-index: 1;
+}
+
+/* Glow orb */
+.glow-orb {
+  position: absolute; width: clamp(250px, 35vw, 500px); height: clamp(250px, 35vw, 500px);
+  border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+/* Typography */
+.section-label {
+  font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 0.9vw, 13px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent-blue); margin-bottom: clamp(24px, 4vh, 48px);
+}
+
+.title-huge {
+  font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+  font-weight: 900; font-size: clamp(36px, 6.5vw, 100px);
+  line-height: 1.05; letter-spacing: 0.08em;
+  color: var(--text-bright); margin-bottom: clamp(12px, 2vh, 24px);
+}
+.title-huge .outlined {
+  -webkit-text-stroke: 2px var(--text);
+  color: transparent;
+  text-shadow: 0 0 20px rgba(61,90,254,.2);
+}
+.title-huge .solid {
+  color: var(--accent-blue);
+  text-shadow: 0 0 40px rgba(61,90,254,.5), 0 0 80px rgba(61,90,254,.2);
+}
+
+.subtitle {
+  font-size: clamp(13px, 1.5vw, 22px); color: var(--muted);
+  letter-spacing: 0.15em; max-width: 60ch; line-height: 1.6;
+}
+
+/* Feature grid */
+.feature-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 3vw, 48px) clamp(36px, 5vw, 80px);
+  max-width: 900px;
+}
+.feature-item h3 {
+  font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+  font-weight: 700; font-size: clamp(16px, 2vw, 28px);
+  color: var(--text-bright); margin-bottom: clamp(6px, 1vh, 12px);
+  letter-spacing: 0.05em;
+}
+.feature-item p {
+  font-size: clamp(11px, 1.1vw, 16px); color: var(--muted);
+  line-height: 1.7; max-width: 35ch;
+}
+
+/* Stats */
+.stats-row { display: flex; gap: clamp(36px, 6vw, 100px); align-items: flex-end; flex-wrap: wrap; }
+.stat-block .number {
+  font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+  font-weight: 900; font-size: clamp(44px, 8vw, 130px);
+  line-height: 1; letter-spacing: -0.02em; color: var(--text-bright);
+}
+.stat-block .number .unit { font-size: 0.4em; color: var(--accent-blue); text-shadow: 0 0 16px rgba(61,90,254,0.5); }
+.stat-block .label { font-size: clamp(11px, 1.1vw, 16px); color: var(--muted); margin-top: clamp(6px, 1vh, 12px); }
+
+/* Quote */
+.quote-bar { width: clamp(40px, 4vw, 64px); height: 3px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); margin-bottom: clamp(20px, 3vh, 36px); box-shadow: 0 0 12px rgba(61,90,254,0.3); }
+.quote-text {
+  font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+  font-weight: 700; font-size: clamp(24px, 4.5vw, 64px);
+  line-height: 1.2; letter-spacing: 0.02em; color: var(--text-bright);
+  max-width: 18ch; margin-bottom: clamp(16px, 2vh, 32px);
+}
+.quote-attr { font-size: clamp(12px, 1.2vw, 18px); color: var(--accent-purple); }
+
+/* Close */
+.close-title {
+  font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+  font-weight: 900; font-size: clamp(36px, 6.5vw, 100px);
+  letter-spacing: 0.08em; line-height: 1.08; color: var(--text-bright);
+  margin-bottom: clamp(12px, 2vh, 24px);
+}
+.close-sub { font-size: clamp(13px, 1.5vw, 22px); color: var(--muted); letter-spacing: 0.1em; }
+
+/* HUD brackets */
+.hud-info {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(8px, 0.7vw, 11px); color: var(--muted);
+  letter-spacing: 0.15em; position: absolute;
+}
+
+/* Animations */
+.reveal { opacity: 0; transform: translateY(30px); }
+.slide.active .reveal { animation: fadeUp 0.6s var(--ease-out-expo) forwards; }
+.slide.active .reveal:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.15s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.28s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.40s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.52s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.64s; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+/* Neon glow pulse */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(61,90,254,.3), 0 0 30px rgba(61,90,254,.1); }
+  50% { box-shadow: 0 0 20px rgba(61,90,254,.5), 0 0 60px rgba(61,90,254,.2); }
+}
+
+/* Scan line animation */
+@keyframes scanLine {
+  0% { top: -2px; } 100% { top: 100%; }
+}
+.scan-line {
+  position: absolute; left: 0; width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+  opacity: 0.3; z-index: 50; pointer-events: none;
+  animation: scanLine 4s linear infinite;
+}
+
+/* Blinking cursor */
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.cursor::after { content: '_'; animation: blink 1s step-end infinite; color: var(--accent-blue); }
+
+@media (max-width: 600px) {
+  .feature-grid { grid-template-columns: 1fr; }
+  .stats-row { flex-direction: column; gap: clamp(20px, 4vw, 40px); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter">[ <span class="current" id="cur">01</span> / <span id="tot">05</span> ]</div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="glow-orb" style="top:10%; right:-10%; background:radial-gradient(circle, rgba(61,90,254,0.15) 0%, transparent 70%);"></div>
+  <div class="scan-line"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">// DESIGN FRONTIER &middot; 2026</div>
+    <h1 class="title-huge reveal"><span class="outlined">DESIGN</span><br><span class="solid">REVOLUTION</span></h1>
+    <p class="subtitle reveal">// 从像素到体验，用代码重新定义创造力的边界</p>
+    <div class="hud-info" style="bottom:clamp(32px,5vh,56px); left:clamp(48px,8vw,160px);">
+      <span class="reveal" style="animation-delay:0.6s;">[  SYS.INIT // ACTIVE  ]</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="glow-orb" style="bottom:-15%; left:-10%; background:radial-gradient(circle, rgba(124,77,255,0.12) 0%, transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">// CORE CAPABILITIES</div>
+    <div class="feature-grid">
+      <div class="feature-item reveal">
+        <h3>智能布局引擎</h3>
+        <p>AI 理解内容语义结构，自动生成符合视觉层次的排版方案</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>风格迁移系统</h3>
+        <p>一键将任意参考图的视觉语言迁移到你的设计中</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>实时神经协作</h3>
+        <p>多人同步编辑，AI 实时调和不同设计师的修改意图</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>自适应响应式</h3>
+        <p>一次设计，自动适配从手表到巨幕的所有终端尺寸</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="glow-orb" style="top:5%; left:25%; background:radial-gradient(circle, rgba(0,229,255,0.1) 0%, transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">// ANALYTICS &mdash; PERFORMANCE INDEX</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">10<span class="unit">x</span></div>
+        <div class="label">效率提升</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">93<span class="unit">%</span></div>
+        <div class="label">用户满意度</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">50<span class="unit">M+</span></div>
+        <div class="label">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="glow-orb" style="top:20%; right:5%; background:radial-gradient(circle, rgba(255,20,147,0.1) 0%, transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="quote-bar reveal"></div>
+    <div class="quote-text reveal">好的设计不是装饰，<br>是沟通。</div>
+    <div class="quote-attr reveal">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="glow-orb" style="bottom:-5%; left:15%; background:radial-gradient(circle, rgba(61,90,254,0.15) 0%, transparent 70%);"></div>
+  <div class="slide-inner">
+    <div class="close-title reveal">重新定义<br>创造力</div>
+    <p class="close-sub reveal">AI + 人类直觉 — 设计的下一个十年从这里开始</p>
+    <div class="hud-info reveal" style="bottom:clamp(32px,5vh,56px); left:clamp(48px,8vw,160px);">
+      <span class="cursor">END TRANSMISSION</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  document.addEventListener('click',function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

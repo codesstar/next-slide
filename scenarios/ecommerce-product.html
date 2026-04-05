@@ -7,38 +7,35 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <style>
         /* ===========================================
-           CSS CUSTOM PROPERTIES — 电商大促风格
-           Red/Gold on dark, conversion-focused
+           CSS CUSTOM PROPERTIES — Premium / Apple Store
+           Clean white, matte charcoal, warm copper
            =========================================== */
         :root {
-            /* --- Color Palette --- */
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #222222;
-            --bg-tertiary: #2a2a2a;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --text-muted: #777777;
-            --accent: #e53935;
-            --accent-secondary: #ffd700;
-            --accent-glow: rgba(229, 57, 53, 0.4);
-            --accent-glow-secondary: rgba(255, 215, 0, 0.3);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --surface: rgba(255, 255, 255, 0.05);
-            --gold: #ffd700;
-            --gold-dim: #b8960b;
-            --red: #e53935;
-            --red-dark: #b71c1c;
-            --red-light: #ff5252;
-            --green-success: #4caf50;
+            --bg-primary: #FAFAF8;
+            --bg-secondary: #F5F5F0;
+            --bg-tertiary: #EEEEE8;
+            --text-primary: #1D1D1F;
+            --text-secondary: #6E6E73;
+            --text-muted: #A1A1A6;
+            --accent: #2D2D2D;
+            --accent-secondary: #B87333;
+            --copper: #B87333;
+            --copper-light: #D4955A;
+            --copper-dark: #8C5A2A;
+            --charcoal: #2D2D2D;
+            --charcoal-light: #424245;
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --surface: rgba(0, 0, 0, 0.02);
+            --success: #34C759;
 
-            /* --- Typography --- */
-            --font-display: 'Noto Sans SC', sans-serif;
-            --font-body: 'Noto Sans SC', sans-serif;
-            --font-mono: 'Courier New', monospace;
+            --font-display: 'Outfit', 'Noto Sans SC', -apple-system, sans-serif;
+            --font-body: 'Outfit', 'Noto Sans SC', -apple-system, sans-serif;
+            --font-cjk: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
 
             --title-size: clamp(2rem, 6vw, 5rem);
             --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
@@ -50,19 +47,17 @@
             --price-size: clamp(1.8rem, 5vw, 3.5rem);
             --price-big: clamp(2.5rem, 7vw, 5rem);
 
-            /* --- Spacing --- */
             --slide-padding: clamp(1.5rem, 4vw, 4rem);
             --content-gap: clamp(1rem, 2vw, 2rem);
             --element-gap: clamp(0.25rem, 1vw, 1rem);
 
-            /* --- Animation --- */
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
             --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --duration-fast: 0.3s;
-            --duration-normal: 0.6s;
-            --duration-slow: 1s;
-            --duration-dramatic: 1.5s;
+            --duration-normal: 0.8s;
+            --duration-slow: 1.2s;
+            --duration-dramatic: 1.8s;
         }
 
         /* ===========================================
@@ -109,17 +104,6 @@
             overflow: hidden;
             padding: var(--slide-padding);
         }
-        :root {
-            --title-size: clamp(1.5rem, 5vw, 4rem);
-            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
-            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
-            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
-            --small-size: clamp(0.65rem, 1vw, 0.875rem);
-            --stat-size: clamp(2rem, 8vw, 6rem);
-            --slide-padding: clamp(1rem, 4vw, 4rem);
-            --content-gap: clamp(0.5rem, 2vw, 2rem);
-            --element-gap: clamp(0.25rem, 1vw, 1rem);
-        }
         .card, .container, .content-box {
             max-width: min(90vw, 1000px);
             max-height: min(80vh, 700px);
@@ -141,18 +125,13 @@
             max-height: min(50vh, 400px);
             object-fit: contain;
         }
-        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
-            line-height: 1.8;
-            word-break: break-all;
+        :lang(zh), :lang(zh-CN) {
+            line-height: 1.7;
+            word-break: normal;
             overflow-wrap: break-word;
         }
-        h1, h2, h3, h4, h5, h6 {
-            overflow-wrap: break-word;
-            hyphens: auto;
-        }
-        p, li, blockquote {
-            overflow-wrap: break-word;
-        }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
 
         /* --- Responsive breakpoints --- */
         @media (max-height: 700px) {
@@ -170,9 +149,7 @@
                 --title-size: clamp(1.1rem, 4vw, 2rem);
                 --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
             }
-            .nav-dots, .keyboard-hint, .decorative {
-                display: none;
-            }
+            .nav-dots, .keyboard-hint, .decorative { display: none; }
         }
         @media (max-height: 500px) {
             :root {
@@ -181,23 +158,13 @@
                 --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
                 --body-size: clamp(0.65rem, 1vw, 0.85rem);
             }
-            .grid {
-                grid-template-columns: 1fr !important;
-            }
+            .grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 600px) {
-            :root {
-                --title-size: clamp(1.25rem, 7vw, 2.5rem);
-            }
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .slide-content[style*="flex-direction: row"] {
-                flex-direction: column !important;
-            }
-            .slide-counter {
-                display: none;
-            }
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .grid { grid-template-columns: 1fr; }
+            .slide-content[style*="flex-direction: row"] { flex-direction: column !important; }
+            .slide-counter { display: none; }
         }
         @media (max-width: 600px) and (min-height: 700px) {
             :root {
@@ -206,15 +173,10 @@
             }
         }
         @media (min-width: 2000px) {
-            .slide-content {
-                max-width: 1600px;
-                margin: 0 auto;
-            }
+            .slide-content { max-width: 1600px; margin: 0 auto; }
         }
         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .card, .content-box {
-                border-width: 0.5px;
-            }
+            .card, .content-box { border-width: 0.5px; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -223,28 +185,20 @@
                 transition-duration: 0.2s !important;
                 scroll-behavior: auto !important;
             }
-            html {
-                scroll-behavior: auto;
-                scroll-snap-type: none;
-            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
             .reveal, .reveal-scale, .reveal-left, .reveal-right,
             .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
             .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
             .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
-                opacity: 0;
-                transform: none !important;
-                filter: none !important;
-                clip-path: none !important;
-                transition: opacity 0.2s ease !important;
+                opacity: 0; transform: none !important; filter: none !important;
+                clip-path: none !important; transition: opacity 0.2s ease !important;
             }
             .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
             .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
             .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
             .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
             .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
-            .visible .reveal-quote {
-                opacity: 1;
-            }
+            .visible .reveal-quote { opacity: 1; }
         }
         @media print {
             html { scroll-snap-type: none; }
@@ -252,8 +206,7 @@
                 height: auto; min-height: 100vh; overflow: visible;
                 page-break-after: always; page-break-inside: avoid;
             }
-            .progress-bar, .nav-dots, .slide-counter,
-            .edit-hotzone, .edit-toggle { display: none !important; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
             .reveal, [class*="reveal-"] {
                 opacity: 1 !important; transform: none !important;
                 filter: none !important; clip-path: none !important;
@@ -267,279 +220,343 @@
             font-family: var(--font-body);
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.8;
+            line-height: 1.7;
         }
 
         /* ===========================================
-           ANIMATIONS
+           ANIMATIONS — Slow, premium feel (0.8s base)
            =========================================== */
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
             transition: opacity var(--duration-normal) var(--ease-out-expo),
                         transform var(--duration-normal) var(--ease-out-expo);
         }
-        .slide.visible .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .reveal:nth-child(1) { transition-delay: 0.08s; }
-        .reveal:nth-child(2) { transition-delay: 0.16s; }
-        .reveal:nth-child(3) { transition-delay: 0.24s; }
-        .reveal:nth-child(4) { transition-delay: 0.32s; }
-        .reveal:nth-child(5) { transition-delay: 0.40s; }
-        .reveal:nth-child(6) { transition-delay: 0.48s; }
-        .reveal:nth-child(7) { transition-delay: 0.56s; }
-        .reveal:nth-child(8) { transition-delay: 0.64s; }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.35s; }
+        .reveal:nth-child(4) { transition-delay: 0.5s; }
+        .reveal:nth-child(5) { transition-delay: 0.65s; }
+        .reveal:nth-child(6) { transition-delay: 0.8s; }
+        .reveal:nth-child(7) { transition-delay: 0.95s; }
+        .reveal:nth-child(8) { transition-delay: 1.1s; }
 
-        /* Pop-in for price tags */
         .reveal-pop {
             opacity: 0;
-            transform: scale(0.5);
-            transition: opacity var(--duration-normal) var(--ease-out-back),
-                        transform var(--duration-normal) var(--ease-out-back);
+            transform: scale(0.85);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-slow) var(--ease-out-back);
         }
-        .slide.visible .reveal-pop {
-            opacity: 1;
-            transform: scale(1);
+        .slide.visible .reveal-pop { opacity: 1; transform: scale(1); }
+        .reveal-pop:nth-child(1) { transition-delay: 0.15s; }
+        .reveal-pop:nth-child(2) { transition-delay: 0.35s; }
+        .reveal-pop:nth-child(3) { transition-delay: 0.55s; }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity var(--duration-normal) ease, transform var(--duration-slow) var(--ease-out-expo);
         }
-        .reveal-pop:nth-child(1) { transition-delay: 0.1s; }
-        .reveal-pop:nth-child(2) { transition-delay: 0.25s; }
-        .reveal-pop:nth-child(3) { transition-delay: 0.4s; }
+        .visible .reveal-scale { opacity: 1; transform: scale(1); }
 
         /* ===========================================
-           PROGRESS BAR
+           PROGRESS BAR — thin copper line
            =========================================== */
         .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--red), var(--gold));
-            width: 0%;
-            z-index: 9999;
-            transition: width 0.3s ease;
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: var(--copper);
+            width: 0%; z-index: 9999; transition: width 0.4s ease;
         }
 
         /* ===========================================
            NAVIGATION DOTS
            =========================================== */
         .nav-dots {
-            position: fixed;
-            right: clamp(12px, 2vw, 24px);
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 9998;
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%;
+            transform: translateY(-50%); display: flex;
+            flex-direction: column; gap: 10px; z-index: 9998;
         }
         .nav-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 0;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--text-muted); border: none;
+            cursor: pointer; transition: all 0.4s ease; padding: 0;
+            opacity: 0.4;
         }
         .nav-dot.active {
-            background: var(--red);
-            transform: scale(1.4);
-            box-shadow: 0 0 8px var(--accent-glow);
+            background: var(--charcoal); transform: scale(1.6);
+            opacity: 1;
         }
 
         /* ===========================================
            SLIDE COUNTER
            =========================================== */
         .slide-counter {
-            position: fixed;
-            bottom: clamp(12px, 2vw, 24px);
-            right: clamp(12px, 2vw, 24px);
-            font-family: var(--font-mono);
-            font-size: var(--small-size);
-            color: var(--text-muted);
-            z-index: 9998;
-        }
-
-        /* ===========================================
-           PROMO TAG (red badge)
-           =========================================== */
-        .promo-tag {
-            display: inline-block;
-            background: var(--red);
-            color: #fff;
-            font-size: var(--small-size);
-            font-weight: 700;
-            padding: clamp(0.2rem, 0.5vw, 0.35rem) clamp(0.5rem, 1.2vw, 0.9rem);
-            border-radius: 4px;
-            letter-spacing: 0.05em;
-        }
-        .promo-tag-gold {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--gold), #ffab00);
-            color: #1a1a1a;
-            font-size: var(--small-size);
-            font-weight: 700;
-            padding: clamp(0.2rem, 0.5vw, 0.35rem) clamp(0.5rem, 1.2vw, 0.9rem);
-            border-radius: 4px;
+            position: fixed; bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px); font-family: var(--font-mono);
+            font-size: var(--small-size); color: var(--text-muted); z-index: 9998;
             letter-spacing: 0.05em;
         }
 
         /* ===========================================
-           CARD GLOW EFFECT
+           CSS ART: THERMOS — gradient cylinder with reflection
            =========================================== */
-        .glow-card {
-            background: var(--surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: clamp(1rem, 2vw, 1.5rem);
+        .thermos-hero {
+            width: clamp(100px, 15vw, 160px);
+            height: clamp(260px, 40vh, 380px);
             position: relative;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            margin: 0 auto;
         }
-        .glow-card:hover {
-            border-color: rgba(229, 57, 53, 0.3);
-            box-shadow: 0 0 20px rgba(229, 57, 53, 0.1), 0 0 40px rgba(255, 215, 0, 0.05);
+        .thermos-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(70px, 10vw, 100px);
+            height: clamp(220px, 34vh, 320px);
+            background: linear-gradient(135deg, #3A3A3A 0%, #2D2D2D 30%, #1A1A1A 60%, #2D2D2D 80%, #4A4A4A 100%);
+            border-radius: clamp(12px, 2vw, 18px) clamp(12px, 2vw, 18px) clamp(8px, 1.5vw, 14px) clamp(8px, 1.5vw, 14px);
+            box-shadow:
+                inset -8px 0 20px rgba(255,255,255,0.06),
+                inset 2px 0 8px rgba(255,255,255,0.03),
+                8px 12px 40px rgba(0,0,0,0.15),
+                -4px 8px 30px rgba(0,0,0,0.08);
         }
-
-        /* ===========================================
-           PRICE STYLING
-           =========================================== */
-        .price-current {
-            font-size: var(--price-big);
-            font-weight: 900;
-            color: var(--red);
-            font-family: var(--font-display);
-        }
-        .price-original {
-            font-size: var(--body-size);
-            color: var(--text-muted);
-            text-decoration: line-through;
-        }
-        .price-symbol {
-            font-size: 0.6em;
-            vertical-align: top;
-            position: relative;
-            top: 0.15em;
-        }
-
-        /* ===========================================
-           STAR RATING
-           =========================================== */
-        .stars {
-            color: var(--gold);
-            font-size: clamp(0.8rem, 1.5vw, 1.1rem);
-            letter-spacing: 2px;
-        }
-
-        /* ===========================================
-           SLIDE-SPECIFIC: TITLE
-           =========================================== */
-        .title-slide {
-            background: radial-gradient(ellipse at 50% 40%, #2a1a1a 0%, #1a1a1a 60%, #111 100%);
-        }
-        .title-slide::before {
+        /* Reflection stripe */
+        .thermos-body::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -30%;
-            width: 160%;
-            height: 160%;
-            background: radial-gradient(circle at 50% 50%, rgba(229, 57, 53, 0.08) 0%, transparent 50%);
-            pointer-events: none;
+            top: 8%;
+            left: 18%;
+            width: 3px;
+            height: 75%;
+            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.08), rgba(255,255,255,0.15), rgba(255,255,255,0.08), transparent);
+            border-radius: 2px;
         }
-
-        /* ===========================================
-           SLIDE-SPECIFIC: PAIN POINT
-           =========================================== */
-        .pain-slide {
-            background: linear-gradient(180deg, #1a1a1a 0%, #1f1010 100%);
-        }
-
-        /* ===========================================
-           SLIDE-SPECIFIC: STATS
-           =========================================== */
-        .stats-slide {
-            background: radial-gradient(ellipse at 50% 50%, #2a1a10 0%, #1a1a1a 70%);
-        }
-
-        /* ===========================================
-           SLIDE-SPECIFIC: PRICING
-           =========================================== */
-        .pricing-slide .tier-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: clamp(0.8rem, 2vw, 1.5rem);
-            text-align: center;
-            position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .pricing-slide .tier-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(229, 57, 53, 0.15);
-        }
-        .pricing-slide .tier-card.featured {
-            border: 2px solid var(--red);
-            background: linear-gradient(180deg, rgba(229, 57, 53, 0.08) 0%, var(--bg-secondary) 40%);
-        }
-        .discount-badge {
+        /* Cap */
+        .thermos-cap {
             position: absolute;
-            top: -12px;
-            right: clamp(8px, 2vw, 16px);
-            background: var(--red);
-            color: #fff;
-            font-size: var(--small-size);
-            font-weight: 700;
-            padding: clamp(0.15rem, 0.4vw, 0.25rem) clamp(0.4rem, 1vw, 0.7rem);
-            border-radius: 4px;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(56px, 8vw, 80px);
+            height: clamp(35px, 5vh, 50px);
+            background: linear-gradient(180deg, #B87333 0%, #9A6028 40%, #B87333 100%);
+            border-radius: clamp(8px, 1.5vw, 14px) clamp(8px, 1.5vw, 14px) clamp(4px, 0.8vw, 6px) clamp(4px, 0.8vw, 6px);
+            box-shadow:
+                inset -3px 0 10px rgba(255,255,255,0.1),
+                0 -2px 10px rgba(184,115,51,0.2);
+        }
+        /* Copper band */
+        .thermos-band {
+            position: absolute;
+            top: clamp(42px, 6vh, 58px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(72px, 10.5vw, 104px);
+            height: clamp(6px, 1vh, 10px);
+            background: linear-gradient(180deg, #D4955A, #B87333, #8C5A2A);
+            border-radius: 2px;
+        }
+        /* OLED display area */
+        .thermos-display {
+            position: absolute;
+            top: clamp(70px, 11vh, 100px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(34px, 5vw, 48px);
+            height: clamp(14px, 2vh, 20px);
+            background: #111;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: clamp(8px, 1.2vw, 11px);
+            color: #B87333;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 6px rgba(184,115,51,0.3);
+        }
+        /* Floor reflection */
+        .thermos-reflection {
+            position: absolute;
+            bottom: -20%;
+            left: 50%;
+            transform: translateX(-50%) scaleY(-1);
+            width: clamp(70px, 10vw, 100px);
+            height: clamp(80px, 12vh, 120px);
+            background: linear-gradient(180deg, rgba(45,45,45,0.12) 0%, transparent 100%);
+            border-radius: clamp(8px, 1.5vw, 14px);
+            filter: blur(4px);
+            opacity: 0.4;
         }
 
         /* ===========================================
-           SLIDE-SPECIFIC: TESTIMONIALS
+           FLOATING 55 C BADGE
            =========================================== */
-        .testimonial-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: clamp(0.8rem, 2vw, 1.2rem);
-        }
-
-        /* ===========================================
-           SLIDE-SPECIFIC: CTA
-           =========================================== */
-        .cta-slide {
-            background: radial-gradient(ellipse at 50% 50%, #2a0a0a 0%, #1a1a1a 70%);
-        }
-        .cta-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--red), var(--red-dark));
+        .temp-badge {
+            width: clamp(80px, 12vw, 110px);
+            height: clamp(80px, 12vw, 110px);
+            border-radius: 50%;
+            background: var(--charcoal);
             color: #fff;
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            font-weight: 900;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             font-family: var(--font-display);
-            padding: clamp(0.6rem, 1.5vw, 1rem) clamp(2rem, 5vw, 4rem);
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            box-shadow: 0 4px 20px rgba(229, 57, 53, 0.4), 0 0 60px rgba(229, 57, 53, 0.15);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            animation: pulse-glow 2s ease-in-out infinite;
+            position: absolute;
+            box-shadow: 0 8px 32px rgba(45,45,45,0.2);
+            animation: float-badge 6s ease-in-out infinite;
         }
-        .cta-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 30px rgba(229, 57, 53, 0.5), 0 0 80px rgba(229, 57, 53, 0.2);
+        .temp-badge-num {
+            font-size: clamp(1.4rem, 3vw, 2.2rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.02em;
         }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 4px 20px rgba(229, 57, 53, 0.4), 0 0 60px rgba(229, 57, 53, 0.15); }
-            50% { box-shadow: 0 4px 30px rgba(229, 57, 53, 0.6), 0 0 80px rgba(229, 57, 53, 0.25); }
+        .temp-badge-label {
+            font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+            font-weight: 500;
+            opacity: 0.7;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        @keyframes float-badge {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         /* ===========================================
-           COMPARISON TABLE
+           SPEC CARDS with CSS icons
+           =========================================== */
+        .spec-card {
+            background: #fff;
+            border: 1px solid var(--border-subtle);
+            border-radius: clamp(12px, 2vw, 20px);
+            padding: clamp(1rem, 2.5vw, 2rem);
+            transition: box-shadow 0.4s ease, transform 0.4s ease;
+        }
+        .spec-card:hover {
+            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+        }
+        .spec-icon {
+            width: clamp(36px, 5vw, 48px);
+            height: clamp(36px, 5vw, 48px);
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: clamp(0.5rem, 1vw, 0.8rem);
+        }
+        /* CSS temperature icon */
+        .icon-temp {
+            width: clamp(14px, 2vw, 18px);
+            height: clamp(24px, 3.5vw, 32px);
+            border: 2px solid var(--copper);
+            border-radius: 0 0 50% 50%;
+            position: relative;
+        }
+        .icon-temp::before {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--copper);
+            border-radius: 50%;
+        }
+        .icon-temp::after {
+            content: '';
+            position: absolute;
+            bottom: 9px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 60%;
+            background: var(--copper);
+        }
+        /* CSS battery icon */
+        .icon-battery {
+            width: clamp(24px, 3.5vw, 32px);
+            height: clamp(14px, 2vw, 18px);
+            border: 2px solid var(--copper);
+            border-radius: 3px;
+            position: relative;
+        }
+        .icon-battery::before {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 6px;
+            background: var(--copper);
+            border-radius: 0 2px 2px 0;
+        }
+        .icon-battery::after {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            bottom: 2px;
+            width: 65%;
+            background: var(--copper);
+            border-radius: 1px;
+            opacity: 0.6;
+        }
+        /* CSS material icon */
+        .icon-material {
+            width: clamp(20px, 3vw, 26px);
+            height: clamp(20px, 3vw, 26px);
+            border: 2px solid var(--copper);
+            border-radius: 50%;
+            position: relative;
+        }
+        .icon-material::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border: 2px solid var(--copper);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+        /* CSS smart icon (bluetooth-ish) */
+        .icon-smart {
+            width: clamp(16px, 2.5vw, 22px);
+            height: clamp(22px, 3vw, 28px);
+            position: relative;
+        }
+        .icon-smart::before,
+        .icon-smart::after {
+            content: '';
+            position: absolute;
+            border: 2px solid var(--copper);
+            border-left: none;
+            border-radius: 0 50% 50% 0;
+        }
+        .icon-smart::before {
+            top: 2px; right: 0;
+            width: 10px; height: calc(100% - 4px);
+        }
+        .icon-smart::after {
+            top: 6px; right: 4px;
+            width: 6px; height: calc(100% - 12px);
+            opacity: 0.5;
+        }
+
+        /* ===========================================
+           COMPARISON TABLE — Apple-style minimalism
            =========================================== */
         .compare-table {
             width: 100%;
@@ -547,206 +564,503 @@
             font-size: var(--body-size);
         }
         .compare-table th {
-            padding: clamp(0.3rem, 0.8vw, 0.6rem) clamp(0.4rem, 1vw, 0.8rem);
+            padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem);
             text-align: center;
             font-size: var(--small-size);
+            font-weight: 600;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
         .compare-table td {
-            padding: clamp(0.3rem, 0.8vw, 0.6rem) clamp(0.4rem, 1vw, 0.8rem);
+            padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem);
             text-align: center;
             border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
         }
         .compare-table td:first-child {
             text-align: left;
-            color: var(--text-secondary);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .compare-table tr:last-child td {
+            border-bottom: none;
         }
 
         /* ===========================================
-           PLATFORM ICONS (CSS-only)
+           PRICING TIERS — Clean cards
+           =========================================== */
+        .tier-card {
+            background: #fff;
+            border: 1px solid var(--border-subtle);
+            border-radius: clamp(16px, 2.5vw, 24px);
+            padding: clamp(1.2rem, 2.5vw, 2rem);
+            text-align: center;
+            position: relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .tier-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+        }
+        .tier-card.featured {
+            border: 2px solid var(--charcoal);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        /* ===========================================
+           PRICE STYLING
+           =========================================== */
+        .price-current {
+            font-size: var(--price-big);
+            font-weight: 800;
+            color: var(--charcoal);
+            font-family: var(--font-display);
+            letter-spacing: -0.03em;
+        }
+        .price-original {
+            font-size: var(--body-size);
+            color: var(--text-muted);
+            text-decoration: line-through;
+            text-decoration-thickness: 1.5px;
+        }
+        .price-symbol {
+            font-size: 0.5em;
+            font-weight: 600;
+            vertical-align: top;
+            position: relative;
+            top: 0.2em;
+        }
+
+        /* ===========================================
+           TESTIMONIAL CARDS
+           =========================================== */
+        .testimonial-card {
+            background: #fff;
+            border: 1px solid var(--border-subtle);
+            border-radius: clamp(12px, 2vw, 20px);
+            padding: clamp(1rem, 2vw, 1.5rem);
+        }
+        .stars {
+            color: var(--copper);
+            font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+            letter-spacing: 1px;
+        }
+
+        /* ===========================================
+           CTA BUTTON — Premium, understated
+           =========================================== */
+        .cta-btn {
+            display: inline-block;
+            background: var(--charcoal);
+            color: #fff;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            font-weight: 600;
+            font-family: var(--font-display);
+            padding: clamp(0.8rem, 1.8vw, 1.2rem) clamp(2.5rem, 6vw, 5rem);
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            letter-spacing: 0.02em;
+        }
+        .cta-btn:hover {
+            background: var(--charcoal-light);
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(45,45,45,0.2);
+        }
+
+        /* ===========================================
+           CSS BAR CHART — Minimal style
+           =========================================== */
+        .bar-chart {
+            display: flex; align-items: flex-end; justify-content: center;
+            gap: clamp(0.8rem, 2vw, 1.5rem); height: clamp(100px, 18vh, 180px);
+            padding-top: 1rem;
+        }
+        .bar-col {
+            display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+            flex: 1; max-width: 80px;
+        }
+        .bar-value {
+            font-size: var(--small-size); font-weight: 600; color: var(--charcoal);
+        }
+        .bar {
+            width: 100%; border-radius: clamp(4px, 0.8vw, 8px) clamp(4px, 0.8vw, 8px) 0 0;
+            transition: height 1.5s var(--ease-out-expo);
+        }
+        .bar-label {
+            font-size: var(--small-size); color: var(--text-muted);
+            margin-top: 0.3rem; white-space: nowrap;
+        }
+
+        /* ===========================================
+           COUNTDOWN — Minimal, Apple-esque
+           =========================================== */
+        .countdown {
+            display: flex; gap: clamp(0.5rem, 1.5vw, 1rem); align-items: center;
+            justify-content: center;
+        }
+        .countdown-block {
+            background: var(--charcoal);
+            color: #fff;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(1.2rem, 3vw, 2.2rem);
+            padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.6rem, 1.5vw, 1rem);
+            border-radius: clamp(8px, 1.5vw, 12px);
+            min-width: clamp(40px, 6vw, 56px);
+            text-align: center;
+        }
+        .countdown-sep {
+            font-size: clamp(1rem, 2.5vw, 1.8rem);
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+        .countdown-label {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.3em;
+        }
+
+        /* ===========================================
+           PLATFORM ICONS
            =========================================== */
         .platform-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: clamp(40px, 6vw, 56px);
-            height: clamp(40px, 6vw, 56px);
-            border-radius: 12px;
-            background: var(--surface);
+            display: inline-flex; align-items: center; justify-content: center;
+            width: clamp(44px, 6vw, 60px); height: clamp(44px, 6vw, 60px);
+            border-radius: 50%; background: #fff;
             border: 1px solid var(--border-subtle);
-            font-size: var(--small-size);
-            font-weight: 700;
+            font-size: var(--small-size); font-weight: 600;
             color: var(--text-secondary);
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .platform-icon:hover {
-            border-color: var(--red);
+            border-color: var(--copper);
+            box-shadow: 0 4px 16px rgba(184,115,51,0.1);
         }
 
         /* ===========================================
-           DECORATIVE PARTICLES
+           SLIDE-SPECIFIC BACKGROUNDS
            =========================================== */
-        .particle {
+        .hero-slide {
+            background: var(--bg-primary);
+        }
+        .hero-slide::before {
+            content: '';
             position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: var(--gold);
-            opacity: 0.2;
+            top: -30%; right: -20%;
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(184,115,51,0.04) 0%, transparent 60%);
             pointer-events: none;
+        }
+
+        /* ===========================================
+           SECTION LABEL — thin uppercase
+           =========================================== */
+        .section-label {
+            font-size: var(--small-size);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--copper);
+            font-family: var(--font-display);
+        }
+
+        /* ===========================================
+           THIN DIVIDER
+           =========================================== */
+        .divider {
+            width: clamp(30px, 5vw, 48px);
+            height: 1.5px;
+            background: var(--copper);
+            border-radius: 1px;
+        }
+
+        /* ===========================================
+           DISCOUNT BADGE — subtle
+           =========================================== */
+        .discount-badge {
+            position: absolute;
+            top: clamp(-10px, -1.2vw, -14px);
+            right: clamp(12px, 2vw, 20px);
+            background: var(--charcoal);
+            color: #fff;
+            font-size: var(--small-size);
+            font-weight: 600;
+            padding: clamp(0.15rem, 0.4vw, 0.25rem) clamp(0.5rem, 1vw, 0.8rem);
+            border-radius: 999px;
         }
     </style>
 </head>
 <body>
     <!-- Progress bar -->
     <div class="progress-bar" id="progressBar"></div>
-
-    <!-- Navigation dots -->
     <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
-
-    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
 
-    <!-- =================== SLIDE 1: TITLE =================== -->
-    <section class="slide title-slide" aria-label="标题页">
-        <!-- Decorative particles -->
-        <div class="particle" style="top: 15%; left: 10%;"></div>
-        <div class="particle" style="top: 25%; right: 15%; width: 3px; height: 3px; background: var(--red); opacity: 0.15;"></div>
-        <div class="particle" style="bottom: 30%; left: 20%; width: 5px; height: 5px;"></div>
-        <div class="particle" style="top: 40%; right: 25%; width: 3px; height: 3px;"></div>
-        <div class="particle" style="bottom: 20%; right: 10%;"></div>
+    <!-- =================== SLIDE 1: HERO — Product reveal =================== -->
+    <section class="slide hero-slide" aria-label="标题页">
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative;">
+            <span class="reveal section-label" style="margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">暖心科技 | 2026 新品</span>
 
-        <div class="slide-content" style="align-items: center; text-align: center;">
-            <div class="reveal" style="margin-bottom: clamp(0.5rem, 1.5vw, 1rem);">
-                <span class="promo-tag" style="font-size: clamp(0.6rem, 1.2vw, 0.9rem);">新品首发</span>
-                <span class="promo-tag-gold" style="font-size: clamp(0.6rem, 1.2vw, 0.9rem); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">限时特惠</span>
-            </div>
-            <h1 class="reveal" style="font-size: clamp(2.5rem, 7vw, 5.5rem); font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em; line-height: 1.1;">
-                恒温<span style="color: var(--red);">Pro</span>
+            <h1 class="reveal" style="font-size: clamp(3rem, 8vw, 6.5rem); font-family: var(--font-display); font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: var(--charcoal);">
+                恒温<span style="color: var(--copper);">Pro</span>
             </h1>
-            <p class="reveal" style="font-size: var(--h3-size); color: var(--gold); font-weight: 700; margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">
-                智能保温杯
-            </p>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.8rem, 2vw, 1.5rem); max-width: min(80vw, 500px); line-height: 1.8;">
+
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 1vw, 0.6rem); font-weight: 300; letter-spacing: 0.02em;">
                 你的每一口，都是刚刚好的温度
             </p>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1rem, 3vw, 2rem);">
-                暖心科技 | 2026年4月15日 全平台首发
+
+            <!-- CSS Art Thermos -->
+            <div class="reveal-scale" style="margin-top: clamp(1rem, 2.5vw, 2rem); position: relative;">
+                <div class="thermos-hero">
+                    <div class="thermos-cap"></div>
+                    <div class="thermos-band"></div>
+                    <div class="thermos-body">
+                        <div class="thermos-display">55°C</div>
+                    </div>
+                    <div class="thermos-reflection"></div>
+                </div>
+                <!-- Floating badge -->
+                <div class="temp-badge" style="top: clamp(20px, 4vh, 40px); right: clamp(-40px, -6vw, -70px);">
+                    <span class="temp-badge-num">55°C</span>
+                    <span class="temp-badge-label">恒温</span>
+                </div>
+            </div>
+
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem); font-weight: 400;">
+                4月15日 全平台首发
             </p>
         </div>
     </section>
 
-    <!-- =================== SLIDE 2: PAIN POINT =================== -->
-    <section class="slide pain-slide" aria-label="痛点共情">
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(85vw, 900px); margin: 0 auto;">
-            <div class="reveal" style="font-size: clamp(3rem, 8vw, 6rem); color: var(--red); line-height: 1; opacity: 0.2; font-family: Georgia, serif;">
+    <!-- =================== SLIDE 2: LAUNCH COUNTDOWN =================== -->
+    <section class="slide" aria-label="倒计时" style="background: var(--bg-primary);">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <span class="reveal section-label">Limited Launch</span>
+
+            <h2 class="reveal" style="font-size: clamp(1.8rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 800; color: var(--charcoal); margin-top: clamp(0.3rem, 0.8vw, 0.5rem); letter-spacing: -0.03em;">
+                首发特惠 倒计时
+            </h2>
+
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3.5vw, 3rem);">
+                <div class="countdown" id="countdown">
+                    <div>
+                        <div class="countdown-block" id="cd-days">11</div>
+                        <div class="countdown-label">天</div>
+                    </div>
+                    <span class="countdown-sep">:</span>
+                    <div>
+                        <div class="countdown-block" id="cd-hours">08</div>
+                        <div class="countdown-label">时</div>
+                    </div>
+                    <span class="countdown-sep">:</span>
+                    <div>
+                        <div class="countdown-block" id="cd-mins">42</div>
+                        <div class="countdown-label">分</div>
+                    </div>
+                    <span class="countdown-sep">:</span>
+                    <div>
+                        <div class="countdown-block" id="cd-secs">17</div>
+                        <div class="countdown-label">秒</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reveal" style="margin-top: clamp(2rem, 4vw, 3rem); display: flex; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap; justify-content: center; align-items: center;">
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 800; color: var(--charcoal); font-family: var(--font-display); letter-spacing: -0.03em;">
+                        <span style="font-size: 0.5em; font-weight: 500; vertical-align: top; position: relative; top: 0.15em;">&#165;</span>199<span style="font-size: 0.4em; font-weight: 400; color: var(--text-muted);">起</span>
+                    </div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted); text-decoration: line-through; text-decoration-thickness: 1px;">原价 &#165;399</div>
+                </div>
+                <div style="width: 1px; height: 40px; background: var(--border-subtle);"></div>
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 800; color: var(--copper); font-family: var(--font-display); letter-spacing: -0.02em;">50%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">最高直降</div>
+                </div>
+                <div style="width: 1px; height: 40px; background: var(--border-subtle);"></div>
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 700; color: var(--charcoal); font-family: var(--font-display);">前1000名</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">再减 &#165;20</div>
+                </div>
+            </div>
+
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1.5rem, 3vw, 2.5rem); font-weight: 400;">
+                4月15日 00:00 开抢 &mdash; 4月30日 23:59 截止
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: PAIN POINT =================== -->
+    <section class="slide" aria-label="痛点共情" style="background: var(--bg-secondary);">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(85vw, 800px); margin: 0 auto;">
+            <div class="reveal" style="font-size: clamp(3rem, 8vw, 5rem); color: var(--copper); line-height: 1; opacity: 0.25; font-family: Georgia, serif;">
                 &ldquo;
             </div>
-            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 2.8rem); font-family: var(--font-display); font-weight: 700; line-height: 1.6; margin-top: -0.3em; color: var(--text-primary);">
+            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 2.5rem); font-family: var(--font-cjk); font-weight: 700; line-height: 1.5; margin-top: -0.2em; color: var(--charcoal);">
                 你有没有泡好一杯茶，<br>忙完回来发现已经凉了？
             </blockquote>
-            <div class="reveal" style="width: 60px; height: 3px; background: linear-gradient(90deg, var(--red), var(--gold)); margin: clamp(1rem, 2.5vw, 2rem) auto; border-radius: 2px;"></div>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1vw, 0.8rem); max-width: min(70vw, 500px); line-height: 1.8;">
+            <div class="reveal divider" style="margin: clamp(1rem, 2.5vw, 2rem) auto;"></div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); max-width: min(70vw, 500px); line-height: 1.7; font-weight: 300;">
                 85% 的保温杯用户表示，水温无法控制是最大痛点。<br>
                 不是太烫就是太凉，从来没有「刚刚好」。
             </p>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1rem, 2vw, 1.5rem);">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1.5rem, 3vw, 2rem); font-weight: 400;">
                 数据来源：暖心科技 2025 年用户调研（N=12,847）
             </p>
         </div>
     </section>
 
-    <!-- =================== SLIDE 3: FEATURES CARD GRID =================== -->
-    <section class="slide" aria-label="四大卖点" style="background: var(--bg-primary);">
-        <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+    <!-- =================== SLIDE 4: CORE SPECS — 4 cards =================== -->
+    <section class="slide" aria-label="核心参数" style="background: var(--bg-primary);">
+        <div class="slide-content" style="align-items: center;">
+            <span class="reveal section-label">Core Technology</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; color: var(--charcoal); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); letter-spacing: -0.02em;">
                 四大核心卖点
             </h2>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); max-width: min(90vw, 800px); margin-left: auto; margin-right: auto;">
-                <!-- Feature 1 -->
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#127777;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">精准控温</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">&plusmn;1&deg;C</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        PTC陶瓷加热芯片，实时温感反馈，让每一口都是你设定的温度
-                    </p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: clamp(1.2rem, 3vw, 2.5rem); max-width: min(92vw, 1000px);">
+                <div class="reveal spec-card" style="text-align: center;">
+                    <div class="spec-icon" style="margin: 0 auto;">
+                        <div class="icon-temp"></div>
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--charcoal);">精准控温</h3>
+                    <p style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: var(--copper); font-family: var(--font-display); margin-top: 0.2em;">&plusmn;1°C</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; line-height: 1.5;">PTC陶瓷加热芯片<br>实时温感反馈</p>
                 </div>
-                <!-- Feature 2 -->
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#9889;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">超长续航</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">8小时</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        2000mAh大容量电池，Type-C快充，一次充电管一整天
-                    </p>
+                <div class="reveal spec-card" style="text-align: center;">
+                    <div class="spec-icon" style="margin: 0 auto;">
+                        <div class="icon-battery"></div>
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--charcoal);">超长续航</h3>
+                    <p style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: var(--copper); font-family: var(--font-display); margin-top: 0.2em;">8小时</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; line-height: 1.5;">2000mAh 大容量<br>Type-C 快充</p>
                 </div>
-                <!-- Feature 3 -->
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#128241;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">APP智控</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">蓝牙5.0</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        手机实时查看水温，自定义温度曲线，喝水提醒不遗漏
-                    </p>
+                <div class="reveal spec-card" style="text-align: center;">
+                    <div class="spec-icon" style="margin: 0 auto;">
+                        <div class="icon-smart"></div>
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--charcoal);">APP智控</h3>
+                    <p style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: var(--copper); font-family: var(--font-display); margin-top: 0.2em;">蓝牙5.0</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; line-height: 1.5;">自定义温度曲线<br>喝水提醒</p>
                 </div>
-                <!-- Feature 4 -->
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#129514;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">医用级材质</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">316L</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        医用级不锈钢内胆，食品级硅胶密封，安全无异味
-                    </p>
+                <div class="reveal spec-card" style="text-align: center;">
+                    <div class="spec-icon" style="margin: 0 auto;">
+                        <div class="icon-material"></div>
+                    </div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--charcoal);">医用级材质</h3>
+                    <p style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: var(--copper); font-family: var(--font-display); margin-top: 0.2em;">316L</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; line-height: 1.5;">食品级硅胶密封<br>安全无异味</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- =================== SLIDE 4: COMPARISON =================== -->
-    <section class="slide" aria-label="产品对比" style="background: var(--bg-primary);">
-        <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
-                普通保温杯 <span style="color: var(--text-muted); font-weight: 400;">vs</span> <span style="color: var(--red);">恒温Pro</span>
+    <!-- =================== SLIDE 5: SALES DATA VIZ =================== -->
+    <section class="slide" aria-label="销售数据" style="background: var(--bg-secondary);">
+        <div class="slide-content" style="align-items: center;">
+            <span class="reveal section-label">By The Numbers</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; color: var(--charcoal); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); letter-spacing: -0.02em;">
+                用数据说话
             </h2>
             <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap);">
+                众筹阶段成绩 &mdash; 数据截至 2026.03.31
+            </p>
+            <!-- Counter stats -->
+            <div style="display: flex; justify-content: center; gap: clamp(3rem, 8vw, 7rem); margin-top: clamp(1.2rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="2847" data-prefix="&#165;" data-suffix="万" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--charcoal); letter-spacing: -0.03em;">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">众筹金额</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="31205" data-suffix="人" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--charcoal); letter-spacing: -0.03em;">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">支持者</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="987" data-decimal="1" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--copper); letter-spacing: -0.03em;">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">好评率</div>
+                </div>
+            </div>
+            <!-- CSS Bar Chart: Monthly sales -->
+            <div class="reveal" style="margin-top: clamp(1.2rem, 3vw, 2rem); max-width: min(80vw, 500px); width: 100%;">
+                <p style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-bottom: 0.5rem; font-weight: 400;">月度预购趋势（万元）</p>
+                <div class="bar-chart" id="barChart">
+                    <div class="bar-col">
+                        <div class="bar-value">120</div>
+                        <div class="bar" style="height: 0; background: var(--bg-tertiary);" data-height="24%"></div>
+                        <div class="bar-label">1月</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="bar-value">280</div>
+                        <div class="bar" style="height: 0; background: var(--bg-tertiary);" data-height="56%"></div>
+                        <div class="bar-label">2月</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="bar-value">450</div>
+                        <div class="bar" style="height: 0; background: var(--copper);" data-height="90%"></div>
+                        <div class="bar-label">3月</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="bar-value">500</div>
+                        <div class="bar" style="height: 0; background: var(--charcoal);" data-height="100%"></div>
+                        <div class="bar-label">4月(预)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 3rem); margin-top: clamp(0.8rem, 2vw, 1.5rem); flex-wrap: wrap;">
+                <span style="font-size: var(--small-size); color: var(--copper); font-weight: 600; letter-spacing: 0.05em;">众筹目标 2837% 达成</span>
+                <span style="font-size: var(--small-size); color: var(--charcoal); font-weight: 600; letter-spacing: 0.05em;">全网热销 TOP 1</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: COMPARISON =================== -->
+    <section class="slide" aria-label="产品对比" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <span class="reveal section-label" style="text-align: center; display: block;">Comparison</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; color: var(--charcoal); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); letter-spacing: -0.02em;">
+                普通保温杯 <span style="color: var(--text-muted); font-weight: 300;">vs</span> 恒温Pro
+            </h2>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap); font-weight: 300;">
                 不是所有保温杯都叫「恒温」
             </p>
-            <div class="reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 750px); margin-left: auto; margin-right: auto; overflow-x: auto;">
+            <div class="reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 700px); margin-left: auto; margin-right: auto; overflow-x: auto; background: #fff; border-radius: clamp(12px, 2vw, 20px); padding: clamp(0.5rem, 1.5vw, 1.5rem); border: 1px solid var(--border-subtle);">
                 <table class="compare-table">
                     <thead>
                         <tr>
-                            <th style="text-align: left; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle);">对比维度</th>
-                            <th style="color: var(--text-muted); border-bottom: 2px solid var(--border-subtle);">普通保温杯</th>
-                            <th style="color: var(--red); border-bottom: 2px solid var(--red);">恒温Pro</th>
+                            <th style="text-align: left; color: var(--text-muted); border-bottom: 1px solid rgba(0,0,0,0.1);">对比维度</th>
+                            <th style="color: var(--text-muted); border-bottom: 1px solid rgba(0,0,0,0.1);">普通保温杯</th>
+                            <th style="color: var(--charcoal); font-weight: 700; border-bottom: 1px solid var(--charcoal);">恒温Pro</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>控温能力</td>
-                            <td style="color: var(--text-muted);">&#10007; 被动保温，温度持续下降</td>
-                            <td style="color: var(--green-success);">&#10003; 主动恒温 &plusmn;1&deg;C</td>
+                            <td style="color: var(--text-muted);">被动保温</td>
+                            <td style="color: var(--charcoal); font-weight: 500;">主动恒温 &plusmn;1°C</td>
                         </tr>
                         <tr>
                             <td>内胆材质</td>
-                            <td style="color: var(--text-muted);">&#10007; 304不锈钢，易留水垢</td>
-                            <td style="color: var(--green-success);">&#10003; 316L医用级，抗腐蚀</td>
+                            <td style="color: var(--text-muted);">304不锈钢</td>
+                            <td style="color: var(--charcoal); font-weight: 500;">316L医用级</td>
                         </tr>
                         <tr>
                             <td>智能功能</td>
-                            <td style="color: var(--text-muted);">&#10007; 无</td>
-                            <td style="color: var(--green-success);">&#10003; APP控温 + 喝水提醒</td>
+                            <td style="color: var(--text-muted);">无</td>
+                            <td style="color: var(--charcoal); font-weight: 500;">APP + 喝水提醒</td>
                         </tr>
                         <tr>
                             <td>续航时间</td>
-                            <td style="color: var(--text-muted);">&#10007; 4~6小时逐渐降温</td>
-                            <td style="color: var(--green-success);">&#10003; 8小时持续恒温</td>
+                            <td style="color: var(--text-muted);">4~6小时降温</td>
+                            <td style="color: var(--charcoal); font-weight: 500;">8小时持续恒温</td>
                         </tr>
-                        <tr style="border-bottom: none;">
+                        <tr>
                             <td>外观设计</td>
-                            <td style="color: var(--text-muted);">&#10007; 同质化严重</td>
-                            <td style="color: var(--green-success);">&#10003; IF设计奖入围，极简美学</td>
+                            <td style="color: var(--text-muted);">同质化</td>
+                            <td style="color: var(--copper); font-weight: 600;">iF设计奖入围</td>
                         </tr>
                     </tbody>
                 </table>
@@ -754,193 +1068,143 @@
         </div>
     </section>
 
-    <!-- =================== SLIDE 5: STATS =================== -->
-    <section class="slide stats-slide" aria-label="数据统计">
+    <!-- =================== SLIDE 7: PRICING =================== -->
+    <section class="slide" aria-label="定价方案" style="background: var(--bg-secondary);">
         <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
-                用数据说话
-            </h2>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap);">
-                众筹阶段成绩 | 数据截至 2026.03.31
-            </p>
-            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="2847" data-prefix="&yen;" data-suffix="万" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--red);">0</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">众筹金额</div>
-                </div>
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="31205" data-suffix="人" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--gold);">0</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">支持者</div>
-                </div>
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="987" data-decimal="1" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--green-success);">0</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">好评率</div>
-                </div>
-            </div>
-            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1rem, 3vw, 2rem); margin-top: clamp(1.5rem, 3vw, 2.5rem); flex-wrap: wrap;">
-                <span class="promo-tag" style="font-size: var(--small-size);">众筹目标 2837% 达成</span>
-                <span class="promo-tag-gold" style="font-size: var(--small-size);">全网热销 TOP 1</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- =================== SLIDE 6: PRICING =================== -->
-    <section class="slide pricing-slide" aria-label="定价方案" style="background: var(--bg-primary);">
-        <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+            <span class="reveal section-label">Pricing</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; color: var(--charcoal); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); letter-spacing: -0.02em;">
                 首发定价
             </h2>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--red); text-align: center; margin-top: var(--element-gap); font-weight: 700;">
-                限时首发价 | 4月15日 - 4月30日
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap); font-weight: 400;">
+                限时首发价 &mdash; 4月15日至4月30日
             </p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); max-width: min(90vw, 900px);">
-                <!-- Basic -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); max-width: min(92vw, 900px);">
                 <div class="reveal-pop tier-card">
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">基础款</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem);">350ml | 经典黑/白</p>
-                    <p style="margin-top: clamp(0.5rem, 1vw, 0.8rem);">
-                        <span class="price-original">&yen;299</span>
-                    </p>
-                    <p class="price-current" style="font-size: var(--price-size);">
-                        <span class="price-symbol">&yen;</span>199
-                    </p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.5rem, 1vw, 0.8rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
-                        <li style="padding: 0.25em 0;">&#10003; 精准控温 &plusmn;1&deg;C</li>
-                        <li style="padding: 0.25em 0;">&#10003; 6小时续航</li>
-                        <li style="padding: 0.25em 0;">&#10003; 316L内胆</li>
+                    <p style="font-size: var(--small-size); font-weight: 600; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase;">基础款</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem); font-weight: 300;">350ml | 经典黑/白</p>
+                    <p style="margin-top: clamp(0.8rem, 1.5vw, 1.2rem);"><span class="price-original">&#165;299</span></p>
+                    <p class="price-current" style="font-size: var(--price-size);"><span class="price-symbol">&#165;</span>199</p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.8rem, 1.5vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left; font-weight: 300;">
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);">精准控温 &plusmn;1°C</li>
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);">6小时续航</li>
+                        <li style="padding: 0.3em 0;">316L内胆</li>
                     </ul>
-                    <div class="discount-badge">省&yen;100</div>
+                    <div class="discount-badge">省&#165;100</div>
                 </div>
-                <!-- Pro (featured) -->
                 <div class="reveal-pop tier-card featured">
-                    <span style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--red); color: #fff; font-size: var(--small-size); padding: 0.2em 0.8em; border-radius: 999px; font-weight: 700;">热卖</span>
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--red); font-weight: 700;">Pro款</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem);">500ml | 5色可选</p>
-                    <p style="margin-top: clamp(0.5rem, 1vw, 0.8rem);">
-                        <span class="price-original">&yen;399</span>
-                    </p>
-                    <p class="price-current" style="font-size: var(--price-size);">
-                        <span class="price-symbol">&yen;</span>299
-                    </p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.5rem, 1vw, 0.8rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
-                        <li style="padding: 0.25em 0;">&#10003; 精准控温 &plusmn;1&deg;C</li>
-                        <li style="padding: 0.25em 0;">&#10003; <strong style="color: var(--gold);">8小时</strong>续航</li>
-                        <li style="padding: 0.25em 0;">&#10003; APP蓝牙智控</li>
-                        <li style="padding: 0.25em 0;">&#10003; OLED温度显示</li>
+                    <span style="position: absolute; top: clamp(-10px, -1.2vw, -14px); left: 50%; transform: translateX(-50%); background: var(--charcoal); color: #fff; font-size: var(--small-size); padding: 0.2em 1em; border-radius: 999px; font-weight: 600; letter-spacing: 0.05em;">热卖</span>
+                    <p style="font-size: var(--small-size); font-weight: 700; letter-spacing: 0.1em; color: var(--charcoal); text-transform: uppercase;">Pro款</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem); font-weight: 300;">500ml | 5色可选</p>
+                    <p style="margin-top: clamp(0.8rem, 1.5vw, 1.2rem);"><span class="price-original">&#165;399</span></p>
+                    <p class="price-current" style="font-size: var(--price-size);"><span class="price-symbol">&#165;</span>299</p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.8rem, 1.5vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left; font-weight: 300;">
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);">精准控温 &plusmn;1°C</li>
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);"><strong style="color: var(--copper); font-weight: 600;">8小时</strong>续航</li>
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);">APP蓝牙智控</li>
+                        <li style="padding: 0.3em 0;">OLED温度显示</li>
                     </ul>
-                    <div class="discount-badge">省&yen;100</div>
+                    <div class="discount-badge">省&#165;100</div>
                 </div>
-                <!-- Gift Box -->
                 <div class="reveal-pop tier-card">
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold);">礼盒装</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem);">Pro款 + 配件全套</p>
-                    <p style="margin-top: clamp(0.5rem, 1vw, 0.8rem);">
-                        <span class="price-original">&yen;599</span>
-                    </p>
-                    <p class="price-current" style="font-size: var(--price-size);">
-                        <span class="price-symbol">&yen;</span>399
-                    </p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.5rem, 1vw, 0.8rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
-                        <li style="padding: 0.25em 0;">&#10003; Pro款全部功能</li>
-                        <li style="padding: 0.25em 0;">&#10003; 真皮杯套</li>
-                        <li style="padding: 0.25em 0;">&#10003; 无线充电底座</li>
-                        <li style="padding: 0.25em 0;">&#10003; 专属礼盒包装</li>
+                    <p style="font-size: var(--small-size); font-weight: 600; letter-spacing: 0.1em; color: var(--copper); text-transform: uppercase;">礼盒装</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem); font-weight: 300;">Pro款 + 配件全套</p>
+                    <p style="margin-top: clamp(0.8rem, 1.5vw, 1.2rem);"><span class="price-original">&#165;599</span></p>
+                    <p class="price-current" style="font-size: var(--price-size);"><span class="price-symbol">&#165;</span>399</p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.8rem, 1.5vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left; font-weight: 300;">
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);">Pro款全部功能</li>
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);">真皮杯套</li>
+                        <li style="padding: 0.3em 0; border-bottom: 1px solid var(--border-subtle);">无线充电底座</li>
+                        <li style="padding: 0.3em 0;">专属礼盒包装</li>
                     </ul>
-                    <div class="discount-badge" style="background: linear-gradient(135deg, var(--gold), #ffab00); color: #1a1a1a;">省&yen;200</div>
+                    <div class="discount-badge" style="background: var(--copper);">省&#165;200</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- =================== SLIDE 7: TESTIMONIALS =================== -->
+    <!-- =================== SLIDE 8: TESTIMONIALS =================== -->
     <section class="slide" aria-label="用户评价" style="background: var(--bg-primary);">
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+            <span class="reveal section-label" style="text-align: center; display: block;">Reviews</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; color: var(--charcoal); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); letter-spacing: -0.02em;">
                 用户怎么说
             </h2>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap);">
-                摘自天猫旗舰店
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap); font-weight: 400;">
+                摘自天猫旗舰店 &mdash; 好评率 98.7%
             </p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); max-width: min(90vw, 900px); margin-left: auto; margin-right: auto;">
-                <!-- Review 1 -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); max-width: min(92vw, 920px); margin-left: auto; margin-right: auto;">
                 <div class="reveal testimonial-card">
-                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
-                        <div style="width: clamp(28px, 4vw, 36px); height: clamp(28px, 4vw, 36px); border-radius: 50%; background: linear-gradient(135deg, #e53935, #ff7043); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 700; color: #fff;">林</div>
+                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--charcoal); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 600; color: #fff;">林</div>
                         <div>
-                            <p style="font-size: var(--body-size); font-weight: 700;">林小雨</p>
+                            <p style="font-size: var(--body-size); font-weight: 600; color: var(--charcoal);">林小雨</p>
                             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                         </div>
                     </div>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        "办公室必备神器！设定55度，从早喝到晚温度都不变，再也不用反复去茶水间接水了。同事都来问我链接。"
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7; font-weight: 300;">
+                        "办公室必备神器！设定55度，从早喝到晚温度都不变，再也不用反复去茶水间接水了。"
                     </p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.4rem, 0.8vw, 0.6rem);">2026-03-28 已购Pro款</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem); font-weight: 400;">2026-03-28 已购Pro款</p>
                 </div>
-                <!-- Review 2 -->
                 <div class="reveal testimonial-card">
-                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
-                        <div style="width: clamp(28px, 4vw, 36px); height: clamp(28px, 4vw, 36px); border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff9100); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 700; color: #1a1a1a;">张</div>
+                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--copper); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 600; color: #fff;">张</div>
                         <div>
-                            <p style="font-size: var(--body-size); font-weight: 700;">张先生</p>
+                            <p style="font-size: var(--body-size); font-weight: 600; color: var(--charcoal);">张先生</p>
                             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                         </div>
                     </div>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        "买的礼盒装送老婆，包装很有质感。APP可以设温度提醒喝水，她说比花更实用，好评！"
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7; font-weight: 300;">
+                        "买的礼盒装送老婆，包装很有质感。APP可以设温度提醒喝水，她说比花更实用！"
                     </p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.4rem, 0.8vw, 0.6rem);">2026-03-25 已购礼盒装</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem); font-weight: 400;">2026-03-25 已购礼盒装</p>
                 </div>
-                <!-- Review 3 -->
                 <div class="reveal testimonial-card">
-                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
-                        <div style="width: clamp(28px, 4vw, 36px); height: clamp(28px, 4vw, 36px); border-radius: 50%; background: linear-gradient(135deg, #4caf50, #00bcd4); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 700; color: #fff;">王</div>
+                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 600; color: #fff;">王</div>
                         <div>
-                            <p style="font-size: var(--body-size); font-weight: 700;">王大力</p>
+                            <p style="font-size: var(--body-size); font-weight: 600; color: var(--charcoal);">王大力</p>
                             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
                         </div>
                     </div>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        "续航确实够用，早上充满带去公司，到下班还有电。唯一建议是希望出更大容量的版本。"
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7; font-weight: 300;">
+                        "续航确实够用，早上充满带去公司，到下班还有电。希望出更大容量的版本。"
                     </p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.4rem, 0.8vw, 0.6rem);">2026-03-22 已购Pro款</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem); font-weight: 400;">2026-03-22 已购Pro款</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- =================== SLIDE 8: CTA =================== -->
-    <section class="slide cta-slide" aria-label="立即抢购">
-        <!-- Decorative glow -->
-        <div style="position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(229, 57, 53, 0.12) 0%, transparent 60%); pointer-events: none;"></div>
-
+    <!-- =================== SLIDE 9: CTA =================== -->
+    <section class="slide" aria-label="立即抢购" style="background: var(--bg-primary);">
         <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; position: relative; z-index: 1;">
-            <div class="reveal" style="margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">
-                <span class="promo-tag" style="font-size: clamp(0.65rem, 1.2vw, 0.9rem); animation: pulse-glow 2s ease-in-out infinite;">限时首发</span>
-            </div>
-            <h2 class="reveal" style="font-size: clamp(2rem, 5.5vw, 4.5rem); font-family: var(--font-display); font-weight: 900; line-height: 1.2;">
-                限时首发<br><span style="color: var(--red);">立即抢购</span>
+            <span class="reveal section-label">Available Now</span>
+
+            <h2 class="reveal" style="font-size: clamp(2rem, 5.5vw, 4.5rem); font-family: var(--font-display); font-weight: 800; line-height: 1.15; color: var(--charcoal); margin-top: clamp(0.3rem, 0.8vw, 0.5rem); letter-spacing: -0.03em;">
+                你的温度，<br><span style="color: var(--copper);">由你掌控</span>
             </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1.5vw, 1rem); line-height: 1.8;">
-                首发特惠 <span style="color: var(--gold); font-weight: 700;">&yen;199</span> 起 | 前 1000 名再减 &yen;20 | 4月30日截止
+
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.8rem, 2vw, 1.2rem); line-height: 1.7; font-weight: 300; max-width: min(70vw, 500px);">
+                首发特惠 <span style="color: var(--charcoal); font-weight: 700;">&#165;199</span> 起 &mdash; 前 1000 名再减 &#165;20
             </p>
 
-            <a class="reveal cta-btn" href="#" style="margin-top: clamp(1rem, 3vw, 2rem);">
-                立即抢购 &yen;199 起
+            <a class="reveal cta-btn" href="#" style="margin-top: clamp(1.5rem, 3.5vw, 2.5rem);">
+                立即抢购
             </a>
 
-            <!-- Platform icons -->
-            <div class="reveal" style="display: flex; gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: clamp(1.2rem, 3vw, 2rem); align-items: center;">
-                <div class="platform-icon" style="font-size: var(--small-size);">天猫</div>
-                <div class="platform-icon" style="font-size: var(--small-size);">京东</div>
-                <div class="platform-icon" style="font-size: var(--small-size);">抖音</div>
+            <div class="reveal" style="display: flex; gap: clamp(1rem, 2.5vw, 2rem); margin-top: clamp(1.5rem, 3.5vw, 2.5rem); align-items: center;">
+                <div class="platform-icon">天猫</div>
+                <div class="platform-icon">京东</div>
+                <div class="platform-icon">抖音</div>
             </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem);">
-                三大平台同步首发 | 全国顺丰包邮
+
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem); font-weight: 400;">
+                三大平台同步首发 &mdash; 全国顺丰包邮
             </p>
         </div>
 
-        <!-- Watermark -->
-        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
             Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
         </p>
     </section>
@@ -957,10 +1221,8 @@
                 this.isAnimating = false;
                 this.touchStartY = 0;
                 this.touchStartX = 0;
-
                 this.init();
             }
-
             init() {
                 this.setupIntersectionObserver();
                 this.setupKeyboardNav();
@@ -969,76 +1231,47 @@
                 this.setupProgressBar();
                 this.setupNavDots();
                 this.setupSlideCounter();
-
-                if (this.slides[0]) {
-                    this.slides[0].classList.add('visible');
-                }
+                if (this.slides[0]) this.slides[0].classList.add('visible');
             }
-
             setupIntersectionObserver() {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('visible');
                             const idx = this.slides.indexOf(entry.target);
-                            if (idx !== -1) {
-                                this.currentSlide = idx;
-                                this.updateUI();
-                            }
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
                         }
                     });
                 }, { threshold: 0.5 });
-
                 this.slides.forEach(slide => observer.observe(slide));
             }
-
             setupKeyboardNav() {
                 document.addEventListener('keydown', (e) => {
                     if (e.target.getAttribute('contenteditable')) return;
-
                     switch (e.key) {
-                        case 'ArrowDown':
-                        case 'ArrowRight':
-                        case ' ':
-                        case 'PageDown':
-                            e.preventDefault();
-                            this.goToSlide(this.currentSlide + 1);
-                            break;
-                        case 'ArrowUp':
-                        case 'ArrowLeft':
-                        case 'PageUp':
-                            e.preventDefault();
-                            this.goToSlide(this.currentSlide - 1);
-                            break;
-                        case 'Home':
-                            e.preventDefault();
-                            this.goToSlide(0);
-                            break;
-                        case 'End':
-                            e.preventDefault();
-                            this.goToSlide(this.slides.length - 1);
-                            break;
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
-
             setupTouchNav() {
                 document.addEventListener('touchstart', (e) => {
                     this.touchStartY = e.touches[0].clientY;
                     this.touchStartX = e.touches[0].clientX;
                 }, { passive: true });
-
                 document.addEventListener('touchend', (e) => {
                     const deltaY = this.touchStartY - e.changedTouches[0].clientY;
                     const deltaX = this.touchStartX - e.changedTouches[0].clientX;
-
                     if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
-
                     if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
                     else this.goToSlide(this.currentSlide - 1);
                 }, { passive: true });
             }
-
             setupWheelNav() {
                 let wheelTimeout;
                 document.addEventListener('wheel', (e) => {
@@ -1049,15 +1282,10 @@
                     }, 50);
                 }, { passive: true });
             }
-
-            setupProgressBar() {
-                this.progressBar = document.getElementById('progressBar');
-            }
-
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
             setupNavDots() {
                 const container = document.getElementById('navDots');
                 if (!container) return;
-
                 this.slides.forEach((_, i) => {
                     const dot = document.createElement('button');
                     dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
@@ -1066,42 +1294,25 @@
                     container.appendChild(dot);
                 });
             }
-
-            setupSlideCounter() {
-                this.counter = document.getElementById('slideCounter');
-                this.updateUI();
-            }
-
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
             goToSlide(index) {
                 if (index < 0 || index >= this.slides.length || this.isAnimating) return;
-                this.isAnimating = true;
-                this.currentSlide = index;
+                this.isAnimating = true; this.currentSlide = index;
                 this.slides[index].scrollIntoView({ behavior: 'smooth' });
                 this.updateUI();
-                setTimeout(() => { this.isAnimating = false; }, 600);
+                setTimeout(() => { this.isAnimating = false; }, 800);
             }
-
             updateUI() {
                 const total = this.slides.length;
                 const current = this.currentSlide;
-
-                if (this.progressBar) {
-                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
-                }
-
-                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-                    dot.classList.toggle('active', i === current);
-                });
-
-                if (this.counter) {
-                    this.counter.textContent = `${current + 1} / ${total}`;
-                }
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
             }
         }
 
         /* ===========================================
            COUNTER ANIMATION
-           Animate numbers when slide becomes visible
            =========================================== */
         const counters = document.querySelectorAll('.counter');
         const counterObserver = new IntersectionObserver((entries) => {
@@ -1112,17 +1323,13 @@
                     const suffix = el.dataset.suffix || '';
                     const prefix = el.dataset.prefix || '';
                     const decimal = el.dataset.decimal ? parseInt(el.dataset.decimal) : 0;
-                    const duration = 1500;
+                    const duration = 2000;
                     const start = performance.now();
-
                     function tick(now) {
                         const elapsed = now - start;
                         const progress = Math.min(elapsed / duration, 1);
-                        /* Ease-out cubic */
                         const eased = 1 - Math.pow(1 - progress, 3);
-
                         if (decimal > 0) {
-                            /* Handle decimal numbers like 98.7 (stored as 987 with decimal=1) */
                             const val = (target * eased / Math.pow(10, decimal)).toFixed(decimal);
                             el.textContent = prefix + val + suffix;
                         } else {
@@ -1137,10 +1344,55 @@
         }, { threshold: 0.5 });
         counters.forEach(c => counterObserver.observe(c));
 
-        /* Initialize on DOM ready */
-        document.addEventListener('DOMContentLoaded', () => {
-            new SlidePresentation();
-        });
+        /* ===========================================
+           COUNTDOWN TIMER
+           Counts down to April 30, 2026 23:59:59
+           =========================================== */
+        function updateCountdown() {
+            const target = new Date('2026-04-30T23:59:59').getTime();
+            const now = Date.now();
+            const diff = Math.max(0, target - now);
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            const dEl = document.getElementById('cd-days');
+            const hEl = document.getElementById('cd-hours');
+            const mEl = document.getElementById('cd-mins');
+            const sEl = document.getElementById('cd-secs');
+            if (dEl) dEl.textContent = String(d).padStart(2, '0');
+            if (hEl) hEl.textContent = String(h).padStart(2, '0');
+            if (mEl) mEl.textContent = String(m).padStart(2, '0');
+            if (sEl) sEl.textContent = String(s).padStart(2, '0');
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        /* ===========================================
+           BAR CHART ANIMATION
+           =========================================== */
+        const barChart = document.getElementById('barChart');
+        if (barChart) {
+            const barObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const bars = entry.target.querySelectorAll('.bar');
+                        bars.forEach((bar, i) => {
+                            setTimeout(() => {
+                                bar.style.height = bar.dataset.height;
+                            }, i * 200);
+                        });
+                        barObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+            barObserver.observe(barChart);
+        }
+
+        /* ===========================================
+           INITIALIZE
+           =========================================== */
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
     </script>
 </body>
 </html>

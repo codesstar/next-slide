@@ -7,7 +7,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@400;700&family=Manrope:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
         /* ===========================================
@@ -35,6 +35,7 @@
             /* --- Typography --- */
             --font-display: 'Manrope', 'Noto Sans SC', sans-serif;
             --font-body: 'Manrope', 'Noto Sans SC', sans-serif;
+            --font-accent: 'LXGW WenKai', serif;
             --font-mono: 'Manrope', monospace;
 
             --title-size: clamp(2rem, 6vw, 5rem);
@@ -130,7 +131,7 @@
         }
         img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
-            line-height: 1.8; word-break: break-all; overflow-wrap: break-word;
+            line-height: 1.8; word-break: normal; overflow-wrap: break-word;
         }
         h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
         p, li, blockquote { overflow-wrap: break-word; }
@@ -452,6 +453,70 @@
             transition: border-color 0.3s ease;
         }
         .platform-icon:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        /* ===========================================
+           COUNTDOWN TIMER — Electric style
+           =========================================== */
+        .countdown {
+            display: flex; gap: clamp(0.3rem, 1vw, 0.8rem); align-items: center;
+            justify-content: center;
+        }
+        .countdown-block {
+            background: var(--accent-blue);
+            color: #fff; font-family: var(--font-display); font-weight: 800;
+            font-size: clamp(1.2rem, 3vw, 2.2rem);
+            padding: clamp(0.3rem, 0.8vw, 0.5rem) clamp(0.5rem, 1.2vw, 0.8rem);
+            border-radius: 8px; min-width: clamp(36px, 5vw, 52px);
+            text-align: center; position: relative;
+            box-shadow: 0 4px 16px rgba(67, 97, 238, 0.3);
+        }
+        .countdown-block::after {
+            content: ''; position: absolute; top: 50%; left: 0; right: 0;
+            height: 1px; background: rgba(255,255,255,0.15);
+        }
+        .countdown-sep {
+            font-size: clamp(1rem, 2.5vw, 1.8rem); color: var(--accent-light);
+            font-weight: 800; animation: blink-colon 1s step-end infinite;
+        }
+        @keyframes blink-colon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .countdown-label {
+            font-size: var(--small-size); color: var(--text-muted);
+            text-align: center; margin-top: 0.2em;
+        }
+
+        /* ===========================================
+           CSS-ONLY DATA VIZ: Bar Chart — Electric
+           =========================================== */
+        .bar-chart {
+            display: flex; align-items: flex-end; justify-content: center;
+            gap: clamp(0.6rem, 1.5vw, 1.2rem); height: clamp(120px, 20vh, 200px);
+            padding-top: 1rem;
+        }
+        .bar-col {
+            display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+            flex: 1; max-width: 80px;
+        }
+        .bar-value {
+            font-size: var(--small-size); font-weight: 700; color: var(--accent-blue);
+        }
+        .bar {
+            width: 100%; border-radius: 6px 6px 0 0;
+            transition: height 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+        .bar-label {
+            font-size: var(--small-size); color: var(--text-muted);
+            margin-top: 0.3rem; white-space: nowrap;
+        }
+
+        /* Reveal slam animation */
+        .reveal-slam { opacity: 0; transform: scale(1.3); transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+        .visible .reveal-slam { opacity: 1; transform: scale(1); }
+        .reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .visible .reveal-scale { opacity: 1; transform: scale(1); }
     </style>
 </head>
 <body>
@@ -489,13 +554,62 @@
         </div>
     </section>
 
-    <!-- =================== SLIDE 2: PAIN POINT =================== -->
+    <!-- =================== SLIDE 2: COUNTDOWN + URGENCY — Split Panel =================== -->
+    <section class="slide split-slide" aria-label="倒计时" style="flex-direction: row;">
+        <div class="split-panel split-blue" style="flex: 0.4; align-items: center; justify-content: center; text-align: center;">
+            <p class="reveal" style="font-size: var(--small-size); opacity: 0.7; letter-spacing: 0.15em; text-transform: uppercase;">限时抢购</p>
+            <div class="reveal" style="margin-top: clamp(0.5rem, 1vw, 1rem);">
+                <div class="countdown" id="countdown" style="flex-direction: column; gap: clamp(0.5rem, 1vw, 0.8rem);">
+                    <div style="display: flex; gap: clamp(0.2rem, 0.5vw, 0.4rem); align-items: center;">
+                        <div class="countdown-block" id="cd-days" style="background: rgba(255,255,255,0.15); color: #fff;">11</div>
+                        <span class="countdown-sep">:</span>
+                        <div class="countdown-block" id="cd-hours" style="background: rgba(255,255,255,0.15); color: #fff;">08</div>
+                        <span class="countdown-sep">:</span>
+                        <div class="countdown-block" id="cd-mins" style="background: rgba(255,255,255,0.15); color: #fff;">42</div>
+                        <span class="countdown-sep">:</span>
+                        <div class="countdown-block" id="cd-secs" style="background: rgba(255,255,255,0.15); color: #fff;">17</div>
+                    </div>
+                    <div style="display: flex; gap: clamp(1.5rem, 3vw, 2.5rem); font-size: var(--small-size); opacity: 0.7;">
+                        <span>天</span><span>时</span><span>分</span><span>秒</span>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--subtitle-size); opacity: 0.8; margin-top: clamp(0.5rem, 1vw, 1rem);">4月30日截止</p>
+        </div>
+        <div class="split-panel split-dark" style="flex: 0.6;">
+            <div class="accent-bar-left"></div>
+            <div style="padding-left: clamp(1rem, 2vw, 2rem);">
+                <h2 class="reveal-slam" style="font-size: clamp(1.8rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 800; color: var(--text-primary);">
+                    首发特惠 倒计时
+                </h2>
+                <div style="display: flex; flex-direction: column; gap: clamp(1rem, 2vw, 1.5rem); margin-top: clamp(1.5rem, 3vw, 2rem);">
+                    <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.5rem, 1vw, 1rem);">
+                        <span style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 800; color: var(--accent-blue);">&#165;199<span style="font-size: 0.5em;">起</span></span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); text-decoration: line-through;">原价 &#165;399</span>
+                    </div>
+                    <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.5rem, 1vw, 1rem);">
+                        <span style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 800; color: var(--text-primary);">50%</span>
+                        <span style="font-size: var(--body-size); color: var(--text-secondary);">最高直降</span>
+                    </div>
+                    <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.5rem, 1vw, 1rem);">
+                        <span style="font-size: clamp(1.2rem, 3vw, 2rem); font-weight: 800; color: var(--green-success);">前1000名</span>
+                        <span style="font-size: var(--body-size); color: var(--text-secondary);">再减 &#165;20</span>
+                    </div>
+                </div>
+                <div class="reveal" style="margin-top: clamp(1rem, 2vw, 1.5rem);">
+                    <span class="promo-tag" style="font-size: var(--small-size);">4月15日 00:00 开抢</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: PAIN POINT =================== -->
     <section class="slide" aria-label="痛点共情" style="background: var(--bg-dark);">
         <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(85vw, 900px); margin: 0 auto;">
             <div class="reveal" style="font-size: clamp(3rem, 8vw, 6rem); color: var(--accent-blue); line-height: 1; opacity: 0.3; font-family: Georgia, serif;">
                 &ldquo;
             </div>
-            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 2.8rem); font-family: var(--font-display); font-weight: 800; line-height: 1.6; margin-top: -0.3em; color: var(--text-primary);">
+            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 2.8rem); font-family: var(--font-accent); font-weight: 700; line-height: 1.6; margin-top: -0.3em; color: var(--text-primary);">
                 你有没有泡好一杯茶，<br>忙完回来发现已经凉了？
             </blockquote>
             <div class="reveal" style="width: 60px; height: 4px; background: var(--accent-blue); margin: clamp(1rem, 2.5vw, 2rem) auto; border-radius: 2px;"></div>
@@ -509,44 +623,45 @@
         </div>
     </section>
 
-    <!-- =================== SLIDE 3: FEATURES CARD GRID =================== -->
-    <section class="slide" aria-label="四大卖点" style="background: var(--bg-dark);">
-        <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center;">
-                四大核心卖点
-            </h2>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); max-width: min(90vw, 800px); margin-left: auto; margin-right: auto;">
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#127777;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; color: var(--accent-blue);">精准控温</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 800; color: var(--text-primary); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">&plusmn;1&deg;C</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        PTC陶瓷加热芯片，实时温感反馈，让每一口都是你设定的温度
-                    </p>
-                </div>
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#9889;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; color: var(--accent-blue);">超长续航</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 800; color: var(--text-primary); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">8小时</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        2000mAh大容量电池，Type-C快充，一次充电管一整天
-                    </p>
-                </div>
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#128241;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; color: var(--accent-blue);">APP智控</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 800; color: var(--text-primary); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">蓝牙5.0</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        手机实时查看水温，自定义温度曲线，喝水提醒不遗漏
-                    </p>
-                </div>
-                <div class="reveal glow-card" style="text-align: center;">
-                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#129514;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; color: var(--accent-blue);">医用级材质</h3>
-                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 800; color: var(--text-primary); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">316L</p>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
-                        医用级不锈钢内胆，食品级硅胶密封，安全无异味
-                    </p>
+    <!-- =================== SLIDE 4: PRODUCT HERO + FEATURES =================== -->
+    <section class="slide" aria-label="产品特写" style="background: var(--bg-dark);">
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: var(--content-gap);">
+            <div style="flex: 1; min-width: 0; display: flex; justify-content: center;">
+                <img src="images/ecom-thermos-hero.webp" alt="恒温Pro 产品细节" class="reveal-scale" style="max-width: min(40vw, 350px); max-height: min(60vh, 400px); object-fit: contain; filter: drop-shadow(0 12px 40px rgba(67, 97, 238, 0.2)); border-radius: 12px;">
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">
+                    四大核心卖点
+                </h2>
+                <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.6rem, 1.2vw, 1rem);">
+                    <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 0.8rem); padding: clamp(0.5rem, 1vw, 0.8rem); background: var(--surface); border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                        <span style="font-size: clamp(1.2rem, 2.5vw, 1.8rem);">&#127777;</span>
+                        <div>
+                            <div style="font-weight: 800; color: var(--accent-blue);">精准控温 <span style="color: var(--accent-light);">&plusmn;1&deg;C</span></div>
+                            <div style="font-size: var(--small-size); color: var(--text-secondary);">PTC陶瓷加热芯片，实时温感反馈</div>
+                        </div>
+                    </div>
+                    <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 0.8rem); padding: clamp(0.5rem, 1vw, 0.8rem); background: var(--surface); border-radius: 8px; border-left: 3px solid var(--accent-light);">
+                        <span style="font-size: clamp(1.2rem, 2.5vw, 1.8rem);">&#9889;</span>
+                        <div>
+                            <div style="font-weight: 800;">超长续航 <span style="color: var(--accent-blue);">8小时</span></div>
+                            <div style="font-size: var(--small-size); color: var(--text-secondary);">2000mAh + Type-C快充</div>
+                        </div>
+                    </div>
+                    <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 0.8rem); padding: clamp(0.5rem, 1vw, 0.8rem); background: var(--surface); border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                        <span style="font-size: clamp(1.2rem, 2.5vw, 1.8rem);">&#128241;</span>
+                        <div>
+                            <div style="font-weight: 800;">APP智控 <span style="color: var(--accent-blue);">蓝牙5.0</span></div>
+                            <div style="font-size: var(--small-size); color: var(--text-secondary);">自定义温度曲线 + 喝水提醒</div>
+                        </div>
+                    </div>
+                    <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 0.8rem); padding: clamp(0.5rem, 1vw, 0.8rem); background: var(--surface); border-radius: 8px; border-left: 3px solid var(--accent-light);">
+                        <span style="font-size: clamp(1.2rem, 2.5vw, 1.8rem);">&#129514;</span>
+                        <div>
+                            <div style="font-weight: 800;">医用级材质 <span style="color: var(--accent-blue);">316L</span></div>
+                            <div style="font-size: var(--small-size); color: var(--text-secondary);">食品级硅胶密封，安全无异味</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -632,14 +747,40 @@
                         <span style="font-size: var(--body-size); color: var(--text-secondary);">好评率</span>
                     </div>
                 </div>
-                <div class="reveal" style="display: flex; gap: clamp(0.5rem, 1.5vw, 1rem); margin-top: clamp(1rem, 2vw, 1.5rem); flex-wrap: wrap;">
+                <!-- CSS Bar Chart: Monthly sales -->
+                <div class="reveal" style="margin-top: clamp(1rem, 2vw, 1.5rem); max-width: min(85vw, 500px); width: 100%;">
+                    <p style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-bottom: 0.5rem;">月度预购趋势（万元）</p>
+                    <div class="bar-chart" id="barChart">
+                        <div class="bar-col">
+                            <div class="bar-value">120</div>
+                            <div class="bar" style="height: 0; background: var(--accent-light);" data-height="24%"></div>
+                            <div class="bar-label">1月</div>
+                        </div>
+                        <div class="bar-col">
+                            <div class="bar-value">280</div>
+                            <div class="bar" style="height: 0; background: var(--accent-light);" data-height="56%"></div>
+                            <div class="bar-label">2月</div>
+                        </div>
+                        <div class="bar-col">
+                            <div class="bar-value">450</div>
+                            <div class="bar" style="height: 0; background: var(--accent-blue);" data-height="90%"></div>
+                            <div class="bar-label">3月</div>
+                        </div>
+                        <div class="bar-col">
+                            <div class="bar-value">500</div>
+                            <div class="bar" style="height: 0; background: var(--accent-blue); box-shadow: 0 4px 16px rgba(67, 97, 238, 0.4);" data-height="100%"></div>
+                            <div class="bar-label">4月(预)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.5rem, 1.5vw, 1rem); margin-top: clamp(0.5rem, 1vw, 0.8rem); flex-wrap: wrap;">
                     <span class="promo-tag" style="font-size: var(--small-size);">全网热销 TOP 1</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- =================== SLIDE 6: PRICING =================== -->
+    <!-- =================== SLIDE 7: PRICING =================== -->
     <section class="slide pricing-slide" aria-label="定价方案" style="background: var(--bg-dark);">
         <div class="slide-content" style="align-items: center;">
             <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center;">
@@ -828,6 +969,7 @@
                         case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
             setupTouchNav() {
                 document.addEventListener('touchstart', (e) => {
@@ -909,6 +1051,48 @@
             });
         }, { threshold: 0.5 });
         counters.forEach(c => counterObserver.observe(c));
+
+        /* ===========================================
+           COUNTDOWN TIMER
+           =========================================== */
+        function updateCountdown() {
+            const target = new Date('2026-04-30T23:59:59').getTime();
+            const now = Date.now();
+            const diff = Math.max(0, target - now);
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            const dEl = document.getElementById('cd-days');
+            const hEl = document.getElementById('cd-hours');
+            const mEl = document.getElementById('cd-mins');
+            const sEl = document.getElementById('cd-secs');
+            if (dEl) dEl.textContent = String(d).padStart(2, '0');
+            if (hEl) hEl.textContent = String(h).padStart(2, '0');
+            if (mEl) mEl.textContent = String(m).padStart(2, '0');
+            if (sEl) sEl.textContent = String(s).padStart(2, '0');
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        /* ===========================================
+           BAR CHART ANIMATION
+           =========================================== */
+        const barChart = document.getElementById('barChart');
+        if (barChart) {
+            const barObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const bars = entry.target.querySelectorAll('.bar');
+                        bars.forEach((bar, i) => {
+                            setTimeout(() => { bar.style.height = bar.dataset.height; }, i * 150);
+                        });
+                        barObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+            barObserver.observe(barChart);
+        }
 
         document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
     </script>

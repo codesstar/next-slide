@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newsprint Broadsheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,900;1,8..60,400&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+:lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .keyboard-hint, .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } }
+@media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+@media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-mask, .reveal-left, .reveal-quote { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; } .visible .reveal, .visible .reveal-mask, .visible .reveal-left, .visible .reveal-quote { opacity: 1; } }
+@media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .page-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; clip-path: none !important; } }
+
+/* === NEWSPRINT BROADSHEET THEME === */
+:root {
+  --np-paper: #F5F0E3;
+  --np-ink: #1A1A1A;
+  --np-red: #C41E25;
+  --np-rule: #C0B8A8;
+  --np-gray: #666;
+  --np-light: #888;
+  --np-cream: #E8E0D0;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body { overflow: hidden; background: var(--np-paper); color: var(--np-ink); }
+body { font-family: 'PT Serif', 'Noto Sans SC', serif; }
+
+/* Newsprint texture */
+.np-texture::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 256px 256px; pointer-events: none; z-index: 1;
+}
+
+/* Progress & Counter */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--np-red); z-index: 1000;
+  transition: width 0.5s var(--ease-out-expo);
+}
+.page-counter {
+  position: fixed; bottom: clamp(16px, 2.5vh, 32px); right: clamp(20px, 3vw, 40px);
+  font-family: 'Source Serif 4', 'Noto Sans SC', serif;
+  font-size: clamp(10px, 1vw, 14px); font-weight: 600;
+  color: var(--np-light); z-index: 1000; letter-spacing: 0.1em;
+}
+.page-counter .current { color: var(--np-ink); }
+
+/* Slide Mechanism */
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex; background: var(--np-paper);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(24px, 4vh, 50px) clamp(32px, 6vw, 80px);
+  display: flex; flex-direction: column;
+  position: relative; z-index: 2;
+}
+
+/* Typographic rules */
+.double-rule { border-top: 3px double var(--np-ink); padding-top: clamp(6px, 1vh, 10px); }
+.thin-rule { border-top: 0.5px solid var(--np-ink); padding-top: clamp(5px, 0.8vh, 8px); }
+.column-rule { border-right: 0.5px solid var(--np-rule); }
+
+/* Common newspaper elements */
+.np-headline {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-weight: 900; color: var(--np-ink); line-height: 1.05;
+}
+.np-subhead {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-weight: 700; font-style: italic; color: #333; line-height: 1.2;
+}
+.np-byline {
+  font-size: clamp(8px, 0.7vw, 9px); letter-spacing: 2px;
+  text-transform: uppercase; color: var(--np-gray);
+  font-variant: small-caps; font-family: 'Source Serif 4', serif;
+}
+.np-body {
+  font-family: 'PT Serif', 'Noto Sans SC', serif;
+  font-size: clamp(10px, 1vw, 12px); color: var(--np-ink);
+  line-height: 1.65; text-align: justify; hyphens: auto;
+}
+.red-accent { color: var(--np-red); }
+.drop-cap::first-letter {
+  font-family: 'Playfair Display', serif; font-size: clamp(36px, 4vw, 52px);
+  font-weight: 900; float: left; line-height: 0.8;
+  padding-right: 8px; padding-top: 4px; color: var(--np-ink);
+}
+
+/* Editorial animations — deliberate, staggered */
+.reveal {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-mask {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.7s var(--ease-out-expo);
+}
+.slide.active .reveal-mask { clip-path: inset(0 0 0 0); }
+
+.reveal-left {
+  opacity: 0; transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-quote {
+  opacity: 0; transform: translateX(-20px);
+  border-left: 3px solid var(--np-red); padding-left: 1.2em;
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal-quote { opacity: 1; transform: translateX(0); }
+
+/* Stagger */
+.slide.active .reveal:nth-child(1), .slide.active .reveal-mask:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal:nth-child(2), .slide.active .reveal-mask:nth-child(2) { transition-delay: 0.12s; }
+.slide.active .reveal:nth-child(3), .slide.active .reveal-mask:nth-child(3) { transition-delay: 0.22s; }
+.slide.active .reveal:nth-child(4), .slide.active .reveal-mask:nth-child(4) { transition-delay: 0.32s; }
+.slide.active .reveal:nth-child(5), .slide.active .reveal-mask:nth-child(5) { transition-delay: 0.42s; }
+.slide.active .reveal:nth-child(6), .slide.active .reveal-mask:nth-child(6) { transition-delay: 0.52s; }
+.slide.active .reveal:nth-child(7) { transition-delay: 0.62s; }
+
+/* === SLIDE 1: FRONT PAGE === */
+.s1-masthead {
+  text-align: center; border-bottom: 3px double var(--np-ink);
+  padding-bottom: clamp(6px, 1vh, 10px); margin-bottom: clamp(8px, 1.5vh, 14px);
+}
+.s1-masthead-above {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 4px;
+}
+.s1-masthead-side {
+  font-size: clamp(7px, 0.6vw, 8px); color: var(--np-light);
+  letter-spacing: 1px; text-transform: uppercase; font-family: 'Source Serif 4', serif;
+}
+.s1-masthead-title {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(28px, 4.5vw, 52px); font-weight: 900;
+  color: var(--np-ink); letter-spacing: clamp(2px, 0.4vw, 6px);
+  text-transform: uppercase; line-height: 1;
+}
+.s1-masthead-below {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 6px; padding-top: 6px; border-top: 0.5px solid var(--np-ink);
+}
+.s1-masthead-info {
+  font-size: clamp(7px, 0.6vw, 8px); color: var(--np-gray);
+  letter-spacing: 1px; font-family: 'Source Serif 4', serif;
+}
+
+.s1-content {
+  flex: 1; display: grid;
+  grid-template-columns: 1.8fr 0.5px 1fr 0.5px 1fr;
+  gap: 0;
+}
+.s1-col-rule { background: var(--np-rule); align-self: stretch; }
+.s1-col-main { padding-right: clamp(10px, 1.5vw, 20px); }
+.s1-main-headline {
+  font-size: clamp(24px, 3.5vw, 46px); margin-bottom: clamp(6px, 1vh, 10px);
+  letter-spacing: -1px;
+}
+.s1-main-subhead {
+  font-size: clamp(11px, 1.3vw, 16px); margin-bottom: clamp(8px, 1vh, 12px);
+  padding-bottom: clamp(6px, 0.8vh, 10px); border-bottom: 0.5px solid #D0C8B8;
+}
+.s1-main-body {
+  column-count: 2; column-gap: clamp(10px, 1.5vw, 18px);
+  column-rule: 0.5px solid #E0D8C8;
+}
+.s1-col-2, .s1-col-3 { padding: 0 clamp(10px, 1.5vw, 20px); }
+.s1-col-2-headline { font-size: clamp(14px, 1.8vw, 22px); margin-bottom: clamp(5px, 0.7vh, 8px); }
+.s1-col-3-headline { font-size: clamp(13px, 1.6vw, 20px); margin-bottom: clamp(5px, 0.7vh, 8px); }
+.s1-pullquote {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: clamp(13px, 1.5vw, 18px); color: var(--np-red);
+  border-top: 2px solid var(--np-red); border-bottom: 1px solid var(--np-red);
+  padding: clamp(8px, 1vh, 14px) 0; margin: clamp(8px, 1vh, 14px) 0;
+  text-align: center; line-height: 1.4;
+}
+
+/* === SLIDE 2: FEATURES === */
+.s2-header {
+  text-align: center; margin-bottom: clamp(16px, 3vh, 32px);
+}
+.s2-section-label {
+  font-size: clamp(9px, 0.8vw, 11px); letter-spacing: clamp(3px, 0.4vw, 5px);
+  text-transform: uppercase; color: var(--np-red); font-weight: 600;
+  margin-bottom: clamp(6px, 1vh, 12px);
+}
+.s2-headline {
+  font-size: clamp(28px, 4vw, 48px); letter-spacing: -1px;
+}
+.s2-subhead {
+  font-size: clamp(14px, 1.6vw, 20px); margin-top: clamp(4px, 0.5vh, 8px);
+}
+
+.s2-columns {
+  flex: 1; display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0; border-top: 3px double var(--np-ink);
+}
+.s2-col {
+  padding: clamp(12px, 2vh, 20px) clamp(14px, 2vw, 24px);
+  border-right: 0.5px solid var(--np-rule);
+}
+.s2-col:last-child { border-right: none; }
+.s2-col-num {
+  font-family: 'Playfair Display', serif; font-size: clamp(28px, 3vw, 42px);
+  font-weight: 900; color: rgba(196,30,37,0.15); margin-bottom: clamp(4px, 0.5vh, 8px);
+}
+.s2-col-title {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(16px, 1.8vw, 22px); font-weight: 700;
+  margin-bottom: clamp(6px, 0.8vh, 10px);
+}
+
+@media (max-width: 600px) { .s2-columns { grid-template-columns: 1fr; } .s2-col { border-right: none; border-bottom: 0.5px solid var(--np-rule); } }
+
+/* === SLIDE 3: STATS === */
+.s3-masthead-mini {
+  text-align: center; border-bottom: 3px double var(--np-ink);
+  padding-bottom: clamp(6px, 1vh, 10px); margin-bottom: clamp(12px, 2vh, 24px);
+}
+.s3-masthead-mini h2 {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(20px, 3vw, 36px); font-weight: 900;
+  letter-spacing: clamp(2px, 0.3vw, 4px); text-transform: uppercase;
+}
+.s3-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; flex: 1;
+}
+.s3-stat-col {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  border-right: 0.5px solid var(--np-rule);
+  padding: clamp(16px, 3vh, 32px) clamp(12px, 2vw, 24px);
+}
+.s3-stat-col:last-child { border-right: none; }
+.s3-stat-number {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(48px, 8vw, 100px); font-weight: 900;
+  line-height: 1; letter-spacing: -0.03em;
+}
+.s3-stat-number .unit { font-size: 0.5em; color: var(--np-red); }
+.s3-stat-label {
+  font-size: clamp(10px, 1vw, 14px); letter-spacing: clamp(2px, 0.3vw, 4px);
+  text-transform: uppercase; color: var(--np-gray);
+  margin-top: clamp(6px, 1vh, 12px); font-family: 'Source Serif 4', serif;
+}
+.s3-stat-desc {
+  font-size: clamp(10px, 0.9vw, 12px); color: var(--np-light);
+  margin-top: clamp(4px, 0.5vh, 8px); line-height: 1.5;
+  max-width: 24ch; font-style: italic;
+}
+
+@media (max-width: 600px) { .s3-stats { grid-template-columns: 1fr; } .s3-stat-col { border-right: none; border-bottom: 0.5px solid var(--np-rule); padding: 16px; } }
+
+/* === SLIDE 4: QUOTE === */
+.s4 { background: var(--np-ink); }
+.s4 .slide-inner { align-items: center; justify-content: center; text-align: center; }
+.s4-quote-text {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(24px, 4vw, 52px); font-weight: 900;
+  color: var(--np-paper); line-height: 1.2; max-width: 18ch;
+  margin-bottom: clamp(16px, 3vh, 32px); letter-spacing: -0.02em;
+}
+.s4-rule {
+  width: clamp(40px, 4vw, 60px); height: 3px;
+  background: var(--np-red); margin-bottom: clamp(12px, 2vh, 20px);
+}
+.s4-author {
+  font-size: clamp(10px, 1vw, 14px); letter-spacing: clamp(2px, 0.3vw, 4px);
+  text-transform: uppercase; color: var(--np-rule);
+  font-family: 'Source Serif 4', serif;
+}
+.s4-edition-mark {
+  position: absolute; top: clamp(20px, 3vh, 40px); right: clamp(24px, 3vw, 48px);
+  font-family: 'Source Serif 4', serif; font-size: clamp(8px, 0.7vw, 10px);
+  letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,227,0.2);
+}
+.s4-border {
+  position: absolute; inset: clamp(16px, 2.5vh, 28px);
+  border: 1px solid rgba(192,184,168,0.15); pointer-events: none; z-index: 1;
+}
+.s4-border::before {
+  content: ''; position: absolute; inset: 6px;
+  border: 0.5px solid rgba(192,184,168,0.08);
+}
+
+/* === SLIDE 5: CLOSING === */
+.s5-center {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; flex: 1;
+}
+.s5-label {
+  font-size: clamp(9px, 0.8vw, 11px); letter-spacing: clamp(3px, 0.4vw, 6px);
+  text-transform: uppercase; color: var(--np-gray);
+  font-family: 'Source Serif 4', serif;
+  margin-bottom: clamp(12px, 2vh, 20px);
+}
+.s5-title {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(32px, 5vw, 60px); font-weight: 900;
+  letter-spacing: clamp(2px, 0.4vw, 6px); text-transform: uppercase;
+  margin-bottom: clamp(8px, 1vh, 14px);
+}
+.s5-rule {
+  width: clamp(120px, 16vw, 200px); height: 3px;
+  background: linear-gradient(90deg, transparent, var(--np-ink), transparent);
+  margin-bottom: clamp(8px, 1vh, 14px);
+}
+.s5-rule-thin {
+  width: clamp(80px, 12vw, 140px); height: 1px;
+  background: linear-gradient(90deg, transparent, var(--np-red), transparent);
+  margin-bottom: clamp(16px, 2.5vh, 28px);
+}
+.s5-tagline {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: clamp(14px, 1.6vw, 20px); color: #333;
+  margin-bottom: clamp(8px, 1vh, 16px);
+}
+.s5-info {
+  font-size: clamp(10px, 0.9vw, 12px); color: var(--np-light);
+  letter-spacing: 2px; text-transform: uppercase;
+  font-family: 'Source Serif 4', serif;
+}
+.s5-border-outer {
+  position: absolute; inset: clamp(16px, 2.5vh, 24px);
+  border: 2px solid var(--np-ink); pointer-events: none;
+}
+.s5-border-outer::before {
+  content: ''; position: absolute; inset: 4px;
+  border: 0.5px solid var(--np-rule);
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Front Page -->
+<div class="slide np-texture active" data-i="0">
+  <div class="slide-inner">
+    <div class="s1-masthead reveal-mask">
+      <div class="s1-masthead-above">
+        <span class="s1-masthead-side">Vol. CXII, No. 1</span>
+        <span class="s1-masthead-side">设计前沿 &middot; 2026</span>
+      </div>
+      <div class="s1-masthead-title">The Design Herald</div>
+      <div class="s1-masthead-below">
+        <span class="s1-masthead-info">Saturday, March 21, 2026</span>
+        <span class="s1-masthead-info">Final Edition &middot; Price: Free</span>
+      </div>
+    </div>
+    <div class="s1-content">
+      <div class="s1-col-main">
+        <h1 class="np-headline s1-main-headline reveal">AI 引爆<br>设计革命</h1>
+        <div class="np-subhead s1-main-subhead reveal">人工智能正在重塑每一个创意领域，从平面设计到建筑空间</div>
+        <div class="np-byline reveal" style="margin-bottom:clamp(6px,1vh,10px);">By Staff Correspondent</div>
+        <div class="np-body s1-main-body reveal drop-cap">当我们回顾设计史上的每一次革命，从包豪斯到后现代，每一次转变都源于对工具和思维方式的根本性突破。如今，人工智能正在以前所未有的速度重新定义"设计"的含义。智能布局引擎可以在毫秒内分析数千种排版方案，自适应排版技术让一次设计适配从手表到巨幕的所有尺寸。这不仅仅是效率的提升，而是创造力的解放。</div>
+      </div>
+      <div class="s1-col-rule"></div>
+      <div class="s1-col-2">
+        <h2 class="np-headline s1-col-2-headline double-rule reveal">智能布局<br>重新定义排版</h2>
+        <div class="np-body reveal">AI 理解内容语义，自动生成符合视觉层次的排版方案。设计师从繁琐的像素调整中解放出来，专注于更高层次的创意决策。</div>
+        <div class="s1-pullquote reveal">"设计的未来不是人机对抗，而是人机共创"</div>
+        <div class="np-body reveal">风格迁移技术让设计师能够一键将任意参考图的视觉语言迁移到自己的作品中，大幅缩短了从灵感到成品的距离。</div>
+      </div>
+      <div class="s1-col-rule"></div>
+      <div class="s1-col-3">
+        <h2 class="np-headline s1-col-3-headline thin-rule reveal">实时协作<br>突破边界</h2>
+        <div class="np-body reveal">多人同步编辑已成为现实。AI 实时调和不同设计师的修改意图，化解冲突，使团队协作如同单人创作一般流畅。全球设计团队正在以全新的方式合作。</div>
+        <div class="np-body reveal" style="margin-top:clamp(8px,1.2vh,14px);border-top:0.5px solid #D0C8B8;padding-top:clamp(6px,0.8vh,10px);">自适应排版技术的突破意味着，设计师只需创作一个版本，系统便能自动适配从智能手表到户外广告屏的所有显示介质。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide np-texture" data-i="1">
+  <div class="slide-inner">
+    <div class="s2-header">
+      <div class="s2-section-label reveal">Special Report</div>
+      <h1 class="np-headline s2-headline reveal-mask">核心能力</h1>
+      <div class="np-subhead s2-subhead reveal">驱动设计革命的三大引擎</div>
+    </div>
+    <div class="s2-columns">
+      <div class="s2-col reveal" style="transition-delay:0.2s;">
+        <div class="s2-col-num">I</div>
+        <div class="s2-col-title">智能布局引擎</div>
+        <div class="np-body drop-cap">通过深度学习数百万优秀设计案例，AI 能在毫秒内生成数百种排版方案。它理解视觉重量、阅读路径、留白比例，像一位经验丰富的排版师一样思考。</div>
+      </div>
+      <div class="s2-col reveal" style="transition-delay:0.35s;">
+        <div class="s2-col-num">II</div>
+        <div class="s2-col-title">风格迁移系统</div>
+        <div class="np-body drop-cap">将任意参考图像的视觉语言——色彩、质感、构图逻辑——提取并应用到新的设计中。这不是简单的滤镜，而是对设计基因的解码与重组。</div>
+      </div>
+      <div class="s2-col reveal" style="transition-delay:0.5s;">
+        <div class="s2-col-num">III</div>
+        <div class="s2-col-title">自适应排版</div>
+        <div class="np-body drop-cap">一次设计，无限适配。从手表到巨幕，AI 自动重排内容层次、调整字号比例、优化间距关系，确保每个尺寸上都呈现最佳阅读体验。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide np-texture" data-i="2">
+  <div class="slide-inner">
+    <div class="s3-masthead-mini reveal-mask">
+      <h2>The Design Herald &mdash; Data Section</h2>
+    </div>
+    <div class="s3-stats">
+      <div class="s3-stat-col reveal" style="transition-delay:0.15s;">
+        <div class="s3-stat-number">10<span class="unit">x</span></div>
+        <div class="s3-stat-label">效率提升</div>
+        <div class="s3-stat-desc">设计周期从数周缩短到数小时</div>
+      </div>
+      <div class="s3-stat-col reveal" style="transition-delay:0.3s;">
+        <div class="s3-stat-number">93<span class="unit">%</span></div>
+        <div class="s3-stat-label">用户满意度</div>
+        <div class="s3-stat-desc">首批体验者给出的综合评分</div>
+      </div>
+      <div class="s3-stat-col reveal" style="transition-delay:0.45s;">
+        <div class="s3-stat-number">50<span class="unit">M</span></div>
+        <div class="s3-stat-label">设计生成</div>
+        <div class="s3-stat-desc">平台上线以来累计产出的设计方案</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide s4 np-texture" data-i="3">
+  <div class="s4-border"></div>
+  <div class="s4-edition-mark">Editorial &middot; Page 4</div>
+  <div class="slide-inner">
+    <div class="s4-quote-text reveal">好的设计<br>不是装饰，<br>是沟通。</div>
+    <div class="s4-rule reveal" style="transition-delay:0.3s;"></div>
+    <div class="s4-author reveal" style="transition-delay:0.4s;">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide np-texture" data-i="4">
+  <div class="s5-border-outer"></div>
+  <div class="slide-inner">
+    <div class="s5-center">
+      <div class="s5-label reveal">Final Edition</div>
+      <div class="np-headline s5-title reveal-mask">重新定义<br>创造力</div>
+      <div class="s5-rule reveal" style="transition-delay:0.25s;"></div>
+      <div class="s5-rule-thin reveal" style="transition-delay:0.3s;"></div>
+      <div class="s5-tagline reveal" style="transition-delay:0.35s;">AI + 人类直觉，设计的下一个十年从这里开始</div>
+      <div class="s5-info reveal" style="transition-delay:0.45s;">The Design Herald &middot; Est. 2026</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click',function(e){
+    if(e.clientX>window.innerWidth/2)go(c+1);else go(c-1);
+  });
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

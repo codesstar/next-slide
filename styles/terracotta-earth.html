@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terracotta Earth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+Pro:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+:lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .keyboard-hint, .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-content[style*="flex-direction: row"] { flex-direction: column !important; } .slide-counter { display: none; } }
+@media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+@media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-scale, .reveal-left, .reveal-right, .reveal-blur, .reveal-gentle, .reveal-zoom-settle { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; } .visible .reveal, .visible .reveal-scale, .visible .reveal-left, .visible .reveal-right, .visible .reveal-blur, .visible .reveal-gentle, .visible .reveal-zoom-settle { opacity: 1; } }
+@media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; } .progress-bar, .nav-dots, .slide-counter, .page-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; } }
+
+/* === TERRACOTTA EARTH THEME === */
+:root {
+  --terra-cream: #F5F0EA;
+  --terra-warm: #E8DDD3;
+  --terra-main: #C67A52;
+  --terra-dark: #5C3D2E;
+  --terra-olive: #7A8B6F;
+  --terra-mid: #B06840;
+  --terra-light: #D4956E;
+  --terra-sand: #D6C9BC;
+  --terra-tan: #8B7262;
+  --terra-beige: #D4C4B0;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html, body { overflow: hidden; background: var(--terra-cream); color: var(--terra-dark); }
+body { font-family: 'Source Sans Pro', 'Noto Sans SC', sans-serif; font-weight: 300; }
+
+/* Progress & Counter */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: linear-gradient(90deg, var(--terra-main), var(--terra-olive));
+  z-index: 1000;
+  transition: width 0.5s var(--ease-out-expo);
+}
+.page-counter {
+  position: fixed; bottom: clamp(20px, 3vh, 40px); right: clamp(24px, 3vw, 48px);
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(12px, 1.2vw, 16px); font-weight: 700;
+  color: var(--terra-tan); z-index: 1000; letter-spacing: 0.05em;
+}
+.page-counter .current { color: var(--terra-dark); }
+
+/* Slide Mechanism */
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+/* Noise texture */
+.noise-overlay::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px; pointer-events: none; z-index: 0;
+}
+
+/* Organic blob */
+.blob {
+  position: absolute; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  filter: blur(40px); pointer-events: none; animation: blobFloat 10s ease-in-out infinite;
+}
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -15px) scale(1.03); }
+  66% { transform: translate(-15px, 10px) scale(0.97); }
+}
+
+/* Plant decorations */
+.plant-deco {
+  position: absolute; width: 2px; background: linear-gradient(to top, var(--terra-main), transparent);
+  border-radius: 1px; z-index: 2;
+}
+.plant-deco::before {
+  content: ''; position: absolute; top: 20%; left: -18px;
+  width: 36px; height: 36px; border: 1.5px solid var(--terra-main);
+  border-radius: 0 50% 50% 50%; transform: rotate(-45deg);
+}
+.plant-deco::after {
+  content: ''; position: absolute; top: 50%; right: -16px;
+  width: 30px; height: 30px; border: 1.5px solid var(--terra-mid);
+  border-radius: 50% 0 50% 50%; transform: rotate(45deg);
+}
+
+/* Dot pattern */
+.dot-pattern {
+  position: absolute; width: 80px; height: 80px;
+  background-image: radial-gradient(circle, var(--terra-main) 2px, transparent 2px);
+  background-size: 16px 16px; opacity: 0.25; pointer-events: none;
+}
+
+/* Line decoration */
+.line-deco {
+  width: clamp(40px, 4vw, 60px); height: 2px;
+  background: var(--terra-main); position: relative;
+}
+.line-deco::after {
+  content: ''; position: absolute; left: 0; top: 8px;
+  width: 50%; height: 2px; background: var(--terra-olive);
+}
+
+/* Circle deco */
+.circle-deco {
+  position: absolute; border: 2px solid rgba(198,122,82,0.15); border-radius: 50%;
+  pointer-events: none;
+}
+.circle-deco::after {
+  content: ''; position: absolute; inset: 20px;
+  border: 1.5px solid rgba(122,139,111,0.12); border-radius: 50%;
+}
+
+/* Stripe bands */
+.band-top, .band-bottom {
+  position: absolute; left: 0; right: 0; height: 8px; z-index: 5;
+}
+.band-top { top: 0; background: linear-gradient(90deg, var(--terra-main), var(--terra-olive), var(--terra-dark), var(--terra-main)); }
+.band-bottom { bottom: 0; background: linear-gradient(90deg, var(--terra-dark), var(--terra-main), var(--terra-olive), var(--terra-dark)); }
+
+/* Animations — calm/earthy mood */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-scale {
+  opacity: 0; transform: scale(0.92);
+  transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo);
+}
+.slide.active .reveal-scale { opacity: 1; transform: scale(1); }
+
+.reveal-left {
+  opacity: 0; transform: translateX(-40px);
+  transition: opacity 0.7s ease, transform 0.7s var(--ease-out-expo);
+}
+.slide.active .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-gentle {
+  opacity: 0; transition: opacity 1.2s ease;
+}
+.slide.active .reveal-gentle { opacity: 1; }
+
+/* Stagger delays */
+.slide.active .reveal:nth-child(1), .slide.active .reveal-left:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal:nth-child(2), .slide.active .reveal-left:nth-child(2) { transition-delay: 0.15s; }
+.slide.active .reveal:nth-child(3), .slide.active .reveal-left:nth-child(3) { transition-delay: 0.3s; }
+.slide.active .reveal:nth-child(4), .slide.active .reveal-left:nth-child(4) { transition-delay: 0.45s; }
+.slide.active .reveal:nth-child(5), .slide.active .reveal-left:nth-child(5) { transition-delay: 0.6s; }
+.slide.active .reveal:nth-child(6), .slide.active .reveal-left:nth-child(6) { transition-delay: 0.75s; }
+
+/* === SLIDE-SPECIFIC STYLES === */
+
+/* Slide 1: Title */
+.s1 { background: var(--terra-cream); }
+.s1 .blob-main {
+  width: clamp(300px, 45vw, 680px); height: clamp(260px, 40vw, 580px);
+  background: linear-gradient(135deg, var(--terra-main) 0%, var(--terra-light) 40%, var(--terra-mid) 100%);
+  right: clamp(-40px, -3vw, 0px); top: 50%; transform: translateY(-50%);
+  box-shadow: inset 0 0 80px rgba(92,61,46,0.3), 0 20px 60px rgba(198,122,82,0.25);
+  animation-delay: 0s;
+}
+.s1 .blob-accent {
+  width: clamp(120px, 16vw, 220px); height: clamp(110px, 14vw, 200px);
+  background: linear-gradient(160deg, var(--terra-olive), #8FA07E);
+  border-radius: 60% 40% 55% 45% / 45% 60% 40% 55%;
+  right: clamp(280px, 35vw, 480px); top: clamp(20px, 4vh, 40px); opacity: 0.85;
+  animation-delay: 2s;
+}
+.s1 .blob-small {
+  width: clamp(60px, 9vw, 120px); height: clamp(55px, 8vw, 110px);
+  background: linear-gradient(140deg, var(--terra-warm), var(--terra-sand));
+  border-radius: 45% 55% 60% 40% / 55% 40% 60% 45%;
+  right: clamp(320px, 40vw, 560px); bottom: clamp(60px, 10vh, 100px);
+  animation-delay: 4s;
+}
+
+.s1-label {
+  font-size: clamp(11px, 1vw, 13px); letter-spacing: 4px;
+  text-transform: uppercase; color: var(--terra-olive); font-weight: 600;
+  margin-bottom: clamp(12px, 2vh, 20px);
+}
+.s1-title {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(32px, 5vw, 62px); font-weight: 900;
+  color: var(--terra-dark); line-height: 1.1;
+  margin-bottom: clamp(12px, 2vh, 24px);
+}
+.s1-subtitle {
+  font-size: clamp(14px, 1.5vw, 18px); color: var(--terra-tan);
+  line-height: 1.6; font-weight: 300; max-width: 40ch;
+}
+
+/* Slide 2: Features */
+.s2 { background: var(--terra-warm); }
+.s2 .layer-top {
+  position: absolute; top: 0; left: 0; right: 0; height: clamp(180px, 35vh, 280px);
+  background: linear-gradient(135deg, var(--terra-main) 0%, #D48B66 60%, #B86E45 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 85%, 40% 75%, 0 90%);
+}
+.s2 .layer-mid {
+  position: absolute; top: clamp(140px, 26vh, 200px); left: 0; right: 0;
+  height: clamp(130px, 25vh, 200px);
+  background: linear-gradient(90deg, var(--terra-dark), #6B4A38); opacity: 0.9;
+  clip-path: polygon(0 30%, 35% 15%, 65% 25%, 100% 5%, 100% 70%, 60% 85%, 30% 75%, 0 90%);
+}
+
+.s2-label {
+  font-size: clamp(10px, 0.9vw, 11px); letter-spacing: 5px;
+  text-transform: uppercase; color: var(--terra-cream);
+  font-weight: 600; margin-bottom: clamp(10px, 1.5vh, 16px); opacity: 0.8;
+}
+.s2-heading {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(26px, 3.5vw, 42px); font-weight: 700;
+  color: var(--terra-cream); line-height: 1.15;
+  margin-bottom: clamp(10px, 1.5vh, 16px);
+}
+.s2-body {
+  font-size: clamp(12px, 1.2vw, 15px); color: var(--terra-cream);
+  line-height: 1.7; opacity: 0.85; font-weight: 300; max-width: 45ch;
+}
+
+.s2-cards {
+  position: absolute; right: clamp(30px, 5vw, 60px); bottom: clamp(30px, 5vh, 50px);
+  display: flex; gap: clamp(12px, 1.5vw, 20px); z-index: 3;
+}
+.s2-card {
+  width: clamp(140px, 15vw, 200px); height: clamp(170px, 22vh, 240px);
+  border-radius: 16px; padding: clamp(16px, 2vw, 28px) clamp(14px, 1.8vw, 24px);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; overflow: hidden;
+}
+.s2-card-1 { background: linear-gradient(160deg, var(--terra-olive), #5E7352); }
+.s2-card-2 { background: linear-gradient(160deg, var(--terra-main), #A86640); }
+.s2-card-3 { background: linear-gradient(160deg, var(--terra-dark), #7A5240); }
+.s2-card-num {
+  font-family: 'Playfair Display', serif; font-size: clamp(32px, 4vw, 48px);
+  font-weight: 900; color: rgba(255,255,255,0.2);
+  position: absolute; top: clamp(12px, 1.5vh, 20px); left: clamp(14px, 1.5vw, 24px);
+}
+.s2-card-title {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(14px, 1.4vw, 18px); font-weight: 700;
+  color: var(--terra-cream); margin-bottom: clamp(4px, 0.5vh, 8px);
+  position: relative; z-index: 1;
+}
+.s2-card-desc {
+  font-size: clamp(10px, 0.9vw, 12px); color: rgba(245,240,234,0.75);
+  line-height: 1.5; position: relative; z-index: 1;
+}
+
+/* Slide 3: Stats */
+.s3 { background: var(--terra-cream); }
+.stats-row {
+  display: flex; gap: clamp(36px, 6vw, 120px); align-items: flex-end;
+  flex-wrap: wrap;
+}
+.stat-block .number {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-weight: 900; font-size: clamp(48px, 8vw, 130px);
+  line-height: 1; letter-spacing: -0.04em; color: var(--terra-dark);
+}
+.stat-block .number .unit {
+  font-size: 0.45em; color: var(--terra-main);
+}
+.stat-block .label {
+  font-size: clamp(12px, 1.1vw, 16px); color: var(--terra-tan);
+  margin-top: clamp(6px, 1vh, 14px);
+}
+.s3-label {
+  font-size: clamp(10px, 0.9vw, 13px); letter-spacing: 5px;
+  text-transform: uppercase; color: var(--terra-main);
+  font-weight: 700; margin-bottom: clamp(24px, 4vh, 56px);
+}
+
+/* Slide 4: Quote */
+.s4 { background: var(--terra-dark); }
+.s4 .blob-bg {
+  position: absolute; width: clamp(400px, 60vw, 800px); height: clamp(300px, 45vh, 600px);
+  background: linear-gradient(135deg, rgba(198,122,82,0.15), rgba(198,122,82,0.05));
+  border-radius: 35% 65% 55% 45% / 45% 35% 65% 55%;
+  left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none;
+}
+.s4-quote-wrap {
+  position: relative; z-index: 2; text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+}
+.s4-quote-mark {
+  font-family: 'Playfair Display', serif; font-size: clamp(80px, 12vw, 140px);
+  color: var(--terra-main); line-height: 0.6; margin-bottom: 10px; opacity: 0.5;
+}
+.s4-quote-text {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(22px, 3vw, 36px); font-weight: 700;
+  color: var(--terra-cream); line-height: 1.45; max-width: 50ch;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+.s4-quote-line {
+  width: clamp(40px, 4vw, 60px); height: 2px;
+  background: var(--terra-main); margin-bottom: clamp(12px, 1.5vh, 20px);
+}
+.s4-quote-author {
+  font-size: clamp(12px, 1.1vw, 15px); letter-spacing: 3px;
+  text-transform: uppercase; color: var(--terra-main); font-weight: 600;
+}
+.s4-stripe-top, .s4-stripe-bot {
+  position: absolute; left: 0; right: 0; height: 6px; z-index: 3;
+}
+.s4-stripe-top { top: 0; background: linear-gradient(90deg, var(--terra-main), var(--terra-olive), var(--terra-dark)); opacity: 0.4; }
+.s4-stripe-bot { bottom: 0; background: linear-gradient(90deg, var(--terra-dark), var(--terra-main), var(--terra-olive)); opacity: 0.4; }
+.s4-corner {
+  position: absolute; width: 80px; height: 80px; z-index: 3;
+}
+.s4-corner.tl { top: 40px; left: 40px; border-top: 2px solid rgba(198,122,82,0.3); border-left: 2px solid rgba(198,122,82,0.3); }
+.s4-corner.br { bottom: 40px; right: 40px; border-bottom: 2px solid rgba(198,122,82,0.3); border-right: 2px solid rgba(198,122,82,0.3); }
+
+/* Slide 5: Closing */
+.s5 { background: linear-gradient(160deg, var(--terra-warm) 0%, var(--terra-cream) 50%, var(--terra-warm) 100%); }
+.s5-center {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; position: relative; z-index: 2;
+}
+.s5-title {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-size: clamp(36px, 5vw, 54px); font-weight: 900;
+  color: var(--terra-dark); margin-bottom: clamp(10px, 1.5vh, 16px);
+}
+.s5-subtitle {
+  font-size: clamp(12px, 1.2vw, 16px); color: var(--terra-tan);
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: clamp(24px, 3.5vh, 40px);
+}
+.s5-divider {
+  width: clamp(50px, 6vw, 80px); height: 2px;
+  background: var(--terra-main); margin-bottom: 12px; position: relative;
+}
+.s5-divider::after {
+  content: ''; position: absolute; top: 6px; left: 25%;
+  width: 50%; height: 2px; background: var(--terra-olive);
+}
+.s5-contact {
+  font-size: clamp(12px, 1.1vw, 14px); color: #A08878;
+  font-weight: 300; margin-top: clamp(12px, 1.5vh, 20px);
+}
+.s5 .arch-deco {
+  position: absolute; left: 50%; top: clamp(60px, 10vh, 120px);
+  transform: translateX(-50%);
+  width: clamp(250px, 30vw, 400px); height: clamp(120px, 15vh, 200px);
+  border: 2px solid rgba(198,122,82,0.1);
+  border-radius: 200px 200px 0 0; border-bottom: none; pointer-events: none;
+}
+.s5 .arch-deco::before {
+  content: ''; position: absolute; left: 30px; top: 30px;
+  width: calc(100% - 60px); height: calc(100% - 30px);
+  border: 1.5px solid rgba(122,139,111,0.08);
+  border-radius: 170px 170px 0 0; border-bottom: none;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide s1 noise-overlay active" data-i="0">
+  <div class="blob blob-main" style="position:absolute;right:-3vw;top:50%;"></div>
+  <div class="blob blob-accent" style="position:absolute;"></div>
+  <div class="blob blob-small" style="position:absolute;"></div>
+  <div class="dot-pattern" style="right:50vw;top:60px;"></div>
+  <div class="circle-deco" style="width:140px;height:140px;left:36vw;top:100px;"></div>
+  <div class="slide-inner" style="z-index:2;">
+    <div class="s1-label reveal">设计前沿 &middot; 2026</div>
+    <h1 class="s1-title reveal">大地之上的<br>设计革命</h1>
+    <p class="s1-subtitle reveal">温暖的色调与有机的形态，重新定义创造力的自然边界</p>
+    <div class="line-deco reveal" style="margin-top:clamp(24px,4vh,48px);"></div>
+  </div>
+  <div class="plant-deco" style="height:clamp(80px,12vh,140px);left:40vw;bottom:60px;"></div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide s2 noise-overlay" data-i="1">
+  <div class="layer-top"></div>
+  <div class="layer-mid"></div>
+  <div class="slide-inner" style="z-index:3;">
+    <div class="s2-label reveal">核心能力</div>
+    <div class="s2-heading reveal">从自然中汲取<br>设计的力量</div>
+    <div class="s2-body reveal">每一个元素都回应着大地的温度，如同沉积岩层般层层叠加。AI 理解自然美学的法则，将其注入现代设计流程。</div>
+  </div>
+  <div class="s2-cards">
+    <div class="s2-card s2-card-1 reveal-scale" style="transition-delay:0.2s;">
+      <div class="s2-card-num">01</div>
+      <div class="s2-card-title">智能布局</div>
+      <div class="s2-card-desc">AI 理解内容语义，生成符合视觉层次的排版</div>
+    </div>
+    <div class="s2-card s2-card-2 reveal-scale" style="transition-delay:0.35s;">
+      <div class="s2-card-num">02</div>
+      <div class="s2-card-title">风格迁移</div>
+      <div class="s2-card-desc">一键将参考图的视觉语言迁移到你的设计</div>
+    </div>
+    <div class="s2-card s2-card-3 reveal-scale" style="transition-delay:0.5s;">
+      <div class="s2-card-num">03</div>
+      <div class="s2-card-title">自适应排版</div>
+      <div class="s2-card-desc">一次设计，自动适配所有设备尺寸</div>
+    </div>
+  </div>
+  <div class="circle-deco" style="width:100px;height:100px;left:60px;bottom:40px;opacity:0.2;"></div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide s3 noise-overlay" data-i="2">
+  <div class="blob" style="width:clamp(200px,30vw,400px);height:clamp(200px,30vw,400px);background:linear-gradient(135deg,rgba(198,122,82,0.1),rgba(122,139,111,0.08));top:5%;left:25%;"></div>
+  <div class="slide-inner" style="z-index:2;">
+    <div class="s3-label reveal">数据亮点</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">10<span class="unit">x</span></div>
+        <div class="label">效率提升</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">93<span class="unit">%</span></div>
+        <div class="label">用户满意度</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">50<span class="unit">M+</span></div>
+        <div class="label">设计生成</div>
+      </div>
+    </div>
+  </div>
+  <div class="dot-pattern" style="right:80px;bottom:80px;"></div>
+  <div class="plant-deco" style="height:100px;right:120px;top:60px;"></div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide s4 noise-overlay" data-i="3">
+  <div class="blob-bg"></div>
+  <div class="s4-stripe-top"></div>
+  <div class="s4-stripe-bot"></div>
+  <div class="s4-corner tl"></div>
+  <div class="s4-corner br"></div>
+  <div class="slide-inner" style="align-items:center;z-index:2;">
+    <div class="s4-quote-wrap">
+      <div class="s4-quote-mark reveal-gentle">"</div>
+      <div class="s4-quote-text reveal">好的设计不是装饰，<br>是与自然的对话。</div>
+      <div class="s4-quote-line reveal"></div>
+      <div class="s4-quote-author reveal">Dieter Rams</div>
+    </div>
+  </div>
+  <div class="dot-pattern" style="right:60px;bottom:60px;background-image:radial-gradient(circle,rgba(198,122,82,0.15) 1.5px,transparent 1.5px);background-size:14px 14px;width:100px;height:100px;"></div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide s5 noise-overlay" data-i="4">
+  <div class="band-top"></div>
+  <div class="band-bottom"></div>
+  <div class="arch-deco"></div>
+  <div class="blob" style="width:clamp(300px,35vw,500px);height:clamp(240px,30vh,400px);background:linear-gradient(135deg,rgba(198,122,82,0.08),rgba(122,139,111,0.06));left:50%;top:50%;transform:translate(-50%,-50%);"></div>
+  <div class="circle-deco" style="width:300px;height:300px;left:-80px;top:-60px;"></div>
+  <div class="circle-deco" style="width:200px;height:200px;right:-40px;bottom:-20px;border-color:rgba(122,139,111,0.1);"></div>
+  <div class="slide-inner" style="align-items:center;z-index:2;">
+    <div class="s5-center">
+      <div class="s5-title reveal">重新定义<br>创造力</div>
+      <div class="s5-subtitle reveal">Terracotta Earth Collection</div>
+      <div class="s5-divider reveal"></div>
+      <div class="s5-contact reveal">AI + 人类直觉，设计的下一个十年从这里开始</div>
+    </div>
+  </div>
+  <div class="dot-pattern" style="left:80px;bottom:80px;"></div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click',function(e){
+    if(e.clientX>window.innerWidth/2)go(c+1);else go(c-1);
+  });
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

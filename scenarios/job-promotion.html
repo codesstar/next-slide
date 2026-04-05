@@ -5,35 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>竞聘：产品总监 — 陈雨萱</title>
 
-    <!-- Fonts: Noto Sans SC for Chinese text -->
+    <!-- Fonts: Playfair Display + DM Sans + Noto Serif SC + Noto Sans SC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <style>
         /* ===========================================
            CSS CUSTOM PROPERTIES (THEME)
-           Dark Professional — warm Keynote Noir variant
+           Warm Gradient Editorial
            =========================================== */
         :root {
             /* --- Color Palette --- */
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1a1a1a;
-            --text-primary: #f0f0f0;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666666;
-            --accent: #3b82f6;
-            --accent-secondary: #f59e0b;
-            --accent-glow: rgba(59, 130, 246, 0.3);
-            --accent-glow-secondary: rgba(245, 158, 11, 0.2);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --surface: rgba(255, 255, 255, 0.05);
+            --bg-primary: #FBF8F4;
+            --bg-secondary: #F5F0E8;
+            --bg-tertiary: #EDE6DA;
+            --text-primary: #2C2420;
+            --text-secondary: #6B5E54;
+            --text-muted: #9C8E82;
+            --accent: #E85D4A;
+            --accent-secondary: #D4A853;
+            --accent-glow: rgba(232, 93, 74, 0.15);
+            --accent-glow-secondary: rgba(212, 168, 83, 0.15);
+            --border-subtle: rgba(44, 36, 32, 0.08);
+            --surface: rgba(44, 36, 32, 0.03);
 
             /* --- Typography — ALL sizes use clamp() --- */
-            --font-display: 'Noto Sans SC', sans-serif;
-            --font-body: 'Noto Sans SC', sans-serif;
-            --font-mono: 'Courier New', monospace;
+            --font-display: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+            --font-display-cn: 'Noto Serif SC', 'Playfair Display', Georgia, serif;
+            --font-body: 'DM Sans', 'Noto Sans SC', sans-serif;
+            --font-mono: 'DM Sans', monospace;
 
             --title-size: clamp(2rem, 6vw, 5rem);
             --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
@@ -56,6 +57,9 @@
             --duration-normal: 0.6s;
             --duration-slow: 1s;
             --duration-dramatic: 1.5s;
+
+            /* --- Decorative watermark number --- */
+            --watermark-size: clamp(6rem, 20vw, 16rem);
         }
 
         /* ===========================================
@@ -107,18 +111,6 @@
             padding: var(--slide-padding);
         }
 
-        :root {
-            --title-size: clamp(2rem, 6vw, 5rem);
-            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
-            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
-            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
-            --small-size: clamp(0.65rem, 1vw, 0.875rem);
-            --stat-size: clamp(2rem, 7vw, 5rem);
-            --slide-padding: clamp(1.5rem, 4vw, 4rem);
-            --content-gap: clamp(1rem, 2vw, 2rem);
-            --element-gap: clamp(0.25rem, 1vw, 1rem);
-        }
-
         .card, .container, .content-box {
             max-width: min(90vw, 1000px);
             max-height: min(80vh, 700px);
@@ -147,7 +139,7 @@
 
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
             line-height: 1.8;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: break-word;
         }
 
@@ -160,13 +152,16 @@
             overflow-wrap: break-word;
         }
 
-        /* --- Responsive Breakpoints --- */
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
         @media (max-height: 700px) {
             :root {
                 --slide-padding: clamp(0.75rem, 3vw, 2rem);
                 --content-gap: clamp(0.4rem, 1.5vw, 1rem);
                 --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
                 --h2-size: clamp(1rem, 3vw, 1.75rem);
+                --watermark-size: clamp(4rem, 14vw, 10rem);
             }
         }
 
@@ -177,7 +172,7 @@
                 --title-size: clamp(1.1rem, 4vw, 2rem);
                 --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
             }
-            .nav-dots, .keyboard-hint, .decorative {
+            .nav-dots, .keyboard-hint, .decorative, .slide-watermark {
                 display: none;
             }
         }
@@ -229,6 +224,9 @@
             }
         }
 
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -260,19 +258,6 @@
             }
         }
 
-        @media (prefers-color-scheme: light) {
-            .auto-theme {
-                --bg-primary: #ffffff;
-                --bg-secondary: #f8f9fa;
-                --bg-tertiary: #e9ecef;
-                --text-primary: #1a1a2e;
-                --text-secondary: #495057;
-                --text-muted: #868e96;
-                --border-subtle: rgba(0, 0, 0, 0.08);
-                --surface: rgba(0, 0, 0, 0.03);
-            }
-        }
-
         @media print {
             html {
                 scroll-snap-type: none;
@@ -297,20 +282,75 @@
         }
 
         /* ===========================================
-           THEME STYLES — Dark Professional
+           THEME STYLES — Warm Gradient Editorial
            =========================================== */
         body {
             font-family: var(--font-body);
-            background: var(--bg-primary);
+            background: linear-gradient(170deg, #FBF8F4 0%, #F5EDE0 50%, #F0E8D8 100%);
             color: var(--text-primary);
+        }
+
+        /* Subtle dot pattern overlay on every slide */
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(44, 36, 32, 0.04) 1px, transparent 1px);
+            background-size: clamp(16px, 2.5vw, 24px) clamp(16px, 2.5vw, 24px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===========================================
+           DECORATIVE WATERMARK NUMBERS
+           Large background slide numbers
+           =========================================== */
+        .slide-watermark {
+            position: absolute;
+            right: clamp(1rem, 5vw, 4rem);
+            bottom: clamp(0.5rem, 3vw, 2rem);
+            font-family: 'Playfair Display', serif;
+            font-size: var(--watermark-size);
+            font-weight: 900;
+            font-style: italic;
+            color: rgba(232, 93, 74, 0.06);
+            line-height: 1;
+            pointer-events: none;
+            z-index: 0;
+            user-select: none;
+        }
+
+        /* ===========================================
+           GOLD DIVIDER LINE
+           =========================================== */
+        .gold-divider {
+            width: clamp(40px, 8vw, 100px);
+            height: 1.5px;
+            background: linear-gradient(90deg, var(--accent-secondary), transparent);
+            border: none;
+        }
+
+        .gold-divider-center {
+            width: clamp(40px, 8vw, 100px);
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, var(--accent-secondary), transparent);
+            border: none;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         /* ===========================================
            ANIMATIONS
+           Triggered by .visible class (added by JS)
            =========================================== */
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(clamp(15px, 2vw, 30px));
             transition: opacity var(--duration-normal) var(--ease-out-expo),
                         transform var(--duration-normal) var(--ease-out-expo);
         }
@@ -319,14 +359,15 @@
             transform: translateY(0);
         }
 
-        .reveal:nth-child(1) { transition-delay: 0.08s; }
-        .reveal:nth-child(2) { transition-delay: 0.16s; }
-        .reveal:nth-child(3) { transition-delay: 0.24s; }
-        .reveal:nth-child(4) { transition-delay: 0.32s; }
-        .reveal:nth-child(5) { transition-delay: 0.40s; }
-        .reveal:nth-child(6) { transition-delay: 0.48s; }
-        .reveal:nth-child(7) { transition-delay: 0.56s; }
-        .reveal:nth-child(8) { transition-delay: 0.64s; }
+        /* Staggered children */
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+        .reveal:nth-child(7) { transition-delay: 0.7s; }
+        .reveal:nth-child(8) { transition-delay: 0.8s; }
 
         /* ===========================================
            PROGRESS BAR
@@ -335,7 +376,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            height: 3px;
+            height: 2px;
             background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
             width: 0%;
             z-index: 9999;
@@ -352,14 +393,15 @@
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: clamp(6px, 1vh, 10px);
             z-index: 9998;
         }
         .nav-dot {
-            width: 8px;
-            height: 8px;
+            width: clamp(6px, 0.6vw, 8px);
+            height: clamp(6px, 0.6vw, 8px);
             border-radius: 50%;
             background: var(--text-muted);
+            opacity: 0.4;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -367,8 +409,8 @@
         }
         .nav-dot.active {
             background: var(--accent);
-            transform: scale(1.4);
-            box-shadow: 0 0 8px var(--accent-glow);
+            opacity: 1;
+            transform: scale(1.5);
         }
 
         /* ===========================================
@@ -378,57 +420,44 @@
             position: fixed;
             bottom: clamp(12px, 2vw, 24px);
             right: clamp(12px, 2vw, 24px);
-            font-family: var(--font-mono);
+            font-family: 'Playfair Display', serif;
             font-size: var(--small-size);
             color: var(--text-muted);
             z-index: 9998;
+            letter-spacing: 0.05em;
         }
 
         /* ===========================================
-           SLIDE-SPECIFIC STYLES
+           EDITORIAL CARD STYLE
            =========================================== */
-
-        /* Title slide decorative line */
-        .title-accent {
-            width: clamp(40px, 6vw, 80px);
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            border-radius: 2px;
+        .editorial-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 168, 83, 0.15);
+            border-radius: clamp(8px, 1vw, 16px);
+            padding: clamp(1rem, 2vw, 1.8rem);
+            box-shadow: 0 clamp(2px, 0.5vw, 8px) clamp(8px, 2vw, 30px) rgba(44, 36, 32, 0.06);
+            transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s ease;
+        }
+        .editorial-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 clamp(4px, 1vw, 12px) clamp(16px, 3vw, 40px) rgba(44, 36, 32, 0.1);
         }
 
-        /* Section divider styling */
+        /* ===========================================
+           SECTION DIVIDER
+           =========================================== */
         .section-divider {
-            background: var(--bg-secondary);
+            background: linear-gradient(135deg, #F5EDE0 0%, #EDE2D0 100%);
         }
-        .section-number {
-            font-size: clamp(4rem, 15vw, 12rem);
-            font-weight: 900;
-            color: rgba(59, 130, 246, 0.08);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            line-height: 1;
+        .section-divider::before {
+            background-image: radial-gradient(circle, rgba(212, 168, 83, 0.06) 1px, transparent 1px);
         }
 
-        /* Timeline node active state */
-        .timeline-node {
-            transition: transform 0.3s ease;
-        }
-        .timeline-node:hover {
-            transform: scale(1.05);
-        }
-
-        /* Stat card hover */
-        .stat-item {
-            transition: transform 0.3s ease;
-        }
-        .stat-item:hover {
-            transform: translateY(-4px);
-        }
-
-        /* Skill bar animation */
+        /* ===========================================
+           SKILL BAR
+           =========================================== */
         .skill-bar-fill {
             height: 100%;
             border-radius: 4px;
@@ -439,30 +468,27 @@
             width: var(--bar-width);
         }
 
-        /* Card grid hover */
-        .project-card {
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-        .project-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent) !important;
-        }
-
-        /* Bullet point custom styling */
+        /* ===========================================
+           VISION ITEMS
+           =========================================== */
         .vision-item {
             display: flex;
             align-items: flex-start;
-            gap: clamp(0.6rem, 1.5vw, 1.2rem);
-            padding: clamp(0.6rem, 1.2vw, 1rem) 0;
+            gap: clamp(0.8rem, 2vw, 1.5rem);
+            padding: clamp(0.8rem, 1.5vw, 1.2rem) 0;
         }
         .vision-number {
-            font-size: var(--h3-size);
-            font-weight: 900;
+            font-family: 'Playfair Display', serif;
+            font-size: var(--h2-size);
+            font-weight: 700;
+            font-style: italic;
             color: var(--accent);
-            min-width: clamp(1.5rem, 3vw, 2.5rem);
-            line-height: 1.4;
+            min-width: clamp(2rem, 4vw, 3rem);
+            line-height: 1.2;
+            opacity: 0.7;
         }
         .vision-text h4 {
+            font-family: var(--font-display-cn);
             font-size: var(--body-size);
             font-weight: 700;
             color: var(--text-primary);
@@ -474,12 +500,66 @@
             line-height: 1.8;
         }
 
-        /* Closing slide gradient text */
-        .closing-message {
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* ===========================================
+           STAT ITEMS
+           =========================================== */
+        .stat-item {
+            transition: transform 0.4s var(--ease-out-expo);
+        }
+        .stat-item:hover {
+            transform: translateY(-3px);
+        }
+
+        /* ===========================================
+           TIMELINE NODES
+           =========================================== */
+        .timeline-node {
+            transition: transform 0.3s ease;
+        }
+        .timeline-node:hover {
+            transform: scale(1.03);
+        }
+
+        /* ===========================================
+           PROJECT CARDS
+           =========================================== */
+        .project-card {
+            transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s ease, border-color 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-secondary) !important;
+            box-shadow: 0 clamp(4px, 1vw, 12px) clamp(16px, 3vw, 40px) rgba(44, 36, 32, 0.1);
+        }
+
+        /* ===========================================
+           TITLE SLIDE SPECIAL
+           =========================================== */
+        .title-slide {
+            background: linear-gradient(160deg, #FBF8F4 0%, #F8F0E4 40%, #F0E5D4 100%);
+        }
+        .title-slide::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(232, 93, 74, 0.03) 0%, rgba(212, 168, 83, 0.05) 100%);
+            pointer-events: none;
+        }
+
+        /* ===========================================
+           CLOSING SLIDE
+           =========================================== */
+        .closing-slide {
+            background: linear-gradient(135deg, #2C2420 0%, #3D322C 50%, #4A3C34 100%);
+        }
+        .closing-slide::before {
+            background-image: radial-gradient(circle, rgba(212, 168, 83, 0.06) 1px, transparent 1px) !important;
+        }
+        .closing-slide .slide-watermark {
+            color: rgba(212, 168, 83, 0.06);
         }
     </style>
 </head>
@@ -495,327 +575,361 @@
 
     <!-- =================== SLIDES =================== -->
 
-    <!-- SLIDE 1: 标题页 -->
+    <!-- SLIDE 1: Title -->
     <section class="slide title-slide" aria-label="标题">
+        <div class="slide-watermark">01</div>
         <div class="slide-content" style="align-items: center; text-align: center;">
-            <div class="reveal title-accent" style="margin-bottom: var(--content-gap);"></div>
-            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: var(--element-gap);">
-                述职竞聘
+            <p class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent-secondary); margin-bottom: var(--content-gap);">
+                Promotion Presentation
             </p>
-            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; line-height: 1.3;">
+            <div class="reveal gold-divider-center" style="margin-bottom: var(--content-gap);"></div>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display-cn); font-weight: 900; line-height: 1.3; color: var(--text-primary);">
                 竞聘：产品总监
             </h1>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;">
-                陈雨萱 &nbsp;|&nbsp; 现任高级产品经理
+            <p class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8; font-style: italic;">
+                陈雨萱 &nbsp;&mdash;&nbsp; 现任高级产品经理
             </p>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); letter-spacing: 0.1em;">
                 云启科技 &nbsp;&middot;&nbsp; 2026年4月
             </p>
         </div>
     </section>
 
-    <!-- SLIDE 2: 目录 -->
+    <!-- SLIDE 2: Table of Contents -->
     <section class="slide" aria-label="目录">
-        <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+        <div class="slide-watermark" style="color: rgba(212, 168, 83, 0.06);">02</div>
+        <div class="slide-content" style="padding-left: clamp(3rem, 8vw, 8rem);">
+            <p class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent-secondary); margin-bottom: var(--element-gap);">
+                Contents
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display-cn); font-weight: 700; margin-bottom: var(--element-gap);">
                 汇报提纲
             </h2>
-            <div style="margin-top: var(--content-gap); max-width: min(80vw, 600px);">
-                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
-                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 700; min-width: 2em;">01</span>
-                    <span style="font-size: var(--body-size); color: var(--text-primary);">个人履历</span>
-                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">职业发展路径</span>
+            <div class="reveal gold-divider" style="margin-bottom: var(--content-gap);"></div>
+            <div style="max-width: min(80vw, 600px);">
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(1rem, 3vw, 2rem); padding: clamp(0.6rem, 1.2vw, 1rem) 0; border-bottom: 1px solid rgba(212, 168, 83, 0.15);">
+                    <span style="font-family: 'Playfair Display', serif; font-size: var(--h2-size); color: var(--accent); font-weight: 700; font-style: italic; min-width: 2.5em; opacity: 0.6;">01</span>
+                    <span style="font-family: var(--font-display-cn); font-size: var(--body-size); color: var(--text-primary); font-weight: 600;">个人履历</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-style: italic;">职业发展路径</span>
                 </div>
-                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
-                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 700; min-width: 2em;">02</span>
-                    <span style="font-size: var(--body-size); color: var(--text-primary);">工作成绩</span>
-                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">核心成果与代表项目</span>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(1rem, 3vw, 2rem); padding: clamp(0.6rem, 1.2vw, 1rem) 0; border-bottom: 1px solid rgba(212, 168, 83, 0.15);">
+                    <span style="font-family: 'Playfair Display', serif; font-size: var(--h2-size); color: var(--accent); font-weight: 700; font-style: italic; min-width: 2.5em; opacity: 0.6;">02</span>
+                    <span style="font-family: var(--font-display-cn); font-size: var(--body-size); color: var(--text-primary); font-weight: 600;">工作成绩</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-style: italic;">核心成果与代表项目</span>
                 </div>
-                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
-                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 700; min-width: 2em;">03</span>
-                    <span style="font-size: var(--body-size); color: var(--text-primary);">核心能力</span>
-                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">产品力与管理力</span>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(1rem, 3vw, 2rem); padding: clamp(0.6rem, 1.2vw, 1rem) 0; border-bottom: 1px solid rgba(212, 168, 83, 0.15);">
+                    <span style="font-family: 'Playfair Display', serif; font-size: var(--h2-size); color: var(--accent); font-weight: 700; font-style: italic; min-width: 2.5em; opacity: 0.6;">03</span>
+                    <span style="font-family: var(--font-display-cn); font-size: var(--body-size); color: var(--text-primary); font-weight: 600;">核心能力</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-style: italic;">产品力与管理力</span>
                 </div>
-                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
-                    <span style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); font-weight: 700; min-width: 2em;">04</span>
-                    <span style="font-size: var(--body-size); color: var(--text-primary);">未来规划</span>
-                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto;">施政纲领与愿景</span>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(1rem, 3vw, 2rem); padding: clamp(0.6rem, 1.2vw, 1rem) 0;">
+                    <span style="font-family: 'Playfair Display', serif; font-size: var(--h2-size); color: var(--accent); font-weight: 700; font-style: italic; min-width: 2.5em; opacity: 0.6;">04</span>
+                    <span style="font-family: var(--font-display-cn); font-size: var(--body-size); color: var(--text-primary); font-weight: 600;">未来规划</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); margin-left: auto; font-style: italic;">施政纲领与愿景</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 3: 时间线 — 职业发展路径 -->
+    <!-- SLIDE 3: Timeline -->
     <section class="slide" aria-label="职业发展路径">
+        <div class="slide-watermark">03</div>
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                职业发展路径
-            </h2>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap);">
-                6年产品经验 &middot; 从执行到管理的持续进阶
-            </p>
+            <div style="text-align: center; margin-bottom: var(--content-gap);">
+                <p class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent-secondary);">
+                    Career Path
+                </p>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display-cn); font-weight: 700; margin-top: var(--element-gap);">
+                    职业发展路径
+                </h2>
+                <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap); font-style: italic;">
+                    6年产品经验 &middot; 从执行到管理的持续进阶
+                </p>
+            </div>
             <div style="display: flex; align-items: flex-start; gap: 0; margin-top: var(--content-gap); position: relative;">
                 <!-- Connecting line -->
-                <div style="position: absolute; top: 20px; left: 20px; right: 20px; height: 2px; background: linear-gradient(90deg, var(--border-subtle), var(--accent), var(--accent-secondary));"></div>
+                <div style="position: absolute; top: clamp(18px, 2.5vw, 24px); left: 10%; right: 10%; height: 1.5px; background: linear-gradient(90deg, var(--accent-secondary) 0%, var(--accent) 100%); opacity: 0.3;"></div>
 
                 <!-- 2018 -->
                 <div class="reveal timeline-node" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--bg-tertiary); border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">18</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">产品助理</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">字节跳动</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; padding: 0 0.3em;">短视频产品线</p>
+                    <div style="width: clamp(36px, 4vw, 48px); height: clamp(36px, 4vw, 48px); border-radius: 50%; background: var(--bg-primary); border: 2px solid var(--accent-secondary); color: var(--accent-secondary); display: inline-flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: var(--small-size);">18</div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">产品助理</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.3em; font-weight: 500;">字节跳动</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">短视频产品线</p>
                 </div>
                 <!-- 2020 -->
                 <div class="reveal timeline-node" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--bg-tertiary); border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">20</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">产品经理</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">美团</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; padding: 0 0.3em;">商家端中台</p>
+                    <div style="width: clamp(36px, 4vw, 48px); height: clamp(36px, 4vw, 48px); border-radius: 50%; background: var(--bg-primary); border: 2px solid var(--accent-secondary); color: var(--accent-secondary); display: inline-flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: var(--small-size);">20</div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">产品经理</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.3em; font-weight: 500;">美团</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">商家端中台</p>
                 </div>
                 <!-- 2022 -->
                 <div class="reveal timeline-node" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--bg-tertiary); border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">22</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">高级产品经理</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">云启科技</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; padding: 0 0.3em;">企业协作产品</p>
+                    <div style="width: clamp(36px, 4vw, 48px); height: clamp(36px, 4vw, 48px); border-radius: 50%; background: var(--bg-primary); border: 2px solid var(--accent-secondary); color: var(--accent-secondary); display: inline-flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: var(--small-size);">22</div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">高级产品经理</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.3em; font-weight: 500;">云启科技</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">企业协作产品</p>
                 </div>
                 <!-- 2024 -->
                 <div class="reveal timeline-node" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--accent-secondary); border: 2px solid var(--accent-secondary); color: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">24</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">团队负责人</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent-secondary); margin-top: 0.3em; padding: 0 0.3em;">云启科技</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em; padding: 0 0.3em;">带领8人产品团队</p>
+                    <div style="width: clamp(36px, 4vw, 48px); height: clamp(36px, 4vw, 48px); border-radius: 50%; background: var(--accent); border: 2px solid var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: var(--small-size);">24</div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); margin-top: 0.6em; font-weight: 700;">团队负责人</h3>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.3em; font-weight: 500;">云启科技</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">带领8人产品团队</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 4: 章节分隔 — 工作成绩 -->
+    <!-- SLIDE 4: Section Divider — Work Results -->
     <section class="slide section-divider" aria-label="章节：工作成绩">
-        <div class="section-number">01</div>
+        <div class="slide-watermark" style="font-size: clamp(8rem, 25vw, 20rem); color: rgba(232, 93, 74, 0.04); left: 50%; right: auto; transform: translateX(-50%); bottom: auto; top: 50%; margin-top: -0.5em;">01</div>
         <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
-            <span class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">
-                Part 01
+            <span class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent-secondary);">
+                Part One
             </span>
-            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); margin-top: var(--element-gap); font-weight: 900;">
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display-cn); margin-top: var(--element-gap); font-weight: 900; color: var(--text-primary);">
                 工作成绩
             </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+            <div class="reveal gold-divider-center" style="margin-top: var(--content-gap);"></div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-style: italic;">
                 用数据和结果说话
             </p>
         </div>
     </section>
 
-    <!-- SLIDE 5: 数据统计 — 4个核心成果 -->
+    <!-- SLIDE 5: Stats — 4 Core Results -->
     <section class="slide" aria-label="核心成果数据">
+        <div class="slide-watermark">05</div>
         <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                核心成果
-            </h2>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(1rem, 3vw, 2.5rem); margin-top: var(--content-gap); max-width: min(90vw, 800px); width: 100%;">
-                <!-- Stat 1: 营收 -->
-                <div class="reveal stat-item" style="text-align: center; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.8rem);">
-                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">主导产品年营收</div>
+            <div style="text-align: center; margin-bottom: var(--content-gap);">
+                <p class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent-secondary);">
+                    Key Metrics
+                </p>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display-cn); font-weight: 700; margin-top: var(--element-gap);">
+                    核心成果
+                </h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); max-width: min(90vw, 800px); width: 100%;">
+                <!-- Stat 1: Revenue -->
+                <div class="reveal stat-item editorial-card" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">主导产品年营收</div>
                     <div style="display: flex; align-items: baseline; justify-content: center; gap: 0.1em;">
                         <span style="font-size: var(--body-size); color: var(--accent-secondary);">&#165;</span>
-                        <span class="counter" data-target="3200" data-suffix="万" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent-secondary);">0</span>
+                        <span class="counter" data-target="3200" data-suffix="万" style="font-size: var(--stat-size); font-family: 'Playfair Display', serif; font-weight: 900; color: var(--accent-secondary);">0</span>
                     </div>
                     <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">/年</div>
                 </div>
-                <!-- Stat 2: 续费率 -->
-                <div class="reveal stat-item" style="text-align: center; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.8rem);">
-                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">用户续费率</div>
+                <!-- Stat 2: Retention -->
+                <div class="reveal stat-item editorial-card" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">用户续费率</div>
                     <div style="display: flex; align-items: baseline; justify-content: center;">
                         <span style="font-size: var(--body-size); color: var(--text-muted); margin-right: 0.3em;">71%</span>
-                        <span style="font-size: var(--body-size); color: var(--text-muted);">&#8594;</span>
-                        <span class="counter" data-target="89" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent); margin-left: 0.2em;">0</span>
+                        <span style="font-size: var(--body-size); color: var(--accent-secondary);">&rarr;</span>
+                        <span class="counter" data-target="89" data-suffix="%" style="font-size: var(--stat-size); font-family: 'Playfair Display', serif; font-weight: 900; color: var(--accent); margin-left: 0.2em;">0</span>
                     </div>
-                    <div style="font-size: var(--small-size); color: #4ade80; margin-top: 0.2em;">+18 个百分点</div>
+                    <div style="font-size: var(--small-size); color: var(--accent); margin-top: 0.2em;">+18 个百分点</div>
                 </div>
                 <!-- Stat 3: NPS -->
-                <div class="reveal stat-item" style="text-align: center; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.8rem);">
-                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">NPS 净推荐值</div>
+                <div class="reveal stat-item editorial-card" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">NPS 净推荐值</div>
                     <div style="display: flex; align-items: baseline; justify-content: center;">
                         <span style="font-size: var(--body-size); color: var(--accent);">+</span>
-                        <span class="counter" data-target="28" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent);">0</span>
+                        <span class="counter" data-target="28" style="font-size: var(--stat-size); font-family: 'Playfair Display', serif; font-weight: 900; color: var(--accent);">0</span>
                     </div>
                     <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">行业平均 +12</div>
                 </div>
-                <!-- Stat 4: 版本交付 -->
-                <div class="reveal stat-item" style="text-align: center; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.8rem);">
-                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">带队交付大版本</div>
-                    <div class="counter" data-target="6" data-suffix=" 个" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent-secondary);">0</div>
+                <!-- Stat 4: Releases -->
+                <div class="reveal stat-item editorial-card" style="text-align: center;">
+                    <div style="font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">带队交付大版本</div>
+                    <div class="counter" data-target="6" data-suffix=" 个" style="font-size: var(--stat-size); font-family: 'Playfair Display', serif; font-weight: 900; color: var(--accent-secondary);">0</div>
                     <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">全部准时上线</div>
                 </div>
             </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: right; max-width: min(90vw, 800px); width: 100%;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: right; max-width: min(90vw, 800px); width: 100%; font-style: italic;">
                 数据截至 2026 Q1 &middot; 经业务部门审核确认
             </p>
         </div>
     </section>
 
-    <!-- SLIDE 6: 卡片网格 — 3个代表项目 -->
+    <!-- SLIDE 6: Card Grid — 3 Projects -->
     <section class="slide" aria-label="代表项目">
+        <div class="slide-watermark">06</div>
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                代表项目
-            </h2>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); max-width: min(95vw, 1000px); margin-left: auto; margin-right: auto;">
+            <div style="text-align: center; margin-bottom: var(--content-gap);">
+                <p class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent-secondary);">
+                    Featured Projects
+                </p>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display-cn); font-weight: 700; margin-top: var(--element-gap);">
+                    代表项目
+                </h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); max-width: min(95vw, 1000px); margin-left: auto; margin-right: auto;">
                 <!-- Project 1 -->
-                <div class="reveal project-card" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.5rem); display: flex; flex-direction: column;">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem); filter: grayscale(0.3);">&#128640;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">企业协作平台重构</h3>
+                <div class="reveal project-card editorial-card" style="display: flex; flex-direction: column;">
+                    <div style="font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 900; font-style: italic; color: var(--accent); opacity: 0.3; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">I</div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">企业协作平台重构</h3>
                     <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; flex: 1;">从零重新设计信息架构和交互流程，重构核心工作流引擎，大幅提升用户体验。</p>
-                    <div style="margin-top: clamp(0.6rem, 1vw, 1rem); padding-top: clamp(0.6rem, 1vw, 1rem); border-top: 1px solid var(--border-subtle);">
-                        <span style="font-size: var(--h3-size); font-weight: 900; color: var(--accent-secondary);">DAU +156%</span>
+                    <div style="margin-top: clamp(0.6rem, 1vw, 1rem); padding-top: clamp(0.6rem, 1vw, 1rem); border-top: 1.5px solid rgba(212, 168, 83, 0.2);">
+                        <span style="font-family: 'Playfair Display', serif; font-size: var(--h3-size); font-weight: 900; color: var(--accent);">DAU +156%</span>
                     </div>
                 </div>
                 <!-- Project 2 -->
-                <div class="reveal project-card" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.5rem); display: flex; flex-direction: column;">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem); filter: grayscale(0.3);">&#9889;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">智能审批流引擎</h3>
+                <div class="reveal project-card editorial-card" style="display: flex; flex-direction: column;">
+                    <div style="font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 900; font-style: italic; color: var(--accent); opacity: 0.3; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">II</div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">智能审批流引擎</h3>
                     <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; flex: 1;">基于规则引擎和 AI 预判的审批流系统，实现复杂流程自动化和智能路由。</p>
-                    <div style="margin-top: clamp(0.6rem, 1vw, 1rem); padding-top: clamp(0.6rem, 1vw, 1rem); border-top: 1px solid var(--border-subtle);">
-                        <span style="font-size: var(--h3-size); font-weight: 900; color: var(--accent-secondary);">节省 2.1万人时/月</span>
+                    <div style="margin-top: clamp(0.6rem, 1vw, 1rem); padding-top: clamp(0.6rem, 1vw, 1rem); border-top: 1.5px solid rgba(212, 168, 83, 0.2);">
+                        <span style="font-family: 'Playfair Display', serif; font-size: var(--h3-size); font-weight: 900; color: var(--accent);">节省 2.1万人时/月</span>
                     </div>
                 </div>
                 <!-- Project 3 -->
-                <div class="reveal project-card" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.5rem); display: flex; flex-direction: column;">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem); filter: grayscale(0.3);">&#127758;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">国际化拓展</h3>
+                <div class="reveal project-card editorial-card" style="display: flex; flex-direction: column;">
+                    <div style="font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 900; font-style: italic; color: var(--accent); opacity: 0.3; margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);">III</div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem); font-weight: 700;">国际化拓展</h3>
                     <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; flex: 1;">主导产品多语言架构改造、合规适配和本地化运营，成功打入东南亚市场。</p>
-                    <div style="margin-top: clamp(0.6rem, 1vw, 1rem); padding-top: clamp(0.6rem, 1vw, 1rem); border-top: 1px solid var(--border-subtle);">
-                        <span style="font-size: var(--h3-size); font-weight: 900; color: var(--accent-secondary);">覆盖 3 国市场</span>
+                    <div style="margin-top: clamp(0.6rem, 1vw, 1rem); padding-top: clamp(0.6rem, 1vw, 1rem); border-top: 1.5px solid rgba(212, 168, 83, 0.2);">
+                        <span style="font-family: 'Playfair Display', serif; font-size: var(--h3-size); font-weight: 900; color: var(--accent);">覆盖 3 国市场</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 7: 章节分隔 — 核心能力 -->
+    <!-- SLIDE 7: Section Divider — Core Capabilities -->
     <section class="slide section-divider" aria-label="章节：核心能力">
-        <div class="section-number">02</div>
+        <div class="slide-watermark" style="font-size: clamp(8rem, 25vw, 20rem); color: rgba(212, 168, 83, 0.04); left: 50%; right: auto; transform: translateX(-50%); bottom: auto; top: 50%; margin-top: -0.5em;">02</div>
         <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
-            <span class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">
-                Part 02
+            <span class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent-secondary);">
+                Part Two
             </span>
-            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); margin-top: var(--element-gap); font-weight: 900;">
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display-cn); margin-top: var(--element-gap); font-weight: 900; color: var(--text-primary);">
                 核心能力
             </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+            <div class="reveal gold-divider-center" style="margin-top: var(--content-gap);"></div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-style: italic;">
                 产品力 + 管理力 = 产品总监的核心底盘
             </p>
         </div>
     </section>
 
-    <!-- SLIDE 8: 双栏能力展示 -->
+    <!-- SLIDE 8: Two-Column Skills -->
     <section class="slide" aria-label="能力展示">
-        <div class="slide-content" style="flex-direction: row; align-items: stretch; gap: var(--content-gap);">
-            <!-- Left: 产品能力 -->
+        <div class="slide-watermark">08</div>
+        <div class="slide-content" style="flex-direction: row; align-items: stretch; gap: clamp(1.5rem, 3vw, 3rem);">
+            <!-- Left: Product -->
             <div style="flex: 1; min-width: 0;">
                 <div class="reveal" style="margin-bottom: var(--content-gap);">
-                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; color: var(--accent);">产品能力</h2>
-                    <div style="width: clamp(30px, 4vw, 50px); height: 2px; background: var(--accent); margin-top: clamp(0.3rem, 0.5vw, 0.5rem); border-radius: 1px;"></div>
+                    <p style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: clamp(0.2rem, 0.3vw, 0.3rem);">Product</p>
+                    <h2 style="font-family: var(--font-display-cn); font-size: var(--h2-size); font-weight: 700; color: var(--text-primary);">产品能力</h2>
+                    <div class="gold-divider" style="margin-top: clamp(0.3rem, 0.5vw, 0.5rem); background: linear-gradient(90deg, var(--accent), transparent);"></div>
                 </div>
                 <!-- Skill bars -->
                 <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">用户洞察</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">6年 B2B 用户研究经验</span>
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">用户洞察</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">6年 B2B 用户研究经验</span>
                     </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 92%; background: linear-gradient(90deg, var(--accent), #60a5fa);"></div>
-                    </div>
-                </div>
-                <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">数据驱动</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">A/B 测试 + 数据建模</span>
-                    </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 88%; background: linear-gradient(90deg, var(--accent), #60a5fa);"></div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 92%; background: linear-gradient(90deg, var(--accent), #f08c7e);"></div>
                     </div>
                 </div>
                 <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">商业思维</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">营收导向产品设计</span>
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">数据驱动</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">A/B 测试 + 数据建模</span>
                     </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 85%; background: linear-gradient(90deg, var(--accent), #60a5fa);"></div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 88%; background: linear-gradient(90deg, var(--accent), #f08c7e);"></div>
                     </div>
                 </div>
                 <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">技术理解</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">能与工程团队深度对话</span>
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">商业思维</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">营收导向产品设计</span>
                     </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 80%; background: linear-gradient(90deg, var(--accent), #60a5fa);"></div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 85%; background: linear-gradient(90deg, var(--accent), #f08c7e);"></div>
+                    </div>
+                </div>
+                <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">技术理解</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">能与工程团队深度对话</span>
+                    </div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 80%; background: linear-gradient(90deg, var(--accent), #f08c7e);"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Divider -->
-            <div class="reveal" style="width: 1px; background: var(--border-subtle); align-self: stretch;"></div>
+            <div class="reveal" style="width: 1.5px; background: linear-gradient(180deg, transparent, var(--accent-secondary), transparent); align-self: stretch; opacity: 0.4;"></div>
 
-            <!-- Right: 管理能力 -->
+            <!-- Right: Management -->
             <div style="flex: 1; min-width: 0;">
                 <div class="reveal" style="margin-bottom: var(--content-gap);">
-                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; color: var(--accent-secondary);">管理能力</h2>
-                    <div style="width: clamp(30px, 4vw, 50px); height: 2px; background: var(--accent-secondary); margin-top: clamp(0.3rem, 0.5vw, 0.5rem); border-radius: 1px;"></div>
+                    <p style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-secondary); margin-bottom: clamp(0.2rem, 0.3vw, 0.3rem);">Leadership</p>
+                    <h2 style="font-family: var(--font-display-cn); font-size: var(--h2-size); font-weight: 700; color: var(--text-primary);">管理能力</h2>
+                    <div class="gold-divider" style="margin-top: clamp(0.3rem, 0.5vw, 0.5rem);"></div>
                 </div>
                 <!-- Skill bars -->
                 <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">团队搭建</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">从 0 到 8 人团队</span>
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">团队搭建</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">从 0 到 8 人团队</span>
                     </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 90%; background: linear-gradient(90deg, var(--accent-secondary), #fbbf24);"></div>
-                    </div>
-                </div>
-                <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">跨部门协作</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">研发 + 销售 + 客成</span>
-                    </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 87%; background: linear-gradient(90deg, var(--accent-secondary), #fbbf24);"></div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 90%; background: linear-gradient(90deg, var(--accent-secondary), #e8c97a);"></div>
                     </div>
                 </div>
                 <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">目标拆解</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">OKR 落地 + 里程碑管理</span>
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">跨部门协作</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">研发 + 销售 + 客成</span>
                     </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 85%; background: linear-gradient(90deg, var(--accent-secondary), #fbbf24);"></div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 87%; background: linear-gradient(90deg, var(--accent-secondary), #e8c97a);"></div>
                     </div>
                 </div>
                 <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
-                        <span style="font-size: var(--body-size); font-weight: 700;">人才培养</span>
-                        <span style="font-size: var(--small-size); color: var(--text-muted);">已培养 2 名独当一面的 PM</span>
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">目标拆解</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">OKR 落地 + 里程碑管理</span>
                     </div>
-                    <div style="height: clamp(4px, 0.6vw, 6px); background: var(--surface); border-radius: 4px; overflow: hidden;">
-                        <div class="skill-bar-fill" style="--bar-width: 82%; background: linear-gradient(90deg, var(--accent-secondary), #fbbf24);"></div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 85%; background: linear-gradient(90deg, var(--accent-secondary), #e8c97a);"></div>
+                    </div>
+                </div>
+                <div class="reveal" style="margin-bottom: clamp(0.6rem, 1.2vw, 1rem);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);">
+                        <span style="font-size: var(--body-size); font-weight: 700; font-family: var(--font-display-cn);">人才培养</span>
+                        <span style="font-size: var(--small-size); color: var(--text-muted); font-style: italic;">已培养 2 名独当一面的 PM</span>
+                    </div>
+                    <div style="height: clamp(4px, 0.6vw, 6px); background: rgba(44, 36, 32, 0.06); border-radius: 4px; overflow: hidden;">
+                        <div class="skill-bar-fill" style="--bar-width: 82%; background: linear-gradient(90deg, var(--accent-secondary), #e8c97a);"></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 9: 施政纲领 — 如果我是产品总监 -->
+    <!-- SLIDE 9: Future Plan -->
     <section class="slide" aria-label="未来规划">
-        <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+        <div class="slide-watermark">09</div>
+        <div class="slide-content" style="padding-left: clamp(3rem, 8vw, 8rem);">
+            <p class="reveal" style="font-family: 'Playfair Display', serif; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent-secondary);">
+                Vision & Roadmap
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display-cn); font-weight: 700; margin-top: var(--element-gap);">
                 如果我是产品总监
             </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-style: italic;">
                 四件事，12个月内落地
             </p>
-            <div style="margin-top: var(--content-gap); max-width: min(90vw, 800px);">
+            <div class="reveal gold-divider" style="margin-top: var(--element-gap); margin-bottom: var(--content-gap);"></div>
+            <div style="max-width: min(90vw, 800px);">
                 <div class="reveal vision-item">
                     <span class="vision-number">01</span>
                     <div class="vision-text">
@@ -823,21 +937,21 @@
                         <p>从单一产品转向产品矩阵，围绕企业协作核心场景构建「平台 + 模块」生态，降低客户采购门槛，提升 LTV。</p>
                     </div>
                 </div>
-                <div class="reveal vision-item" style="border-top: 1px solid var(--border-subtle);">
+                <div class="reveal vision-item" style="border-top: 1px solid rgba(212, 168, 83, 0.15);">
                     <span class="vision-number">02</span>
                     <div class="vision-text">
                         <h4>建立数据驱动决策体系</h4>
                         <p>搭建产品数据看板和实验平台，让每个产品决策都有数据支撑，减少「拍脑袋」，提升迭代效率。</p>
                     </div>
                 </div>
-                <div class="reveal vision-item" style="border-top: 1px solid var(--border-subtle);">
+                <div class="reveal vision-item" style="border-top: 1px solid rgba(212, 168, 83, 0.15);">
                     <span class="vision-number">03</span>
                     <div class="vision-text">
                         <h4>打造产品文化</h4>
                         <p>建立产品评审机制、内部分享会、用户访谈常态化。让「以用户为中心」不只是口号，而是每个人的工作习惯。</p>
                     </div>
                 </div>
-                <div class="reveal vision-item" style="border-top: 1px solid var(--border-subtle);">
+                <div class="reveal vision-item" style="border-top: 1px solid rgba(212, 168, 83, 0.15);">
                     <span class="vision-number">04</span>
                     <div class="vision-text">
                         <h4>推动国际化 2.0</h4>
@@ -848,25 +962,26 @@
         </div>
     </section>
 
-    <!-- SLIDE 10: 结尾页 -->
+    <!-- SLIDE 10: Closing -->
     <section class="slide closing-slide" aria-label="结尾">
+        <div class="slide-watermark" style="font-size: clamp(8rem, 25vw, 20rem);">10</div>
         <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
-            <div class="reveal title-accent" style="margin-bottom: var(--content-gap);"></div>
-            <h2 class="reveal closing-message" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; line-height: 1.6;">
+            <div class="reveal gold-divider-center" style="margin-bottom: var(--content-gap); background: linear-gradient(90deg, transparent, var(--accent-secondary), transparent);"></div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display-cn); font-weight: 900; line-height: 1.6; background: linear-gradient(135deg, var(--accent-secondary), #e8c97a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                 期待与大家一起，把产品做到极致
             </h2>
             <div class="reveal" style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vw, 0.5rem); align-items: center;">
-                <p style="font-size: var(--body-size); color: var(--text-secondary);">陈雨萱</p>
-                <p style="font-size: var(--small-size); color: var(--text-muted);">yuxuan.chen@yunqi.tech &nbsp;&middot;&nbsp; 186-1234-5678</p>
+                <p style="font-family: 'Playfair Display', serif; font-size: var(--body-size); color: rgba(255,255,255,0.8); font-style: italic;">陈雨萱</p>
+                <p style="font-size: var(--small-size); color: rgba(255,255,255,0.4);">yuxuan.chen@yunqi.tech &nbsp;&middot;&nbsp; 186-1234-5678</p>
             </div>
             <div class="reveal" style="margin-top: var(--content-gap);">
-                <p style="font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
-                    "产品的价值，不在于功能多少，而在于它改变了多少人的工作方式。"
+                <p style="font-family: 'Playfair Display', serif; font-size: var(--small-size); color: rgba(255,255,255,0.25); font-style: italic;">
+                    &ldquo;产品的价值，不在于功能多少，而在于它改变了多少人的工作方式。&rdquo;
                 </p>
             </div>
         </div>
         <!-- Watermark -->
-        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: rgba(255,255,255,0.2); opacity: 0.5;">
             Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
         </p>
     </section>
@@ -949,6 +1064,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             /* --- Touch: swipe up/down with 50px threshold --- */
@@ -1033,19 +1149,14 @@
 
                 // Counter
                 if (this.counter) {
-                    this.counter.textContent = `${current + 1} / ${total}`;
+                    this.counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
                 }
             }
         }
 
-        // Initialize on DOM ready
-        document.addEventListener('DOMContentLoaded', () => {
-            new SlidePresentation();
-        });
-
         /* ===========================================
            COUNTER ANIMATION
-           Animates numbers when stats slide is visible
+           Animate numbers when slide becomes visible
            =========================================== */
         const counters = document.querySelectorAll('.counter');
         const counterObserver = new IntersectionObserver((entries) => {
@@ -1072,6 +1183,11 @@
             });
         }, { threshold: 0.5 });
         counters.forEach(c => counterObserver.observe(c));
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
     </script>
 </body>
 </html>

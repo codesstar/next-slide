@@ -25,7 +25,7 @@
             --accent-gold: #b8860b;
             --accent-gold-light: rgba(184, 134, 11, 0.15);
             --text-primary: #1a1a1a;
-            --text-secondary: #8a8070;
+            --text-secondary: #6a6058;
             --text-muted: #b0a898;
             --border-subtle: rgba(26, 26, 26, 0.1);
             --surface: rgba(26, 26, 26, 0.03);
@@ -112,32 +112,6 @@
             padding: var(--slide-padding);
         }
 
-        :root {
-            --title-size-base: clamp(1.5rem, 5vw, 4rem);
-            --h2-size-base: clamp(1.25rem, 3.5vw, 2.5rem);
-            --h3-size-base: clamp(1rem, 2.5vw, 1.75rem);
-            --body-size-base: clamp(0.75rem, 1.5vw, 1.125rem);
-            --small-size-base: clamp(0.65rem, 1vw, 0.875rem);
-            --stat-size-base: clamp(2rem, 8vw, 6rem);
-            --slide-padding-base: clamp(1rem, 4vw, 4rem);
-            --content-gap-base: clamp(0.5rem, 2vw, 2rem);
-            --element-gap-base: clamp(0.25rem, 1vw, 1rem);
-        }
-
-        .card, .container, .content-box {
-            max-width: min(90vw, 1000px);
-            max-height: min(80vh, 700px);
-        }
-
-        .feature-list, .bullet-list {
-            gap: clamp(0.4rem, 1vh, 1rem);
-        }
-
-        .feature-list li, .bullet-list li {
-            font-size: var(--body-size);
-            line-height: 1.8;
-        }
-
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
@@ -152,7 +126,7 @@
 
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
             line-height: 1.8;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: break-word;
         }
 
@@ -194,6 +168,17 @@
                 --body-size: clamp(0.65rem, 1vw, 0.85rem);
             }
             .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .process-timeline {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        @media (max-width: 500px) {
+            .process-timeline {
                 grid-template-columns: 1fr !important;
             }
         }
@@ -466,6 +451,14 @@
             height: 0;
             border-style: solid;
         }
+
+        /* Subtle ink breathing for background blobs */
+        @keyframes ink-breathe {
+            0%, 100% { transform: scale(1); opacity: 0.05; }
+            50% { transform: scale(1.04); opacity: 0.07; }
+        }
+        .ink-wash-bg { animation: ink-breathe 10s ease-in-out infinite; }
+
     </style>
 </head>
 <body>
@@ -563,31 +556,13 @@
                 </p>
             </div>
 
-            <!-- Right: CSS mountain scene art -->
+            <!-- Right: Mountain landscape photo -->
             <div style="flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center;">
-                <div class="reveal" style="position: relative; width: min(100%, 400px); height: clamp(200px, 35vh, 350px); overflow: hidden; border-radius: 4px;">
-                    <!-- Sky gradient -->
-                    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #f0ebe2 0%, #e8e0d3 40%, #ddd4c4 100%);"></div>
-
-                    <!-- Far mountain -->
-                    <div style="position: absolute; bottom: 20%; left: -5%; width: 60%; height: 55%; background: linear-gradient(160deg, rgba(26,26,26,0.08) 0%, rgba(26,26,26,0.04) 100%); clip-path: polygon(0% 100%, 30% 15%, 55% 35%, 75% 10%, 100% 100%); filter: blur(2px);"></div>
-
-                    <!-- Mid mountain -->
-                    <div style="position: absolute; bottom: 15%; right: -5%; width: 70%; height: 50%; background: linear-gradient(170deg, rgba(26,26,26,0.12) 0%, rgba(26,26,26,0.06) 100%); clip-path: polygon(0% 100%, 20% 40%, 45% 15%, 70% 30%, 90% 5%, 100% 100%); filter: blur(1px);"></div>
-
-                    <!-- Near mountain -->
-                    <div style="position: absolute; bottom: 0; left: 10%; width: 80%; height: 40%; background: linear-gradient(175deg, rgba(26,26,26,0.18) 0%, rgba(26,26,26,0.1) 100%); clip-path: polygon(0% 100%, 15% 50%, 40% 20%, 60% 40%, 85% 10%, 100% 100%);"></div>
-
-                    <!-- Mist layers -->
-                    <div style="position: absolute; bottom: 30%; left: 0; width: 100%; height: 20%; background: linear-gradient(180deg, transparent, rgba(240,235,226,0.7), transparent); filter: blur(8px);"></div>
-                    <div style="position: absolute; bottom: 15%; left: 0; width: 100%; height: 15%; background: linear-gradient(180deg, transparent, rgba(240,235,226,0.5), transparent); filter: blur(6px);"></div>
-
-                    <!-- Tea trees silhouette at bottom -->
-                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 12%; background: linear-gradient(180deg, rgba(26,26,26,0.15), rgba(26,26,26,0.08));"></div>
-
+                <div class="reveal" style="position: relative; width: min(100%, 450px); height: clamp(200px, 35vh, 350px); overflow: hidden; border-radius: 4px;">
+                    <img src="images/shanyin-mountain.webp" alt="武夷山茶园云雾景" style="width: 100%; height: 100%; object-fit: cover; filter: contrast(0.95) brightness(1.02);">
                     <!-- Floating seal in corner -->
                     <div style="position: absolute; bottom: clamp(8px, 1.5vh, 16px); right: clamp(8px, 1.5vw, 16px);">
-                        <div class="seal" style="width: clamp(28px, 3.5vw, 40px); height: clamp(28px, 3.5vw, 40px); font-size: clamp(0.45rem, 0.8vw, 0.65rem); border-width: 1.5px;">山隐</div>
+                        <div class="seal" style="width: clamp(28px, 3.5vw, 40px); height: clamp(28px, 3.5vw, 40px); font-size: clamp(0.45rem, 0.8vw, 0.65rem); border-width: 1.5px; background: rgba(247,244,239,0.85);">山隐</div>
                     </div>
                 </div>
             </div>
@@ -610,9 +585,9 @@
 
                 <!-- Card 1: 正山小种 -->
                 <div class="reveal" style="background: linear-gradient(175deg, rgba(197,61,67,0.04) 0%, rgba(197,61,67,0.01) 100%); border: 1px solid rgba(197,61,67,0.12); border-radius: 4px; padding: clamp(1rem, 2vw, 1.8rem); text-align: center; position: relative;">
-                    <!-- Tea type icon — simplified circle -->
-                    <div style="width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); border-radius: 50%; border: 1.5px solid var(--accent-red); margin: 0 auto; display: flex; align-items: center; justify-content: center; opacity: 0.6;">
-                        <div style="width: 60%; height: 60%; border-radius: 50%; background: radial-gradient(circle, rgba(197,61,67,0.2), transparent);"></div>
+                    <!-- Tea product photo -->
+                    <div style="width: clamp(50px, 5vw, 70px); height: clamp(50px, 5vw, 70px); border-radius: 50%; margin: 0 auto; overflow: hidden; border: 1.5px solid rgba(197,61,67,0.2);">
+                        <img src="images/shanyin-tea-product.webp" alt="正山小种" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.6rem, 1vh, 1rem); color: var(--ink-black);">正山小种</h3>
                     <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-display);">传统红茶&ensp;|&ensp;松烟香</p>
@@ -660,12 +635,9 @@
                 从叶到茶，四步成韵
             </h2>
 
-            <div style="display: flex; align-items: flex-start; gap: 0; margin-top: clamp(2rem, 4vh, 3.5rem); position: relative; max-width: min(90vw, 900px); margin-left: auto; margin-right: auto;">
-                <!-- Connecting line — ink brush style -->
-                <div style="position: absolute; top: clamp(18px, 2.5vw, 28px); left: clamp(18px, 2.5vw, 28px); right: clamp(18px, 2.5vw, 28px); height: 1px; background: linear-gradient(90deg, transparent 0%, var(--ink-black) 10%, var(--ink-black) 90%, transparent 100%); opacity: 0.15;"></div>
-
+            <div class="process-timeline" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(0.5rem, 1.5vw, 1.5rem); margin-top: clamp(2rem, 4vh, 3.5rem); position: relative; max-width: min(90vw, 900px); margin-left: auto; margin-right: auto;">
                 <!-- Step 1: 采摘 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                <div class="reveal" style="text-align: center; position: relative; z-index: 1;">
                     <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
                         一
                     </div>
@@ -677,7 +649,7 @@
                 </div>
 
                 <!-- Step 2: 萎凋 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                <div class="reveal" style="text-align: center; position: relative; z-index: 1;">
                     <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
                         二
                     </div>
@@ -689,7 +661,7 @@
                 </div>
 
                 <!-- Step 3: 揉捻 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                <div class="reveal" style="text-align: center; position: relative; z-index: 1;">
                     <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
                         三
                     </div>
@@ -701,7 +673,7 @@
                 </div>
 
                 <!-- Step 4: 烘焙 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                <div class="reveal" style="text-align: center; position: relative; z-index: 1;">
                     <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1.5px solid var(--ink-black); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--ink-black);">
                         四
                     </div>
@@ -716,6 +688,26 @@
             <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: clamp(1.5rem, 2.5vh, 2rem); font-style: italic;">
                 注：工艺以正山小种为例，不同茶类略有差异
             </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5.5: 茶道意境 — 全幅图片 =================== -->
+    <section class="slide" aria-label="茶道意境" style="padding: 0;">
+        <!-- Full bleed ceremony photo -->
+        <div style="position: absolute; inset: 0; overflow: hidden;">
+            <img src="images/shanyin-ceremony.webp" alt="传统茶道仪式 — 盖碗冲泡，茶汤流转之间感受慢生活" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.35; filter: grayscale(0.4) contrast(0.95) brightness(0.95);">
+        </div>
+        <!-- Warm overlay gradient -->
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(239,232,220,0.6) 0%, rgba(247,244,239,0.4) 40%, rgba(247,244,239,0.7) 100%); pointer-events: none;"></div>
+        <!-- Ink wash blobs -->
+        <div class="ink-wash-bg" style="width: 40vw; height: 40vw; top: -15%; right: -10%; opacity: 0.06;"></div>
+
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; position: relative; z-index: 1;">
+            <div class="reveal brush-divider" style="margin-bottom: clamp(1rem, 2vh, 1.5rem);"></div>
+            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 2.8rem); font-family: var(--font-display); font-weight: 400; line-height: 1.7; color: var(--ink-black); letter-spacing: 0.08em;">
+                茶是一场仪式，<br>关于慢下来，关于此刻
+            </blockquote>
+            <div class="reveal brush-divider" style="margin-top: clamp(1rem, 2vh, 1.5rem);"></div>
         </div>
     </section>
 
@@ -823,10 +815,14 @@
 
     <!-- =================== SLIDE 8: 结尾页 =================== -->
     <section class="slide closing-slide" aria-label="结尾">
+        <!-- Background tea ceremony photo with overlay -->
+        <div style="position: absolute; inset: 0; overflow: hidden; pointer-events: none;">
+            <img src="images/shanyin-ceremony.webp" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.08; filter: grayscale(0.6) contrast(0.8);">
+        </div>
         <!-- Ink wash atmosphere -->
         <div class="ink-wash-bg" style="width: 60vw; height: 60vw; top: -25%; left: -20%; opacity: 0.05;"></div>
         <div class="ink-wash-bg" style="width: 40vw; height: 40vw; bottom: -15%; right: -10%; opacity: 0.04;"></div>
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 50%, rgba(239,232,220,0.3) 0%, transparent 60%); pointer-events: none;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 50%, rgba(239,232,220,0.5) 0%, transparent 60%); pointer-events: none;"></div>
 
         <div class="slide-content" style="align-items: center; text-align: center; position: relative; z-index: 1;">
             <!-- Brand name -->
@@ -851,8 +847,16 @@
                 </div>
             </div>
 
+            <!-- CTA: QR code placeholder -->
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 2rem); transition-delay: 1.4s; display: flex; flex-direction: column; align-items: center; gap: clamp(0.3rem, 0.5vh, 0.5rem);">
+                <div style="width: clamp(80px, 10vw, 120px); height: clamp(80px, 10vw, 120px); border: 1.5px solid rgba(26,26,26,0.15); border-radius: 4px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5);">
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--text-muted); text-align: center; line-height: 1.4;">扫码<br>品鉴</span>
+                </div>
+                <span style="font-size: var(--small-size); color: var(--text-muted);">微信扫码，开启山隐之旅</span>
+            </div>
+
             <!-- Seal -->
-            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 2.5rem); transition-delay: 1.4s;">
+            <div class="reveal" style="margin-top: clamp(1rem, 2vh, 1.5rem); transition-delay: 1.6s;">
                 <div class="seal">山隐<br>茶号</div>
             </div>
         </div>
@@ -941,6 +945,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             /* --- Touch: swipe up/down with 50px threshold --- */

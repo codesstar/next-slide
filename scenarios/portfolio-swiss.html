@@ -21,7 +21,7 @@
             --bg-tertiary: #eeeeee;
             --text-primary: #0a0a0a;
             --text-secondary: #666666;
-            --text-muted: #999999;
+            --text-muted: #767676;
             --accent: #ff3300;
             --accent-secondary: #cc2900;
             --accent-glow: rgba(255, 51, 0, 0.2);
@@ -326,6 +326,11 @@
         .reveal:nth-child(6) { transition-delay: 0.36s; }
         .reveal:nth-child(7) { transition-delay: 0.42s; }
         .reveal:nth-child(8) { transition-delay: 0.48s; }
+
+        /* --- Bar chart animation --- */
+        .slide.visible .bar-fill {
+            transform: scaleX(1) !important;
+        }
 
         /* ===========================================
            PROGRESS BAR
@@ -717,7 +722,109 @@
         </div>
     </section>
 
-    <!-- =================== SLIDE 8: CLOSING =================== -->
+    <!-- =================== SLIDE 8: DESIGN TOOLKIT (Data Viz — Bar Chart) =================== -->
+    <section class="slide" aria-label="Design Toolkit">
+        <div class="slide-content" style="max-width: min(90vw, 800px);">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); font-weight: 700;">
+                Expertise
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); text-transform: uppercase;">
+                Design Toolkit
+            </h2>
+            <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.5rem, 1vh, 0.8rem);">
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem);">
+                    <span style="font-size: var(--small-size); min-width: clamp(80px, 12vw, 140px); text-align: right; color: var(--text-secondary); font-weight: 500;">UX Research</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--bg-secondary); overflow: hidden;">
+                        <div class="bar-fill" style="width: 92%; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform 0.8s var(--ease-out-expo);"></div>
+                    </div>
+                    <span style="font-size: var(--small-size); color: var(--text-primary); min-width: 2.5em; font-weight: 700;">92</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem);">
+                    <span style="font-size: var(--small-size); min-width: clamp(80px, 12vw, 140px); text-align: right; color: var(--text-secondary); font-weight: 500;">Prototyping</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--bg-secondary); overflow: hidden;">
+                        <div class="bar-fill" style="width: 95%; height: 100%; background: var(--text-primary); transform-origin: left; transform: scaleX(0); transition: transform 0.8s var(--ease-out-expo) 0.08s;"></div>
+                    </div>
+                    <span style="font-size: var(--small-size); color: var(--text-primary); min-width: 2.5em; font-weight: 700;">95</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem);">
+                    <span style="font-size: var(--small-size); min-width: clamp(80px, 12vw, 140px); text-align: right; color: var(--text-secondary); font-weight: 500;">Design Systems</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--bg-secondary); overflow: hidden;">
+                        <div class="bar-fill" style="width: 88%; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform 0.8s var(--ease-out-expo) 0.16s;"></div>
+                    </div>
+                    <span style="font-size: var(--small-size); color: var(--text-primary); min-width: 2.5em; font-weight: 700;">88</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem);">
+                    <span style="font-size: var(--small-size); min-width: clamp(80px, 12vw, 140px); text-align: right; color: var(--text-secondary); font-weight: 500;">Visual Design</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--bg-secondary); overflow: hidden;">
+                        <div class="bar-fill" style="width: 85%; height: 100%; background: var(--text-primary); transform-origin: left; transform: scaleX(0); transition: transform 0.8s var(--ease-out-expo) 0.24s;"></div>
+                    </div>
+                    <span style="font-size: var(--small-size); color: var(--text-primary); min-width: 2.5em; font-weight: 700;">85</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem);">
+                    <span style="font-size: var(--small-size); min-width: clamp(80px, 12vw, 140px); text-align: right; color: var(--text-secondary); font-weight: 500;">Front-End CSS</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--bg-secondary); overflow: hidden;">
+                        <div class="bar-fill" style="width: 72%; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform 0.8s var(--ease-out-expo) 0.32s;"></div>
+                    </div>
+                    <span style="font-size: var(--small-size); color: var(--text-primary); min-width: 2.5em; font-weight: 700;">72</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem);">
+                    <span style="font-size: var(--small-size); min-width: clamp(80px, 12vw, 140px); text-align: right; color: var(--text-secondary); font-weight: 500;">Accessibility</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--bg-secondary); overflow: hidden;">
+                        <div class="bar-fill" style="width: 80%; height: 100%; background: var(--text-primary); transform-origin: left; transform: scaleX(0); transition: transform 0.8s var(--ease-out-expo) 0.4s;"></div>
+                    </div>
+                    <span style="font-size: var(--small-size); color: var(--text-primary); min-width: 2.5em; font-weight: 700;">80</span>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center; text-transform: uppercase; letter-spacing: 0.1em;">
+                Figma / Framer / Principle / Storybook / Notion / Linear
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: CAREER JOURNEY (Timeline) =================== -->
+    <section class="slide" aria-label="Career Journey">
+        <div class="slide-content" style="max-width: min(90vw, 800px);">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); font-weight: 700;">
+                Journey
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); text-transform: uppercase;">
+                Career Timeline
+            </h2>
+            <div style="margin-top: var(--content-gap); position: relative; padding-left: clamp(1.5rem, 3vw, 2.5rem);">
+                <div style="position: absolute; left: clamp(6px, 0.8vw, 10px); top: 0; bottom: 0; width: 2px; background: var(--text-primary);"></div>
+
+                <div class="reveal" style="position: relative; padding-bottom: clamp(1rem, 2vh, 1.5rem);">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(1px, 0.3vw, 4px)); top: 0.4em; width: clamp(12px, 1.4vw, 16px); height: clamp(12px, 1.4vw, 16px); background: var(--accent);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">2026 &mdash; Present</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em;">Independent Design Consultant</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em;">Select projects in healthcare, SaaS, and consumer brands</p>
+                </div>
+
+                <div class="reveal" style="position: relative; padding-bottom: clamp(1rem, 2vh, 1.5rem);">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(1px, 0.3vw, 4px)); top: 0.4em; width: clamp(12px, 1.4vw, 16px); height: clamp(12px, 1.4vw, 16px); background: var(--text-primary);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">2022 &mdash; 2025</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em;">Senior Product Designer &mdash; Canopy Analytics</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em;">Led design systems team, shipped to 40K+ enterprise users</p>
+                </div>
+
+                <div class="reveal" style="position: relative; padding-bottom: clamp(1rem, 2vh, 1.5rem);">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(1px, 0.3vw, 4px)); top: 0.4em; width: clamp(12px, 1.4vw, 16px); height: clamp(12px, 1.4vw, 16px); background: var(--text-primary);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">2019 &mdash; 2022</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em;">Product Designer &mdash; Meridian Health Systems</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em;">Patient portal redesign, 1.2M users, 3 design awards</p>
+                </div>
+
+                <div class="reveal" style="position: relative;">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(1px, 0.3vw, 4px)); top: 0.4em; width: clamp(12px, 1.4vw, 16px); height: clamp(12px, 1.4vw, 16px); background: var(--text-primary);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">2018</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em;">BFA Interaction Design &mdash; RISD</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em;">Graduated with honors, thesis on healthcare accessibility</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: CLOSING =================== -->
     <section class="slide closing-slide" aria-label="Contact">
         <div class="grid-overlay"></div>
         <div style="position: absolute; top: 0; right: 0; width: clamp(6px, 0.8vw, 10px); height: 45%; background: var(--accent);"></div>
@@ -828,6 +935,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

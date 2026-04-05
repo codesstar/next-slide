@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于深度学习的医学影像分析 — Campus White 风格</title>
+
+    <!-- Fonts: Campus White uses Literata + Atkinson Hyperlegible; CJK: LXGW WenKai + Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=LXGW+WenKai:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Campus White (Medical)
+           =========================================== */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-sidebar: #f5f5f0;
+            --bg-secondary: #f8f7f4;
+            --bg-tertiary: #efeee9;
+            --text-primary: #2c2c2c;
+            --text-secondary: #6a6a6a;
+            --text-muted: #767676;
+            --accent: #1b3a5c;
+            --accent-secondary: #c8a951;
+            --accent-glow: rgba(27, 58, 92, 0.15);
+            --border: #ddd8cf;
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --highlight: #e8f4f0;
+            --surface: #f5f5f0;
+
+            --font-display: 'LXGW WenKai', 'Literata', Georgia, serif;
+            --font-body: 'Noto Sans SC', 'Atkinson Hyperlegible', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(1.6rem, 4.5vw, 3.2rem);
+            --h2-size: clamp(1.2rem, 3vw, 2.2rem);
+            --h3-size: clamp(0.95rem, 2.2vw, 1.5rem);
+            --subtitle-size: clamp(0.85rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-normal: 0.6s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* VIEWPORT FITTING */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+        }
+
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+        :lang(zh), :lang(zh-CN) { line-height: 1.8; word-break: normal; overflow-wrap: break-word; }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        /* Responsive */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4vw, 2.5rem); --h2-size: clamp(1rem, 2.8vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 3.5vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-content[style*="flex-direction: row"] { flex-direction: column !important; } .slide-counter { display: none; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal { opacity: 1; }
+        }
+
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* ===========================================
+           CAMPUS WHITE THEME
+           =========================================== */
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); }
+
+        .campus-header {
+            background: var(--accent);
+            padding: clamp(0.4rem, 1vw, 0.7rem) var(--slide-padding);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+        .campus-header .course-title { font-family: var(--font-display); font-size: var(--small-size); color: rgba(255, 255, 255, 0.9); font-weight: 600; letter-spacing: 0.03em; }
+        .campus-header .slide-badge { width: clamp(22px, 3vw, 32px); height: clamp(22px, 3vw, 32px); border-radius: 50%; background: var(--accent-secondary); color: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: var(--small-size); }
+
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(25px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.08s; } .reveal:nth-child(2) { transition-delay: 0.16s; } .reveal:nth-child(3) { transition-delay: 0.24s; } .reveal:nth-child(4) { transition-delay: 0.32s; } .reveal:nth-child(5) { transition-delay: 0.40s; } .reveal:nth-child(6) { transition-delay: 0.48s; } .reveal:nth-child(7) { transition-delay: 0.56s; } .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-secondary)); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.4); box-shadow: 0 0 8px var(--accent-glow); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Campus-specific */
+        .title-slide .slide-content { align-items: center; text-align: center; }
+        .title-decoration { width: clamp(40px, 6vw, 60px); height: 3px; background: var(--accent-secondary); margin: clamp(0.5rem, 1.5vw, 1rem) auto; }
+        .sidebar-note { background: var(--bg-sidebar); border-left: 3px solid var(--accent-secondary); border-radius: 0 clamp(6px, 1vw, 8px) clamp(6px, 1vw, 8px) 0; padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem); font-size: var(--small-size); color: var(--text-secondary); line-height: 1.6; }
+        .sidebar-note strong { color: var(--accent); display: block; margin-bottom: 0.3em; font-size: var(--body-size); }
+        .footnote { position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: var(--slide-padding); font-size: var(--small-size); color: var(--text-muted); font-style: italic; }
+
+        /* Academic table */
+        .academic-table { width: 100%; border-collapse: collapse; font-size: var(--body-size); }
+        .academic-table thead th { text-align: left; padding: clamp(0.4rem, 1vw, 0.8rem); border-bottom: 2px solid var(--accent); font-weight: 700; font-size: var(--small-size); }
+        .academic-table tbody td { padding: clamp(0.4rem, 1vw, 0.8rem); border-bottom: 1px solid var(--border-subtle); line-height: 1.6; }
+        .academic-table tbody tr:last-child td { border-bottom: 2px solid var(--accent); }
+        .academic-table .highlight-row td { background: var(--highlight); font-weight: 600; }
+
+        /* Stat cards */
+        .stat-card { text-align: center; padding: clamp(0.8rem, 2vw, 1.5rem); background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: clamp(8px, 1vw, 12px); }
+        .stat-value { font-size: var(--stat-size); font-family: var(--font-mono); font-weight: 700; color: var(--accent); line-height: 1; }
+        .stat-label { font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.8vw, 0.6rem); }
+        .stat-sub { font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.15rem, 0.4vw, 0.3rem); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide title-slide" aria-label="标题">
+        <div class="campus-header">
+            <span class="course-title">浙江大学 &middot; 博士论文答辩</span>
+            <div class="slide-badge">1</div>
+        </div>
+        <div class="slide-content">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-secondary); font-weight: 700;">
+                生物医学工程与仪器科学学院
+            </p>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; color: var(--text-primary); margin-top: var(--element-gap);">
+                基于深度学习的医学影像分析研究
+            </h1>
+            <div class="reveal title-decoration"></div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); max-width: min(80vw, 600px);">
+                以肺部 CT 影像中的结节检测与分类为核心任务
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 2;">
+                <p>答辩人：陈雨薇 &nbsp;|&nbsp; 导师：张明远 教授</p>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">2026年5月</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: 研究背景 -->
+    <section class="slide" aria-label="研究背景">
+        <div class="campus-header">
+            <span class="course-title">研究背景与临床需求</span>
+            <div class="slide-badge">2</div>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                为什么需要 AI 辅助肺结节诊断？
+            </h2>
+
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); line-height: 2;">
+                        <li style="padding: 0.2em 0; display: flex; gap: 0.6em; align-items: baseline;"><span style="color: var(--accent); font-weight: 700;">01</span> 中国年筛查量超 4,500 万例</li>
+                        <li style="padding: 0.2em 0; display: flex; gap: 0.6em; align-items: baseline;"><span style="color: var(--accent); font-weight: 700;">02</span> 微小结节漏诊率高达 23.4%</li>
+                        <li style="padding: 0.2em 0; display: flex; gap: 0.6em; align-items: baseline;"><span style="color: var(--accent); font-weight: 700;">03</span> 良恶性分类传统方法准确率 &lt;75%</li>
+                    </ul>
+                </div>
+                <div class="sidebar-note">
+                    <strong>核心挑战</strong>
+                    磨玻璃结节(GGN)的密度与正常肺组织接近，传统密度阈值法难以识别。需要模型学习纹理、形态、边缘等多层次特征。
+                </div>
+            </div>
+
+            <p class="reveal footnote">
+                <sup>1</sup> 中国国家癌症中心, 2025 年度报告
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: 方法 — 网络架构 -->
+    <section class="slide" aria-label="网络架构">
+        <div class="campus-header">
+            <span class="course-title">研究方法</span>
+            <div class="slide-badge">3</div>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                MSA-Net: 多尺度注意力网络
+            </h2>
+
+            <div class="reveal" style="display: flex; align-items: center; justify-content: center; gap: clamp(0.3rem, 0.8vw, 0.6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1vw, 0.8rem); text-align: center; min-width: clamp(60px, 9vw, 100px);">
+                    <p style="font-size: var(--body-size); font-weight: 600;">CT 输入</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">3D Volume</p>
+                </div>
+                <span style="color: var(--accent); font-size: var(--body-size);">&#8594;</span>
+                <div style="background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1vw, 0.8rem); text-align: center; min-width: clamp(60px, 9vw, 100px);">
+                    <p style="font-size: var(--body-size); font-weight: 600;">3D ResNet</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">Backbone</p>
+                </div>
+                <span style="color: var(--accent); font-size: var(--body-size);">&#8594;</span>
+                <div style="background: var(--highlight); border: 2px solid var(--accent); border-radius: 8px; padding: clamp(0.5rem, 1vw, 0.8rem); text-align: center; min-width: clamp(60px, 9vw, 100px);">
+                    <p style="font-size: var(--body-size); font-weight: 700; color: var(--accent);">MSA</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary);">多尺度注意力</p>
+                </div>
+                <span style="color: var(--accent); font-size: var(--body-size);">&#8594;</span>
+                <div style="background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1vw, 0.8rem); text-align: center; min-width: clamp(60px, 9vw, 100px);">
+                    <p style="font-size: var(--body-size); font-weight: 600;">FPN</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">特征金字塔</p>
+                </div>
+                <span style="color: var(--accent); font-size: var(--body-size);">&#8594;</span>
+                <div style="background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1vw, 0.8rem); text-align: center; min-width: clamp(60px, 9vw, 100px);">
+                    <p style="font-size: var(--body-size); font-weight: 600;">分类</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted);">良/恶性</p>
+                </div>
+            </div>
+
+            <div class="reveal sidebar-note" style="margin-top: var(--content-gap);">
+                <strong>MSA 模块关键设计</strong>
+                三尺度并行卷积 (3&times;3&times;3, 5&times;5&times;5, 7&times;7&times;7) + 通道-空间联合注意力。参数量仅增加 8.3%，AUC 提升 4.9%。
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: 数据集 -->
+    <section class="slide" aria-label="数据集">
+        <div class="campus-header">
+            <span class="course-title">数据集与实验设计</span>
+            <div class="slide-badge">4</div>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                双数据集评估体系
+            </h2>
+
+            <div class="reveal" style="margin-top: var(--content-gap); overflow-x: auto;">
+                <table class="academic-table">
+                    <thead>
+                        <tr>
+                            <th>数据集</th>
+                            <th style="text-align: center;">样本量</th>
+                            <th style="text-align: center;">标注方式</th>
+                            <th style="text-align: center;">评估任务</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>LUNA16</strong> (公开)</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">888 例</td>
+                            <td style="text-align: center;">4 位放射科医师</td>
+                            <td style="text-align: center;">检测 (FROC)</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td><strong>ZJU-Lung</strong> (自建)</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">2,340 例</td>
+                            <td style="text-align: center;">病理金标准</td>
+                            <td style="text-align: center;">分类 (AUC)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="reveal" style="margin-top: var(--content-gap); display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap);">
+                <div class="sidebar-note">
+                    <strong>数据增强</strong>
+                    随机翻转、旋转(&plusmn;15&deg;)、弹性形变、Mixup(&alpha;=0.2)
+                </div>
+                <div class="sidebar-note">
+                    <strong>验证策略</strong>
+                    五折交叉验证 + 独立测试集（20%）
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: 实验结果 -->
+    <section class="slide" aria-label="实验结果">
+        <div class="campus-header">
+            <span class="course-title">实验结果</span>
+            <div class="slide-badge">5</div>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                分类性能对比
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;">
+                ZJU-Lung 测试集（468 例）
+            </p>
+
+            <div class="reveal" style="margin-top: var(--content-gap); overflow-x: auto;">
+                <table class="academic-table">
+                    <thead>
+                        <tr>
+                            <th>方法</th>
+                            <th style="text-align: center;">AUC</th>
+                            <th style="text-align: center;">灵敏度</th>
+                            <th style="text-align: center;">特异度</th>
+                            <th style="text-align: center;">准确率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: var(--text-secondary);">3D ResNet-50</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.891</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.843</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.876</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">86.3%</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-secondary);">DenseNet-121</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.903</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.861</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.889</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">87.8%</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--text-secondary);">放射科主治医师</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.924</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.882</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">0.901</td>
+                            <td style="text-align: center; font-family: var(--font-mono);">89.4%</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td style="color: var(--accent);"><strong>MSA-Net (Ours)</strong></td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">0.952</td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">0.917</td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">0.934</td>
+                            <td style="text-align: center; font-family: var(--font-mono); color: var(--accent);">92.7%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="reveal footnote"><sup>*</sup> DeLong 检验: MSA-Net vs 主治医师, p&lt;0.001</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: 核心指标 -->
+    <section class="slide" aria-label="核心指标">
+        <div class="campus-header">
+            <span class="course-title">关键性能指标</span>
+            <div class="slide-badge">6</div>
+        </div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center;">
+                关键数据
+            </h2>
+
+            <div style="display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 4rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
+                <div class="reveal stat-card">
+                    <div class="stat-value counter" data-target="952" data-prefix="0." style="font-size: var(--stat-size);">0</div>
+                    <div class="stat-label">AUC</div>
+                    <div class="stat-sub">超越主治医师 (0.924)</div>
+                </div>
+                <div class="reveal stat-card">
+                    <div class="stat-value counter" data-target="917" data-prefix="0." style="font-size: var(--stat-size);">0</div>
+                    <div class="stat-label">灵敏度</div>
+                    <div class="stat-sub">GGN 亚组 0.893</div>
+                </div>
+                <div class="reveal stat-card">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-mono); font-weight: 700; color: var(--accent); line-height: 1;">0.8s</div>
+                    <div class="stat-label">推理速度</div>
+                    <div class="stat-sub">单例 CT 体积</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: 主要贡献 -->
+    <section class="slide" aria-label="主要贡献">
+        <div class="campus-header">
+            <span class="course-title">主要贡献</span>
+            <div class="slide-badge">7</div>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                三项核心创新
+            </h2>
+
+            <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.6rem, 1.5vw, 1.2rem);">
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">01</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-weight: 700;">多尺度注意力机制 (MSA)</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.2em; line-height: 1.8;">参数量仅增 8.3%，AUC 提升 4.9 个百分点</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">02</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-weight: 700;">3D Grad-CAM++ 可解释性</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.2em; line-height: 1.8;">91.2% 热力图区域与医师关注区域重合</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">03</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-weight: 700;">ZJU-Lung 多中心数据集</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.2em; line-height: 1.8;">2,340 例，含 3 家三甲医院、4 种 CT 设备，附病理金标准</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: 展望 -->
+    <section class="slide" aria-label="展望">
+        <div class="campus-header">
+            <span class="course-title">不足与展望</span>
+            <div class="slide-badge">8</div>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
+                未来研究方向
+            </h2>
+
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div>
+                    <h3 style="font-size: var(--h3-size); font-weight: 700; color: var(--text-secondary); margin-bottom: 0.5em;">当前局限</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); line-height: 2;">
+                        <li>&#9670; 仅覆盖肺部结节</li>
+                        <li>&#9670; 极小结节(&lt;4mm)灵敏度下降 12%</li>
+                        <li>&#9670; 缺乏纵向随访动态评估</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="font-size: var(--h3-size); font-weight: 700; color: var(--accent); margin-bottom: 0.5em;">未来方向</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); line-height: 2;">
+                        <li>&#9679; 多模态融合（临床+基因组）</li>
+                        <li>&#9679; 联邦学习多院区部署</li>
+                        <li>&#9679; PACS 系统实时集成</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="reveal footnote"><sup>*</sup> 成果：MICCAI 2025 (1篇)、Medical Image Analysis (在审)</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: 结尾 -->
+    <section class="slide closing-slide" aria-label="致谢">
+        <div class="campus-header">
+            <span class="course-title">致谢</span>
+            <div class="slide-badge">9</div>
+        </div>
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <div class="reveal title-decoration"></div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; line-height: 1.6;">
+                感谢各位老师指导
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                敬请批评指正
+            </p>
+            <div class="reveal" style="margin-top: clamp(2rem, 5vw, 4rem); font-size: var(--body-size); color: var(--text-muted); line-height: 2;">
+                <p>陈雨薇 &middot; 浙江大学</p>
+                <p style="font-family: var(--font-mono); font-size: var(--small-size);">chenyuwei@zju.edu.cn</p>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); }
+            init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); }
+            setupIntersectionObserver() { const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); const idx = this.slides.indexOf(entry.target); if (idx !== -1) { this.currentSlide = idx; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(slide => observer.observe(slide)); }
+            setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch (e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide + 1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide - 1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break; } }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const deltaY = this.touchStartY - e.changedTouches[0].clientY; const deltaX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return; if (deltaY > 0) this.goToSlide(this.currentSlide + 1); else this.goToSlide(this.currentSlide - 1); }, { passive: true }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1); }, 50); }, { passive: true }); }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+            setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `跳转至第 ${i + 1} 页`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(index) { if (index < 0 || index >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = index; this.slides[index].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600); }
+            updateUI() { const total = this.slides.length; const current = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`; document.querySelectorAll('.nav-dot').forEach((dot, i) => { dot.classList.toggle('active', i === current); }); if (this.counter) this.counter.textContent = `${current + 1} / ${total}`; }
+        }
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { const el = entry.target; const target = parseInt(el.dataset.target); const suffix = el.dataset.suffix || ''; const prefix = el.dataset.prefix || ''; const duration = 1500; const start = performance.now(); function tick(now) { const elapsed = now - start; const progress = Math.min(elapsed / duration, 1); const eased = 1 - Math.pow(1 - progress, 3); el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix; if (progress < 1) requestAnimationFrame(tick); } requestAnimationFrame(tick); counterObserver.unobserve(el); } }); }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

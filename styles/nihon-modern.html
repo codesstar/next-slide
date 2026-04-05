@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nihon Modern</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fbfaf8;--text:#2c2c2c;
+  --indigo:#3f3a6b;--vermillion:#d05a4e;
+  --line:#d4d0c8;--text-light:#605c56;
+}
+body{
+  font-family:'Noto Sans JP','Noto Sans SC',sans-serif;
+  font-weight:300;
+  color:var(--text);background:var(--bg);overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.slide{
+  position:fixed;inset:0;
+  height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1);
+  background:var(--bg);
+}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-inner{
+  width:min(80vw,840px);
+  padding:clamp(2rem,5vw,5rem);
+  position:relative;
+}
+
+.progress-bar{
+  position:fixed;top:0;left:0;height:1px;
+  background:var(--vermillion);z-index:100;
+  transition:width 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.page-counter{
+  position:fixed;bottom:clamp(1.5rem,3vw,2.5rem);right:clamp(2rem,4vw,4rem);
+  font-family:'Noto Sans JP',sans-serif;font-weight:300;
+  font-size:clamp(0.875rem,0.85vw,0.875rem);
+  color:var(--text-light);z-index:100;
+  letter-spacing:0.15em;
+}
+
+h1{
+  font-family:'Noto Serif JP','Noto Sans SC',serif;
+  font-size:clamp(2rem,4.5vw,3.6rem);
+  font-weight:700;line-height:1.3;
+  color:var(--text);letter-spacing:0.04em;
+}
+h2{
+  font-family:'Noto Serif JP','Noto Sans SC',serif;
+  font-size:clamp(1.4rem,3vw,2.2rem);
+  font-weight:500;line-height:1.3;
+  color:var(--text);letter-spacing:0.03em;
+  margin-bottom:clamp(1.5rem,3vw,2.5rem);
+}
+p,.body-text{
+  font-size:clamp(0.875rem,1.1vw,0.92rem);
+  line-height:2;color:var(--text-light);
+  font-weight:300;letter-spacing:0.02em;
+}
+
+.fade-up{
+  opacity:0;transform:translateY(18px);
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.15s}
+.active .fade-up.d2{transition-delay:0.3s}
+.active .fade-up.d3{transition-delay:0.45s}
+.active .fade-up.d4{transition-delay:0.6s}
+.active .fade-up.d5{transition-delay:0.75s}
+
+/* Hair-thin line */
+.hairline{
+  width:100%;height:0.5px;background:var(--line);
+  margin:clamp(1.5rem,3vw,2.5rem) 0;
+}
+.hairline-short{
+  width:clamp(30px,6vw,60px);height:0.5px;
+  background:var(--vermillion);
+}
+
+/* Thin circle mark */
+.circle-mark{
+  width:clamp(50px,8vw,80px);height:clamp(50px,8vw,80px);
+  border:0.5px solid var(--line);border-radius:50%;
+  position:absolute;
+}
+
+/* Vertical accent text */
+.vertical-text{
+  position:absolute;
+  writing-mode:vertical-rl;
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(0.875rem,0.9vw,0.875rem);
+  font-weight:500;letter-spacing:0.3em;
+  color:var(--vermillion);opacity:0.6;
+}
+
+/* Vermillion accent */
+.v-accent{color:var(--vermillion)}
+.i-accent{color:var(--indigo)}
+
+/* Feature list */
+.feature-list{
+  display:flex;flex-direction:column;
+  gap:0;
+}
+.feature-item{
+  display:flex;align-items:baseline;
+  padding:clamp(1rem,2vw,1.8rem) 0;
+  border-bottom:0.5px solid var(--line);
+}
+.feature-item:first-child{border-top:0.5px solid var(--line)}
+.feature-num{
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(0.875rem,0.9vw,0.875rem);
+  font-weight:500;color:var(--vermillion);
+  width:clamp(30px,4vw,50px);flex-shrink:0;
+  letter-spacing:0.1em;
+}
+.feature-name{
+  font-family:'Noto Serif JP','Noto Sans SC',serif;
+  font-size:clamp(1rem,1.8vw,1.4rem);
+  font-weight:500;color:var(--text);
+  flex:1;
+}
+.feature-desc{
+  font-size:clamp(0.875rem,1vw,0.875rem);
+  color:var(--text-light);font-weight:300;
+  max-width:280px;text-align:right;
+  line-height:1.7;
+}
+
+/* Stats */
+.stat-row{
+  display:flex;gap:clamp(2rem,5vw,5rem);
+  margin-top:clamp(2rem,4vw,3.5rem);
+}
+.stat-item{}
+.stat-num{
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(2.5rem,6vw,4.5rem);
+  font-weight:700;line-height:1;
+  color:var(--text);letter-spacing:-0.02em;
+}
+.stat-label{
+  font-size:clamp(0.875rem,0.95vw,0.875rem);
+  color:var(--text-light);font-weight:300;
+  margin-top:0.5rem;letter-spacing:0.05em;
+}
+.stat-underline{
+  width:100%;height:0.5px;background:var(--vermillion);
+  margin-top:0.8rem;opacity:0.5;
+}
+
+/* Quote */
+.zen-quote{
+  font-family:'Noto Serif JP','Noto Sans SC',serif;
+  font-size:clamp(1.3rem,2.8vw,2.2rem);
+  font-weight:500;line-height:1.7;
+  color:var(--text);letter-spacing:0.04em;
+}
+.zen-attr{
+  font-size:clamp(0.875rem,0.95vw,0.875rem);
+  color:var(--text-light);font-weight:300;
+  margin-top:clamp(1.5rem,3vw,2.5rem);
+  letter-spacing:0.1em;
+}
+
+@media(max-width:640px){
+  .stat-row{flex-direction:column;gap:clamp(1.5rem,3vw,2rem)}
+  .feature-desc{display:none}
+  .vertical-text{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" id="slide-0">
+  <div class="slide-inner">
+    <div class="circle-mark fade-up d1" style="top:-5%;right:8%;"></div>
+    <div class="vertical-text fade-up d1" style="right:calc(-1 * clamp(2rem,4vw,4rem));top:15%;">DESIGN REVOLUTION</div>
+    <div class="hairline-short fade-up d1"></div>
+    <div style="height:clamp(2rem,4vw,3.5rem)"></div>
+    <h1 class="fade-up d2">AI 驱动的<br><span class="v-accent">設計革命</span></h1>
+    <div style="height:clamp(1.5rem,3vw,2.5rem)"></div>
+    <p class="fade-up d3" style="max-width:380px;">
+      从像素到体验，重新定义创造力的边界
+    </p>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" id="slide-1">
+  <div class="slide-inner">
+    <div class="vertical-text fade-up d1" style="left:calc(-1 * clamp(2rem,4vw,4rem));top:5%;">CORE FEATURES</div>
+    <h2 class="fade-up d1">核心能力</h2>
+    <div class="feature-list">
+      <div class="feature-item fade-up d2">
+        <div class="feature-num">01</div>
+        <div class="feature-name">智能布局</div>
+        <div class="feature-desc">自动理解内容层级，生成精准版面。</div>
+      </div>
+      <div class="feature-item fade-up d3">
+        <div class="feature-num">02</div>
+        <div class="feature-name">风格迁移</div>
+        <div class="feature-desc">一键转换，保持信息架构不变。</div>
+      </div>
+      <div class="feature-item fade-up d4">
+        <div class="feature-num">03</div>
+        <div class="feature-name">实时协作</div>
+        <div class="feature-desc">多人编辑，AI 智能合并建议。</div>
+      </div>
+      <div class="feature-item fade-up d5">
+        <div class="feature-num">04</div>
+        <div class="feature-name">自适应排版</div>
+        <div class="feature-desc">一次设计，适配所有终端。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="circle-mark fade-up d1" style="bottom:5%;right:0;width:clamp(100px,15vw,160px);height:clamp(100px,15vw,160px);"></div>
+    <h2 class="fade-up d1">数据</h2>
+    <div class="hairline fade-up d1"></div>
+    <div class="stat-row">
+      <div class="fade-up d2">
+        <div class="stat-num">10<span class="v-accent" style="font-size:0.6em">x</span></div>
+        <div class="stat-label">效率提升</div>
+        <div class="stat-underline"></div>
+      </div>
+      <div class="fade-up d3">
+        <div class="stat-num">93<span class="v-accent" style="font-size:0.6em">%</span></div>
+        <div class="stat-label">用户满意度</div>
+        <div class="stat-underline"></div>
+      </div>
+      <div class="fade-up d4">
+        <div class="stat-num">50<span class="v-accent" style="font-size:0.6em">M+</span></div>
+        <div class="stat-label">设计生成</div>
+        <div class="stat-underline"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="vertical-text fade-up d1" style="right:calc(-1 * clamp(2rem,4vw,4rem));bottom:20%;">DIETER RAMS</div>
+    <div style="height:clamp(3rem,8vw,6rem)"></div>
+    <div class="hairline-short fade-up d1"></div>
+    <div style="height:clamp(2rem,4vw,3rem)"></div>
+    <div class="zen-quote fade-up d2">
+      好的设计不是装饰，<br>是沟通。
+    </div>
+    <div class="zen-attr fade-up d3">-- Dieter Rams</div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" id="slide-4">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="circle-mark fade-up d1" style="top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(180px,25vw,280px);height:clamp(180px,25vw,280px);opacity:0.3;"></div>
+    <div style="height:clamp(2rem,5vw,4rem)"></div>
+    <div class="hairline-short fade-up d1" style="margin:0 auto;"></div>
+    <div style="height:clamp(2rem,4vw,3rem)"></div>
+    <h1 class="fade-up d2" style="font-size:clamp(1.6rem,3.5vw,2.8rem);position:relative;z-index:2;">
+      让每一次创造<br>都值得被<span class="v-accent">看见</span>
+    </h1>
+    <div style="height:clamp(1.5rem,3vw,2.5rem)"></div>
+    <p class="fade-up d3 body-text" style="position:relative;z-index:2;">設計の未来は、今ここから。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides=document.querySelectorAll('.slide');
+  const total=slides.length;
+  let current=0;
+  const progress=document.getElementById('progress');
+  const counter=document.getElementById('counter');
+  function update(){
+    slides.forEach((s,i)=>{s.classList.toggle('active',i===current)});
+    progress.style.width=((current+1)/total*100)+'%';
+    counter.textContent=(current+1)+' / '+total;
+  }
+  function next(){if(current<total-1){current++;update()}}
+  function prev(){if(current>0){current--;update()}}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')next();
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const diff=e.changedTouches[0].clientX-tx;
+    if(Math.abs(diff)>50){diff<0?next():prev()}
+  },{passive:true});
+  update();
+})();
+</script>
+</body>
+</html>

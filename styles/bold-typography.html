@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bold Typography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+  .reveal, .reveal-scale, .reveal-slam { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal, .slide.active .reveal-scale, .slide.active .reveal-slam { opacity: 1; }
+}
+@media print {
+  .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal, .reveal-scale, .reveal-slam { opacity: 1 !important; transform: none !important; }
+}
+
+/* === THEME === */
+:root {
+  --bg: #0a0a0a;
+  --text: #fff;
+  --accent: #ff6b35;
+  --accent-2: #f7c948;
+  --muted: rgba(255,255,255,0.4);
+  --muted-2: rgba(255,255,255,0.15);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html, body { overflow: hidden; background: var(--bg); color: var(--text); }
+body { font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  z-index: 1000; transition: width 0.5s var(--ease-out-expo);
+}
+.page-counter {
+  position: fixed; bottom: clamp(20px, 3vh, 40px); right: clamp(24px, 3vw, 48px);
+  font-size: clamp(12px, 1.2vw, 16px); font-weight: 700;
+  color: var(--muted); z-index: 1000; letter-spacing: 0.05em;
+}
+.page-counter .current { color: var(--text); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(36px, 5vh, 60px) clamp(48px, 6vw, 80px);
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; z-index: 2;
+}
+
+/* Glows */
+.glow {
+  position: absolute; border-radius: 50%; filter: blur(120px);
+  opacity: 0.15; pointer-events: none;
+}
+.glow-orange { background: var(--accent); }
+.glow-yellow { background: var(--accent-2); }
+.glow-sm { width: clamp(200px, 25vw, 300px); height: clamp(200px, 25vw, 300px); }
+.glow-md { width: clamp(260px, 30vw, 400px); height: clamp(260px, 30vw, 400px); }
+.glow-lg { width: clamp(320px, 38vw, 500px); height: clamp(320px, 38vw, 500px); }
+
+/* Typography */
+.gradient-text {
+  background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.accent-text {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.tag { font-size: clamp(10px, 0.9vw, 12px); font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+.divider { width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 2px; }
+
+/* Animations */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-scale {
+  opacity: 0; transform: scale(0.9);
+  transition: opacity 0.5s ease, transform 0.5s var(--ease-out-expo);
+}
+.slide.active .reveal-scale { opacity: 1; transform: scale(1); }
+
+.reveal-slam {
+  opacity: 0; transform: translateY(-60px) scale(1.05);
+  transition: opacity 0.3s ease, transform 0.4s var(--ease-out-expo);
+}
+.slide.active .reveal-slam { opacity: 1; transform: translateY(0) scale(1); }
+
+.slide.active .reveal:nth-child(1), .slide.active .reveal-slam:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal:nth-child(2), .slide.active .reveal-slam:nth-child(2) { transition-delay: 0.12s; }
+.slide.active .reveal:nth-child(3), .slide.active .reveal-scale:nth-child(3) { transition-delay: 0.22s; }
+.slide.active .reveal:nth-child(4), .slide.active .reveal-scale:nth-child(4) { transition-delay: 0.32s; }
+.slide.active .reveal:nth-child(5) { transition-delay: 0.42s; }
+
+/* SLIDE 1: COVER */
+.s1-hero { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.s1-title {
+  font-size: clamp(48px, 9vw, 120px); font-weight: 700;
+  line-height: 0.9; letter-spacing: -0.03em;
+}
+.s1-sub {
+  font-size: var(--body-size); font-weight: 300;
+  color: var(--muted); letter-spacing: 1px;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  margin-top: clamp(16px, 2vh, 32px);
+}
+.s1-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+.s1-stats { display: flex; gap: clamp(24px, 3vw, 48px); }
+.s1-stat-num { font-size: clamp(20px, 2.5vw, 32px); font-weight: 700; color: var(--accent); }
+.s1-stat-label { margin-top: 4px; font-size: clamp(9px, 0.8vw, 11px); color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-family: 'Inter', sans-serif; }
+
+/* SLIDE 2: PROBLEM */
+.s2-body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(16px, 2vh, 32px); }
+.s2-question {
+  font-size: clamp(32px, 5.5vw, 72px); font-weight: 700;
+  line-height: 1.05; letter-spacing: -0.02em; max-width: 900px;
+}
+.s2-detail {
+  font-size: clamp(14px, 1.4vw, 18px); font-weight: 300;
+  color: rgba(255,255,255,0.45); max-width: 640px;
+  line-height: 1.7; font-family: 'Inter', 'Noto Sans SC', sans-serif;
+}
+
+/* SLIDE 3: SOLUTION CARDS */
+.s3-header { display: flex; flex-direction: column; gap: clamp(8px, 1vh, 16px); }
+.s3-title { font-size: clamp(28px, 3.5vw, 48px); font-weight: 700; letter-spacing: -0.02em; }
+.s3-cards { display: flex; gap: clamp(14px, 2vw, 28px); flex: 1; align-items: center; }
+.s3-card {
+  flex: 1; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: clamp(20px, 2.5vw, 36px) clamp(18px, 2vw, 32px);
+  backdrop-filter: blur(20px); display: flex; flex-direction: column;
+  gap: clamp(10px, 1.5vh, 20px); transition: border-color 0.3s;
+}
+.s3-card:hover { border-color: rgba(255,107,53,0.3); }
+.s3-icon {
+  width: clamp(36px, 3.5vw, 48px); height: clamp(36px, 3.5vw, 48px);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+}
+.icon-speed { border: 2px solid var(--accent); background: rgba(255,107,53,0.1); }
+.icon-speed::before { content: ''; width: 14px; height: 22px; border-left: 3px solid var(--accent); border-bottom: 3px solid var(--accent); transform: skewX(-15deg); }
+.icon-secure { border: 2px solid var(--accent-2); background: rgba(247,201,72,0.1); }
+.icon-secure::before { content: ''; width: 18px; height: 20px; border: 2.5px solid var(--accent-2); border-radius: 2px 2px 50% 50%; }
+.icon-scale { border: 2px solid #ff8f5e; background: rgba(255,143,94,0.1); }
+.icon-scale::before { content: ''; width: 20px; height: 4px; background: #ff8f5e; border-radius: 2px; box-shadow: 0 7px 0 #ff8f5e, 0 14px 0 #ff8f5e; }
+.s3-card-title { font-size: clamp(16px, 1.7vw, 22px); font-weight: 700; letter-spacing: -0.02em; }
+.s3-card-desc { font-size: clamp(12px, 1.1vw, 14px); font-weight: 300; color: rgba(255,255,255,0.45); line-height: 1.7; font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+
+/* SLIDE 4: METRICS */
+.s4-header { display: flex; flex-direction: column; gap: clamp(6px, 1vh, 12px); }
+.s4-title { font-size: clamp(26px, 3.2vw, 42px); font-weight: 700; letter-spacing: -0.02em; }
+.s4-grid { flex: 1; display: flex; align-items: center; gap: 0; }
+.s4-metric { flex: 1; text-align: center; padding: 0 clamp(10px, 1.5vw, 20px); position: relative; }
+.s4-metric + .s4-metric::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1px; height: 80px; background: var(--muted-2); }
+.s4-number { font-size: clamp(40px, 6vw, 80px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.s4-number.c1 { background: linear-gradient(135deg, #ff6b35, #ff8f5e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.s4-number.c2 { background: linear-gradient(135deg, #f7c948, #ffe082); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.s4-number.c3 { background: linear-gradient(135deg, #ff6b35, #f7c948); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.s4-label { margin-top: clamp(6px, 1vh, 12px); font-size: clamp(10px, 1vw, 13px); color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-family: 'Inter', sans-serif; }
+.s4-sublabel { margin-top: 6px; font-size: clamp(11px, 1.1vw, 14px); color: rgba(255,255,255,0.25); font-family: 'Inter', sans-serif; font-weight: 300; }
+
+/* SLIDE 5: CTA */
+.s5-body { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: clamp(20px, 3vh, 40px); }
+.s5-headline { font-size: clamp(44px, 7.5vw, 96px); font-weight: 700; line-height: 0.95; letter-spacing: -0.04em; }
+.s5-sub { font-size: clamp(14px, 1.4vw, 18px); font-weight: 300; color: var(--muted); font-family: 'Inter', 'Noto Sans SC', sans-serif; max-width: 500px; line-height: 1.6; }
+.s5-cta-btn {
+  display: inline-block; padding: clamp(10px, 1.5vh, 16px) clamp(28px, 3.5vw, 48px);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-radius: 8px; font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(13px, 1.2vw, 16px); font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--bg);
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide active" data-i="0">
+  <div class="glow glow-orange glow-md decorative" style="top:-100px; right:-50px;"></div>
+  <div class="glow glow-yellow glow-md decorative" style="bottom:-100px; left:100px;"></div>
+  <div class="slide-inner">
+    <div class="top-row" style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <span class="tag reveal">设计革命 &middot; 主题演讲</span>
+      <span class="tag reveal" style="color:rgba(255,255,255,0.3);">2026</span>
+    </div>
+    <div class="s1-hero">
+      <div class="reveal-slam"><span class="s1-title gradient-text">颠覆 </span><span class="s1-title accent-text">设计</span></div>
+      <div class="reveal-slam"><span class="s1-title gradient-text">重塑 </span><span class="s1-title accent-text">未来</span></div>
+      <p class="s1-sub reveal">当创造力遇上人工智能，一切规则都将被改写</p>
+    </div>
+    <div class="s1-bottom">
+      <div class="s1-stats reveal">
+        <div><div class="s1-stat-num">10x</div><div class="s1-stat-label">效率提升</div></div>
+        <div><div class="s1-stat-num">93%</div><div class="s1-stat-label">满意度</div></div>
+        <div><div class="s1-stat-num">50M+</div><div class="s1-stat-label">设计生成</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Problem -->
+<div class="slide" data-i="1">
+  <div class="glow glow-orange glow-lg decorative" style="top:50%;left:-150px;transform:translateY(-50%);opacity:0.1;"></div>
+  <div class="slide-inner">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <span class="tag reveal">核心问题</span>
+      <span class="tag reveal">01</span>
+    </div>
+    <div class="s2-body">
+      <div class="divider reveal"></div>
+      <div class="s2-question reveal-slam">
+        <span class="gradient-text">为什么 73% 的团队</span> <span class="accent-text">还在重复低效的设计流程？</span>
+      </div>
+      <p class="s2-detail reveal">传统设计工作流缓慢、割裂、被动。当你终于完成交付时，市场早已变了天。设计革命的到来，是必然的。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Solution -->
+<div class="slide" data-i="2">
+  <div class="glow glow-orange glow-md decorative" style="top:-120px;left:50%;transform:translateX(-50%);opacity:0.1;"></div>
+  <div class="slide-inner">
+    <div class="s3-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <span class="tag reveal">解决方案</span>
+        <span class="tag reveal">02</span>
+      </div>
+      <div class="s3-title reveal">
+        <span class="gradient-text">智能设计的 </span><span class="accent-text">三大支柱</span>
+      </div>
+    </div>
+    <div class="s3-cards">
+      <div class="s3-card reveal-scale">
+        <div class="s3-icon icon-speed"></div>
+        <div class="s3-card-title">即时原型</div>
+        <div class="s3-card-desc">从想法到可交互原型，60 秒内完成。AI 搭建框架，你专注于创意本身。</div>
+      </div>
+      <div class="s3-card reveal-scale">
+        <div class="s3-icon icon-secure"></div>
+        <div class="s3-card-title">风格一致性</div>
+        <div class="s3-card-desc">AI 学习你的设计语言，确保跨页面、跨平台的视觉统一性与品牌调性。</div>
+      </div>
+      <div class="s3-card reveal-scale">
+        <div class="s3-icon icon-scale"></div>
+        <div class="s3-card-title">无限扩展</div>
+        <div class="s3-card-desc">从个人创作者到全球企业。自动扩展的设计基础设施，跟随你的野心成长。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Metrics -->
+<div class="slide" data-i="3">
+  <div class="glow glow-orange glow-sm decorative" style="top:-80px;right:200px;opacity:0.12;"></div>
+  <div class="glow glow-yellow glow-md decorative" style="bottom:-120px;left:200px;opacity:0.1;"></div>
+  <div class="slide-inner">
+    <div class="s4-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <span class="tag reveal">数据验证</span>
+        <span class="tag reveal">03</span>
+      </div>
+      <div class="s4-title gradient-text reveal">用数字说话</div>
+    </div>
+    <div class="s4-grid">
+      <div class="s4-metric reveal">
+        <div class="s4-number c1">10x</div>
+        <div class="s4-label">交付速度</div>
+        <div class="s4-sublabel">对比传统流程</div>
+      </div>
+      <div class="s4-metric reveal">
+        <div class="s4-number c2">$4.2M</div>
+        <div class="s4-label">年均节省</div>
+        <div class="s4-sublabel">每个企业客户</div>
+      </div>
+      <div class="s4-metric reveal">
+        <div class="s4-number c3">99.9%</div>
+        <div class="s4-label">可用性</div>
+        <div class="s4-sublabel">全球分布式部署</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: CTA -->
+<div class="slide" data-i="4">
+  <div class="glow glow-orange glow-lg decorative" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.12;"></div>
+  <div class="slide-inner">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <span class="tag reveal">下一步</span>
+      <span class="tag reveal">04</span>
+    </div>
+    <div class="s5-body">
+      <div class="s5-headline reveal-slam">
+        <span class="gradient-text">停止规划。</span><br>
+        <span class="accent-text">开始创造。</span>
+      </div>
+      <p class="s5-sub reveal">加入已经在 10 倍速交付的团队，开启你的设计革命之旅。</p>
+      <div class="s5-cta-btn reveal">立即开始</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+      <span class="tag reveal" style="font-size:clamp(11px,1vw,13px);color:rgba(255,255,255,0.3);">hello@design-revolution.ai</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total) return;
+    slides[c].classList.remove('active');
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c+1)/total*100)+'%';
+    cur.textContent = String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(c-1);}
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click', function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width = (1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

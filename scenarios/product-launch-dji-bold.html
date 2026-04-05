@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJI Mini 5 — Bold Signal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           BOLD SIGNAL — Confident, high-impact, energetic
+           =========================================== */
+        :root {
+            --bg-primary: #111111;
+            --bg-gradient: linear-gradient(160deg, #111111 0%, #1e1e1e 50%, #111111 100%);
+            --card-bg: #E64A19;
+            --card-alt: #FFB300;
+            --text-primary: #ffffff;
+            --text-on-card: #111111;
+            --text-secondary: #aaaaaa;
+            --text-muted: #878787;
+            --border-subtle: rgba(255,255,255,0.08);
+            --surface: rgba(255,255,255,0.06);
+            --font-display: 'Archivo Black', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-fast: 0.35s;
+            --duration-normal: 0.5s;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; background: var(--bg-gradient); }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        h1,h2,h3 { overflow-wrap: break-word; }
+        p,li { overflow-wrap: break-word; }
+
+        /* Bold colored card */
+        .bold-card { background: var(--card-bg); color: var(--text-on-card); border-radius: 16px; padding: clamp(1rem,2.5vw,2rem); }
+        .bold-card-alt { background: var(--card-alt); color: var(--text-on-card); border-radius: 16px; padding: clamp(1rem,2.5vw,2rem); }
+
+        /* Section number */
+        .section-num { font-family: var(--font-display); font-size: clamp(3rem,10vw,8rem); color: rgba(255,255,255,0.04); position: absolute; top: var(--slide-padding); left: var(--slide-padding); line-height: 1; z-index: 0; }
+
+        /* Nav breadcrumbs */
+        .breadcrumb { display: flex; gap: clamp(0.3rem,0.6vw,0.5rem); position: absolute; top: var(--slide-padding); right: var(--slide-padding); z-index: 3; }
+        .breadcrumb span { width: clamp(16px,2.5vw,30px); height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; }
+        .breadcrumb span.active { background: var(--card-bg); }
+
+        /* Animations — Fast, punchy */
+        .reveal { opacity: 0; transform: translateY(25px); transition: opacity var(--duration-fast) var(--ease-out-expo), transform var(--duration-fast) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal-slam { opacity: 0; transform: translateY(-60px) scale(1.05); transition: opacity 0.25s ease, transform var(--duration-fast) var(--ease-out-expo); }
+        .slide.visible .reveal-slam { opacity: 1; transform: translateY(0) scale(1); }
+        .reveal-pop { opacity: 0; transform: scale(0.8); transition: opacity 0.3s ease, transform var(--duration-normal) var(--ease-out-back); }
+        .slide.visible .reveal-pop { opacity: 1; transform: scale(1); }
+        .reveal:nth-child(1) { transition-delay: 0.05s; } .reveal:nth-child(2) { transition-delay: 0.1s; }
+        .reveal:nth-child(3) { transition-delay: 0.15s; } .reveal:nth-child(4) { transition-delay: 0.2s; }
+        .reveal:nth-child(5) { transition-delay: 0.25s; } .reveal:nth-child(6) { transition-delay: 0.3s; }
+        .reveal-slam:nth-child(1) { transition-delay: 0.05s; }
+        .reveal-pop:nth-child(1) { transition-delay: 0.1s; } .reveal-pop:nth-child(2) { transition-delay: 0.15s; } .reveal-pop:nth-child(3) { transition-delay: 0.2s; }
+
+        @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(1deg); } }
+
+        /* Spec badge */
+        .spec-badge { display: inline-flex; align-items: center; gap: 0.5em; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 8px; padding: clamp(0.4rem,1vw,0.75rem) clamp(0.6rem,1.5vw,1.2rem); }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: var(--card-bg); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px,2vw,24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--card-bg); transform: scale(1.3); }
+        .slide-counter { position: fixed; bottom: clamp(12px,2vw,24px); left: clamp(12px,2vw,24px); font-family: var(--font-display); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem,3vw,2rem); --content-gap: clamp(0.4rem,1.5vw,1rem); --title-size: clamp(1.25rem,4.5vw,2.5rem); --h2-size: clamp(1rem,3vw,2rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem,2.5vw,1.5rem); --body-size: clamp(0.7rem,1.2vw,0.95rem); } .nav-dots,.section-num,.breadcrumb { display: none; } }
+        @media (max-height: 500px) { :root { --title-size: clamp(1rem,3.5vw,1.5rem); --body-size: clamp(0.65rem,1vw,0.85rem); } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem,7vw,2.5rem); } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal,.reveal-slam,.reveal-pop { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; } .slide.visible .reveal,.slide.visible .reveal-slam,.slide.visible .reveal-pop { opacity: 1; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar,.nav-dots,.slide-counter,.breadcrumb,.section-num { display: none !important; } .reveal,[class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+        @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div class="section-num">01</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-body);font-weight:500;letter-spacing:0.15em;color:var(--card-bg);text-transform:uppercase;">Product Launch 2026</div>
+            <h1 class="reveal-slam" style="font-size:var(--title-size);font-family:var(--font-display);margin-top:var(--element-gap);text-transform:uppercase;">DJI Mini 5</h1>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);">Fly Without Limits</p>
+            <div class="reveal-pop bold-card" style="margin-top:var(--content-gap);display:inline-block;max-width:min(60vw,400px);">
+                <div style="font-size:var(--body-size);font-weight:600;">249g  |  4K/120fps  |  45min flight</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: HERO -->
+    <section class="slide" aria-label="Hero">
+        <div class="section-num">02</div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:1;">
+            <!-- CSS drone -->
+            <div class="reveal-pop" style="position:relative;width:clamp(140px,22vw,280px);height:clamp(70px,11vw,140px);animation:float 3.5s ease-in-out infinite;">
+                <div style="position:absolute;width:35%;height:4px;background:#3a3a3c;top:48%;left:0;transform:rotate(-15deg);"></div>
+                <div style="position:absolute;width:35%;height:4px;background:#3a3a3c;top:48%;right:0;transform:rotate(15deg);"></div>
+                <div style="position:absolute;width:40%;height:45%;background:linear-gradient(135deg,#4a4a4c,#2a2a2c);border-radius:30%;top:30%;left:30%;box-shadow:0 10px 40px rgba(0,0,0,0.6);"></div>
+                <div style="position:absolute;width:22%;height:22%;border:2px solid var(--card-bg);border-radius:50%;top:5%;left:2%;animation:spin 0.6s linear infinite;"></div>
+                <div style="position:absolute;width:22%;height:22%;border:2px solid var(--card-bg);border-radius:50%;top:5%;right:2%;animation:spin 0.6s linear infinite;"></div>
+                <div style="position:absolute;width:22%;height:22%;border:2px solid rgba(255,87,34,0.5);border-radius:50%;bottom:15%;left:2%;animation:spin 0.6s linear infinite;"></div>
+                <div style="position:absolute;width:22%;height:22%;border:2px solid rgba(255,87,34,0.5);border-radius:50%;bottom:15%;right:2%;animation:spin 0.6s linear infinite;"></div>
+                <div style="position:absolute;width:12%;height:18%;background:radial-gradient(circle,#2997ff,#111);border-radius:50%;bottom:18%;left:44%;box-shadow:0 0 12px rgba(41,151,255,0.5);"></div>
+            </div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);text-transform:uppercase;margin-top:var(--content-gap);">Ultralight Power</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(55vw,450px);">249g. No registration. All the power of a pro drone in the palm of your hand.</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: SPECS -->
+    <section class="slide" aria-label="Specs">
+        <div class="section-num">03</div>
+        <div class="slide-content" style="z-index:1;">
+            <h2 class="reveal-slam" style="font-size:var(--h2-size);font-family:var(--font-display);text-transform:uppercase;">Key Specs</h2>
+            <div style="display:flex;gap:clamp(1rem,3vw,3rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:left;">
+                    <div class="bold-card" style="display:inline-block;padding:clamp(0.5rem,1.2vw,1rem) clamp(0.8rem,1.8vw,1.5rem);">
+                        <div style="font-size:var(--stat-size);font-family:var(--font-display);">249g</div>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;">Takeoff Weight</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);">4K</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">120fps Video</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);color:var(--card-bg);">45</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">Minutes Flight</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:clamp(0.4rem,0.8vw,0.6rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal spec-badge"><span style="font-weight:600;">48MP</span><span style="color:var(--text-secondary);font-size:var(--small-size);">Sensor</span></div>
+                <div class="reveal spec-badge"><span style="font-weight:600;">f/1.7</span><span style="color:var(--text-secondary);font-size:var(--small-size);">Aperture</span></div>
+                <div class="reveal spec-badge"><span style="font-weight:600;">10-bit</span><span style="color:var(--text-secondary);font-size:var(--small-size);">D-Log M</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: FEATURES -->
+    <section class="slide" aria-label="Features">
+        <div class="section-num">04</div>
+        <div class="slide-content" style="z-index:1;">
+            <h2 class="reveal-slam" style="font-size:var(--h2-size);font-family:var(--font-display);text-transform:uppercase;">Smart Flight</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal-pop bold-card">
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);text-transform:uppercase;">ActiveTrack 6.0</h3>
+                    <p style="font-size:var(--small-size);margin-top:0.3em;line-height:1.5;opacity:0.8;">360-degree tracking through complex environments</p>
+                </div>
+                <div class="reveal-pop" style="background:var(--surface);border:1px solid var(--border-subtle);border-radius:16px;padding:clamp(1rem,2.5vw,2rem);">
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);text-transform:uppercase;">MasterShots</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">One-tap cinematic flight paths. Dronie, Helix, Rocket, Circle.</p>
+                </div>
+                <div class="reveal-pop" style="background:var(--surface);border:1px solid var(--border-subtle);border-radius:16px;padding:clamp(1rem,2.5vw,2rem);">
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);text-transform:uppercase;">Hyperlapse</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Sub-pixel stabilized aerial timelapses in 4 modes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: CAMERA -->
+    <section class="slide" aria-label="Camera">
+        <div class="section-num">05</div>
+        <div class="slide-content" style="z-index:1;">
+            <h2 class="reveal-slam" style="font-size:var(--h2-size);font-family:var(--font-display);text-transform:uppercase;">1-Inch CMOS</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(55vw,500px);line-height:1.7;">4x more light capture. Native D-Log M for maximum post flexibility. HDR Night Mode brings cities alive after dark.</p>
+            <div class="reveal" style="margin-top:var(--content-gap);">
+                <div class="bold-card-alt" style="display:inline-block;max-width:min(70vw,500px);">
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);text-transform:uppercase;">Pro imaging. Mini footprint.</div>
+                    <p style="font-size:var(--small-size);margin-top:0.3em;opacity:0.7;">The same sensor tech found in drones 3x the price.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: SAFETY -->
+    <section class="slide" aria-label="Safety">
+        <div class="section-num">06</div>
+        <div class="slide-content" style="z-index:1;">
+            <h2 class="reveal-slam" style="font-size:var(--h2-size);font-family:var(--font-display);text-transform:uppercase;">Built Tough</h2>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal"><div style="font-size:var(--stat-size);font-family:var(--font-display);color:var(--card-bg);">LV5</div><div style="font-size:var(--small-size);color:var(--text-secondary);">Wind Resistance (38 km/h)</div></div>
+                <div class="reveal"><div style="font-size:var(--stat-size);font-family:var(--font-display);">APAS</div><div style="font-size:var(--small-size);color:var(--text-secondary);">360 Obstacle Sensing</div></div>
+                <div class="reveal"><div style="font-size:var(--stat-size);font-family:var(--font-display);">RTH</div><div style="font-size:var(--small-size);color:var(--text-secondary);">Smart Return Home</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: SHOWCASE -->
+    <section class="slide" aria-label="Showcase">
+        <div class="section-num">07</div>
+        <div class="slide-content" style="z-index:1;">
+            <h2 class="reveal-slam" style="font-size:var(--h2-size);font-family:var(--font-display);text-transform:uppercase;">Shot on Mini 5</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal-pop" style="background:linear-gradient(135deg,rgba(255,87,34,0.15),var(--surface));border:1px solid var(--border-subtle);border-radius:12px;padding:clamp(0.75rem,1.5vw,1.2rem);aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:flex-end;">
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);text-transform:uppercase;color:var(--card-bg);">Golden Hour</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">4K/60fps mountain hyperlapse</div>
+                </div>
+                <div class="reveal-pop" style="background:linear-gradient(135deg,rgba(41,151,255,0.1),var(--surface));border:1px solid var(--border-subtle);border-radius:12px;padding:clamp(0.75rem,1.5vw,1.2rem);aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:flex-end;">
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);text-transform:uppercase;color:#5ac8fa;">Ocean Chase</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">Surfer tracking, ActiveTrack 6.0</div>
+                </div>
+                <div class="reveal-pop" style="background:linear-gradient(135deg,rgba(255,179,0,0.1),var(--surface));border:1px solid var(--border-subtle);border-radius:12px;padding:clamp(0.75rem,1.5vw,1.2rem);aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:flex-end;">
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);text-transform:uppercase;color:var(--card-alt);">Night City</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">HDR Night Mode urbanscape</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: PRICING -->
+    <section class="slide" aria-label="Pricing">
+        <div class="section-num">08</div>
+        <div class="slide-content" style="z-index:1;">
+            <h2 class="reveal-slam" style="font-size:var(--h2-size);font-family:var(--font-display);text-transform:uppercase;">Pick Your Kit</h2>
+            <div style="display:flex;gap:clamp(0.75rem,2vw,1.5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal-pop" style="flex:1;min-width:min(100%,200px);background:var(--surface);border:1px solid var(--border-subtle);border-radius:16px;padding:clamp(1rem,2.5vw,2rem);">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);text-transform:uppercase;color:var(--text-muted);">Standard</div>
+                    <div style="font-size:clamp(2rem,4vw,3.5rem);font-family:var(--font-display);margin-top:0.2em;">$599</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;line-height:1.5;">Drone + RC Controller + 1 Battery</p>
+                </div>
+                <div class="reveal-pop bold-card" style="flex:1;min-width:min(100%,200px);">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);text-transform:uppercase;">Fly More Combo</div>
+                    <div style="font-size:clamp(2rem,4vw,3.5rem);font-family:var(--font-display);margin-top:0.2em;">$799</div>
+                    <p style="font-size:var(--small-size);margin-top:0.5em;line-height:1.5;opacity:0.8;">Drone + RC 2 + 3 Batteries + ND Filters + Bag</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: CTA -->
+    <section class="slide" aria-label="CTA">
+        <div class="section-num">09</div>
+        <div class="slide-content" style="align-items:center;text-align:center;justify-content:center;z-index:1;">
+            <h2 class="reveal-slam" style="font-size:var(--title-size);font-family:var(--font-display);text-transform:uppercase;">Your Sky<br>Awaits</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);">DJI Mini 5  |  Available Now</p>
+            <div class="reveal-pop bold-card" style="display:inline-block;margin-top:var(--content-gap);cursor:pointer;">
+                <div style="font-family:var(--font-display);font-size:var(--body-size);text-transform:uppercase;letter-spacing:0.1em;">Order Now  &#8594;</div>
+            </div>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-muted);margin-top:var(--content-gap);">store.dji.com</p>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.35;">Made with <a href="https://nextslide.app" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init();}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible');}setupIntersectionObserver(){const o=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const idx=this.slides.indexOf(entry.target);if(idx!==-1){this.currentSlide=idx;this.updateUI();}}});},{threshold:0.5});this.slides.forEach(s=>o.observe(s));}setupKeyboardNav(){document.addEventListener('keydown',(e)=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}});}setupTouchNav(){document.addEventListener('touchstart',(e)=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true});document.addEventListener('touchend',(e)=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true});}setupWheelNav(){let t;document.addEventListener('wheel',(e)=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true});}setupProgressBar(){this.progressBar=document.getElementById('progressBar');}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label','Go to slide '+(i+1));d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);});}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI();}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600);}updateUI(){const t=this.slides.length;const c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=((c+1)/t*100)+'%';document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=(c+1)+' / '+t;}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+    </script>
+</body>
+</html>

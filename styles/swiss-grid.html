@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #ffffff;
+  --text: #000000;
+  --red: #d32f2f;
+  --gray: #666666;
+  --light-gray: #e0e0e0;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --title-size: clamp(2.5rem, 7vw, 6rem);
+  --h2-size: clamp(1.75rem, 4vw, 3rem);
+  --h3-size: clamp(1.25rem, 2.5vw, 2rem);
+  --body-size: clamp(0.75rem, 1.3vw, 1rem);
+  --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+  --stat-size: clamp(3rem, 12vw, 12.5rem);
+  --slide-padding: clamp(2rem, 6vw, 5rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+}
+
+/* === VIEWPORT BASE (inline) === */
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Inter', 'Noto Sans SC', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--red); z-index: 1000;
+  transition: width 0.5s var(--ease-out-expo);
+}
+
+.page-counter {
+  position: fixed; bottom: clamp(20px,3vh,40px); right: clamp(24px,3vw,48px);
+  font-size: clamp(11px,1vw,14px); font-weight: 700; color: var(--gray);
+  z-index: 1000; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.page-counter .current { color: var(--text); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex; background: var(--bg);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative;
+}
+
+/* === REVEAL ANIMATIONS === */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+.slide.active .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { transition-delay: 0.15s; }
+.slide.active .reveal:nth-child(3) { transition-delay: 0.28s; }
+.slide.active .reveal:nth-child(4) { transition-delay: 0.4s; }
+.slide.active .reveal:nth-child(5) { transition-delay: 0.52s; }
+.slide.active .reveal:nth-child(6) { transition-delay: 0.64s; }
+
+/* === SLIDE 1: COVER === */
+.s1 .red-line {
+  position: absolute; top: 0; left: var(--slide-padding);
+  width: 6px; height: 45%;
+  background: var(--red);
+}
+.s1 .title {
+  font-size: var(--title-size); font-weight: 900;
+  line-height: 0.95; letter-spacing: -0.03em;
+  margin-bottom: clamp(16px, 2vh, 30px);
+}
+.s1 .subtitle {
+  font-size: var(--body-size); font-weight: 400;
+  color: var(--text); line-height: 1.6;
+  max-width: 45ch;
+}
+.s1 .meta {
+  position: absolute; top: var(--slide-padding); right: var(--slide-padding);
+  text-align: right; font-size: var(--small-size);
+  color: var(--gray); line-height: 1.8;
+}
+
+/* === SLIDE 2: DATA === */
+.s2 .slide-inner { justify-content: flex-start; }
+.s2 .topline {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px; background: var(--text);
+}
+.s2 .big-number {
+  font-size: var(--stat-size); font-weight: 900;
+  line-height: 0.85; letter-spacing: -0.05em;
+}
+.s2 .big-number span { color: var(--red); }
+.s2 .data-label {
+  font-size: var(--body-size); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-top: clamp(4px,0.8vh,10px);
+  margin-bottom: clamp(16px,3vh,40px);
+}
+.s2 .data-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; border-top: 2px solid var(--text); margin-top: auto;
+}
+.s2 .data-cell {
+  padding: clamp(12px,1.5vh,20px) clamp(12px,1.5vw,20px) clamp(12px,1.5vh,20px) 0;
+  border-right: 1px solid var(--light-gray);
+}
+.s2 .data-cell:last-child { border-right: none; }
+.s2 .data-cell-num {
+  font-size: clamp(1.25rem, 2.8vw, 2.25rem); font-weight: 900;
+  line-height: 1; margin-bottom: clamp(4px,0.5vh,8px);
+}
+.s2 .data-cell-label {
+  font-size: var(--small-size); color: var(--gray);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+/* === SLIDE 3: STATEMENT === */
+.s3 .slide-inner { justify-content: center; }
+.s3 .rule-top {
+  position: absolute; top: var(--slide-padding);
+  left: var(--slide-padding); right: var(--slide-padding);
+  height: 2px; background: var(--text);
+}
+.s3 .statement {
+  font-size: clamp(1.75rem, 4.2vw, 3.5rem); font-weight: 900;
+  line-height: 1.1; letter-spacing: -0.02em; max-width: 22ch;
+}
+.s3 .statement-author {
+  font-size: var(--body-size); color: var(--gray); margin-top: clamp(20px,3vh,40px);
+}
+.s3 .red-block {
+  position: absolute;
+  bottom: var(--slide-padding); right: var(--slide-padding);
+  width: clamp(24px,3vw,40px); height: clamp(24px,3vw,40px);
+  background: var(--red);
+}
+.s3 .rule-bottom {
+  position: absolute; bottom: var(--slide-padding);
+  left: var(--slide-padding); width: clamp(100px,15vw,200px);
+  height: 1px; background: var(--text);
+}
+
+/* === SLIDE 4: COMPARISON === */
+.s4 .slide-inner { justify-content: flex-start; }
+.s4 .comp-header {
+  display: flex; align-items: baseline;
+  margin-bottom: clamp(24px,4vh,50px); gap: clamp(12px,2vw,30px);
+}
+.s4 .comp-title {
+  font-size: var(--h2-size); font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.s4 .comp-subtitle { font-size: var(--body-size); color: var(--gray); }
+.s4 .comp-grid {
+  display: grid;
+  grid-template-columns: clamp(100px,15vw,200px) 1fr 1fr 1fr;
+  flex: 1;
+}
+.s4 .comp-row { display: contents; }
+.s4 .comp-cell {
+  padding: clamp(10px,1.3vh,18px) clamp(10px,1.5vw,20px) clamp(10px,1.3vh,18px) 0;
+  border-top: 1px solid var(--light-gray);
+  font-size: var(--body-size); line-height: 1.4;
+}
+.s4 .comp-row:first-child .comp-cell {
+  border-top: 2px solid var(--text); font-weight: 700;
+  font-size: var(--small-size); text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--gray);
+}
+.s4 .comp-cell.label { font-weight: 700; }
+.s4 .red-indicator {
+  position: absolute; top: var(--slide-padding); right: var(--slide-padding);
+  width: 12px; height: 12px; background: var(--red);
+}
+.s4 .bottom-rule {
+  position: absolute; bottom: var(--slide-padding);
+  left: var(--slide-padding); right: var(--slide-padding);
+  height: 1px; background: var(--light-gray);
+}
+
+/* === SLIDE 5: CLOSING === */
+.s5 .top-rule {
+  position: absolute; top: var(--slide-padding);
+  left: var(--slide-padding);
+  width: clamp(200px,30vw,400px); height: 2px; background: var(--text);
+}
+.s5 .red-square {
+  position: absolute; top: var(--slide-padding); right: var(--slide-padding);
+  width: clamp(36px,4.5vw,60px); height: clamp(36px,4.5vw,60px);
+  background: var(--red);
+}
+.s5 .closing-text {
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem); font-weight: 900;
+  letter-spacing: -0.03em; line-height: 1.08;
+  margin-bottom: clamp(10px,1.5vh,20px);
+}
+.s5 .closing-sub {
+  font-size: var(--body-size); color: var(--gray);
+  max-width: 35ch; line-height: 1.6;
+}
+
+/* === RESPONSIVE === */
+@media (max-height: 700px) {
+  :root {
+    --slide-padding: clamp(1.5rem, 4vw, 3rem);
+    --title-size: clamp(2rem, 6vw, 4rem);
+    --stat-size: clamp(2.5rem, 10vw, 8rem);
+  }
+}
+@media (max-height: 500px) {
+  :root { --title-size: clamp(1.5rem, 5vw, 3rem); }
+  .s2 .data-grid { grid-template-columns: repeat(2, 1fr); }
+  .s4 .comp-grid { grid-template-columns: clamp(80px,12vw,140px) 1fr 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .s2 .data-grid { grid-template-columns: repeat(2, 1fr); }
+  .s4 .comp-grid { grid-template-columns: 1fr; }
+  .page-counter { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.2s !important;
+  }
+  .reveal { transform: none !important; }
+}
+
+@media print {
+  .slide { position: relative; opacity: 1; pointer-events: auto; page-break-after: always; height: auto; min-height: 100vh; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide s1 active" data-i="0">
+  <div class="red-line"></div>
+  <div class="slide-inner">
+    <div class="meta reveal">设计前沿<br>Swiss Grid System<br>2026</div>
+    <div class="title reveal">设计革命<br>的网格法则</div>
+    <div class="subtitle reveal">通过数学精度、客观表达和排版层次，系统化地重新定义视觉传达的每一个像素。</div>
+  </div>
+</div>
+
+<!-- Slide 2: Stats -->
+<div class="slide s2" data-i="1">
+  <div class="topline"></div>
+  <div class="slide-inner">
+    <div class="big-number reveal">10<span>x</span></div>
+    <div class="data-label reveal">设计效率提升 — 精度驱动变革</div>
+    <div class="data-grid">
+      <div class="data-cell reveal">
+        <div class="data-cell-num">93%</div>
+        <div class="data-cell-label">用户满意度</div>
+      </div>
+      <div class="data-cell reveal">
+        <div class="data-cell-num">50M+</div>
+        <div class="data-cell-label">设计作品生成</div>
+      </div>
+      <div class="data-cell reveal">
+        <div class="data-cell-num">12</div>
+        <div class="data-cell-label">栅格列数标准</div>
+      </div>
+      <div class="data-cell reveal">
+        <div class="data-cell-num">3.2x</div>
+        <div class="data-cell-label">协作效率倍增</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Quote -->
+<div class="slide s3" data-i="2">
+  <div class="rule-top"></div>
+  <div class="slide-inner">
+    <div class="statement reveal">网格系统是辅助，不是保证。它允许无数种可能性，每个设计师都能找到属于自己风格的解决方案。</div>
+    <div class="statement-author reveal">Josef Muller-Brockmann, 1981</div>
+  </div>
+  <div class="rule-bottom"></div>
+  <div class="red-block"></div>
+</div>
+
+<!-- Slide 4: Comparison -->
+<div class="slide s4" data-i="3">
+  <div class="red-indicator"></div>
+  <div class="slide-inner">
+    <div class="comp-header">
+      <div class="comp-title reveal">三大设计体系</div>
+      <div class="comp-subtitle reveal">系统化设计的三种路径</div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-row">
+        <div class="comp-cell reveal">维度</div>
+        <div class="comp-cell reveal">瑞士风格</div>
+        <div class="comp-cell reveal">包豪斯</div>
+        <div class="comp-cell reveal">风格派</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell label reveal">栅格</div>
+        <div class="comp-cell reveal">数学化12列</div>
+        <div class="comp-cell reveal">模块化单元</div>
+        <div class="comp-cell reveal">非对称均衡</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell label reveal">字体</div>
+        <div class="comp-cell reveal">Helvetica, 齐左</div>
+        <div class="comp-cell reveal">通用几何体</div>
+        <div class="comp-cell reveal">无衬线自有体</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell label reveal">色彩</div>
+        <div class="comp-cell reveal">极简、功能性</div>
+        <div class="comp-cell reveal">三原色+中性色</div>
+        <div class="comp-cell reveal">红、蓝、黄</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell label reveal">理念</div>
+        <div class="comp-cell reveal">客观清晰</div>
+        <div class="comp-cell reveal">形式追随功能</div>
+        <div class="comp-cell reveal">普遍和谐</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-rule"></div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide s5" data-i="4">
+  <div class="top-rule"></div>
+  <div class="red-square"></div>
+  <div class="slide-inner">
+    <div class="closing-text reveal">少即是多<br>精度即表达</div>
+    <div class="closing-sub reveal">当AI遇见瑞士网格，设计不再是装饰 — 而是一种精确到像素的沟通语言。</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i<0||i>=total) return;
+    slides[c].classList.remove('active');
+    // Reset reveals
+    slides[c].querySelectorAll('.reveal').forEach(el => {
+      el.style.transition = 'none';
+      el.offsetHeight;
+      el.style.transition = '';
+    });
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c+1)/total*100)+'%';
+    cur.textContent = String(c+1).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { e.preventDefault(); go(c+1); }
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') { e.preventDefault(); go(c-1); }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  document.addEventListener('click', function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1);
+    else go(c-1);
+  });
+
+  bar.style.width = (1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

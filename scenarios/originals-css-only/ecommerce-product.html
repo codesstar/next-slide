@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恒温Pro 智能保温杯 — 新品首发</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — 电商大促风格
+           Red/Gold on dark, conversion-focused
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #222222;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #777777;
+            --accent: #e53935;
+            --accent-secondary: #ffd700;
+            --accent-glow: rgba(229, 57, 53, 0.4);
+            --accent-glow-secondary: rgba(255, 215, 0, 0.3);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --surface: rgba(255, 255, 255, 0.05);
+            --gold: #ffd700;
+            --gold-dim: #b8960b;
+            --red: #e53935;
+            --red-dark: #b71c1c;
+            --red-light: #ff5252;
+            --green-success: #4caf50;
+
+            /* --- Typography --- */
+            --font-display: 'Noto Sans SC', sans-serif;
+            --font-body: 'Noto Sans SC', sans-serif;
+            --font-mono: 'Courier New', monospace;
+
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --price-size: clamp(1.8rem, 5vw, 3.5rem);
+            --price-big: clamp(2.5rem, 7vw, 5rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+            --duration-dramatic: 1.5s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+        :root {
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
+            line-height: 1.8;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        /* --- Responsive breakpoints --- */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide {
+                height: auto; min-height: 100vh; overflow: visible;
+                page-break-after: always; page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle { display: none !important; }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important; transform: none !important;
+                filter: none !important; clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           BODY & GLOBAL STYLES
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* Pop-in for price tags */
+        .reveal-pop {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity var(--duration-normal) var(--ease-out-back),
+                        transform var(--duration-normal) var(--ease-out-back);
+        }
+        .slide.visible .reveal-pop {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .reveal-pop:nth-child(1) { transition-delay: 0.1s; }
+        .reveal-pop:nth-child(2) { transition-delay: 0.25s; }
+        .reveal-pop:nth-child(3) { transition-delay: 0.4s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--gold));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--red);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           PROMO TAG (red badge)
+           =========================================== */
+        .promo-tag {
+            display: inline-block;
+            background: var(--red);
+            color: #fff;
+            font-size: var(--small-size);
+            font-weight: 700;
+            padding: clamp(0.2rem, 0.5vw, 0.35rem) clamp(0.5rem, 1.2vw, 0.9rem);
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+        }
+        .promo-tag-gold {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold), #ffab00);
+            color: #1a1a1a;
+            font-size: var(--small-size);
+            font-weight: 700;
+            padding: clamp(0.2rem, 0.5vw, 0.35rem) clamp(0.5rem, 1.2vw, 0.9rem);
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        /* ===========================================
+           CARD GLOW EFFECT
+           =========================================== */
+        .glow-card {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: clamp(1rem, 2vw, 1.5rem);
+            position: relative;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glow-card:hover {
+            border-color: rgba(229, 57, 53, 0.3);
+            box-shadow: 0 0 20px rgba(229, 57, 53, 0.1), 0 0 40px rgba(255, 215, 0, 0.05);
+        }
+
+        /* ===========================================
+           PRICE STYLING
+           =========================================== */
+        .price-current {
+            font-size: var(--price-big);
+            font-weight: 900;
+            color: var(--red);
+            font-family: var(--font-display);
+        }
+        .price-original {
+            font-size: var(--body-size);
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+        .price-symbol {
+            font-size: 0.6em;
+            vertical-align: top;
+            position: relative;
+            top: 0.15em;
+        }
+
+        /* ===========================================
+           STAR RATING
+           =========================================== */
+        .stars {
+            color: var(--gold);
+            font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+            letter-spacing: 2px;
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: TITLE
+           =========================================== */
+        .title-slide {
+            background: radial-gradient(ellipse at 50% 40%, #2a1a1a 0%, #1a1a1a 60%, #111 100%);
+        }
+        .title-slide::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(circle at 50% 50%, rgba(229, 57, 53, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: PAIN POINT
+           =========================================== */
+        .pain-slide {
+            background: linear-gradient(180deg, #1a1a1a 0%, #1f1010 100%);
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: STATS
+           =========================================== */
+        .stats-slide {
+            background: radial-gradient(ellipse at 50% 50%, #2a1a10 0%, #1a1a1a 70%);
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: PRICING
+           =========================================== */
+        .pricing-slide .tier-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: clamp(0.8rem, 2vw, 1.5rem);
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pricing-slide .tier-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(229, 57, 53, 0.15);
+        }
+        .pricing-slide .tier-card.featured {
+            border: 2px solid var(--red);
+            background: linear-gradient(180deg, rgba(229, 57, 53, 0.08) 0%, var(--bg-secondary) 40%);
+        }
+        .discount-badge {
+            position: absolute;
+            top: -12px;
+            right: clamp(8px, 2vw, 16px);
+            background: var(--red);
+            color: #fff;
+            font-size: var(--small-size);
+            font-weight: 700;
+            padding: clamp(0.15rem, 0.4vw, 0.25rem) clamp(0.4rem, 1vw, 0.7rem);
+            border-radius: 4px;
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: TESTIMONIALS
+           =========================================== */
+        .testimonial-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: clamp(0.8rem, 2vw, 1.2rem);
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: CTA
+           =========================================== */
+        .cta-slide {
+            background: radial-gradient(ellipse at 50% 50%, #2a0a0a 0%, #1a1a1a 70%);
+        }
+        .cta-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--red), var(--red-dark));
+            color: #fff;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: 900;
+            font-family: var(--font-display);
+            padding: clamp(0.6rem, 1.5vw, 1rem) clamp(2rem, 5vw, 4rem);
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(229, 57, 53, 0.4), 0 0 60px rgba(229, 57, 53, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(229, 57, 53, 0.5), 0 0 80px rgba(229, 57, 53, 0.2);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 4px 20px rgba(229, 57, 53, 0.4), 0 0 60px rgba(229, 57, 53, 0.15); }
+            50% { box-shadow: 0 4px 30px rgba(229, 57, 53, 0.6), 0 0 80px rgba(229, 57, 53, 0.25); }
+        }
+
+        /* ===========================================
+           COMPARISON TABLE
+           =========================================== */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--body-size);
+        }
+        .compare-table th {
+            padding: clamp(0.3rem, 0.8vw, 0.6rem) clamp(0.4rem, 1vw, 0.8rem);
+            text-align: center;
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .compare-table td {
+            padding: clamp(0.3rem, 0.8vw, 0.6rem) clamp(0.4rem, 1vw, 0.8rem);
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .compare-table td:first-child {
+            text-align: left;
+            color: var(--text-secondary);
+        }
+
+        /* ===========================================
+           PLATFORM ICONS (CSS-only)
+           =========================================== */
+        .platform-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: clamp(40px, 6vw, 56px);
+            height: clamp(40px, 6vw, 56px);
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            font-size: var(--small-size);
+            font-weight: 700;
+            color: var(--text-secondary);
+            transition: border-color 0.3s ease;
+        }
+        .platform-icon:hover {
+            border-color: var(--red);
+        }
+
+        /* ===========================================
+           DECORATIVE PARTICLES
+           =========================================== */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: 0.2;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide title-slide" aria-label="标题页">
+        <!-- Decorative particles -->
+        <div class="particle" style="top: 15%; left: 10%;"></div>
+        <div class="particle" style="top: 25%; right: 15%; width: 3px; height: 3px; background: var(--red); opacity: 0.15;"></div>
+        <div class="particle" style="bottom: 30%; left: 20%; width: 5px; height: 5px;"></div>
+        <div class="particle" style="top: 40%; right: 25%; width: 3px; height: 3px;"></div>
+        <div class="particle" style="bottom: 20%; right: 10%;"></div>
+
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal" style="margin-bottom: clamp(0.5rem, 1.5vw, 1rem);">
+                <span class="promo-tag" style="font-size: clamp(0.6rem, 1.2vw, 0.9rem);">新品首发</span>
+                <span class="promo-tag-gold" style="font-size: clamp(0.6rem, 1.2vw, 0.9rem); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">限时特惠</span>
+            </div>
+            <h1 class="reveal" style="font-size: clamp(2.5rem, 7vw, 5.5rem); font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em; line-height: 1.1;">
+                恒温<span style="color: var(--red);">Pro</span>
+            </h1>
+            <p class="reveal" style="font-size: var(--h3-size); color: var(--gold); font-weight: 700; margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">
+                智能保温杯
+            </p>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.8rem, 2vw, 1.5rem); max-width: min(80vw, 500px); line-height: 1.8;">
+                你的每一口，都是刚刚好的温度
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1rem, 3vw, 2rem);">
+                暖心科技 | 2026年4月15日 全平台首发
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: PAIN POINT =================== -->
+    <section class="slide pain-slide" aria-label="痛点共情">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(85vw, 900px); margin: 0 auto;">
+            <div class="reveal" style="font-size: clamp(3rem, 8vw, 6rem); color: var(--red); line-height: 1; opacity: 0.2; font-family: Georgia, serif;">
+                &ldquo;
+            </div>
+            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 2.8rem); font-family: var(--font-display); font-weight: 700; line-height: 1.6; margin-top: -0.3em; color: var(--text-primary);">
+                你有没有泡好一杯茶，<br>忙完回来发现已经凉了？
+            </blockquote>
+            <div class="reveal" style="width: 60px; height: 3px; background: linear-gradient(90deg, var(--red), var(--gold)); margin: clamp(1rem, 2.5vw, 2rem) auto; border-radius: 2px;"></div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1vw, 0.8rem); max-width: min(70vw, 500px); line-height: 1.8;">
+                85% 的保温杯用户表示，水温无法控制是最大痛点。<br>
+                不是太烫就是太凉，从来没有「刚刚好」。
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(1rem, 2vw, 1.5rem);">
+                数据来源：暖心科技 2025 年用户调研（N=12,847）
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: FEATURES CARD GRID =================== -->
+    <section class="slide" aria-label="四大卖点" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+                四大核心卖点
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); max-width: min(90vw, 800px); margin-left: auto; margin-right: auto;">
+                <!-- Feature 1 -->
+                <div class="reveal glow-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#127777;</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">精准控温</h3>
+                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">&plusmn;1&deg;C</p>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        PTC陶瓷加热芯片，实时温感反馈，让每一口都是你设定的温度
+                    </p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="reveal glow-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#9889;</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">超长续航</h3>
+                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">8小时</p>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        2000mAh大容量电池，Type-C快充，一次充电管一整天
+                    </p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="reveal glow-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#128241;</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">APP智控</h3>
+                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">蓝牙5.0</p>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        手机实时查看水温，自定义温度曲线，喝水提醒不遗漏
+                    </p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="reveal glow-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">&#129514;</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--red);">医用级材质</h3>
+                    <p style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 900; color: var(--gold); margin: clamp(0.2rem, 0.5vw, 0.3rem) 0;">316L</p>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        医用级不锈钢内胆，食品级硅胶密封，安全无异味
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: COMPARISON =================== -->
+    <section class="slide" aria-label="产品对比" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+                普通保温杯 <span style="color: var(--text-muted); font-weight: 400;">vs</span> <span style="color: var(--red);">恒温Pro</span>
+            </h2>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap);">
+                不是所有保温杯都叫「恒温」
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 750px); margin-left: auto; margin-right: auto; overflow-x: auto;">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; color: var(--text-muted); border-bottom: 2px solid var(--border-subtle);">对比维度</th>
+                            <th style="color: var(--text-muted); border-bottom: 2px solid var(--border-subtle);">普通保温杯</th>
+                            <th style="color: var(--red); border-bottom: 2px solid var(--red);">恒温Pro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>控温能力</td>
+                            <td style="color: var(--text-muted);">&#10007; 被动保温，温度持续下降</td>
+                            <td style="color: var(--green-success);">&#10003; 主动恒温 &plusmn;1&deg;C</td>
+                        </tr>
+                        <tr>
+                            <td>内胆材质</td>
+                            <td style="color: var(--text-muted);">&#10007; 304不锈钢，易留水垢</td>
+                            <td style="color: var(--green-success);">&#10003; 316L医用级，抗腐蚀</td>
+                        </tr>
+                        <tr>
+                            <td>智能功能</td>
+                            <td style="color: var(--text-muted);">&#10007; 无</td>
+                            <td style="color: var(--green-success);">&#10003; APP控温 + 喝水提醒</td>
+                        </tr>
+                        <tr>
+                            <td>续航时间</td>
+                            <td style="color: var(--text-muted);">&#10007; 4~6小时逐渐降温</td>
+                            <td style="color: var(--green-success);">&#10003; 8小时持续恒温</td>
+                        </tr>
+                        <tr style="border-bottom: none;">
+                            <td>外观设计</td>
+                            <td style="color: var(--text-muted);">&#10007; 同质化严重</td>
+                            <td style="color: var(--green-success);">&#10003; IF设计奖入围，极简美学</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: STATS =================== -->
+    <section class="slide stats-slide" aria-label="数据统计">
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+                用数据说话
+            </h2>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap);">
+                众筹阶段成绩 | 数据截至 2026.03.31
+            </p>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="2847" data-prefix="&yen;" data-suffix="万" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--red);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">众筹金额</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="31205" data-suffix="人" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--gold);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">支持者</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="987" data-decimal="1" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--green-success);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">好评率</div>
+                </div>
+            </div>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1rem, 3vw, 2rem); margin-top: clamp(1.5rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                <span class="promo-tag" style="font-size: var(--small-size);">众筹目标 2837% 达成</span>
+                <span class="promo-tag-gold" style="font-size: var(--small-size);">全网热销 TOP 1</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: PRICING =================== -->
+    <section class="slide pricing-slide" aria-label="定价方案" style="background: var(--bg-primary);">
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+                首发定价
+            </h2>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--red); text-align: center; margin-top: var(--element-gap); font-weight: 700;">
+                限时首发价 | 4月15日 - 4月30日
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); max-width: min(90vw, 900px);">
+                <!-- Basic -->
+                <div class="reveal-pop tier-card">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">基础款</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem);">350ml | 经典黑/白</p>
+                    <p style="margin-top: clamp(0.5rem, 1vw, 0.8rem);">
+                        <span class="price-original">&yen;299</span>
+                    </p>
+                    <p class="price-current" style="font-size: var(--price-size);">
+                        <span class="price-symbol">&yen;</span>199
+                    </p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.5rem, 1vw, 0.8rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
+                        <li style="padding: 0.25em 0;">&#10003; 精准控温 &plusmn;1&deg;C</li>
+                        <li style="padding: 0.25em 0;">&#10003; 6小时续航</li>
+                        <li style="padding: 0.25em 0;">&#10003; 316L内胆</li>
+                    </ul>
+                    <div class="discount-badge">省&yen;100</div>
+                </div>
+                <!-- Pro (featured) -->
+                <div class="reveal-pop tier-card featured">
+                    <span style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--red); color: #fff; font-size: var(--small-size); padding: 0.2em 0.8em; border-radius: 999px; font-weight: 700;">热卖</span>
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--red); font-weight: 700;">Pro款</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem);">500ml | 5色可选</p>
+                    <p style="margin-top: clamp(0.5rem, 1vw, 0.8rem);">
+                        <span class="price-original">&yen;399</span>
+                    </p>
+                    <p class="price-current" style="font-size: var(--price-size);">
+                        <span class="price-symbol">&yen;</span>299
+                    </p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.5rem, 1vw, 0.8rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
+                        <li style="padding: 0.25em 0;">&#10003; 精准控温 &plusmn;1&deg;C</li>
+                        <li style="padding: 0.25em 0;">&#10003; <strong style="color: var(--gold);">8小时</strong>续航</li>
+                        <li style="padding: 0.25em 0;">&#10003; APP蓝牙智控</li>
+                        <li style="padding: 0.25em 0;">&#10003; OLED温度显示</li>
+                    </ul>
+                    <div class="discount-badge">省&yen;100</div>
+                </div>
+                <!-- Gift Box -->
+                <div class="reveal-pop tier-card">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold);">礼盒装</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vw, 0.5rem);">Pro款 + 配件全套</p>
+                    <p style="margin-top: clamp(0.5rem, 1vw, 0.8rem);">
+                        <span class="price-original">&yen;599</span>
+                    </p>
+                    <p class="price-current" style="font-size: var(--price-size);">
+                        <span class="price-symbol">&yen;</span>399
+                    </p>
+                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.5rem, 1vw, 0.8rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left;">
+                        <li style="padding: 0.25em 0;">&#10003; Pro款全部功能</li>
+                        <li style="padding: 0.25em 0;">&#10003; 真皮杯套</li>
+                        <li style="padding: 0.25em 0;">&#10003; 无线充电底座</li>
+                        <li style="padding: 0.25em 0;">&#10003; 专属礼盒包装</li>
+                    </ul>
+                    <div class="discount-badge" style="background: linear-gradient(135deg, var(--gold), #ffab00); color: #1a1a1a;">省&yen;200</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: TESTIMONIALS =================== -->
+    <section class="slide" aria-label="用户评价" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-align: center;">
+                用户怎么说
+            </h2>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap);">
+                摘自天猫旗舰店
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); max-width: min(90vw, 900px); margin-left: auto; margin-right: auto;">
+                <!-- Review 1 -->
+                <div class="reveal testimonial-card">
+                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
+                        <div style="width: clamp(28px, 4vw, 36px); height: clamp(28px, 4vw, 36px); border-radius: 50%; background: linear-gradient(135deg, #e53935, #ff7043); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 700; color: #fff;">林</div>
+                        <div>
+                            <p style="font-size: var(--body-size); font-weight: 700;">林小雨</p>
+                            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        "办公室必备神器！设定55度，从早喝到晚温度都不变，再也不用反复去茶水间接水了。同事都来问我链接。"
+                    </p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.4rem, 0.8vw, 0.6rem);">2026-03-28 已购Pro款</p>
+                </div>
+                <!-- Review 2 -->
+                <div class="reveal testimonial-card">
+                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
+                        <div style="width: clamp(28px, 4vw, 36px); height: clamp(28px, 4vw, 36px); border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff9100); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 700; color: #1a1a1a;">张</div>
+                        <div>
+                            <p style="font-size: var(--body-size); font-weight: 700;">张先生</p>
+                            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        "买的礼盒装送老婆，包装很有质感。APP可以设温度提醒喝水，她说比花更实用，好评！"
+                    </p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.4rem, 0.8vw, 0.6rem);">2026-03-25 已购礼盒装</p>
+                </div>
+                <!-- Review 3 -->
+                <div class="reveal testimonial-card">
+                    <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.6rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
+                        <div style="width: clamp(28px, 4vw, 36px); height: clamp(28px, 4vw, 36px); border-radius: 50%; background: linear-gradient(135deg, #4caf50, #00bcd4); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); font-weight: 700; color: #fff;">王</div>
+                        <div>
+                            <p style="font-size: var(--body-size); font-weight: 700;">王大力</p>
+                            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        "续航确实够用，早上充满带去公司，到下班还有电。唯一建议是希望出更大容量的版本。"
+                    </p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.4rem, 0.8vw, 0.6rem);">2026-03-22 已购Pro款</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: CTA =================== -->
+    <section class="slide cta-slide" aria-label="立即抢购">
+        <!-- Decorative glow -->
+        <div style="position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(229, 57, 53, 0.12) 0%, transparent 60%); pointer-events: none;"></div>
+
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; position: relative; z-index: 1;">
+            <div class="reveal" style="margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">
+                <span class="promo-tag" style="font-size: clamp(0.65rem, 1.2vw, 0.9rem); animation: pulse-glow 2s ease-in-out infinite;">限时首发</span>
+            </div>
+            <h2 class="reveal" style="font-size: clamp(2rem, 5.5vw, 4.5rem); font-family: var(--font-display); font-weight: 900; line-height: 1.2;">
+                限时首发<br><span style="color: var(--red);">立即抢购</span>
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1.5vw, 1rem); line-height: 1.8;">
+                首发特惠 <span style="color: var(--gold); font-weight: 700;">&yen;199</span> 起 | 前 1000 名再减 &yen;20 | 4月30日截止
+            </p>
+
+            <a class="reveal cta-btn" href="#" style="margin-top: clamp(1rem, 3vw, 2rem);">
+                立即抢购 &yen;199 起
+            </a>
+
+            <!-- Platform icons -->
+            <div class="reveal" style="display: flex; gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: clamp(1.2rem, 3vw, 2rem); align-items: center;">
+                <div class="platform-icon" style="font-size: var(--small-size);">天猫</div>
+                <div class="platform-icon" style="font-size: var(--small-size);">京东</div>
+                <div class="platform-icon" style="font-size: var(--small-size);">抖音</div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem);">
+                三大平台同步首发 | 全国顺丰包邮
+            </p>
+        </div>
+
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+            Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Full-featured, production-ready
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `跳转到第 ${i + 1} 页`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           Animate numbers when slide becomes visible
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const decimal = el.dataset.decimal ? parseInt(el.dataset.decimal) : 0;
+                    const duration = 1500;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        /* Ease-out cubic */
+                        const eased = 1 - Math.pow(1 - progress, 3);
+
+                        if (decimal > 0) {
+                            /* Handle decimal numbers like 98.7 (stored as 987 with decimal=1) */
+                            const val = (target * eased / Math.pow(10, decimal)).toFixed(decimal);
+                            el.textContent = prefix + val + suffix;
+                        } else {
+                            el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        }
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        /* Initialize on DOM ready */
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

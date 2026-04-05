@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星辰科技 · 销售部 2025年度总结 — Bold Signal</title>
+
+    <!-- Fonts: Archivo Black (display) + Space Grotesk (body) + Noto Sans SC (CJK) — Bold Signal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Bold Signal
+           =========================================== */
+        :root {
+            --bg-primary: #111111;
+            --bg-gradient: linear-gradient(160deg, #111111 0%, #1e1e1e 50%, #111111 100%);
+            --card-bg: #E64A19;
+            --card-bg-alt: #FFB300;
+            --text-primary: #ffffff;
+            --text-on-card: #111111;
+            --accent-secondary: #FFB300;
+            --surface: rgba(255,255,255,0.06);
+            --border-subtle: rgba(255,255,255,0.1);
+            --text-secondary: #999999;
+            --text-muted: #555555;
+            --accent: #E64A19;
+            --accent-glow: rgba(255,87,34,0.3);
+
+            --font-display: 'Archivo Black', 'Noto Sans SC', sans-serif;
+            --font-body: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+            --font-cn: 'Noto Sans SC', sans-serif;
+            --font-mono: 'Space Grotesk', monospace;
+
+            --title-size: clamp(2rem, 6vw, 4.5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.5s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary);
+        }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        :lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } .two-col { flex-direction: column !important; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-slam { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-slam { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+
+        /* BOLD SIGNAL — Animations */
+        .reveal { opacity: 0; transform: translateY(25px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.05s; } .reveal:nth-child(2) { transition-delay: 0.12s; }
+        .reveal:nth-child(3) { transition-delay: 0.19s; } .reveal:nth-child(4) { transition-delay: 0.26s; }
+        .reveal:nth-child(5) { transition-delay: 0.33s; } .reveal:nth-child(6) { transition-delay: 0.4s; }
+
+        .reveal-slam { opacity: 0; transform: translateY(-40px) scale(1.05); transition: opacity 0.3s ease, transform 0.4s var(--ease-out-expo); }
+        .visible .reveal-slam { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* Progress & Nav */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: var(--card-bg); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--card-bg); transform: scale(1.4); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-body); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Section number */
+        .section-num {
+            font-family: var(--font-display); font-size: clamp(3rem, 10vw, 8rem); font-weight: 900;
+            color: rgba(255,255,255,0.04); position: absolute;
+            top: var(--slide-padding); left: var(--slide-padding); line-height: 1; z-index: 0;
+        }
+
+        /* Bold card accent */
+        .bold-card {
+            background: var(--card-bg); color: var(--text-on-card);
+            border-radius: clamp(8px, 1vw, 16px); padding: clamp(1rem, 2vw, 1.8rem);
+        }
+        .bold-card-alt { background: var(--card-bg-alt); }
+        .bold-card h3 { font-family: var(--font-display); font-size: var(--h3-size); }
+
+        /* Dark card */
+        .dark-card {
+            background: var(--surface); border: 1px solid var(--border-subtle);
+            border-radius: clamp(8px, 1vw, 12px); padding: clamp(1rem, 2vw, 1.5rem);
+        }
+
+        /* Bar chart */
+        .bar-chart { display: flex; align-items: flex-end; gap: clamp(0.8rem, 2vw, 1.5rem); height: clamp(120px, 25vh, 220px); }
+        .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: clamp(0.2rem, 0.5vw, 0.4rem); height: 100%; justify-content: flex-end; }
+        .bar { width: 100%; border-radius: clamp(4px, 0.5vw, 8px) clamp(4px, 0.5vw, 8px) 0 0; transition: height 1s var(--ease-out-expo); min-height: 4px; }
+
+        /* Leaderboard */
+        .lb-row { display: flex; align-items: center; gap: clamp(0.5rem, 1.5vw, 1rem); padding: clamp(0.4rem, 1vw, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle); }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-rank-badge { min-width: clamp(28px, 3.5vw, 36px); height: clamp(28px, 3.5vw, 36px); border-radius: clamp(4px, 0.5vw, 8px); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--small-size); flex-shrink: 0; }
+        .lb-bar-wrap { flex: 1; height: clamp(8px, 1.2vw, 12px); background: var(--surface); border-radius: 99px; overflow: hidden; }
+        .lb-bar-inner { height: 100%; border-radius: 99px; transition: width 1s var(--ease-out-expo); }
+
+        /* Donut */
+        .donut { width: clamp(100px, 18vw, 160px); height: clamp(100px, 18vw, 160px); border-radius: 50%; position: relative; }
+        .donut-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 60%; height: 60%; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center; }
+
+        /* Two column */
+        .two-col { display: flex; gap: var(--content-gap); align-items: center; }
+        .two-col > * { flex: 1; min-width: 0; }
+
+        /* NPS ring */
+        .nps-ring { width: clamp(80px, 14vw, 130px); height: clamp(80px, 14vw, 130px); border-radius: 50%; position: relative; }
+        .nps-center { position: absolute; top: 12%; left: 12%; width: 76%; height: 76%; border-radius: 50%; background: var(--bg-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title" style="background: var(--bg-gradient);">
+        <div class="section-num">01</div>
+        <div class="slide-content" style="justify-content: flex-end;">
+            <p class="reveal" style="font-family: var(--font-body); font-size: var(--small-size); color: var(--card-bg); letter-spacing: 0.2em; font-weight: 600;">ANNUAL SALES REVIEW 2025</p>
+            <h1 class="reveal-slam" style="font-family: var(--font-display); font-size: var(--title-size); margin-top: var(--element-gap);">
+                星辰科技
+            </h1>
+            <h2 class="reveal" style="font-family: var(--font-cn); font-size: var(--h2-size); font-weight: 900; color: var(--card-bg); margin-top: clamp(0.2rem, 0.5vw, 0.4rem);">销售部 · 年度总结</h2>
+            <div class="reveal" style="display: inline-block; margin-top: var(--content-gap); padding: clamp(0.4rem, 1vw, 0.6rem) clamp(1rem, 2.5vw, 1.5rem); background: var(--card-bg); border-radius: clamp(4px, 0.5vw, 6px);">
+                <span style="font-family: var(--font-body); font-size: var(--small-size); color: var(--text-on-card); font-weight: 600;">¥2.8亿营收 · 127%达成 · 68个新客户</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: EXECUTIVE SUMMARY -->
+    <section class="slide" aria-label="Executive Summary" style="background: var(--bg-gradient);">
+        <div class="section-num">02</div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">核心指标</h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr); max-width: min(85vw, 750px);">
+                <div class="reveal bold-card" style="text-align: center;">
+                    <div style="font-family: var(--font-display); font-size: var(--stat-size);">
+                        <span class="counter" data-target="2.8" data-prefix="¥" data-suffix="亿" data-decimal="1">¥0</span>
+                    </div>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.3em;">年度营收</p>
+                </div>
+                <div class="reveal bold-card bold-card-alt" style="text-align: center;">
+                    <div style="font-family: var(--font-display); font-size: var(--stat-size);">
+                        <span class="counter" data-target="127" data-suffix="%" data-decimal="0">0</span>
+                    </div>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.3em;">目标达成率</p>
+                </div>
+                <div class="reveal bold-card" style="text-align: center;">
+                    <div style="font-family: var(--font-display); font-size: var(--stat-size);">
+                        <span class="counter" data-target="68" data-decimal="0">0</span>
+                    </div>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.3em;">新签客户</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: REVENUE Q1-Q4 -->
+    <section class="slide" aria-label="Revenue" style="background: var(--bg-gradient);">
+        <div class="section-num">03</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">季度营收</h2>
+            <div class="reveal bar-chart" style="margin-top: var(--content-gap); max-width: min(85vw, 700px); margin-left: auto; margin-right: auto;">
+                <div class="bar-col">
+                    <div style="font-size: var(--small-size); font-weight: 700; color: var(--card-bg);">¥5,200万</div>
+                    <div class="bar animated-bar" data-height="45" style="background: var(--card-bg); height: 0;"></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Q1</div>
+                </div>
+                <div class="bar-col">
+                    <div style="font-size: var(--small-size); font-weight: 700; color: var(--card-bg);">¥6,800万</div>
+                    <div class="bar animated-bar" data-height="60" style="background: var(--card-bg); height: 0;"></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Q2</div>
+                </div>
+                <div class="bar-col">
+                    <div style="font-size: var(--small-size); font-weight: 700; color: var(--accent-secondary);">¥7,500万</div>
+                    <div class="bar animated-bar" data-height="70" style="background: var(--accent-secondary); height: 0;"></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Q3</div>
+                </div>
+                <div class="bar-col">
+                    <div style="font-size: var(--small-size); font-weight: 700; color: var(--accent-secondary);">¥8,500万</div>
+                    <div class="bar animated-bar" data-height="85" style="background: var(--accent-secondary); height: 0;"></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Q4</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap);">全年持续增长，Q4创历史新高</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: TOP PRODUCTS -->
+    <section class="slide" aria-label="Products" style="background: var(--bg-gradient);">
+        <div class="section-num">04</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">产品线收入</h2>
+            <div class="two-col" style="margin-top: var(--content-gap);">
+                <div class="reveal" style="display: flex; justify-content: center;">
+                    <div class="donut" style="background: conic-gradient(var(--card-bg) 0deg 180deg, var(--accent-secondary) 180deg 288deg, #fff 288deg 360deg);">
+                        <div class="donut-hole"><span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--card-bg);">¥2.8亿</span></div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 1rem);">
+                    <div class="reveal dark-card" style="border-left: 4px solid var(--card-bg);">
+                        <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900;">星云 SaaS 平台</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">50% · ¥1.4亿 · +35%</p>
+                    </div>
+                    <div class="reveal dark-card" style="border-left: 4px solid var(--accent-secondary);">
+                        <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900;">数据中台</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">30% · ¥8,400万 · +22%</p>
+                    </div>
+                    <div class="reveal dark-card" style="border-left: 4px solid #fff;">
+                        <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900;">定制化开发</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">20% · ¥5,600万 · +15%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: KEY WINS -->
+    <section class="slide" aria-label="Key Wins" style="background: var(--bg-gradient);">
+        <div class="section-num">05</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">标杆客户</h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr);">
+                <div class="reveal bold-card">
+                    <p style="font-size: var(--stat-size); font-family: var(--font-display); line-height: 1;">¥3,200<span style="font-size: var(--body-size);">万</span></p>
+                    <h3 style="margin-top: 0.3em;">华为</h3>
+                    <p style="font-size: var(--small-size); margin-top: 0.5em; line-height: 1.5;">全球供应链数字化 · 3年合约</p>
+                </div>
+                <div class="reveal bold-card bold-card-alt">
+                    <p style="font-size: var(--stat-size); font-family: var(--font-display); line-height: 1;">¥2,800<span style="font-size: var(--body-size);">万</span></p>
+                    <h3 style="margin-top: 0.3em;">中国银行</h3>
+                    <p style="font-size: var(--small-size); margin-top: 0.5em; line-height: 1.5;">智能风控数据中台 · 替换IBM</p>
+                </div>
+                <div class="reveal bold-card">
+                    <p style="font-size: var(--stat-size); font-family: var(--font-display); line-height: 1;">¥1,500<span style="font-size: var(--body-size);">万</span></p>
+                    <h3 style="margin-top: 0.3em;">比亚迪</h3>
+                    <p style="font-size: var(--small-size); margin-top: 0.5em; line-height: 1.5;">新能源产线IoT分析</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: TEAM LEADERBOARD -->
+    <section class="slide" aria-label="Team" style="background: var(--bg-gradient);">
+        <div class="section-num">06</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">销售排行榜</h2>
+            <div style="margin-top: var(--content-gap); max-width: min(85vw, 700px); margin-left: auto; margin-right: auto;">
+                <div class="reveal lb-row">
+                    <div class="lb-rank-badge" style="background: var(--card-bg); color: #fff;">1</div>
+                    <span style="font-weight: 700; font-size: var(--body-size); min-width: clamp(50px, 8vw, 80px);">张伟</span>
+                    <div class="lb-bar-wrap"><div class="lb-bar-inner animated-lb" data-width="100" style="background: var(--card-bg); width: 0;"></div></div>
+                    <span style="font-size: var(--small-size); font-weight: 700; color: var(--card-bg); min-width: clamp(50px, 8vw, 70px); text-align: right;">¥4,800万</span>
+                </div>
+                <div class="reveal lb-row">
+                    <div class="lb-rank-badge" style="background: var(--accent-secondary); color: #111;">2</div>
+                    <span style="font-weight: 700; font-size: var(--body-size); min-width: clamp(50px, 8vw, 80px);">李雨晴</span>
+                    <div class="lb-bar-wrap"><div class="lb-bar-inner animated-lb" data-width="88" style="background: var(--accent-secondary); width: 0;"></div></div>
+                    <span style="font-size: var(--small-size); font-weight: 700; min-width: clamp(50px, 8vw, 70px); text-align: right;">¥4,200万</span>
+                </div>
+                <div class="reveal lb-row">
+                    <div class="lb-rank-badge" style="background: var(--surface); color: var(--text-secondary);">3</div>
+                    <span style="font-weight: 700; font-size: var(--body-size); min-width: clamp(50px, 8vw, 80px);">王磊</span>
+                    <div class="lb-bar-wrap"><div class="lb-bar-inner animated-lb" data-width="75" style="background: var(--card-bg); width: 0;"></div></div>
+                    <span style="font-size: var(--small-size); font-weight: 700; min-width: clamp(50px, 8vw, 70px); text-align: right;">¥3,600万</span>
+                </div>
+                <div class="reveal lb-row">
+                    <div class="lb-rank-badge" style="background: var(--surface); color: var(--text-secondary);">4</div>
+                    <span style="font-weight: 700; font-size: var(--body-size); min-width: clamp(50px, 8vw, 80px);">陈思</span>
+                    <div class="lb-bar-wrap"><div class="lb-bar-inner animated-lb" data-width="65" style="background: var(--card-bg); opacity: 0.7; width: 0;"></div></div>
+                    <span style="font-size: var(--small-size); font-weight: 700; min-width: clamp(50px, 8vw, 70px); text-align: right;">¥3,100万</span>
+                </div>
+                <div class="reveal lb-row">
+                    <div class="lb-rank-badge" style="background: var(--surface); color: var(--text-secondary);">5</div>
+                    <span style="font-weight: 700; font-size: var(--body-size); min-width: clamp(50px, 8vw, 80px);">赵明</span>
+                    <div class="lb-bar-wrap"><div class="lb-bar-inner animated-lb" data-width="56" style="background: var(--card-bg); opacity: 0.5; width: 0;"></div></div>
+                    <span style="font-size: var(--small-size); font-weight: 700; min-width: clamp(50px, 8vw, 70px); text-align: right;">¥2,700万</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: CHANNEL ANALYSIS -->
+    <section class="slide" aria-label="Channels" style="background: var(--bg-gradient);">
+        <div class="section-num">07</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">渠道分析</h2>
+            <div class="two-col" style="margin-top: var(--content-gap);">
+                <div class="reveal" style="display: flex; justify-content: center;">
+                    <div class="donut" style="background: conic-gradient(var(--card-bg) 0deg 194deg, var(--accent-secondary) 194deg 302deg, #fff 302deg 360deg);">
+                        <div class="donut-hole"><span style="font-family: var(--font-display); font-size: var(--small-size);">CHANNELS</span></div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 1rem);">
+                    <div class="reveal dark-card" style="border-left: 4px solid var(--card-bg);">
+                        <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900;">直销团队 54%</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">¥1.51亿 · 核心驱动力</p>
+                    </div>
+                    <div class="reveal dark-card" style="border-left: 4px solid var(--accent-secondary);">
+                        <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900;">渠道伙伴 30%</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">¥8,400万 · 增速+45%</p>
+                    </div>
+                    <div class="reveal dark-card" style="border-left: 4px solid #fff;">
+                        <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900;">线上自助 16%</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">¥4,480万 · 中小客户入口</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: SATISFACTION -->
+    <section class="slide" aria-label="Satisfaction" style="background: var(--bg-gradient);">
+        <div class="section-num">08</div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">客户满意度</h2>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="nps-ring" style="background: conic-gradient(var(--card-bg) 0deg, var(--card-bg) 259deg, var(--surface) 259deg);">
+                        <div class="nps-center"><span style="font-family: var(--font-display); font-size: var(--h2-size); color: var(--card-bg);">72</span></div>
+                    </div>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.6em;">NPS 净推荐值</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="nps-ring" style="background: conic-gradient(var(--accent-secondary) 0deg, var(--accent-secondary) 331deg, var(--surface) 331deg);">
+                        <div class="nps-center"><span style="font-family: var(--font-display); font-size: var(--h2-size); color: var(--accent-secondary);">4.6</span><span style="font-size: var(--small-size); color: var(--text-secondary);">/5</span></div>
+                    </div>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.6em;">CSAT 满意度</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: CHALLENGES -->
+    <section class="slide" aria-label="Challenges" style="background: var(--bg-gradient);">
+        <div class="section-num">09</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">挑战与反思</h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(2, 1fr); max-width: min(85vw, 800px); margin-left: auto; margin-right: auto;">
+                <div class="reveal dark-card">
+                    <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900; color: var(--card-bg);">销售周期延长</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">平均成交周期 90天 &rarr; 120天</p>
+                </div>
+                <div class="reveal dark-card">
+                    <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900; color: var(--card-bg);">人才梯队</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">高级经理缺口3人</p>
+                </div>
+                <div class="reveal dark-card">
+                    <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900; color: var(--accent-secondary);">华南区增速</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">需加强本地化团队建设</p>
+                </div>
+                <div class="reveal dark-card">
+                    <h3 style="font-family: var(--font-cn); font-size: var(--h3-size); font-weight: 900; color: var(--accent-secondary);">SaaS续约</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">82% &rarr; 目标90%</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: 2026 GOALS -->
+    <section class="slide" aria-label="2026 Goals" style="background: var(--bg-gradient);">
+        <div class="section-num">10</div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size);">2026 目标</h2>
+            <div class="reveal-slam" style="margin-top: var(--content-gap);">
+                <span style="font-family: var(--font-display); font-size: clamp(3rem, 12vw, 9rem); color: var(--card-bg); line-height: 1;">¥4亿</span>
+            </div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary);">同比增长 43% &mdash; 全面扩张</p>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr); max-width: min(80vw, 650px);">
+                <div class="reveal bold-card" style="text-align: center; padding: clamp(0.6rem, 1.5vw, 1rem);">
+                    <h3>华南扩张</h3>
+                    <p style="font-size: var(--small-size); margin-top: 0.2em;">深圳分部</p>
+                </div>
+                <div class="reveal bold-card bold-card-alt" style="text-align: center; padding: clamp(0.6rem, 1.5vw, 1rem);">
+                    <h3>团队 50人</h3>
+                    <p style="font-size: var(--small-size); margin-top: 0.2em;">35 &rarr; 50</p>
+                </div>
+                <div class="reveal bold-card" style="text-align: center; padding: clamp(0.6rem, 1.5vw, 1rem);">
+                    <h3>续约 90%</h3>
+                    <p style="font-size: var(--small-size); margin-top: 0.2em;">客户成功升级</p>
+                </div>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() { this.slides=[...document.querySelectorAll('.slide')]; this.currentSlide=0; this.isAnimating=false; this.touchStartY=0; this.touchStartX=0; this.init(); }
+            init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if(this.slides[0]) this.slides[0].classList.add('visible'); }
+            setupIntersectionObserver() { const o=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const idx=this.slides.indexOf(entry.target);if(idx!==-1){this.currentSlide=idx;this.updateUI();}}});},{threshold:0.5}); this.slides.forEach(s=>o.observe(s)); }
+            setupKeyboardNav() { document.addEventListener('keydown',(e)=>{if(e.target.getAttribute('contenteditable')) return; switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}}); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupTouchNav() { document.addEventListener('touchstart',(e)=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true}); document.addEventListener('touchend',(e)=>{const dy=this.touchStartY-e.changedTouches[0].clientY;const dx=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dy)<50||Math.abs(dx)>Math.abs(dy))return;if(dy>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true}); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupWheelNav() { let t; document.addEventListener('wheel',(e)=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true}); }
+            setupProgressBar() { this.progressBar=document.getElementById('progressBar'); }
+            setupNavDots() { const c=document.getElementById('navDots');if(!c)return; this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Go to slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);}); }
+            setupSlideCounter() { this.counter=document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(i) { if(i<0||i>=this.slides.length||this.isAnimating)return; this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600); }
+            updateUI() { const t=this.slides.length,c=this.currentSlide; if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`; document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c)); if(this.counter)this.counter.textContent=`${c+1} / ${t}`; }
+        }
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+
+        /* Counters */
+        const counters=document.querySelectorAll('.counter');
+        const cObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){const el=entry.target;const target=parseFloat(el.dataset.target);const suffix=el.dataset.suffix||'';const prefix=el.dataset.prefix||'';const decimal=parseInt(el.dataset.decimal)||0;const dur=1500;const start=performance.now();function tick(now){const elapsed=now-start;const p=Math.min(elapsed/dur,1);const eased=1-Math.pow(1-p,3);el.textContent=prefix+(target*eased).toFixed(decimal)+suffix;if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);cObs.unobserve(el);}});},{threshold:0.5});
+        counters.forEach(c=>cObs.observe(c));
+
+        /* Animated bars */
+        const bObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.querySelectorAll('.animated-bar').forEach((b,i)=>{setTimeout(()=>{b.style.height=b.dataset.height+'%';},i*150);});entry.target.querySelectorAll('.animated-lb').forEach((b,i)=>{setTimeout(()=>{b.style.width=b.dataset.width+'%';},i*100);});bObs.unobserve(entry.target);}});},{threshold:0.3});
+        document.querySelectorAll('.slide').forEach(s=>bObs.observe(s));
+    </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinema Scope</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0a;
+  --bar: #000;
+  --gold: #d4a843;
+  --text: #e8e4df;
+  --secondary: #a8a8a8;
+  --bar-h: 8vh;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Lato', 'Noto Sans SC', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Film grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+/* Letterbox bars */
+.letterbox-top, .letterbox-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: var(--bar-h);
+  background: var(--bar);
+  z-index: 100;
+}
+.letterbox-top { top: 0; }
+.letterbox-bottom { bottom: 0; }
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--gold);
+  z-index: 1001;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: calc(var(--bar-h) + clamp(12px, 1.5vh, 24px));
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Bebas Neue', 'Noto Sans SC', sans-serif;
+  font-size: clamp(14px, 1.4vw, 20px);
+  color: var(--secondary);
+  z-index: 101;
+  letter-spacing: 0.12em;
+}
+
+.page-counter .current { color: var(--gold); }
+
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  position: absolute;
+  top: var(--bar-h);
+  bottom: var(--bar-h);
+  left: 0;
+  right: 0;
+  padding: clamp(32px, 5vh, 64px) clamp(48px, 8vw, 160px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.slide-inner.v-center {
+  justify-content: center;
+}
+
+.chapter {
+  font-family: 'Bebas Neue', 'Noto Sans SC', sans-serif;
+  font-size: clamp(12px, 1.1vw, 16px);
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+
+/* Title slide */
+.cinema-title {
+  font-family: 'Bebas Neue', 'Noto Sans SC', sans-serif;
+  font-size: clamp(52px, 9vw, 160px);
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  margin-bottom: clamp(12px, 2vh, 24px);
+}
+
+.cinema-title .gold { color: var(--gold); }
+
+.cinema-sub {
+  font-size: clamp(14px, 1.6vw, 22px);
+  color: var(--secondary);
+  font-weight: 300;
+  max-width: 50ch;
+  line-height: 1.6;
+}
+
+/* Lower third style */
+.lower-third {
+  position: absolute;
+  bottom: clamp(48px, 8vh, 80px);
+  left: clamp(48px, 8vw, 160px);
+}
+
+.lower-third .lt-bar {
+  width: clamp(32px, 3vw, 48px);
+  height: 2px;
+  background: var(--gold);
+  margin-bottom: clamp(12px, 1.5vh, 20px);
+}
+
+.lower-third .lt-text {
+  font-size: clamp(13px, 1.2vw, 17px);
+  color: var(--secondary);
+  letter-spacing: 0.05em;
+}
+
+/* Features */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vh, 48px);
+  max-width: 700px;
+}
+
+.feature-row {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(20px, 2.5vw, 40px);
+}
+
+.feature-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 3.5vw, 52px);
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  width: clamp(40px, 4vw, 64px);
+}
+
+.feature-content h3 {
+  font-family: 'Bebas Neue', 'Noto Sans SC', sans-serif;
+  font-size: clamp(22px, 2.8vw, 40px);
+  letter-spacing: 0.06em;
+  margin-bottom: clamp(4px, 0.5vh, 8px);
+}
+
+.feature-content p {
+  font-size: clamp(13px, 1.2vw, 17px);
+  color: var(--secondary);
+  line-height: 1.6;
+}
+
+/* Stats */
+.stats-cinema {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+}
+
+.stat-item .val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(56px, 10vw, 160px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.stat-item .val .accent { color: var(--gold); }
+
+.stat-item .desc {
+  font-size: clamp(13px, 1.2vw, 17px);
+  color: var(--secondary);
+  margin-top: clamp(4px, 0.8vh, 12px);
+  letter-spacing: 0.05em;
+}
+
+/* Quote */
+.cine-quote {
+  font-family: 'Bebas Neue', 'Noto Sans SC', sans-serif;
+  font-size: clamp(32px, 5.5vw, 88px);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  max-width: 18ch;
+  margin-bottom: clamp(20px, 3vh, 36px);
+}
+
+.cine-attr {
+  font-family: 'Lato', sans-serif;
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  font-weight: 400;
+}
+
+/* Close */
+.close-cinema {
+  font-family: 'Bebas Neue', 'Noto Sans SC', sans-serif;
+  font-size: clamp(48px, 8vw, 140px);
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  margin-bottom: clamp(12px, 2vh, 24px);
+}
+
+/* Reveal */
+.rv {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.slide.active .rv {
+  animation: cUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .rv:nth-child(1) { animation-delay: 0.1s; }
+.slide.active .rv:nth-child(2) { animation-delay: 0.22s; }
+.slide.active .rv:nth-child(3) { animation-delay: 0.36s; }
+.slide.active .rv:nth-child(4) { animation-delay: 0.5s; }
+.slide.active .rv:nth-child(5) { animation-delay: 0.64s; }
+.slide.active .rv:nth-child(6) { animation-delay: 0.78s; }
+
+@keyframes cUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="letterbox-top"></div>
+<div class="letterbox-bottom"></div>
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="slide-inner">
+    <div class="chapter rv">CHAPTER 01 &mdash; PROLOGUE</div>
+    <h1 class="cinema-title rv">AI <span class="gold">DESIGN</span><br>REVOLUTION</h1>
+    <div class="lower-third rv">
+      <div class="lt-bar"></div>
+      <div class="lt-text">从像素到体验，重新定义创造力的边界</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="slide-inner v-center">
+    <div class="chapter rv">CHAPTER 02 &mdash; CAPABILITIES</div>
+    <div class="feature-list">
+      <div class="feature-row rv">
+        <div class="feature-num">01</div>
+        <div class="feature-content">
+          <h3>智能布局</h3>
+          <p>AI 理解内容语义，自动生成符合视觉层次的排版方案</p>
+        </div>
+      </div>
+      <div class="feature-row rv">
+        <div class="feature-num">02</div>
+        <div class="feature-content">
+          <h3>风格迁移</h3>
+          <p>一键将任意参考图的视觉语言迁移到你的设计</p>
+        </div>
+      </div>
+      <div class="feature-row rv">
+        <div class="feature-num">03</div>
+        <div class="feature-content">
+          <h3>实时协作</h3>
+          <p>多人同步编辑，AI 调和不同设计师的意图</p>
+        </div>
+      </div>
+      <div class="feature-row rv">
+        <div class="feature-num">04</div>
+        <div class="feature-content">
+          <h3>自适应排版</h3>
+          <p>一次设计，适配从手表到巨幕的所有尺寸</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="slide-inner">
+    <div class="chapter rv">CHAPTER 03 &mdash; IMPACT</div>
+    <div class="stats-cinema">
+      <div class="stat-item rv">
+        <div class="val">10<span class="accent">x</span></div>
+        <div class="desc">效率提升</div>
+      </div>
+      <div class="stat-item rv">
+        <div class="val">93<span class="accent">%</span></div>
+        <div class="desc">用户满意度</div>
+      </div>
+      <div class="stat-item rv">
+        <div class="val">50<span class="accent">M</span></div>
+        <div class="desc">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="slide-inner v-center">
+    <div class="chapter rv">CHAPTER 04 &mdash; PHILOSOPHY</div>
+    <div class="cine-quote rv">好的设计不是装饰，是沟通。</div>
+    <div class="cine-attr rv">&mdash; DIETER RAMS</div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="slide-inner">
+    <div class="chapter rv">CHAPTER 05 &mdash; FINALE</div>
+    <div class="close-cinema rv">REDEFINE<br><span style="color:var(--gold)">CREATIVITY</span></div>
+    <div class="lower-third rv">
+      <div class="lt-bar"></div>
+      <div class="lt-text">AI + 人类直觉，设计的下一个十年从这里开始</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.rv').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

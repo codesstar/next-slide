@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bauhaus Primary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Montserrat:wght@400;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+:lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .keyboard-hint, .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } }
+@media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+@media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, [class*="reveal-"] { opacity: 0; transform: none !important; filter: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; } .slide.active .reveal, .slide.active [class*="reveal-"] { opacity: 1; } }
+@media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; } .progress-bar, .nav-dots, .slide-counter, .page-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+
+/* === BAUHAUS PRIMARY THEME === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #FFFFFF;
+  --text: #000000;
+  --red: #FF0000;
+  --blue: #0047AB;
+  --yellow: #FFD700;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+body { font-family: 'IBM Plex Sans', 'Noto Sans SC', sans-serif; font-weight: 300; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 4px;
+  background: var(--red); z-index: 1000;
+  transition: width 0.5s var(--ease-out-expo);
+}
+
+.page-counter {
+  position: fixed; bottom: clamp(20px, 3vh, 40px); right: clamp(24px, 3vw, 48px);
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif; font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 800; color: #888; z-index: 1000; letter-spacing: 0.15em;
+}
+.page-counter .current { color: var(--text); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+/* Bauhaus shapes */
+.red-circle {
+  position: absolute; width: clamp(120px, 15vw, 220px); height: clamp(120px, 15vw, 220px);
+  background: var(--red); border-radius: 50%; border: 3px solid var(--text);
+}
+.blue-square {
+  position: absolute; width: clamp(50px, 6vw, 80px); height: clamp(50px, 6vw, 80px);
+  background: var(--blue); border: 3px solid var(--text); transform: rotate(45deg);
+}
+.yellow-triangle {
+  position: absolute; width: clamp(60px, 7vw, 100px); height: clamp(60px, 7vw, 100px);
+  background: var(--yellow); clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+.h-line {
+  position: absolute; width: 100%; height: 3px; background: var(--text);
+}
+.ruler {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 12px;
+  background-image: repeating-linear-gradient(to right, #000 0px, #000 1px, transparent 1px, transparent 64px);
+  background-size: 64px 12px; opacity: 0.3;
+}
+
+/* Typography */
+.title-huge {
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+  font-weight: 800; font-size: clamp(42px, 7vw, 120px);
+  line-height: 1.05; letter-spacing: clamp(4px, 1vw, 20px);
+  text-transform: uppercase; text-align: center;
+}
+.subtitle-text {
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+  font-weight: 400; font-size: clamp(11px, 1vw, 14px);
+  letter-spacing: clamp(4px, 0.6vw, 8px); text-transform: uppercase; text-align: center;
+}
+.section-label {
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+  font-size: clamp(11px, 0.9vw, 13px); font-weight: 800;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--red); margin-bottom: clamp(24px, 4vh, 48px);
+}
+.body-text {
+  font-family: 'IBM Plex Sans', 'Noto Sans SC', sans-serif;
+  font-weight: 300; font-size: clamp(13px, 1.3vw, 18px);
+  line-height: 1.8; letter-spacing: 0.5px; max-width: 55ch;
+}
+
+/* Grid */
+.feature-grid-bau {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 3vw, 48px) clamp(32px, 5vw, 80px);
+  max-width: 900px;
+}
+.feature-item h3 {
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+  font-weight: 800; font-size: clamp(18px, 2vw, 28px);
+  margin-bottom: clamp(6px, 1vh, 12px); letter-spacing: 0.1em; text-transform: uppercase;
+}
+.feature-item p {
+  font-size: clamp(12px, 1.2vw, 16px); color: #555; line-height: 1.7; max-width: 30ch;
+}
+.feature-item .shape-indicator {
+  width: clamp(20px, 2.5vw, 36px); height: clamp(20px, 2.5vw, 36px);
+  margin-bottom: clamp(8px, 1vh, 16px); border: 2px solid var(--text);
+}
+.shape-circle { border-radius: 50%; background: var(--red); }
+.shape-square { background: var(--blue); }
+.shape-tri { background: var(--yellow); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border: none !important; }
+.shape-diamond { background: var(--text); transform: rotate(45deg); }
+
+/* Stats */
+.stats-row {
+  display: flex; gap: clamp(32px, 5vw, 100px); align-items: flex-end; flex-wrap: wrap;
+}
+.stat-block .number {
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+  font-weight: 800; font-size: clamp(48px, 8vw, 130px);
+  line-height: 1; letter-spacing: -0.04em;
+}
+.stat-block .unit { font-size: 0.4em; }
+.stat-block .label {
+  font-size: clamp(11px, 1.1vw, 16px); color: #555;
+  margin-top: clamp(6px, 1vh, 14px); letter-spacing: 0.15em; text-transform: uppercase;
+}
+
+/* Quote */
+.quote-text {
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+  font-weight: 800; font-size: clamp(28px, 4.5vw, 68px);
+  line-height: 1.2; letter-spacing: -0.01em; max-width: 18ch;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.quote-bar {
+  width: clamp(40px, 4vw, 64px); height: 4px;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+.quote-attr {
+  font-size: clamp(12px, 1.2vw, 18px); color: #555; font-weight: 400; letter-spacing: 0.1em;
+}
+
+/* Close */
+.close-title {
+  font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+  font-weight: 800; font-size: clamp(36px, 6vw, 100px);
+  letter-spacing: clamp(2px, 0.3vw, 6px); text-transform: uppercase;
+  line-height: 1.1; margin-bottom: clamp(12px, 2vh, 24px);
+}
+.close-sub {
+  font-size: clamp(13px, 1.5vw, 22px); color: #555;
+  font-weight: 300; letter-spacing: 0.15em; text-transform: uppercase;
+}
+.bars-deco { display: flex; flex-direction: column; gap: clamp(10px, 1.5vh, 20px); }
+.bar-deco {
+  height: clamp(24px, 3.5vh, 48px); border: 3px solid var(--text);
+  border-left: none;
+}
+
+/* Bg grid */
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, #E0E0E0 1px, transparent 1px),
+    linear-gradient(to bottom, #E0E0E0 1px, transparent 1px);
+  background-size: 64px 64px; pointer-events: none; opacity: 0.5;
+}
+
+/* Animations */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+.slide.active .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { transition-delay: 0.15s; }
+.slide.active .reveal:nth-child(3) { transition-delay: 0.28s; }
+.slide.active .reveal:nth-child(4) { transition-delay: 0.40s; }
+.slide.active .reveal:nth-child(5) { transition-delay: 0.52s; }
+.slide.active .reveal:nth-child(6) { transition-delay: 0.64s; }
+.slide.active .reveal:nth-child(7) { transition-delay: 0.76s; }
+
+/* Shape animations */
+.slide.active .shape-anim {
+  animation: shapeIn 0.8s var(--ease-out-expo) forwards;
+}
+@keyframes shapeIn {
+  from { opacity: 0; transform: scale(0) rotate(-90deg); }
+  to { opacity: 1; transform: scale(1) rotate(var(--rot, 0deg)); }
+}
+
+@media (max-width: 600px) {
+  .feature-grid-bau { grid-template-columns: 1fr; }
+  .stats-row { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="bg-grid"></div>
+  <div class="red-circle shape-anim" style="top: -8%; left: -5%; --rot: 0deg;"></div>
+  <div class="blue-square shape-anim" style="bottom: 12%; left: 8%; --rot: 45deg; transition-delay: 0.3s;"></div>
+  <div class="yellow-triangle shape-anim" style="bottom: 10%; right: 8%; --rot: 0deg; transition-delay: 0.5s;"></div>
+  <div class="h-line" style="top: 70%;"></div>
+  <div class="slide-inner" style="align-items: center; text-align: center;">
+    <div class="title-huge reveal" style="border: 4px solid var(--text); padding: clamp(16px, 2vh, 32px) clamp(24px, 3vw, 48px);">
+      设计革命
+    </div>
+    <div class="subtitle-text reveal" style="margin-top: clamp(16px, 2vh, 32px);">FORM FOLLOWS FUNCTION &middot; 2026</div>
+  </div>
+  <div class="ruler"></div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">CORE CAPABILITIES</div>
+    <div class="feature-grid-bau">
+      <div class="feature-item reveal">
+        <div class="shape-indicator shape-circle"></div>
+        <h3>智能布局</h3>
+        <p>AI 理解内容语义，自动生成符合视觉层次的排版方案</p>
+      </div>
+      <div class="feature-item reveal">
+        <div class="shape-indicator shape-square"></div>
+        <h3>风格迁移</h3>
+        <p>一键将任意参考图的视觉语言迁移到你的设计中</p>
+      </div>
+      <div class="feature-item reveal">
+        <div class="shape-indicator shape-tri"></div>
+        <h3>实时协作</h3>
+        <p>多人同步编辑，AI 实时调和不同设计师的修改意图</p>
+      </div>
+      <div class="feature-item reveal">
+        <div class="shape-indicator shape-diamond"></div>
+        <h3>自适应排版</h3>
+        <p>一次设计，自动适配从手表到巨幕的所有尺寸</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="bg-grid"></div>
+  <div class="red-circle" style="top: 5%; right: -5%; width: clamp(80px, 10vw, 150px); height: clamp(80px, 10vw, 150px); opacity: 0.15;"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">BY THE NUMBERS</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number" style="color: var(--red);">10<span class="unit">x</span></div>
+        <div class="label">效率提升</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number" style="color: var(--blue);">93<span class="unit">%</span></div>
+        <div class="label">用户满意度</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number" style="color: var(--text);">50<span class="unit" style="color: var(--yellow);">M+</span></div>
+        <div class="label">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="bg-grid"></div>
+  <div style="position: absolute; top: 0; left: 0; width: 40%; height: 100%; background: var(--red);"></div>
+  <div class="slide-inner" style="padding-left: clamp(60px, 12vw, 200px); z-index: 1;">
+    <div class="quote-bar reveal" style="background: var(--blue);"></div>
+    <div class="quote-text reveal">好的设计<br>不是装饰，<br>是沟通。</div>
+    <div class="quote-attr reveal">— Dieter Rams</div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="bg-grid"></div>
+  <div style="position: absolute; top: 18%; left: 0; display: flex; flex-direction: column; gap: clamp(12px, 1.8vh, 20px); width: 45%;">
+    <div class="bar-deco" style="width: 100%; background: var(--red);"></div>
+    <div class="bar-deco" style="width: 80%; background: var(--blue);"></div>
+    <div class="bar-deco" style="width: 60%; background: var(--yellow);"></div>
+  </div>
+  <div style="position: absolute; top: 0; left: 40%; width: 1px; height: 100%; background: var(--red); opacity: 0.3;"></div>
+  <div class="slide-inner" style="align-items: flex-end; text-align: left; padding-right: clamp(48px, 6vw, 100px);">
+    <div class="close-title reveal">LESS<br>IS<br>MORE</div>
+    <div class="close-sub reveal">FORM / FUNCTION / FUTURE</div>
+  </div>
+  <div style="position: absolute; bottom: clamp(40px, 5vh, 60px); left: clamp(30px, 4vw, 40px); right: clamp(30px, 4vw, 40px); height: 3px; background: var(--text);"></div>
+  <div style="position: absolute; bottom: clamp(16px, 2vh, 24px); left: clamp(30px, 4vw, 40px); right: clamp(30px, 4vw, 40px); display: flex; justify-content: space-between;">
+    <span style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: clamp(9px, 0.8vw, 10px); letter-spacing: 4px; text-transform: uppercase;">BAUHAUS DESIGN SYSTEM</span>
+    <span style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: clamp(9px, 0.8vw, 10px); letter-spacing: 4px; text-transform: uppercase;">2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal').forEach(el=>{
+      el.style.transition='none'; el.offsetHeight;
+      el.style.transition='';
+    });
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click',function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

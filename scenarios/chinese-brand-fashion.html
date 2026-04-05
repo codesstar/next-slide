@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>锦绣坊 — 东方有衣，锦绣成裳</title>
+
+    <!-- Fonts: Cormorant Garamond (editorial display) + Libre Franklin (body) + Noto Serif SC + Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Libre+Franklin:wght@200;300;400;500&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Fashion Editorial
+           Vogue / Bazaar China aesthetic
+           =========================================== */
+        :root {
+            /* --- Color Palette: Noir, Burgundy & Gold --- */
+            --black: #000000;
+            --white: #ffffff;
+            --off-white: #f5f3f0;
+            --burgundy: #8B1A2B;
+            --burgundy-light: rgba(139, 26, 43, 0.12);
+            --burgundy-glow: rgba(139, 26, 43, 0.25);
+            --gold: #C5A258;
+            --gold-light: rgba(197, 162, 88, 0.15);
+            --text-on-dark: #e8e4df;
+            --text-muted-dark: #7a756e;
+            --text-on-light: #1a1a1a;
+            --text-muted-light: #999490;
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(0, 0, 0, 0.08);
+            --surface-dark: rgba(255, 255, 255, 0.04);
+            --surface-light: rgba(0, 0, 0, 0.03);
+
+            /* --- Typography --- */
+            --font-display-en: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            --font-display-cn: 'Noto Serif SC', 'Cormorant Garamond', serif;
+            --font-body-en: 'Libre Franklin', 'Noto Sans SC', sans-serif;
+            --font-body-cn: 'Noto Sans SC', 'Libre Franklin', sans-serif;
+            --font-display: var(--font-display-cn);
+            --font-body: var(--font-body-cn);
+
+            --title-size: clamp(3rem, 10vw, 9rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.2vw, 1.5rem);
+            --subtitle-size: clamp(0.875rem, 1.8vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --label-size: clamp(0.55rem, 0.8vw, 0.75rem);
+            --stat-size: clamp(2.5rem, 9vw, 7rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-editorial: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-slow: 1.2s;
+            --duration-normal: 0.8s;
+            --duration-fast: 0.4s;
+
+            /* --- Mapped vars for nav components --- */
+            --accent: var(--burgundy);
+            --accent-glow: var(--burgundy-glow);
+            --text-muted: var(--text-muted-dark);
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        :lang(zh), :lang(zh-CN) {
+            line-height: 1.7;
+            word-break: normal;
+            overflow-wrap: break-word;
+        }
+
+        h1, h2, h3 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(2rem, 7vw, 5rem);
+                --h2-size: clamp(1.2rem, 3vw, 2rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.8rem, 5vw, 3rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1.2rem, 4vw, 2rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 700px) {
+            .product-grid { grid-template-columns: 1fr !important; }
+            .craft-grid { grid-template-columns: 1fr 1fr !important; }
+            .editorial-split { flex-direction: column !important; }
+            .editorial-split > * { flex: none !important; width: 100% !important; }
+        }
+        @media (max-width: 500px) {
+            .craft-grid { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(2rem, 12vw, 4rem); }
+            .grid { grid-template-columns: 1fr; }
+            .slide-content[style*="flex-direction: row"] { flex-direction: column !important; }
+            .slide-counter { display: none; }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content { max-width: 1600px; margin: 0 auto; }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box { border-width: 0.5px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-clip, .reveal-fade {
+                opacity: 0; transform: none !important; filter: none !important;
+                clip-path: none !important; transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-clip, .visible .reveal-fade { opacity: 1; }
+        }
+
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
+        }
+
+        /* ===========================================
+           BODY — Fashion Editorial Base
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--black);
+            color: var(--text-on-dark);
+            font-weight: 300;
+        }
+
+        /* ===========================================
+           SLIDE THEMES — Alternating Black/White
+           =========================================== */
+        .slide-dark {
+            background: var(--black);
+            color: var(--text-on-dark);
+        }
+        .slide-light {
+            background: var(--off-white);
+            color: var(--text-on-light);
+        }
+        .slide-light .hairline { border-color: rgba(0,0,0,0.12) !important; }
+        .slide-dark .hairline { border-color: rgba(255,255,255,0.12) !important; }
+
+        /* ===========================================
+           ANIMATIONS — Slow editorial fade-ins
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(clamp(10px, 1.5vh, 20px));
+            transition: opacity var(--duration-slow) var(--ease-editorial),
+                        transform var(--duration-slow) var(--ease-editorial);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.3s; }
+        .reveal:nth-child(3) { transition-delay: 0.5s; }
+        .reveal:nth-child(4) { transition-delay: 0.7s; }
+        .reveal:nth-child(5) { transition-delay: 0.9s; }
+        .reveal:nth-child(6) { transition-delay: 1.1s; }
+        .reveal:nth-child(7) { transition-delay: 1.3s; }
+        .reveal:nth-child(8) { transition-delay: 1.5s; }
+
+        /* Clip-path reveal for editorial "photography" sections */
+        .reveal-clip {
+            opacity: 0;
+            clip-path: inset(0 100% 0 0);
+            transition: opacity var(--duration-slow) var(--ease-editorial),
+                        clip-path var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal-clip {
+            opacity: 1;
+            clip-path: inset(0 0 0 0);
+        }
+
+        /* Gentle fade only */
+        .reveal-fade {
+            opacity: 0;
+            transition: opacity 1.6s var(--ease-editorial);
+        }
+        .slide.visible .reveal-fade {
+            opacity: 1;
+        }
+
+        /* ===========================================
+           EDITORIAL TYPOGRAPHY
+           =========================================== */
+        .section-label {
+            font-family: var(--font-body-en);
+            font-size: var(--label-size);
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.35em;
+            color: var(--gold);
+        }
+
+        .display-cn {
+            font-family: var(--font-display-cn);
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .display-en {
+            font-family: var(--font-display-en);
+            font-style: italic;
+            font-weight: 400;
+            line-height: 1.15;
+        }
+
+        .body-light {
+            font-family: var(--font-body-cn);
+            font-weight: 300;
+            line-height: 1.9;
+        }
+
+        /* Vertical decorative text */
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-family: var(--font-display-cn);
+            letter-spacing: 0.2em;
+        }
+
+        /* Hairline dividers */
+        .hairline-h {
+            width: clamp(40px, 6vw, 80px);
+            height: 0;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+        .hairline-h-wide {
+            width: clamp(60px, 15vw, 200px);
+            height: 0;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+        .slide-light .hairline-h,
+        .slide-light .hairline-h-wide {
+            border-color: rgba(0,0,0,0.12);
+        }
+
+        /* ===========================================
+           EDITORIAL PHOTOGRAPHY PLACEHOLDERS
+           Simulated fabric textures via CSS gradients
+           =========================================== */
+        .photo-silk {
+            background:
+                repeating-linear-gradient(
+                    135deg,
+                    rgba(197,162,88,0.03) 0px,
+                    transparent 2px,
+                    transparent 8px
+                ),
+                linear-gradient(160deg, #1a1519 0%, #2a1f25 40%, #1a1519 100%);
+        }
+        .photo-embroidery {
+            background:
+                radial-gradient(ellipse at 30% 40%, rgba(139,26,43,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(197,162,88,0.1) 0%, transparent 40%),
+                linear-gradient(175deg, #1c1318 0%, #241a1f 50%, #1a1519 100%);
+        }
+        .photo-garden {
+            background:
+                radial-gradient(ellipse at 40% 30%, rgba(80,100,70,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 70%, rgba(197,162,88,0.05) 0%, transparent 40%),
+                linear-gradient(170deg, #ece8e2 0%, #e5e0d8 50%, #dfd9d0 100%);
+        }
+        .photo-atelier {
+            background:
+                linear-gradient(170deg, rgba(255,255,255,0.02) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(197,162,88,0.06) 0%, transparent 60%),
+                linear-gradient(175deg, #0a0809 0%, #151113 50%, #0a0809 100%);
+        }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 1px;
+            background: linear-gradient(90deg, var(--burgundy), var(--gold));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.5s var(--ease-editorial);
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 0.8vh, 10px);
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: clamp(4px, 0.4vw, 6px);
+            height: clamp(4px, 0.4vw, 6px);
+            border-radius: 50%;
+            background: var(--text-muted-dark);
+            border: none;
+            cursor: pointer;
+            transition: all 0.5s var(--ease-editorial);
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--gold);
+            transform: scale(1.8);
+            box-shadow: 0 0 8px rgba(197, 162, 88, 0.3);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-body-en);
+            font-size: var(--small-size);
+            font-weight: 200;
+            color: var(--text-muted-dark);
+            z-index: 9998;
+            letter-spacing: 0.2em;
+        }
+
+        /* ===========================================
+           SEASONAL COLLECTION LABEL
+           Magazine section header style
+           =========================================== */
+        .collection-label {
+            display: inline-flex;
+            align-items: center;
+            gap: clamp(0.5rem, 1.5vw, 1.5rem);
+            font-family: var(--font-body-en);
+            font-size: var(--label-size);
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.35em;
+        }
+        .collection-label::before,
+        .collection-label::after {
+            content: '';
+            width: clamp(20px, 4vw, 50px);
+            height: 1px;
+            background: currentColor;
+            opacity: 0.3;
+        }
+
+        /* ===========================================
+           FABRIC TEXTURE SHIMMER (subtle animation)
+           =========================================== */
+        @keyframes fabric-shimmer {
+            0%, 100% { opacity: 0.03; }
+            50% { opacity: 0.06; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE — Black, dramatic =================== -->
+    <section class="slide slide-dark" aria-label="Title">
+        <!-- Decorative vertical text -->
+        <div class="reveal-fade vertical-text" style="position: absolute; right: clamp(3rem, 6vw, 6rem); top: 50%; transform: translateY(-50%); font-size: var(--label-size); color: rgba(197,162,88,0.15); letter-spacing: 0.6em; pointer-events: none;">
+            东方有衣锦绣成裳
+        </div>
+
+        <!-- Gold hairline frame — top -->
+        <div style="position: absolute; top: clamp(1.5rem, 3vw, 3rem); left: clamp(2rem, 5vw, 5rem); right: clamp(2rem, 5vw, 5rem); height: 0; border-top: 1px solid rgba(197,162,88,0.12);"></div>
+        <!-- Gold hairline frame — bottom -->
+        <div style="position: absolute; bottom: clamp(1.5rem, 3vw, 3rem); left: clamp(2rem, 5vw, 5rem); right: clamp(2rem, 5vw, 5rem); height: 0; border-top: 1px solid rgba(197,162,88,0.12);"></div>
+
+        <div class="slide-content" style="align-items: center; text-align: center; justify-content: center; position: relative; z-index: 1;">
+            <!-- Season label -->
+            <div class="reveal collection-label" style="color: var(--gold); margin-bottom: clamp(1.5rem, 3vh, 3rem);">
+                <span>Spring / Summer 2026</span>
+            </div>
+
+            <!-- Brand name — massive editorial display -->
+            <h1 class="reveal display-cn" style="font-size: var(--title-size); color: var(--white); letter-spacing: clamp(0.15em, 1.5vw, 0.35em);">
+                锦绣坊
+            </h1>
+
+            <!-- English subtitle — italic Cormorant -->
+            <p class="reveal display-en" style="font-size: clamp(1rem, 2.5vw, 2rem); color: var(--gold); margin-top: clamp(0.5rem, 1.5vh, 1.5rem); letter-spacing: 0.08em;">
+                Jinxiu Fang
+            </p>
+
+            <div class="reveal hairline-h-wide" style="margin-top: clamp(1.5rem, 3vh, 2.5rem);"></div>
+
+            <!-- Tagline -->
+            <p class="reveal" style="font-family: var(--font-body-cn); font-weight: 300; font-size: var(--subtitle-size); color: var(--text-muted-dark); margin-top: clamp(1rem, 2vh, 1.5rem); letter-spacing: 0.15em;">
+                东方有衣，锦绣成裳
+            </p>
+
+            <p class="reveal" style="font-family: var(--font-body-en); font-weight: 200; font-size: var(--small-size); color: var(--text-muted-dark); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); letter-spacing: 0.3em; text-transform: uppercase;">
+                Modern Chinese Couture
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: PHILOSOPHY — White, quote =================== -->
+    <section class="slide slide-light" aria-label="Design Philosophy">
+        <!-- Decorative vertical burgundy line -->
+        <div style="position: absolute; left: clamp(2rem, 4vw, 4rem); top: 15%; bottom: 15%; width: 1px; background: linear-gradient(180deg, transparent, var(--burgundy), transparent); opacity: 0.15;"></div>
+
+        <div class="slide-content" style="align-items: flex-start; justify-content: center; padding-left: clamp(4rem, 10vw, 12rem);">
+            <div class="reveal section-label" style="color: var(--burgundy);">Philosophy</div>
+
+            <blockquote class="reveal display-cn" style="font-size: clamp(1.6rem, 4.5vw, 3.5rem); font-weight: 900; color: var(--text-on-light); margin-top: clamp(1rem, 2vh, 2rem); letter-spacing: 0.06em; max-width: min(70vw, 700px);">
+                衣不在华，适体为美；<br>裳不在贵，合度为尚
+            </blockquote>
+
+            <div class="reveal hairline-h" style="margin-top: clamp(1.5rem, 3vh, 2.5rem); border-color: rgba(0,0,0,0.12);"></div>
+
+            <cite class="reveal" style="display: block; margin-top: clamp(1rem, 2vh, 1.5rem); font-family: var(--font-body-en); font-size: var(--small-size); font-weight: 300; color: var(--text-muted-light); font-style: normal; letter-spacing: 0.2em; text-transform: uppercase;">
+                &mdash; Design Ethos, Jinxiu Fang
+            </cite>
+
+            <p class="reveal body-light" style="font-size: var(--body-size); color: #555; margin-top: clamp(1.5rem, 3vh, 2.5rem); max-width: min(55vw, 500px); line-height: 2;">
+                我们相信，东方之美不在于复古，而在于让千年织锦的基因，以现代的姿态重新生长。每一件衣裳，都是传统与当代的一次对话。
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: BRAND STORY — Black, asymmetric =================== -->
+    <section class="slide slide-dark" aria-label="Brand Story">
+        <div class="slide-content editorial-split" style="flex-direction: row; align-items: center; gap: 0; padding: 0;">
+            <!-- Left: Editorial photo placeholder (60% width) -->
+            <div style="flex: 3; min-width: 0; height: 100%; position: relative;">
+                <div class="reveal-clip photo-silk" style="width: 100%; height: 100%; position: relative; overflow: hidden;">
+                    <img src="images/jinxiufang-sisters.webp" alt="沈家三姐妹在苏州丝绸工坊中" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7; filter: contrast(1.05) brightness(0.85); mix-blend-mode: luminosity;">
+                    <!-- Photo credit overlay -->
+                    <div style="position: absolute; bottom: clamp(1rem, 2vh, 2rem); left: clamp(1.5rem, 3vw, 3rem); font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 200; color: rgba(255,255,255,0.35); letter-spacing: 0.3em; text-transform: uppercase;">
+                        Suzhou Atelier, 2019
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Story text (40% width) -->
+            <div style="flex: 2; min-width: 0; padding: clamp(2rem, 4vw, 5rem);">
+                <div class="reveal section-label">Origin</div>
+
+                <h2 class="reveal display-cn" style="font-size: var(--h2-size); color: var(--white); margin-top: clamp(0.8rem, 1.5vh, 1.5rem);">
+                    三姐妹，一匹绸
+                </h2>
+
+                <div class="reveal hairline-h" style="margin-top: clamp(1rem, 2vh, 1.5rem);"></div>
+
+                <p class="reveal body-light" style="font-size: var(--body-size); color: var(--text-on-dark); margin-top: clamp(1rem, 2vh, 1.5rem); line-height: 2; opacity: 0.8;">
+                    苏州镇湖，丝绸之乡。沈家三姐妹自幼跟随外婆学习苏绣，大姐沈织云擅长设计，二姐沈织锦精于工艺，小妹沈织霞主理品牌。2019年，三人在祖宅的织坊里创办了锦绣坊。
+                </p>
+
+                <p class="reveal" style="font-family: var(--font-display-cn); font-weight: 700; font-size: var(--body-size); color: var(--gold); margin-top: clamp(1rem, 1.5vh, 1.2rem); line-height: 1.8; font-style: normal;">
+                    "外婆说，绣花要静心，做衣裳也是。"
+                </p>
+
+                <p class="reveal body-light" style="font-size: var(--body-size); color: var(--text-on-dark); margin-top: clamp(0.5rem, 1vh, 0.8rem); line-height: 2; opacity: 0.6;">
+                    锦绣坊从一间老宅起步，如今已成为国潮服饰的代表品牌。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: COLLECTIONS — White, product grid =================== -->
+    <section class="slide slide-light" aria-label="Collections">
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal collection-label" style="color: var(--burgundy);">
+                <span>Core Collection</span>
+            </div>
+
+            <h2 class="reveal display-cn" style="font-size: var(--h2-size); color: var(--text-on-light); text-align: center; margin-top: clamp(0.5rem, 1vh, 1rem);">
+                三件衣裳，各有风骨
+            </h2>
+
+            <div class="product-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 2.5rem); margin-top: clamp(1.5rem, 3vh, 3rem); max-width: min(90vw, 1000px); width: 100%;">
+
+                <!-- Card 1: 云锦旗袍 -->
+                <div class="reveal" style="text-align: left; position: relative;">
+                    <!-- Photo placeholder -->
+                    <div style="width: 100%; height: clamp(120px, 20vh, 220px); overflow: hidden; position: relative;">
+                        <div class="photo-silk" style="width: 100%; height: 100%;"></div>
+                        <img src="images/jinxiufang-hero-product.webp" alt="改良旗袍" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; mix-blend-mode: luminosity;">
+                    </div>
+                    <!-- Hairline -->
+                    <div style="width: 100%; height: 0; border-top: 1px solid rgba(0,0,0,0.08); margin: clamp(0.8rem, 1.5vh, 1.2rem) 0;"></div>
+                    <!-- Label -->
+                    <p style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 300; text-transform: uppercase; letter-spacing: 0.3em; color: var(--burgundy);">01 &mdash; Qipao</p>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 900; color: var(--text-on-light); margin-top: clamp(0.3rem, 0.5vh, 0.5rem);">云锦旗袍</h3>
+                    <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: var(--text-muted-light); margin-top: clamp(0.2rem, 0.3vh, 0.3rem); letter-spacing: 0.05em;">改良旗袍 &ensp;|&ensp; 苏绣点缀</p>
+                    <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: #666; margin-top: clamp(0.4rem, 0.8vh, 0.6rem); line-height: 1.8;">传统立领与现代A字裙摆结合，真丝面料，手工苏绣牡丹。可日常穿着的东方雅韵。</p>
+                    <p style="font-family: var(--font-display-en); font-size: var(--h3-size); font-weight: 600; color: var(--burgundy); margin-top: clamp(0.4rem, 0.8vh, 0.8rem);">&#165;1,688<span style="font-family: var(--font-body-cn); font-size: var(--label-size); font-weight: 300; color: var(--text-muted-light); margin-left: 0.3em;">起</span></p>
+                </div>
+
+                <!-- Card 2: 青竹外套 -->
+                <div class="reveal" style="text-align: left; position: relative;">
+                    <div style="width: 100%; height: clamp(120px, 20vh, 220px); overflow: hidden;">
+                        <div class="photo-embroidery" style="width: 100%; height: 100%;"></div>
+                    </div>
+                    <div style="width: 100%; height: 0; border-top: 1px solid rgba(0,0,0,0.08); margin: clamp(0.8rem, 1.5vh, 1.2rem) 0;"></div>
+                    <p style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 300; text-transform: uppercase; letter-spacing: 0.3em; color: var(--burgundy);">02 &mdash; Jacket</p>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 900; color: var(--text-on-light); margin-top: clamp(0.3rem, 0.5vh, 0.5rem);">青竹外套</h3>
+                    <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: var(--text-muted-light); margin-top: clamp(0.2rem, 0.3vh, 0.3rem); letter-spacing: 0.05em;">新中式外套 &ensp;|&ensp; 盘扣设计</p>
+                    <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: #666; margin-top: clamp(0.4rem, 0.8vh, 0.6rem); line-height: 1.8;">手工盘扣，对襟设计，桑蚕丝混纺面料。从办公室到茶会，一件足矣。</p>
+                    <p style="font-family: var(--font-display-en); font-size: var(--h3-size); font-weight: 600; color: var(--burgundy); margin-top: clamp(0.4rem, 0.8vh, 0.8rem);">&#165;888<span style="font-family: var(--font-body-cn); font-size: var(--label-size); font-weight: 300; color: var(--text-muted-light); margin-left: 0.3em;">起</span></p>
+                </div>
+
+                <!-- Card 3: 缠花发簪 -->
+                <div class="reveal" style="text-align: left; position: relative;">
+                    <div style="width: 100%; height: clamp(120px, 20vh, 220px); overflow: hidden;">
+                        <div class="photo-atelier" style="width: 100%; height: 100%;"></div>
+                    </div>
+                    <div style="width: 100%; height: 0; border-top: 1px solid rgba(0,0,0,0.08); margin: clamp(0.8rem, 1.5vh, 1.2rem) 0;"></div>
+                    <p style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 300; text-transform: uppercase; letter-spacing: 0.3em; color: var(--burgundy);">03 &mdash; Accessoire</p>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 900; color: var(--text-on-light); margin-top: clamp(0.3rem, 0.5vh, 0.5rem);">缠花发簪</h3>
+                    <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: var(--text-muted-light); margin-top: clamp(0.2rem, 0.3vh, 0.3rem); letter-spacing: 0.05em;">国风配饰 &ensp;|&ensp; 手工缠花</p>
+                    <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: #666; margin-top: clamp(0.4rem, 0.8vh, 0.6rem); line-height: 1.8;">非遗缠花工艺，蚕丝线手工缠绕。每一支都是独一无二的东方之花。</p>
+                    <p style="font-family: var(--font-display-en); font-size: var(--h3-size); font-weight: 600; color: var(--burgundy); margin-top: clamp(0.4rem, 0.8vh, 0.8rem);">&#165;388<span style="font-family: var(--font-body-cn); font-size: var(--label-size); font-weight: 300; color: var(--text-muted-light); margin-left: 0.3em;">起</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: CRAFT — Black, asymmetric split =================== -->
+    <section class="slide slide-dark" aria-label="Craftsmanship">
+        <div class="slide-content editorial-split" style="flex-direction: row; align-items: center; gap: 0; padding: 0;">
+            <!-- Left: Craft text -->
+            <div style="flex: 2; min-width: 0; padding: clamp(2rem, 4vw, 5rem);">
+                <div class="reveal section-label">Savoir-Faire</div>
+
+                <h2 class="reveal display-cn" style="font-size: var(--h2-size); color: var(--white); margin-top: clamp(0.8rem, 1.5vh, 1.5rem);">
+                    一针一线，皆是时光
+                </h2>
+
+                <div class="reveal hairline-h" style="margin-top: clamp(1rem, 2vh, 1.5rem);"></div>
+
+                <div class="craft-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(1rem, 2vw, 1.8rem); margin-top: clamp(1.2rem, 2.5vh, 2rem);">
+                    <div class="reveal">
+                        <p style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 300; text-transform: uppercase; letter-spacing: 0.3em; color: var(--gold);">Embroidery</p>
+                        <p style="font-family: var(--font-display-cn); font-size: var(--body-size); font-weight: 700; color: var(--white); margin-top: 0.3em;">苏绣</p>
+                        <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: var(--text-on-dark); opacity: 0.6; line-height: 1.7; margin-top: 0.3em;">四大名绣之首，2400余年历史。一件旗袍的绣花需160小时。</p>
+                    </div>
+                    <div class="reveal">
+                        <p style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 300; text-transform: uppercase; letter-spacing: 0.3em; color: var(--gold);">Knot Buttons</p>
+                        <p style="font-family: var(--font-display-cn); font-size: var(--body-size); font-weight: 700; color: var(--white); margin-top: 0.3em;">盘扣</p>
+                        <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: var(--text-on-dark); opacity: 0.6; line-height: 1.7; margin-top: 0.3em;">手工编结，每一颗盘扣都有独特的花型纹样。</p>
+                    </div>
+                    <div class="reveal">
+                        <p style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 300; text-transform: uppercase; letter-spacing: 0.3em; color: var(--gold);">Pure Silk</p>
+                        <p style="font-family: var(--font-display-cn); font-size: var(--body-size); font-weight: 700; color: var(--white); margin-top: 0.3em;">真丝面料</p>
+                        <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: var(--text-on-dark); opacity: 0.6; line-height: 1.7; margin-top: 0.3em;">苏州本地桑蚕丝，22姆米重磅真丝，手感温润如玉。</p>
+                    </div>
+                    <div class="reveal">
+                        <p style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 300; text-transform: uppercase; letter-spacing: 0.3em; color: var(--gold);">Plant Dye</p>
+                        <p style="font-family: var(--font-display-cn); font-size: var(--body-size); font-weight: 700; color: var(--white); margin-top: 0.3em;">植物染</p>
+                        <p style="font-family: var(--font-body-cn); font-size: var(--small-size); font-weight: 300; color: var(--text-on-dark); opacity: 0.6; line-height: 1.7; margin-top: 0.3em;">栀子黄、靛蓝、茜草红。古法染色，色彩沉静持久。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Editorial photo (60% width) -->
+            <div style="flex: 3; min-width: 0; height: 100%; position: relative;">
+                <div class="reveal-clip photo-embroidery" style="width: 100%; height: 100%; position: relative; overflow: hidden;">
+                    <img src="images/jinxiufang-embroidery.webp" alt="苏绣工艺特写 — 金丝牡丹" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6; filter: contrast(1.1) brightness(0.8); mix-blend-mode: luminosity;">
+                    <div style="position: absolute; bottom: clamp(1rem, 2vh, 2rem); right: clamp(1.5rem, 3vw, 3rem); font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 200; color: rgba(255,255,255,0.3); letter-spacing: 0.3em; text-transform: uppercase;">
+                        160 Hours per Piece
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: LOOKBOOK — Full bleed editorial =================== -->
+    <section class="slide slide-light" aria-label="Lookbook" style="padding: 0;">
+        <!-- Full-bleed photo background -->
+        <div style="position: absolute; inset: 0; overflow: hidden;">
+            <div class="photo-garden" style="width: 100%; height: 100%;"></div>
+            <img src="images/jinxiufang-lifestyle.webp" alt="新中式穿搭 — 苏州园林中的东方韵味" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.25; filter: grayscale(0.4) contrast(0.9);">
+        </div>
+        <!-- Gradient overlay for text legibility -->
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(245,243,240,0.5) 0%, rgba(245,243,240,0.3) 30%, rgba(245,243,240,0.6) 70%, rgba(245,243,240,0.85) 100%); pointer-events: none;"></div>
+
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; position: relative; z-index: 1;">
+            <div class="reveal collection-label" style="color: var(--burgundy);">
+                <span>Editorial</span>
+            </div>
+
+            <blockquote class="reveal display-cn" style="font-size: clamp(1.8rem, 5vw, 4rem); font-weight: 900; color: var(--text-on-light); margin-top: clamp(1rem, 2vh, 2rem); letter-spacing: 0.08em; line-height: 1.4;">
+                穿在身上的文化，<br>活在当下的传统
+            </blockquote>
+
+            <div class="reveal hairline-h-wide" style="margin-top: clamp(1.5rem, 3vh, 2.5rem); border-color: rgba(0,0,0,0.1);"></div>
+
+            <p class="reveal display-en" style="font-size: clamp(0.875rem, 1.5vw, 1.2rem); color: var(--burgundy); margin-top: clamp(1rem, 2vh, 1.5rem); letter-spacing: 0.05em;">
+                From Suzhou Gardens to City Streets
+            </p>
+
+            <p class="reveal body-light" style="font-size: var(--body-size); color: #666; margin-top: clamp(0.5rem, 1vh, 0.8rem);">
+                从苏州园林到城市街头，锦绣坊让新中式融入日常
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: STATS — Black, dramatic numbers =================== -->
+    <section class="slide slide-dark" aria-label="Numbers">
+        <!-- Subtle gold line accents -->
+        <div style="position: absolute; top: 0; left: 50%; width: 1px; height: clamp(40px, 8vh, 80px); background: linear-gradient(180deg, var(--gold), transparent); opacity: 0.2;"></div>
+
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="reveal section-label" style="text-align: center;">By the Numbers</div>
+
+            <h2 class="reveal display-cn" style="font-size: var(--h2-size); color: var(--white); text-align: center; margin-top: clamp(0.5rem, 1vh, 1rem);">
+                数字背后，是热爱与坚持
+            </h2>
+
+            <div style="display: flex; justify-content: center; gap: clamp(3rem, 8vw, 10rem); margin-top: clamp(2.5rem, 5vh, 5rem); flex-wrap: wrap;">
+                <!-- Stat 1: Followers -->
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="86" data-suffix="w" style="font-size: var(--stat-size); font-family: var(--font-display-en); font-weight: 700; color: var(--white); letter-spacing: -0.02em;">0</div>
+                    <div style="width: clamp(30px, 4vw, 50px); height: 0; border-top: 1px solid var(--gold); margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
+                    <div style="font-family: var(--font-display-cn); font-size: var(--body-size); font-weight: 700; color: var(--text-on-dark); letter-spacing: 0.1em;">全网粉丝</div>
+                    <div style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 200; color: var(--text-muted-dark); margin-top: 0.3em; letter-spacing: 0.2em; text-transform: uppercase;">Xiaohongshu + Douyin + Weibo</div>
+                </div>
+
+                <!-- Stat 2: Revenue -->
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="3200" data-suffix="" style="font-size: var(--stat-size); font-family: var(--font-display-en); font-weight: 700; color: var(--white); letter-spacing: -0.02em;">0</div>
+                    <div style="width: clamp(30px, 4vw, 50px); height: 0; border-top: 1px solid var(--gold); margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
+                    <div style="font-family: var(--font-display-cn); font-size: var(--body-size); font-weight: 700; color: var(--text-on-dark); letter-spacing: 0.1em;">万元年营收</div>
+                    <div style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 200; color: var(--text-muted-dark); margin-top: 0.3em; letter-spacing: 0.2em; text-transform: uppercase;">2025 &mdash; +68% YoY</div>
+                </div>
+
+                <!-- Stat 3: Artisans -->
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="42" data-suffix="" style="font-size: var(--stat-size); font-family: var(--font-display-en); font-weight: 700; color: var(--white); letter-spacing: -0.02em;">0</div>
+                    <div style="width: clamp(30px, 4vw, 50px); height: 0; border-top: 1px solid var(--gold); margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
+                    <div style="font-family: var(--font-display-cn); font-size: var(--body-size); font-weight: 700; color: var(--text-on-dark); letter-spacing: 0.1em;">位合作绣娘</div>
+                    <div style="font-family: var(--font-body-en); font-size: var(--label-size); font-weight: 200; color: var(--text-muted-dark); margin-top: 0.3em; letter-spacing: 0.2em; text-transform: uppercase;">Zhenhu, Suzhou &mdash; ICH Artisans</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: CLOSING — White, elegant =================== -->
+    <section class="slide slide-light closing-slide" aria-label="Closing">
+        <!-- Subtle background image -->
+        <div style="position: absolute; inset: 0; overflow: hidden; pointer-events: none;">
+            <img src="images/jinxiufang-lifestyle.webp" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.04; filter: grayscale(1);">
+        </div>
+
+        <!-- Decorative hairline frame -->
+        <div style="position: absolute; top: clamp(2rem, 4vw, 4rem); left: clamp(2.5rem, 5vw, 5rem); right: clamp(2.5rem, 5vw, 5rem); bottom: clamp(2rem, 4vw, 4rem); border: 1px solid rgba(0,0,0,0.06); pointer-events: none;"></div>
+
+        <!-- Decorative vertical text -->
+        <div class="reveal-fade vertical-text" style="position: absolute; left: clamp(3rem, 6vw, 6rem); top: 50%; transform: translateY(-50%); font-size: var(--label-size); color: rgba(139,26,43,0.08); letter-spacing: 0.6em; pointer-events: none;">
+            以针为笔以丝为墨
+        </div>
+
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative; z-index: 1; justify-content: center;">
+            <!-- Brand name -->
+            <h2 class="reveal display-cn" style="font-size: clamp(3.5rem, 10vw, 8rem); color: var(--text-on-light); letter-spacing: clamp(0.15em, 1.5vw, 0.3em);">
+                锦绣坊
+            </h2>
+
+            <p class="reveal display-en" style="font-size: clamp(0.875rem, 1.5vw, 1.2rem); color: var(--burgundy); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); letter-spacing: 0.08em;">
+                Jinxiu Fang
+            </p>
+
+            <div class="reveal hairline-h-wide" style="margin-top: clamp(1.5rem, 3vh, 2.5rem); border-color: rgba(0,0,0,0.1);"></div>
+
+            <p class="reveal body-light" style="font-size: var(--subtitle-size); color: #555; margin-top: clamp(1rem, 2vh, 1.5rem); letter-spacing: 0.08em;">
+                以针为笔，以丝为墨，织就东方新韵
+            </p>
+
+            <div class="reveal" style="margin-top: clamp(2rem, 4vh, 3rem); display: flex; flex-direction: column; align-items: center; gap: clamp(0.5rem, 1vh, 0.8rem);">
+                <div style="display: flex; align-items: center; gap: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-body-en); font-size: var(--small-size); font-weight: 200; color: #888; letter-spacing: 0.15em;">
+                    <span>jinxiufang.com</span>
+                    <span style="width: 3px; height: 3px; border-radius: 50%; background: var(--gold); display: inline-block;"></span>
+                    <span style="font-family: var(--font-body-cn);">江苏省苏州市镇湖绣品街</span>
+                </div>
+            </div>
+
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 2rem); display: flex; flex-direction: column; align-items: center; gap: clamp(0.3rem, 0.5vh, 0.5rem);">
+                <div style="width: clamp(70px, 8vw, 100px); height: clamp(70px, 8vw, 100px); border: 1px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center;">
+                    <span style="font-family: var(--font-body-cn); font-size: var(--label-size); font-weight: 300; color: var(--text-muted-light); text-align: center; line-height: 1.4; letter-spacing: 0.1em;">扫码<br>探店</span>
+                </div>
+                <span style="font-family: var(--font-body-cn); font-size: var(--label-size); font-weight: 300; color: var(--text-muted-light); letter-spacing: 0.1em;">关注锦绣坊，发现东方穿搭之美</span>
+            </div>
+        </div>
+
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--label-size); color: var(--text-muted-light); opacity: 0.4; font-family: var(--font-body-en); font-weight: 200; letter-spacing: 0.1em;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 800);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 2000;
+                    const start = performance.now();
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

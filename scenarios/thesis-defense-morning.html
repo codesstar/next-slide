@@ -130,7 +130,7 @@
 
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
             line-height: 1.8;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: break-word;
         }
 
@@ -1025,6 +1025,7 @@
                         case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

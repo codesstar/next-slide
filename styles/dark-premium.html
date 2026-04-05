@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计革命 — Dark Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   VIEWPORT BASE (inlined)
+   =========================================== */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+:root {
+    --title-size: clamp(1.5rem, 5vw, 4rem);
+    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+    --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+    --small-size: clamp(0.65rem, 1vw, 0.875rem);
+    --stat-size: clamp(2rem, 8vw, 6rem);
+    --slide-padding: clamp(1rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 2vw, 2rem);
+    --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+:lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+    }
+    .decorative { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+    .slide-counter { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+    }
+    .reveal { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; }
+    .slide.active .reveal { opacity: 1; }
+}
+
+@media print {
+    .slide { position: relative !important; height: auto; min-height: 100vh; overflow: visible; page-break-after: always; opacity: 1 !important; pointer-events: auto !important; }
+    .progress-bar, .page-counter { display: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+
+/* ===========================================
+   DARK PREMIUM THEME
+   =========================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #0d0d0d;
+    --gold: #c4a87c;
+    --gold-dim: rgba(196,168,124,0.3);
+    --gold-glow: rgba(196,168,124,0.15);
+    --text-warm: #f5f0eb;
+    --text-muted: rgba(255,255,255,0.35);
+    --text-faint: rgba(255,255,255,0.2);
+    --border-subtle: rgba(255,255,255,0.06);
+    --grid-line: rgba(255,255,255,0.04);
+}
+
+html, body { background: var(--bg); color: #fff; }
+
+body {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+}
+
+/* ── Progress Bar ── */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), #8b7355);
+    z-index: 1000;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Page Counter ── */
+.page-counter {
+    position: fixed;
+    bottom: clamp(20px, 3vh, 40px);
+    right: clamp(24px, 3vw, 60px);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(14px, 1.2vw, 18px);
+    font-weight: 400;
+    color: var(--text-faint);
+    z-index: 1000;
+    letter-spacing: 0.1em;
+}
+.page-counter .current { color: var(--gold); }
+
+/* ── Slide Base ── */
+.slide {
+    position: fixed;
+    inset: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    font-family: 'Outfit', sans-serif;
+    color: #fff;
+    background: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* ── Grid Lines ── */
+.grid-lines {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+.v-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: var(--grid-line);
+}
+.h-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--grid-line);
+}
+
+/* ── Corner Accents ── */
+.corner {
+    position: absolute;
+    width: clamp(16px, 2vw, 24px);
+    height: clamp(16px, 2vw, 24px);
+    z-index: 3;
+}
+.corner-tl { top: clamp(16px, 2vw, 24px); left: clamp(16px, 2vw, 24px); border-top: 1px solid var(--gold-dim); border-left: 1px solid var(--gold-dim); }
+.corner-tr { top: clamp(16px, 2vw, 24px); right: clamp(16px, 2vw, 24px); border-top: 1px solid var(--gold-dim); border-right: 1px solid var(--gold-dim); }
+.corner-bl { bottom: clamp(16px, 2vw, 24px); left: clamp(16px, 2vw, 24px); border-bottom: 1px solid var(--gold-dim); border-left: 1px solid var(--gold-dim); }
+.corner-br { bottom: clamp(16px, 2vw, 24px); right: clamp(16px, 2vw, 24px); border-bottom: 1px solid var(--gold-dim); border-right: 1px solid var(--gold-dim); }
+
+/* ── Shared Elements ── */
+.brand-mark {
+    font-size: clamp(10px, 1vw, 13px);
+    font-weight: 400;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+}
+.line-sep {
+    width: clamp(32px, 4vw, 48px);
+    height: 1px;
+    background: var(--gold);
+    margin: clamp(16px, 2.5vh, 32px) 0;
+}
+.gold { color: var(--gold); }
+
+/* ── Glass Card ── */
+.glass-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: clamp(8px, 1vw, 12px);
+}
+
+/* ── Reveal Animations ── */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+}
+.slide.active .reveal {
+    animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.1s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.22s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.36s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.5s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.64s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.78s; }
+.slide.active .reveal:nth-child(7) { animation-delay: 0.92s; }
+
+@keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Gold shimmer for accents */
+@keyframes goldShimmer {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.35; }
+}
+
+/* Elegant line grow */
+.reveal-line {
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+.slide.active .reveal-line {
+    animation: lineGrow 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.4s;
+}
+@keyframes lineGrow {
+    to { opacity: 1; transform: scaleX(1); }
+}
+
+/* ════════════════════════════════════
+   SLIDE 1 — COVER / 封面
+   ════════════════════════════════════ */
+.slide-1 .content {
+    position: relative;
+    z-index: 2;
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+}
+.slide-1 .divider {
+    background: rgba(255,255,255,0.08);
+}
+.slide-1 .left-panel {
+    padding: var(--slide-padding) clamp(32px, 5vw, 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.slide-1 .right-panel {
+    padding: var(--slide-padding) clamp(32px, 5vw, 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.slide-1 .top-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.slide-1 .left-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.slide-1 .left-hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5.5vw, 72px);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--text-warm);
+}
+.slide-1 .left-hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+}
+.slide-1 .left-desc {
+    font-size: var(--body-size);
+    font-weight: 200;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.8;
+    max-width: 360px;
+}
+.slide-1 .bottom-credit {
+    font-size: var(--small-size);
+    color: var(--text-faint);
+    letter-spacing: 2px;
+}
+.slide-1 .cover-tag {
+    display: inline-block;
+    font-size: var(--small-size);
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: clamp(5px, 0.8vh, 8px) clamp(10px, 1.2vw, 16px);
+    border-radius: 4px;
+    margin-bottom: clamp(12px, 1.5vh, 20px);
+}
+.slide-1 .cover-detail {
+    font-size: clamp(11px, 1.1vw, 13px);
+    font-weight: 300;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+.slide-1 .cover-detail strong {
+    color: rgba(255,255,255,0.55);
+    font-weight: 400;
+}
+.slide-1 .detail-row {
+    display: flex;
+    gap: clamp(24px, 3.5vw, 48px);
+    margin-top: clamp(20px, 2.5vh, 32px);
+}
+.slide-1 .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.5vh, 6px);
+}
+.slide-1 .detail-label {
+    font-size: clamp(8px, 0.8vw, 10px);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+}
+.slide-1 .detail-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 400;
+    color: var(--gold);
+}
+
+/* Gold glow on cover */
+.slide-1::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 35%;
+    width: clamp(200px, 30vw, 400px);
+    height: clamp(200px, 30vw, 400px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,168,124,0.06) 0%, transparent 70%);
+    filter: blur(60px);
+    animation: goldShimmer 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ════════════════════════════════════
+   SLIDE 2 — FEATURES / 核心能力
+   ════════════════════════════════════ */
+.slide-2 .content {
+    position: relative;
+    z-index: 2;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 clamp(32px, 5vw, 60px);
+}
+.slide-2 .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(24px, 3vh, 36px) 0;
+}
+.slide-2 .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 400;
+    color: var(--text-warm);
+}
+.slide-2 .section-title em {
+    font-style: italic;
+    color: var(--gold);
+}
+.slide-2 .section-label {
+    font-size: clamp(8px, 0.8vw, 10px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+}
+.slide-2 .pillars {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr 1px 1fr;
+    gap: 0;
+    padding-bottom: clamp(32px, 5vh, 60px);
+}
+.slide-2 .pillar-divider {
+    background: linear-gradient(180deg, var(--gold-dim), rgba(196,168,124,0.05));
+    margin: clamp(12px, 2vh, 20px) 0 clamp(24px, 3vh, 40px);
+}
+.slide-2 .pillar {
+    padding: clamp(16px, 2vh, 24px) clamp(20px, 3vw, 40px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 1.5vh, 20px);
+}
+.slide-2 .pillar:first-child { padding-left: 0; }
+.slide-2 .pillar:last-child { padding-right: 0; }
+.slide-2 .pillar-icon {
+    width: clamp(36px, 4vw, 48px);
+    height: clamp(36px, 4vw, 48px);
+    border: 1px solid var(--gold-dim);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CSS-only icons */
+.icon-strategy { width: 20px; height: 20px; position: relative; }
+.icon-strategy::before { content: ''; position: absolute; top: 2px; left: 4px; width: 12px; height: 12px; border: 1.5px solid var(--gold); border-radius: 50%; }
+.icon-strategy::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 1.5px; height: 10px; background: var(--gold); transform: translateX(-50%) rotate(-45deg); transform-origin: top center; }
+
+.icon-design { width: 20px; height: 20px; position: relative; }
+.icon-design::before { content: ''; position: absolute; inset: 0; border: 1.5px solid var(--gold); transform: rotate(45deg); }
+.icon-design::after { content: ''; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; background: rgba(196,168,124,0.3); border-radius: 50%; transform: translate(-50%, -50%); }
+
+.icon-growth { width: 20px; height: 20px; position: relative; }
+.icon-growth::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1.5px; background: var(--gold); }
+.icon-growth::after { content: ''; position: absolute; bottom: 2px; left: 2px; width: 16px; height: 14px; border-left: 1.5px solid var(--gold); background: linear-gradient(135deg, transparent 40%, rgba(196,168,124,0.2) 100%); clip-path: polygon(0 100%, 35% 30%, 65% 60%, 100% 0, 100% 100%); }
+
+.slide-2 .pillar-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(11px, 1.1vw, 14px);
+    color: rgba(196,168,124,0.4);
+    letter-spacing: 2px;
+}
+.slide-2 .pillar h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 2.2vw, 26px);
+    font-weight: 400;
+    color: var(--text-warm);
+}
+.slide-2 .pillar p {
+    font-size: clamp(11px, 1.1vw, 13px);
+    font-weight: 200;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.8;
+}
+.slide-2 .pillar-tag {
+    margin-top: auto;
+    font-size: clamp(8px, 0.8vw, 10px);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(196,168,124,0.5);
+    padding-top: clamp(10px, 1.2vh, 16px);
+    border-top: 1px solid var(--grid-line);
+}
+
+/* ════════════════════════════════════
+   SLIDE 3 — STATS / 数据仪表盘
+   ════════════════════════════════════ */
+.slide-3 .content {
+    position: relative;
+    z-index: 2;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 clamp(32px, 5vw, 60px);
+}
+.slide-3 .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(24px, 3vh, 36px) 0;
+}
+.slide-3 .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 400;
+    color: var(--text-warm);
+}
+.slide-3 .section-title em { font-style: italic; color: var(--gold); }
+.slide-3 .section-label {
+    font-size: clamp(8px, 0.8vw, 10px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+}
+.slide-3 .dashboard {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: clamp(12px, 1.5vw, 20px);
+    padding-bottom: clamp(32px, 5vh, 60px);
+}
+.slide-3 .metric-card {
+    padding: clamp(20px, 2.5vw, 32px) clamp(24px, 3vw, 36px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.slide-3 .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.slide-3 .metric-label {
+    font-size: clamp(9px, 0.9vw, 11px);
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+}
+.slide-3 .metric-badge {
+    font-size: clamp(8px, 0.8vw, 10px);
+    font-weight: 400;
+    color: var(--gold);
+    border: 1px solid rgba(196,168,124,0.2);
+    border-radius: 4px;
+    padding: 3px 8px;
+    letter-spacing: 1px;
+}
+.slide-3 .metric-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 4.5vw, 56px);
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+    margin-top: clamp(8px, 1vh, 12px);
+}
+.slide-3 .metric-sub {
+    font-size: clamp(11px, 1.1vw, 13px);
+    font-weight: 300;
+    color: var(--text-muted);
+    margin-top: clamp(4px, 0.5vh, 6px);
+}
+.slide-3 .metric-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin-top: clamp(10px, 1.2vh, 16px);
+    overflow: hidden;
+}
+.slide-3 .metric-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--gold), #8b7355);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide-3.active .metric-bar-fill {
+    transform: scaleX(1);
+}
+
+/* Staggered bar fill delays */
+.slide-3.active .metric-card:nth-child(1) .metric-bar-fill { transition-delay: 0.4s; }
+.slide-3.active .metric-card:nth-child(2) .metric-bar-fill { transition-delay: 0.55s; }
+.slide-3.active .metric-card:nth-child(3) .metric-bar-fill { transition-delay: 0.7s; }
+.slide-3.active .metric-card:nth-child(4) .metric-bar-fill { transition-delay: 0.85s; }
+
+/* ════════════════════════════════════
+   SLIDE 4 — QUOTE / 引言
+   ════════════════════════════════════ */
+.slide-4 .content {
+    position: relative;
+    z-index: 2;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(48px, 6vh, 80px);
+}
+.slide-4 .top-bar {
+    position: absolute;
+    top: clamp(24px, 3vh, 36px);
+    left: clamp(32px, 5vw, 60px);
+    right: clamp(32px, 5vw, 60px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 4;
+}
+.slide-4 .section-label {
+    font-size: clamp(8px, 0.8vw, 10px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+}
+.slide-4 .quote-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(60px, 9vw, 120px);
+    font-weight: 300;
+    color: var(--gold-glow);
+    line-height: 1;
+    position: absolute;
+    top: clamp(80px, 12vh, 140px);
+    left: clamp(60px, 8vw, 100px);
+}
+.slide-4 blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--text-warm);
+    text-align: center;
+    max-width: min(90vw, 900px);
+    position: relative;
+}
+.slide-4 blockquote em {
+    color: var(--gold);
+    font-style: italic;
+}
+.slide-4 .quote-sep {
+    width: clamp(40px, 5vw, 64px);
+    height: 1px;
+    background: var(--gold);
+    margin: clamp(20px, 2.5vh, 32px) auto;
+}
+.slide-4 .quote-attr {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(11px, 1vw, 13px);
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* Subtle gold glow behind quote */
+.slide-4::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: clamp(250px, 35vw, 500px);
+    height: clamp(250px, 35vw, 500px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,168,124,0.05) 0%, transparent 70%);
+    filter: blur(80px);
+    transform: translate(-50%, -50%);
+    animation: goldShimmer 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ════════════════════════════════════
+   SLIDE 5 — CLOSING / 结语
+   ════════════════════════════════════ */
+.slide-5 .content {
+    position: relative;
+    z-index: 2;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.slide-5 .frame {
+    position: absolute;
+    inset: clamp(24px, 4vw, 48px);
+    border: 1px solid rgba(196,168,124,0.15);
+    z-index: 2;
+    pointer-events: none;
+}
+.slide-5 .closing-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 6.5vw, 80px);
+    font-weight: 300;
+    color: var(--gold);
+    letter-spacing: 8px;
+    position: relative;
+    z-index: 3;
+}
+.slide-5 .closing-sep {
+    width: clamp(48px, 6vw, 80px);
+    height: 1px;
+    background: rgba(196,168,124,0.4);
+    margin: clamp(20px, 3vh, 36px) 0;
+    position: relative;
+    z-index: 3;
+}
+.slide-5 .closing-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-muted);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 3;
+    text-align: center;
+}
+.slide-5 .closing-sub {
+    font-size: clamp(9px, 0.9vw, 11px);
+    font-weight: 300;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: clamp(16px, 2vh, 24px);
+    position: relative;
+    z-index: 3;
+}
+.slide-5 .top-bar {
+    position: absolute;
+    top: clamp(48px, 6vh, 72px);
+    left: clamp(48px, 6vw, 80px);
+    right: clamp(48px, 6vw, 80px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 4;
+}
+.slide-5 .section-label {
+    font-size: clamp(8px, 0.8vw, 10px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+/* Closing gold shimmer */
+.slide-5::before {
+    content: '';
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    width: clamp(300px, 40vw, 600px);
+    height: clamp(300px, 40vw, 600px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,168,124,0.04) 0%, transparent 70%);
+    filter: blur(80px);
+    transform: translateX(-50%);
+    animation: goldShimmer 10s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Responsive stacking ── */
+@media (max-width: 600px) {
+    .slide-1 .content { grid-template-columns: 1fr; }
+    .slide-1 .divider { display: none; }
+    .slide-1 .right-panel { display: none; }
+    .slide-2 .pillars { grid-template-columns: 1fr; gap: clamp(12px, 2vh, 20px); }
+    .slide-2 .pillar-divider { display: none; }
+    .slide-2 .pillar { padding-left: 0 !important; padding-right: 0 !important; }
+    .slide-3 .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter">No. <span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- ============================================================
+     SLIDE 1 — COVER / 封面：设计革命
+     ============================================================ -->
+<div class="slide slide-1 active" data-i="0">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <div class="grid-lines">
+    <div class="v-line" style="left:25%"></div>
+    <div class="v-line" style="left:50%"></div>
+    <div class="v-line" style="left:75%"></div>
+    <div class="h-line" style="top:33%"></div>
+    <div class="h-line" style="top:66%"></div>
+  </div>
+  <div class="content">
+    <div class="left-panel">
+      <div class="top-meta reveal">
+        <span class="brand-mark">Design</span>
+      </div>
+      <div class="left-hero">
+        <h1 class="reveal">设计<br><em>革命</em></h1>
+        <div class="line-sep reveal-line"></div>
+        <p class="left-desc reveal">当技术与美学交汇，创造力不再受限于工具。我们正在见证设计语言的全面重塑。</p>
+      </div>
+      <span class="bottom-credit reveal">设计前沿 / 2026</span>
+    </div>
+    <div class="divider"></div>
+    <div class="right-panel">
+      <div class="cover-tag reveal">Annual Manifesto</div>
+      <div class="cover-detail reveal">
+        从概念到落地，从像素到体验。这不仅是一场视觉升级，更是一次<strong>思维范式的转变</strong>。
+      </div>
+      <div class="detail-row reveal">
+        <div class="detail-item">
+          <span class="detail-label">发布</span>
+          <span class="detail-value">2026</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">领域</span>
+          <span class="detail-value">AI + Design</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">状态</span>
+          <span class="detail-value">进行中</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 2 — FEATURES / 核心能力
+     ============================================================ -->
+<div class="slide slide-2" data-i="1">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <div class="grid-lines">
+    <div class="v-line" style="left:25%"></div>
+    <div class="v-line" style="left:50%"></div>
+    <div class="v-line" style="left:75%"></div>
+    <div class="h-line" style="top:33%"></div>
+    <div class="h-line" style="top:66%"></div>
+  </div>
+  <div class="content">
+    <div class="top-bar">
+      <div class="section-title reveal">核心 <em>能力</em></div>
+      <span class="section-label reveal">Core Capabilities</span>
+    </div>
+    <div class="pillars">
+      <!-- Pillar 1 -->
+      <div class="pillar reveal">
+        <div class="pillar-icon">
+          <div class="icon-strategy"></div>
+        </div>
+        <span class="pillar-num">01</span>
+        <h3>智能生成</h3>
+        <p>AI 理解设计意图，从草稿到精稿，将创意转化为高保真作品。减少重复劳动，释放真正的创造力。</p>
+        <span class="pillar-tag">AI + Creativity</span>
+      </div>
+      <div class="pillar-divider"></div>
+      <!-- Pillar 2 -->
+      <div class="pillar reveal">
+        <div class="pillar-icon">
+          <div class="icon-design"></div>
+        </div>
+        <span class="pillar-num">02</span>
+        <h3>风格迁移</h3>
+        <p>一键捕捉任意参考的视觉语言，将品牌基因注入每一个设计元素。风格一致性不再是难题。</p>
+        <span class="pillar-tag">Style + Transfer</span>
+      </div>
+      <div class="pillar-divider"></div>
+      <!-- Pillar 3 -->
+      <div class="pillar reveal">
+        <div class="pillar-icon">
+          <div class="icon-growth"></div>
+        </div>
+        <span class="pillar-num">03</span>
+        <h3>自适应系统</h3>
+        <p>一次设计，无限适配。从手表到巨幕，从海报到网页，智能排版引擎让每个尺寸都完美呈现。</p>
+        <span class="pillar-tag">Adaptive + Scale</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 3 — STATS / 数据仪表盘
+     ============================================================ -->
+<div class="slide slide-3" data-i="2">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <div class="grid-lines">
+    <div class="v-line" style="left:25%"></div>
+    <div class="v-line" style="left:50%"></div>
+    <div class="v-line" style="left:75%"></div>
+    <div class="h-line" style="top:33%"></div>
+    <div class="h-line" style="top:66%"></div>
+  </div>
+  <div class="content">
+    <div class="top-bar">
+      <div class="section-title reveal">关键 <em>数据</em></div>
+      <span class="section-label reveal">Performance Dashboard</span>
+    </div>
+    <div class="dashboard">
+      <!-- Card 1 -->
+      <div class="glass-card metric-card reveal">
+        <div>
+          <div class="metric-header">
+            <span class="metric-label">效率提升</span>
+            <span class="metric-badge">+180% YoY</span>
+          </div>
+          <div class="metric-value">10x</div>
+          <div class="metric-sub">设计产出效率对比传统流程</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:92%"></div></div>
+      </div>
+      <!-- Card 2 -->
+      <div class="glass-card metric-card reveal">
+        <div>
+          <div class="metric-header">
+            <span class="metric-label">用户满意度</span>
+            <span class="metric-badge">Top 3%</span>
+          </div>
+          <div class="metric-value">93.7%</div>
+          <div class="metric-sub">行业基准线以上</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:94%"></div></div>
+      </div>
+      <!-- Card 3 -->
+      <div class="glass-card metric-card reveal">
+        <div>
+          <div class="metric-header">
+            <span class="metric-label">设计生成量</span>
+            <span class="metric-badge">+12M QoQ</span>
+          </div>
+          <div class="metric-value">50M+</div>
+          <div class="metric-sub">覆盖 24 个国家和地区</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:76%"></div></div>
+      </div>
+      <!-- Card 4 -->
+      <div class="glass-card metric-card reveal">
+        <div>
+          <div class="metric-header">
+            <span class="metric-label">企业客户</span>
+            <span class="metric-badge">6 大洲</span>
+          </div>
+          <div class="metric-value">2,400</div>
+          <div class="metric-sub">横跨科技、金融、消费三大行业</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:64%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 4 — QUOTE / 引言
+     ============================================================ -->
+<div class="slide slide-4" data-i="3">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <div class="grid-lines">
+    <div class="v-line" style="left:20%"></div>
+    <div class="v-line" style="left:40%"></div>
+    <div class="v-line" style="left:60%"></div>
+    <div class="v-line" style="left:80%"></div>
+    <div class="h-line" style="top:25%"></div>
+    <div class="h-line" style="top:50%"></div>
+    <div class="h-line" style="top:75%"></div>
+  </div>
+  <div class="top-bar">
+    <span class="brand-mark reveal">Design</span>
+    <span class="section-label reveal">Philosophy</span>
+  </div>
+  <div class="quote-mark reveal decorative">&ldquo;</div>
+  <div class="content">
+    <blockquote class="reveal">
+      好的设计不是装饰，<br>是<em>沟通</em>。
+    </blockquote>
+    <div class="quote-sep reveal-line"></div>
+    <div class="quote-attr reveal">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 5 — CLOSING / 结语
+     ============================================================ -->
+<div class="slide slide-5" data-i="4">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <div class="grid-lines">
+    <div class="v-line" style="left:25%"></div>
+    <div class="v-line" style="left:50%"></div>
+    <div class="v-line" style="left:75%"></div>
+    <div class="h-line" style="top:33%"></div>
+    <div class="h-line" style="top:66%"></div>
+  </div>
+  <div class="frame"></div>
+  <div class="top-bar">
+    <span class="brand-mark reveal">Design</span>
+    <span class="section-label reveal">Fin</span>
+  </div>
+  <div class="content">
+    <div class="closing-brand reveal">设计革命</div>
+    <div class="closing-sep reveal-line"></div>
+    <div class="closing-tagline reveal">重新定义创造力的边界</div>
+    <div class="closing-sub reveal">AI + Human Intuition / 2026 and Beyond</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function resetReveals(slide) {
+    slide.querySelectorAll('.reveal, .reveal-line').forEach(function(el) {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+
+  function go(i) {
+    if (i < 0 || i >= total) return;
+    slides[c].classList.remove('active');
+    resetReveals(slides[c]);
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c + 1) / total * 100) + '%';
+    cur.textContent = String(c + 1).padStart(2, '0');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      go(c + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      go(c - 1);
+    }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  // Touch swipe
+  let tx = 0, ty = 0;
+  document.addEventListener('touchstart', function(e) {
+    tx = e.changedTouches[0].screenX;
+    ty = e.changedTouches[0].screenY;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].screenX - tx;
+    var dy = e.changedTouches[0].screenY - ty;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      dx < 0 ? go(c + 1) : go(c - 1);
+    }
+  }, { passive: true });
+
+  bar.style.width = (1 / total * 100) + '%';
+})();
+</script>
+</body>
+</html>

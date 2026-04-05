@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surrealism Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE (INLINE) === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+  .reveal, .reveal-mask, .reveal-left { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal, .slide.active .reveal-mask, .slide.active .reveal-left { opacity: 1; }
+}
+@media print {
+  .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; position: relative !important; opacity: 1 !important; pointer-events: auto !important; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+}
+
+/* === STYLE: SURREALISM GALLERY === */
+:root {
+  --bg: #f5f5f0;
+  --bg-dark: #111;
+  --text: #111;
+  --text-light: #f5f5f0;
+  --accent: #3a4a6b;
+  --gold: #8b7355;
+  --gold-light: #c4b396;
+  --muted: #888;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', 'Noto Sans SC', sans-serif; font-weight: 300; }
+
+/* Paper texture */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(0,0,0,0.01) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0,0,0,0.008) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px; z-index: 1000;
+  background: var(--bg-dark); transition: width 0.6s var(--ease-out-expo);
+}
+
+.page-counter {
+  position: fixed; bottom: clamp(16px, 2.5vh, 32px); right: clamp(24px, 3vw, 48px);
+  font-family: 'Cormorant Garamond', 'Noto Sans SC', serif;
+  font-size: clamp(11px, 1vw, 14px); font-weight: 400; font-style: italic;
+  color: var(--muted); z-index: 1000; letter-spacing: 0.05em;
+}
+.page-counter .current { color: var(--text); font-weight: 500; }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s var(--ease-out-expo);
+  background: var(--bg);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(40px, 6vh, 72px) clamp(48px, 8vw, 120px);
+  max-height: 100%; overflow: hidden; position: relative;
+}
+
+/* Bottom bar */
+.bottom-bar {
+  height: clamp(32px, 5vh, 44px); background: var(--bg-dark);
+  display: flex; align-items: center; padding: 0 clamp(32px, 5vw, 60px);
+  justify-content: space-between; flex-shrink: 0;
+}
+.bottom-bar span {
+  color: var(--text-light); font-size: clamp(9px, 0.8vw, 11px);
+  letter-spacing: 0.2em; font-weight: 500; text-transform: uppercase;
+}
+.bottom-bar .muted { color: rgba(245,245,240,0.4); }
+
+/* Gallery frame */
+.gallery-frame {
+  border: clamp(3px, 0.3vw, 5px) solid var(--gold);
+  box-shadow: inset 0 0 0 1px #a08b6a, inset 0 0 0 clamp(3px, 0.3vw, 5px) var(--gold-light), inset 0 0 0 clamp(4px, 0.4vw, 6px) var(--gold), 2px 3px 10px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #2d1b69, #1a1a2e 40%, #16213e 100%);
+}
+
+/* Typography */
+.serif { font-family: 'Cormorant Garamond', 'Noto Sans SC', serif; }
+.big-number {
+  font-family: 'Cormorant Garamond', 'Noto Sans SC', serif;
+  font-size: clamp(80px, 14vw, 200px); font-weight: 300; line-height: 0.85; color: var(--text);
+}
+.title-serif {
+  font-family: 'Cormorant Garamond', 'Noto Sans SC', serif;
+  font-size: clamp(48px, 7vw, 100px); font-weight: 300; line-height: 1; color: var(--text);
+  letter-spacing: 0.06em;
+}
+.label-caps {
+  font-size: clamp(9px, 0.8vw, 12px); font-weight: 600;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent);
+}
+.body-text {
+  font-size: var(--body-size); font-weight: 300; line-height: 1.8; color: #666;
+  max-width: 40ch;
+}
+.hairline { width: clamp(40px, 4vw, 60px); height: 1px; background: var(--text); opacity: 0.15; }
+.section-italic {
+  font-family: 'Cormorant Garamond', 'Noto Sans SC', serif;
+  font-size: clamp(14px, 1.5vw, 20px); font-style: italic; color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+/* Stats row */
+.stats-gallery {
+  display: flex; gap: clamp(32px, 5vw, 80px); align-items: baseline; flex-wrap: wrap;
+}
+.stat-item .num {
+  font-family: 'Cormorant Garamond', 'Noto Sans SC', serif;
+  font-size: clamp(48px, 8vw, 120px); font-weight: 300; line-height: 1;
+}
+.stat-item .num .suffix { font-size: 0.4em; color: var(--accent); }
+.stat-item .desc { font-size: var(--body-size); color: var(--muted); margin-top: clamp(4px, 0.6vh, 10px); }
+
+/* 3-column content */
+.columns-3 {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  flex: 1; padding-top: clamp(16px, 2vh, 28px);
+}
+.col-item {
+  padding: clamp(12px, 2vw, 24px) clamp(16px, 2.5vw, 30px);
+  display: flex; flex-direction: column; gap: clamp(8px, 1vh, 14px);
+  position: relative;
+}
+.col-item:not(:last-child)::after {
+  content: ''; position: absolute; right: 0; top: clamp(12px, 2vw, 20px); bottom: clamp(12px, 2vw, 20px);
+  width: 1px; background: var(--text); opacity: 0.08;
+}
+.col-num { font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 5vw, 64px); font-weight: 300; line-height: 0.85; }
+.col-part { font-size: clamp(9px, 0.8vw, 11px); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+.col-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(14px, 1.5vw, 19px); font-weight: 500; line-height: 1.3; }
+.col-desc { font-size: clamp(10px, 0.9vw, 12px); font-weight: 300; line-height: 1.8; color: var(--muted); }
+.col-line { width: 30px; height: 1px; background: var(--accent); opacity: 0.4; }
+
+/* Animations */
+.reveal { opacity: 0; transform: translateY(25px); transition: opacity 0.7s ease, transform 0.7s var(--ease-out-expo); }
+.reveal-mask { clip-path: inset(0 0 100% 0); transition: clip-path 0.8s var(--ease-out-expo); }
+.reveal-left { opacity: 0; transform: translateX(-30px); transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo); }
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+.slide.active .reveal-mask { clip-path: inset(0 0 0 0); }
+.slide.active .reveal-left { opacity: 1; transform: translateX(0); }
+.slide.active .d1 { transition-delay: 0.1s; }
+.slide.active .d2 { transition-delay: 0.2s; }
+.slide.active .d3 { transition-delay: 0.35s; }
+.slide.active .d4 { transition-delay: 0.5s; }
+.slide.active .d5 { transition-delay: 0.65s; }
+
+@media (max-width: 600px) {
+  .columns-3 { grid-template-columns: 1fr; }
+  .col-item:not(:last-child)::after { display: none; }
+  .stats-gallery { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide active" data-i="0">
+  <div class="slide-inner" style="flex-direction:row; align-items:stretch; gap:0; padding:0;">
+    <!-- Left -->
+    <div style="flex:1; padding:clamp(32px,5vh,56px) clamp(32px,5vw,56px); display:flex; flex-direction:column; justify-content:space-between;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <span class="label-caps reveal d1">Art Gallery</span>
+        <span class="reveal d2" style="font-size:var(--small-size); color:var(--muted); letter-spacing:0.1em;">2026.04</span>
+      </div>
+      <div>
+        <div class="big-number reveal-mask d2" style="position:relative; display:inline-block;">
+          118
+          <span class="section-italic" style="position:absolute; left:clamp(80px,10vw,140px); top:50%; transform:translateY(-50%); opacity:0.6; font-size:clamp(40px,6vw,80px);">Dali</span>
+        </div>
+      </div>
+      <div>
+        <div class="reveal d3" style="margin-bottom:clamp(12px,2vh,24px);">
+          <span style="display:block; text-transform:uppercase; letter-spacing:0.08em; line-height:1.15; font-size:clamp(14px,2vw,28px); font-weight:300;">设计</span>
+          <span style="display:block; text-transform:uppercase; letter-spacing:0.08em; line-height:1.15; font-size:clamp(18px,2.5vw,34px); font-weight:400;">超现实主义</span>
+          <span style="display:block; text-transform:uppercase; letter-spacing:0.08em; line-height:1.15; font-size:clamp(22px,3vw,40px); font-weight:600;">设计革命</span>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <span class="label-caps reveal d4" style="color:var(--text);">Surrealism Report</span>
+        <span class="reveal d4" style="font-size:var(--small-size); color:var(--muted);">2026.04.05</span>
+      </div>
+    </div>
+    <!-- Right (dark) -->
+    <div style="flex:1; background:var(--bg-dark); padding:clamp(32px,5vh,56px) clamp(32px,4vw,48px); display:flex; flex-direction:column; justify-content:space-between; position:relative;">
+      <div style="position:absolute; left:0; top:clamp(40px,6vh,60px); bottom:clamp(40px,6vh,60px); width:1px; background:rgba(245,245,240,0.1);"></div>
+      <div style="display:flex; flex-direction:column; gap:clamp(16px,2vh,24px); align-items:flex-end;">
+        <span class="reveal d2" style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--text-light);">Catalog</span>
+        <span class="reveal d3" style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,245,240,0.4);">Data</span>
+        <span class="reveal d4" style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,245,240,0.4);">Analysis</span>
+      </div>
+      <div class="gallery-frame reveal d3" style="width:100%; aspect-ratio:4/3; position:relative;">
+        <div style="position:absolute; inset:clamp(4px,0.5vw,8px); border:1px solid rgba(245,245,240,0.06);"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <span class="reveal d4" style="font-family:'Cormorant Garamond',serif; font-size:var(--small-size); font-style:italic; color:rgba(245,245,240,0.4);">Salvador Dali, 1931</span>
+        <span class="reveal d4" style="font-family:'Cormorant Garamond',serif; font-size:clamp(28px,4vw,48px); font-weight:300; color:rgba(245,245,240,0.08);">01</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="slide-inner" style="flex-direction:row; gap:clamp(24px,4vw,48px);">
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:clamp(8px,1.5vh,16px);">
+      <div class="big-number reveal d1" style="font-size:clamp(60px,10vw,140px);">1<sup style="font-size:0.35em; vertical-align:super;">o</sup></div>
+      <div class="reveal d2" style="font-family:'IBM Plex Sans','Noto Sans SC',sans-serif; font-size:clamp(20px,3vw,32px); font-weight:700; letter-spacing:0.2em; text-transform:uppercase;">IMAGINE</div>
+      <div class="section-italic reveal d3">充满想象力与创造力</div>
+      <p class="body-text reveal d4" style="margin-top:clamp(8px,1.5vh,16px);">
+        超现实主义试图通过潜意识释放想象力。AI 驱动的设计工具正在延续这一传统 --
+        将直觉转化为精确的视觉语言，模糊梦境与现实的边界。
+      </p>
+    </div>
+    <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+      <div class="gallery-frame reveal d3" style="width:clamp(200px,25vw,380px); height:clamp(260px,35vh,480px); position:relative;">
+        <div style="position:absolute; inset:clamp(8px,1vw,14px); border:1px solid rgba(255,255,255,0.05);"></div>
+        <div style="position:absolute; bottom:clamp(-20px,-2vh,-28px); width:100%; text-align:center; font-family:'Cormorant Garamond',serif; font-size:var(--small-size); font-style:italic; color:var(--muted);">The Persistence of Memory, 1931</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <span>// <span style="color:var(--text-light);">Surrealism</span></span>
+    <span class="muted">Design Revolution Report</span>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="slide-inner">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:clamp(12px,2vh,20px);">
+      <span class="title-serif reveal d1" style="font-size:clamp(48px,7vw,80px);">Content</span>
+      <span class="label-caps reveal d1">Surrealism Report 2026</span>
+    </div>
+    <div class="hairline reveal d2"></div>
+    <div class="stats-gallery" style="margin-top:clamp(24px,4vh,48px);">
+      <div class="stat-item reveal d2">
+        <div class="num">10<span class="suffix">x</span></div>
+        <div class="desc">效率提升</div>
+      </div>
+      <div class="stat-item reveal d3">
+        <div class="num">93<span class="suffix">%</span></div>
+        <div class="desc">用户满意度</div>
+      </div>
+      <div class="stat-item reveal d4">
+        <div class="num">50<span class="suffix">M</span></div>
+        <div class="desc">设计生成</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <span class="muted">Performance Index</span>
+    <span style="font-family:'Cormorant Garamond',serif; font-style:italic; color:rgba(245,245,240,0.3);">Surrealism Art Report</span>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="slide-inner" style="align-items:center; text-align:center;">
+    <div class="label-caps reveal d1" style="margin-bottom:clamp(16px,3vh,32px);">Imagine</div>
+    <div class="section-italic reveal d2" style="margin-bottom:clamp(8px,1.5vh,16px);">充满想象力</div>
+    <div class="hairline reveal d2" style="margin:0 auto clamp(24px,4vh,40px);"></div>
+    <div class="reveal-mask d3" style="font-family:'Cormorant Garamond','Noto Sans SC',serif; font-size:clamp(28px,5vw,68px); font-weight:400; font-style:italic; line-height:1.3; max-width:18ch; color:var(--accent);">
+      "好的设计是尽可能少的设计。"
+    </div>
+    <div class="reveal d4" style="font-size:var(--body-size); color:var(--muted); margin-top:clamp(16px,3vh,32px);">
+      Dieter Rams
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="slide-inner">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:clamp(12px,2vh,20px);">
+      <span class="title-serif reveal d1" style="font-size:clamp(48px,7vw,80px);">Content</span>
+      <span class="label-caps reveal d1">Report 2026</span>
+    </div>
+    <div class="hairline reveal d2" style="width:calc(100% - 0px); margin-bottom:clamp(16px,2vh,24px);"></div>
+    <div class="columns-3">
+      <div class="col-item reveal d2">
+        <span class="col-num">03</span>
+        <span class="col-part">Part One</span>
+        <div class="col-line"></div>
+        <span class="col-title">超现实主义的诞生</span>
+        <span class="col-desc">从达达主义到安德烈·布勒东的宣言，追溯运动在1920年代的快速扩展。</span>
+      </div>
+      <div class="col-item reveal d3">
+        <span class="col-num">02</span>
+        <span class="col-part">Part Two</span>
+        <div class="col-line"></div>
+        <span class="col-title">AI 的视觉语言</span>
+        <span class="col-desc">分析 AI 如何创造通用视觉词汇：从融化时钟到自动生成的不可能景观。</span>
+      </div>
+      <div class="col-item reveal d4">
+        <span class="col-num">01</span>
+        <span class="col-part">Part Three</span>
+        <div class="col-line"></div>
+        <span class="col-title">遗产与未来</span>
+        <span class="col-desc">从广告到数字艺术，超现实主义 DNA 如何在当代 AI 生成图像中延续。</span>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <div style="display:flex; gap:clamp(24px,3vw,40px);">
+      <span style="color:var(--text-light);">Content</span>
+      <span class="muted">Gallery</span>
+      <span class="muted">Analysis</span>
+    </div>
+    <span style="font-family:'Cormorant Garamond',serif; font-style:italic; color:rgba(245,245,240,0.3);">Surrealism Art Report</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click',function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

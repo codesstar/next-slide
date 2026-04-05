@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next Slide — Style Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Inter+Tight:wght@700&family=Archivo+Black&family=Space+Grotesk:wght@700&family=JetBrains+Mono:wght@700&family=Bebas+Neue&family=Cormorant:wght@600&family=Exo+2:wght@700&family=Cinzel:wght@700&family=Space+Mono:wght@700&family=Literata:wght@600&family=Atkinson+Hyperlegible:wght@700&family=DM+Sans:wght@700&family=IBM+Plex+Sans:wght@700&family=Source+Serif+4:wght@700&family=Figtree:wght@700&family=Cormorant+Garamond:wght@600&family=Nunito:wght@700&family=Noto+Serif+JP:wght@700&family=Playfair+Display:wght@700&family=Bodoni+Moda:wght@700&family=PT+Serif:wght@700&family=Fraunces:wght@700&family=Manrope:wght@700&family=Syne:wght@700&family=Outfit:wght@700&family=Bangers&family=Poppins:wght@700&family=DM+Serif+Display&family=Alfa+Slab+One&family=Press+Start+2P&family=Caveat:wght@700&family=Libre+Franklin:wght@700&family=Gilda+Display&family=Ma+Shan+Zheng&family=Bricolage+Grotesque:wght@700&family=Chakra+Petch:wght@700&family=Montserrat:wght@700&family=Noto+Serif+SC:wght@700&family=Inter:wght@600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#100f0d;color:#e8e4df;font-family:'Plus Jakarta Sans',sans-serif;padding:2rem;min-height:100vh}
+header{text-align:center;padding:2rem 0 1.5rem}
+h1{font-size:2rem;font-weight:700;color:#fff}
+h1 span{color:#e8643a}
+.subtitle{color:#8a857e;margin:.5rem 0;font-size:.95rem}
+.link{color:#e8643a;text-decoration:none;font-size:.85rem;display:inline-block;margin-top:.5rem;transition:opacity .2s}
+.link:hover{opacity:.75}
+.filters{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0 2rem}
+.filters button{background:#1a1917;border:1px solid #2a2825;color:#8a857e;padding:.4rem 1rem;border-radius:99px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:all .2s}
+.filters button.active,.filters button:hover{background:#e8643a;color:#fff;border-color:#e8643a}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;max-width:1200px;margin:0 auto}
+.card{background:#1a1917;border:1px solid #2a2825;border-radius:12px;overflow:hidden;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-3px);border-color:#3a3835}
+.card[hidden]{display:none}
+.preview{width:100%;height:120px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.preview .deco{position:absolute;inset:0;opacity:.25}
+.preview .aa{font-size:2.8rem;position:relative;z-index:1;opacity:.9}
+.info{padding:.85rem 1rem}
+.name{font-size:.9rem;font-weight:600;color:#fff;margin-bottom:.3rem}
+.vibe{font-size:.75rem;color:#8a857e;margin-bottom:.4rem}
+.badge{display:inline-block;font-size:.65rem;padding:.15rem .55rem;border-radius:99px;background:#2a2825;color:#8a857e;text-transform:uppercase;letter-spacing:.04em}
+footer{text-align:center;padding:2.5rem 0 1rem;color:#4a4540;font-size:.8rem}
+footer a{color:#e8643a;text-decoration:none}
+@media(max-width:640px){.grid{grid-template-columns:1fr}body{padding:1rem}}
+</style>
+</head>
+<body>
+<header>
+<h1>Next <span>Slide</span> — Style Gallery</h1>
+<p class="subtitle">50+ curated design styles. 你的下个 ppt，何必是 PPT</p>
+<a class="link" href="https://next-slide.vercel.app/gallery">View full interactive gallery &rarr;</a>
+</header>
+<div class="filters">
+<button class="active" data-cat="all">All</button>
+<button data-cat="dark">Dark</button>
+<button data-cat="light">Light</button>
+<button data-cat="editorial">Editorial</button>
+<button data-cat="bold">Bold</button>
+<button data-cat="retro">Retro</button>
+<button data-cat="artistic">Artistic</button>
+<button data-cat="cultural">Cultural</button>
+</div>
+<div class="grid" id="grid"></div>
+<footer>Made with <a href="https://next-slide.vercel.app">Next Slide</a> &middot; Full gallery at <a href="https://next-slide.vercel.app/gallery">next-slide.vercel.app/gallery</a></footer>
+<script>
+const S=[
+["Keynote Noir","#0a0a0a","#2997ff","Inter Tight","Dark Premium","dark","linear-gradient(135deg,#2997ff22 0%,transparent 60%)"],
+["Bold Signal","#0a0a0a","#ff4444","Archivo Black","Danger Red","dark","radial-gradient(circle at 80% 20%,#ff444433,transparent 60%)"],
+["Neon Cyber","#0a0f1a","#00ffcc","Space Grotesk","Cyber Glow","dark","linear-gradient(160deg,#00ffcc15 0%,transparent 50%)"],
+["Terminal Green","#0c0c0c","#00ff41","JetBrains Mono","Hacker Mode","dark","repeating-linear-gradient(0deg,#00ff4108 0px,#00ff4108 1px,transparent 1px,transparent 3px)"],
+["Midnight Corporate","#0f1219","#3d7cf5","Plus Jakarta Sans","Corporate Blue","dark","linear-gradient(180deg,#3d7cf520 0%,transparent 50%)"],
+["Cinema Scope","#0a0a0a","#d4a843","Bebas Neue","Film Gold","dark","linear-gradient(135deg,#d4a84320 0%,transparent 60%)"],
+["Dark Botanical","#0a0f08","#e8e4df","Cormorant","Moody Nature","dark","radial-gradient(circle at 30% 70%,#1a2f1525,transparent 60%)"],
+["Starfield","#05051a","#8855ff","Exo 2","Cosmic Purple","dark","radial-gradient(circle at 50% 50%,#8855ff18,transparent 50%)"],
+["Dark Premium","#0A0A0A","#C4A265","Cinzel","Luxury Dark","dark","linear-gradient(135deg,#C4A26520 0%,transparent 60%)"],
+["Dark Cinema","#0a0a0a","#d4a843","Bebas Neue","Cinematic Gold","dark","linear-gradient(160deg,#d4a84322 0%,transparent 60%)"],
+["Futuristic Blue","#0a1628","#00d4ff","Space Mono","Tech Blue","dark","linear-gradient(135deg,#00d4ff18 0%,transparent 50%)"],
+["Swiss Modern","#ffffff","#ff0000","Inter","Clean Precision","light","linear-gradient(90deg,#ff000010 0%,transparent 30%)"],
+["Paper & Ink","#faf8f5","#1a1a1a","Literata","Warm Analog","light","none"],
+["Notebook Tabs","#f5f3ee","#4a90d9","Atkinson Hyperlegible","Study Notes","light","repeating-linear-gradient(0deg,#4a90d910 0px,#4a90d910 1px,transparent 1px,transparent 28px)"],
+["Pastel Geometry","#f0e8ff","#7c5cbf","DM Sans","Soft Purple","light","linear-gradient(45deg,#7c5cbf10 25%,transparent 25%)"],
+["Morning Brief","#ffffff","#1a73e8","IBM Plex Sans","News Blue","light","linear-gradient(180deg,#1a73e808 0%,transparent 30%)"],
+["Campus White","#ffffff","#2563eb","Source Serif 4","Academic","light","none"],
+["Soft Landing","#faf9f7","#6366f1","Figtree","Gentle Indigo","light","radial-gradient(circle at 80% 80%,#6366f110,transparent 50%)"],
+["Watercolor Wash","#f7f3ee","#8b7355","Cormorant Garamond","Earthy Warm","light","radial-gradient(ellipse at 30% 40%,#8b735512,transparent 60%)"],
+["Korean Soft","#f5f3f0","#c4a68a","Inter","K-Minimal","light","none"],
+["Claymorphism 3D","#e8e4f0","#7c6bc4","Nunito","Soft 3D","light","linear-gradient(145deg,#ffffff40,#d0cce040)"],
+["Wabi-Sabi Zen","#f5f2ed","#1a1a1a","Noto Serif JP","Zen Minimal","light","none"],
+["Editorial Serif","#F8F6F2","#C4A265","Playfair Display","Luxury Type","editorial","none"],
+["Fashion Editorial","#f5f0e8","#c4a265","Bodoni Moda","Vogue Style","editorial","linear-gradient(180deg,#c4a26510 0%,transparent 40%)"],
+["Newsprint Broadsheet","#f2ead8","#cc0000","PT Serif","Old Press","editorial","repeating-linear-gradient(90deg,#00000005 0px,#00000005 1px,transparent 1px,transparent 20px)"],
+["Vintage Editorial","#f5f3ee","#e07a3a","Fraunces","Warm Retro","editorial","none"],
+["Electric Studio","#0a0a0a","#4361ee","Manrope","Studio Blue","bold","radial-gradient(circle at 70% 30%,#4361ee25,transparent 50%)"],
+["Creative Voltage","#0e0e12","#5cff5c","Syne","High Energy","bold","linear-gradient(135deg,#5cff5c12 0%,transparent 50%)"],
+["Split Pastel","#f5e6dc","#e88d7a","Outfit","Warm Pastel","bold","linear-gradient(90deg,#f5e6dc 50%,#e88d7a20 50%)"],
+["Pop Art","#ffffff","#ff1744","Bangers","Comic Bold","bold","radial-gradient(circle at 20% 80%,#ff174415,transparent 40%)"],
+["Bold Typography","#0a0a0a","#ffffff","Space Grotesk","Type Forward","bold","none"],
+["Neon Brutalism","#0a1628","#39ff14","Space Mono","Raw Neon","bold","linear-gradient(180deg,#39ff1410 0%,transparent 40%)"],
+["Memphis Pop","#ffdd00","#ff3366","Poppins","90s Fun","bold","radial-gradient(circle at 80% 20%,#ff336620,transparent 40%)"],
+["Grainy Retro","#F2E8D9","#D4A574","DM Serif Display","Faded Warm","retro","none"],
+["Art Deco Gatsby","#0a1628","#c9a84c","Playfair Display","Roaring 20s","retro","linear-gradient(135deg,#c9a84c15 0%,transparent 50%)"],
+["Risograph Overprint","#f5f0e8","#ff3399","Space Grotesk","Print Offset","retro","radial-gradient(circle at 60% 50%,#ff339915,transparent 40%)"],
+["Vintage Poster","#f2e8d9","#cc3333","Alfa Slab One","Bold Vintage","retro","none"],
+["Retro Arcade","#0a0a0a","#39ff14","Press Start 2P","8-Bit","retro","repeating-linear-gradient(0deg,#39ff1406 0px,#39ff1406 2px,transparent 2px,transparent 4px)"],
+["Surrealism Gallery","#ffffff","#1a1a1a","Playfair Display","Avant-Garde","artistic","linear-gradient(45deg,#00000008 25%,transparent 25%)"],
+["Scrapbook Portfolio","#f5f0e8","#e07a3a","Caveat","Handmade Feel","artistic","none"],
+["Blue Collage","#f5f0e8","#1e3a5f","Libre Franklin","Layered Blue","artistic","linear-gradient(135deg,#1e3a5f12 0%,transparent 50%)"],
+["Pink Handwritten","#ffe8ee","#ff6b9d","Caveat","Cute & Soft","artistic","radial-gradient(circle at 50% 50%,#ff6b9d15,transparent 50%)"],
+["Art Nouveau Botanical","#f5f0e8","#8b4513","Gilda Display","Organic Lines","artistic","none"],
+["Soft Dreamy","#E8D5E0","#b088c0","Cormorant Garamond","Lavender Haze","artistic","radial-gradient(circle at 40% 60%,#b088c018,transparent 50%)"],
+["Terracotta Earth","#f2e8d9","#c4623a","DM Serif Display","Warm Clay","artistic","none"],
+["东方墨韵","#f7f4ef","#c53d43","Ma Shan Zheng","水墨中国风","cultural","none"],
+["和風","#fbfaf8","#d05a4e","Noto Serif JP","Japanese Zen","cultural","none"],
+["Gradient Dreams","#667eea","#764ba2","Bricolage Grotesque","Mesh Glow","cultural","linear-gradient(135deg,#667eea,#764ba2)"],
+["Blueprint","#1a3a5c","#ffffff","Chakra Petch","Technical","cultural","repeating-linear-gradient(0deg,#ffffff08 0px,#ffffff08 1px,transparent 1px,transparent 20px),repeating-linear-gradient(90deg,#ffffff08 0px,#ffffff08 1px,transparent 1px,transparent 20px)"],
+["Bauhaus Primary","#ffffff","#ff0000","Montserrat","Geometric","cultural","linear-gradient(135deg,#ff000010 33%,#0000ff10 33%,#0000ff10 66%,#ffcc0010 66%)"],
+["Swiss Grid","#ffffff","#ff0000","Inter","Grid System","cultural","repeating-linear-gradient(90deg,#ff000008 0px,#ff000008 1px,transparent 1px,transparent 60px)"],
+["Aurora Mesh","#0a0a1a","#7c3aed","Inter","Cosmic Glow","cultural","radial-gradient(circle at 30% 40%,#7c3aed25,transparent 40%),radial-gradient(circle at 70% 60%,#3b82f620,transparent 40%)"],
+["Chinese Ink Wash","#f7f4ef","#c53d43","Noto Serif SC","古典墨韵","cultural","none"]
+];
+const g=document.getElementById('grid');
+S.forEach(([name,bg,accent,font,vibe,cat,deco])=>{
+const light=['light','editorial'].includes(cat)||['#ffffff','#faf8f5','#f5f3ee','#f0e8ff','#F8F6F2','#f5f0e8','#f2ead8','#f5e6dc','#f7f3ee','#f5f3f0','#e8e4f0','#f5f2ed','#F2E8D9','#f7f4ef','#fbfaf8','#ffdd00','#ffe8ee','#E8D5E0','#f2e8d9'].includes(bg);
+const textCol=light?'#1a1a1a':'#ffffff';
+const c=document.createElement('div');
+c.className='card';c.dataset.category=cat;
+c.innerHTML=`<div class="preview" style="background:${bg}"><div class="deco" style="background:${deco}"></div><span class="aa" style="color:${accent};font-family:'${font}',sans-serif">Aa</span></div><div class="info"><div class="name">${name}</div><div class="vibe">${vibe}</div><span class="badge">${cat}</span></div>`;
+g.appendChild(c);
+});
+document.querySelector('.filters').addEventListener('click',e=>{
+if(e.target.tagName!=='BUTTON')return;
+document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+e.target.classList.add('active');
+const cat=e.target.dataset.cat;
+document.querySelectorAll('.card').forEach(c=>{c.hidden=cat!=='all'&&c.dataset.category!==cat});
+});
+</script>
+</body>
+</html>

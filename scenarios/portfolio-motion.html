@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Rivera — Brand & Motion Designer</title>
+
+    <!-- Fonts: Syne (display) + Space Mono (body) — Creative Voltage -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Creative Voltage
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #0066ff;
+            --bg-dark: #1a1a2e;
+            --bg-cream: #1a1a2e;
+            --bg-secondary: #12122a;
+            --bg-tertiary: #0a0a1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8d0;
+            --text-muted: #7878a0;
+            --accent: #d4ff00;
+            --accent-neon: #d4ff00;
+            --accent-secondary: #0066ff;
+            --accent-glow: rgba(212, 255, 0, 0.3);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --surface: rgba(255, 255, 255, 0.05);
+            --badge-bg: #d4ff00;
+            --badge-text: #1a1a2e;
+
+            /* --- Typography --- */
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Space Mono', monospace;
+            --font-mono: 'Space Mono', monospace;
+
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+            --duration-dramatic: 1.5s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        /* --- Responsive Breakpoints --- */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           THEME — Creative Voltage
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+        }
+        .visible .reveal-left {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-pop {
+            opacity: 0;
+            transform: scale(0) rotate(-10deg);
+            transition: opacity 0.3s ease, transform 0.5s var(--ease-spring);
+        }
+        .visible .reveal-pop {
+            opacity: 1;
+            transform: scale(1) rotate(0);
+        }
+
+        .reveal-wipe {
+            clip-path: inset(0 50% 0 50%);
+            opacity: 0;
+            transition: clip-path 1s var(--ease-out-expo), opacity 0.6s ease;
+        }
+        .visible .reveal-wipe {
+            clip-path: inset(0 0 0 0);
+            opacity: 1;
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           CREATIVE VOLTAGE — Signature Elements
+           =========================================== */
+
+        /* Halftone dot pattern background */
+        .halftone-bg {
+            background-image: radial-gradient(circle, rgba(212, 255, 0, 0.06) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Neon badge */
+        .neon-badge {
+            display: inline-block;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: var(--small-size);
+            padding: clamp(0.3rem, 0.6vw, 0.5rem) clamp(0.6rem, 1.2vw, 1rem);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Split panel effect */
+        .split-slide {
+            display: flex;
+            flex-direction: row;
+        }
+        .split-left {
+            flex: 1;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--slide-padding);
+        }
+        .split-right {
+            flex: 1;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--slide-padding);
+        }
+
+        /* Rotated sidebar label */
+        .sidebar-label {
+            position: absolute;
+            left: clamp(8px, 1.5vw, 16px);
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        /* Glow effect */
+        .glow-text {
+            text-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(212, 255, 0, 0.15);
+        }
+
+        /* Project card with hover */
+        .voltage-card {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s ease;
+        }
+        .voltage-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 255, 0, 0.1);
+        }
+
+        /* Before/after container */
+        .before-after-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--content-gap);
+            align-items: stretch;
+        }
+
+        /* Stat styling */
+        .stat-number {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-family: var(--font-body);
+            font-weight: 400;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        /* Slide backgrounds */
+        .slide {
+            background: var(--bg-dark);
+        }
+
+        .slide-blue {
+            background: var(--bg-primary);
+        }
+
+        /* Animated scanning border */
+        .scan-border {
+            position: relative;
+            overflow: hidden;
+        }
+        .scan-border::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @media (max-width: 600px) {
+            .split-slide {
+                flex-direction: column;
+            }
+            .before-after-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE — Split Panel =================== -->
+    <section class="slide split-slide" aria-label="Title">
+        <div class="split-left" style="position: relative;">
+            <!-- Halftone texture -->
+            <div style="position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px); background-size: 16px 16px; pointer-events: none;"></div>
+            <div style="position: relative; z-index: 1;">
+                <div class="reveal" style="display: inline-block;">
+                    <span class="neon-badge" style="font-size: var(--small-size);">Available 2026</span>
+                </div>
+                <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--content-gap); line-height: 1.05; letter-spacing: -0.02em;">
+                    Alex<br>Rivera
+                </h1>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: rgba(255,255,255,0.7); margin-top: var(--element-gap); letter-spacing: 0.05em;">
+                    Brand & Motion Designer
+                </p>
+            </div>
+        </div>
+        <div class="split-right" style="position: relative; overflow: hidden;">
+            <!-- Abstract motion graphics background -->
+            <div style="position: absolute; inset: 0; overflow: hidden;">
+                <img src="images/motion-reel-frame.webp" alt="Motion design reel frame" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5; max-height: none;">
+            </div>
+            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, var(--bg-dark) 100%);"></div>
+            <div style="position: relative; z-index: 1; margin-top: auto; padding-bottom: 0;">
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7; max-width: min(80%, 400px);">
+                    I make brands move. From identity systems to motion language, I build the visual DNA that makes companies unforgettable.
+                </p>
+                <div class="reveal" style="display: flex; gap: clamp(1rem, 2vw, 2rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                    <span style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;">Brand Identity</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted);">/</span>
+                    <span style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;">Motion Graphics</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted);">/</span>
+                    <span style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;">Art Direction</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: SELECTED WORKS — Grid =================== -->
+    <section class="slide halftone-bg" aria-label="Selected Works">
+        <div class="sidebar-label decorative">Selected Works</div>
+
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal neon-badge">Portfolio</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; margin-top: var(--element-gap);">
+                Selected Works
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); max-width: min(90vw, 960px); width: 100%;">
+                <!-- Card 1: VOLTA -->
+                <div class="reveal voltage-card" style="cursor: pointer;">
+                    <div style="height: clamp(100px, 18vh, 200px); background: linear-gradient(135deg, #0066ff 0%, #0044cc 60%, #1a1a2e 100%); position: relative; overflow: hidden;">
+                        <div style="position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(212,255,0,0.15) 1px, transparent 1px); background-size: 12px 12px;"></div>
+                        <div style="position: absolute; bottom: 12%; left: 10%; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.2rem, 3vw, 2rem); color: #fff; letter-spacing: -0.02em;">VOLTA</div>
+                    </div>
+                    <div style="padding: clamp(0.6rem, 1.2vw, 1rem);">
+                        <p style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em;">Brand Identity</p>
+                        <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 700; margin-top: 0.2em;">Volta Energy</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Full rebrand + motion system</p>
+                    </div>
+                </div>
+                <!-- Card 2: PRISM -->
+                <div class="reveal voltage-card" style="cursor: pointer;">
+                    <div style="height: clamp(100px, 18vh, 200px); background: linear-gradient(135deg, #1a1a2e 0%, #2a1a4e 60%, #4a1a6e 100%); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 50%; left: 50%; width: 60%; height: 60%; transform: translate(-50%, -50%); border: 2px solid rgba(212,255,0,0.3); border-radius: 50%;"></div>
+                        <div style="position: absolute; top: 50%; left: 50%; width: 40%; height: 40%; transform: translate(-50%, -50%); border: 1px solid rgba(212,255,0,0.2); border-radius: 50%;"></div>
+                    </div>
+                    <div style="padding: clamp(0.6rem, 1.2vw, 1rem);">
+                        <p style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em;">Motion</p>
+                        <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 700; margin-top: 0.2em;">Prism Festival</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Event branding + title sequence</p>
+                    </div>
+                </div>
+                <!-- Card 3: HELIX -->
+                <div class="reveal voltage-card" style="cursor: pointer;">
+                    <div style="height: clamp(100px, 18vh, 200px); background: linear-gradient(135deg, #d4ff00 0%, #88cc00 40%, #446600 100%); position: relative; overflow: hidden;">
+                        <div style="position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(26,26,46,0.1) 8px, rgba(26,26,46,0.1) 16px);"></div>
+                    </div>
+                    <div style="padding: clamp(0.6rem, 1.2vw, 1rem);">
+                        <p style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em;">Brand + Motion</p>
+                        <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 700; margin-top: 0.2em;">Helix Biotech</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Science meets story</p>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                Clients include Volta Energy, Prism Arts, Helix Biotech, and more &mdash; 2020&ndash;2026
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: CASE STUDY — Volta Brand (Two-Column) =================== -->
+    <section class="slide slide-blue" aria-label="Volta Energy — Overview">
+        <div style="position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none;"></div>
+
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(1.5rem, 4vw, 4rem); position: relative; z-index: 1;">
+            <!-- Left: Project Visual -->
+            <div style="flex: 1.1; min-width: 0; display: flex; justify-content: center;">
+                <div class="reveal-wipe" style="width: 100%; max-width: min(45vw, 440px); aspect-ratio: 4/3; overflow: hidden; position: relative;">
+                    <img src="images/motion-brand-showcase.webp" alt="Volta Energy brand identity showcase" style="width: 100%; height: 100%; object-fit: cover; max-height: none;">
+                </div>
+            </div>
+            <!-- Right: Project Info -->
+            <div style="flex: 1; min-width: 0;">
+                <div class="reveal neon-badge">Case Study 01</div>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); line-height: 1.2;">
+                    Volta Energy
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: rgba(255,255,255,0.7); margin-top: var(--element-gap);">
+                    Electrifying a clean-energy startup's brand from zero
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: rgba(255,255,255,0.7); line-height: 1.7;">
+                    <p>Volta needed more than a logo &mdash; they needed a complete visual language that could flex from pitch deck to billboard to social motion. I designed an identity system with 40+ brand elements and a kinetic motion library for every touchpoint.</p>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5);">Role</p>
+                        <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.15em;">Lead Designer</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5);">Duration</p>
+                        <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.15em;">10 weeks</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5);">Deliverables</p>
+                        <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.15em;">Brand + Motion</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: BEFORE / AFTER — Brand Transformation =================== -->
+    <section class="slide" aria-label="Volta — Before & After">
+        <div class="sidebar-label decorative">Transformation</div>
+
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal neon-badge">Before & After</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; margin-top: var(--element-gap);">
+                The Volta Transformation
+            </h2>
+            <div class="reveal before-after-grid" style="margin-top: var(--content-gap); max-width: min(90vw, 900px); width: 100%;">
+                <!-- Before -->
+                <div style="background: rgba(255, 80, 80, 0.08); border: 1px solid rgba(255, 80, 80, 0.2); padding: clamp(1rem, 2vw, 1.5rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); color: #ff6b6b; margin-bottom: clamp(0.5rem, 1vh, 0.8rem);">Before</h3>
+                    <div style="height: clamp(80px, 12vh, 140px); background: linear-gradient(135deg, #e8e8e8 0%, #cccccc 100%); display: flex; align-items: center; justify-content: center; margin-bottom: clamp(0.5rem, 1vh, 0.8rem);">
+                        <span style="font-family: Arial, sans-serif; font-size: var(--h3-size); color: #666; font-weight: bold;">volta</span>
+                    </div>
+                    <ul style="list-style: none; padding: 0; font-size: var(--small-size); color: var(--text-secondary);">
+                        <li style="padding: 0.25em 0;">&#10007; Generic wordmark</li>
+                        <li style="padding: 0.25em 0;">&#10007; No motion language</li>
+                        <li style="padding: 0.25em 0;">&#10007; Inconsistent across media</li>
+                    </ul>
+                </div>
+                <!-- Divider -->
+                <div style="width: 2px; background: var(--border-subtle); align-self: stretch; display: flex; align-items: center; justify-content: center;">
+                    <div style="width: clamp(20px, 3vw, 36px); height: clamp(20px, 3vw, 36px); background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: var(--small-size); color: var(--bg-dark); font-weight: 700; flex-shrink: 0;">&#8594;</div>
+                </div>
+                <!-- After -->
+                <div style="background: rgba(212, 255, 0, 0.05); border: 1px solid rgba(212, 255, 0, 0.15); padding: clamp(1rem, 2vw, 1.5rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent); margin-bottom: clamp(0.5rem, 1vh, 0.8rem);">After</h3>
+                    <div style="height: clamp(80px, 12vh, 140px); background: linear-gradient(135deg, #0066ff 0%, #0044cc 100%); display: flex; align-items: center; justify-content: center; margin-bottom: clamp(0.5rem, 1vh, 0.8rem); position: relative; overflow: hidden;">
+                        <div style="position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(212,255,0,0.1) 1px, transparent 1px); background-size: 10px 10px;"></div>
+                        <span style="font-family: var(--font-display); font-size: var(--h3-size); color: #fff; font-weight: 800; letter-spacing: -0.02em; position: relative; z-index: 1;">VOLTA</span>
+                    </div>
+                    <ul style="list-style: none; padding: 0; font-size: var(--small-size); color: var(--text-secondary);">
+                        <li style="padding: 0.25em 0; color: var(--accent);">&#10003; Bold geometric identity</li>
+                        <li style="padding: 0.25em 0; color: var(--accent);">&#10003; 40+ motion assets</li>
+                        <li style="padding: 0.25em 0; color: var(--accent);">&#10003; Unified cross-platform</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: IMPACT STATS =================== -->
+    <section class="slide slide-blue" aria-label="Volta — Impact">
+        <div style="position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none;"></div>
+
+        <div class="slide-content" style="align-items: center; position: relative; z-index: 1;">
+            <div class="reveal neon-badge">Impact</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; margin-top: var(--element-gap);">
+                Volta &mdash; By the Numbers
+            </h2>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number counter glow-text" data-target="280" data-prefix="+" data-suffix="%" style="font-size: var(--stat-size);">0</div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">Brand Recognition</div>
+                    <p style="font-size: var(--small-size); color: rgba(255,255,255,0.5); margin-top: 0.3em; max-width: 180px;">Aided recall in target market, 6mo post-launch</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number glow-text" style="font-size: var(--stat-size);">
+                        <span class="counter" data-target="12" data-suffix="M" style="font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit;">0</span>
+                    </div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">Social Impressions</div>
+                    <p style="font-size: var(--small-size); color: rgba(255,255,255,0.5); margin-top: 0.3em; max-width: 180px;">Launch month across Instagram, TikTok, YouTube</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number glow-text" style="font-size: var(--stat-size);">
+                        <span class="counter" data-target="40" data-suffix="+" style="font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit;">0</span>
+                    </div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">Motion Assets</div>
+                    <p style="font-size: var(--small-size); color: rgba(255,255,255,0.5); margin-top: 0.3em; max-width: 180px;">Loops, transitions, stingers for all platforms</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: CASE STUDY 2 — Prism Festival =================== -->
+    <section class="slide" aria-label="Prism Festival — Overview">
+        <div class="sidebar-label decorative">Case Study 02</div>
+
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(1.5rem, 4vw, 4rem);">
+            <!-- Left: Text -->
+            <div style="flex: 1; min-width: 0;">
+                <div class="reveal neon-badge">Case Study 02</div>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); line-height: 1.2;">
+                    Prism Festival
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                    A multi-sensory arts festival identity in motion
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7;">
+                    <p>Prism is a 3-day immersive arts and music festival. I created the visual identity, 90-second title sequence, social motion toolkit, and environmental wayfinding &mdash; all unified under a prismatic light-refraction concept.</p>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Type</p>
+                        <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.15em;">Event Branding</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Output</p>
+                        <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.15em;">ID + Motion + Spatial</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Right: Visual -->
+            <div style="flex: 1.1; min-width: 0; display: flex; justify-content: center;">
+                <div class="reveal" style="width: 100%; max-width: min(45vw, 440px); aspect-ratio: 4/3; overflow: hidden; position: relative; background: linear-gradient(160deg, #1a1a2e 0%, #2a1a4e 30%, #4a1a6e 60%, #6a1a8e 100%); box-shadow: 0 12px 40px rgba(0,0,0,0.3);">
+                    <!-- Abstract prismatic effect -->
+                    <div style="position: absolute; top: 20%; left: 20%; width: 60%; height: 60%; border: 2px solid rgba(212,255,0,0.2); border-radius: 50%; transform: rotate(30deg);"></div>
+                    <div style="position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; border: 1px solid rgba(0,102,255,0.3); border-radius: 50%; transform: rotate(-15deg);"></div>
+                    <div style="position: absolute; top: 30%; left: 30%; width: 40%; height: 40%; border: 1px solid rgba(255,100,200,0.2); border-radius: 50%;"></div>
+                    <div style="position: absolute; bottom: 15%; left: 10%; font-family: var(--font-display); font-weight: 800; font-size: clamp(1rem, 2.5vw, 1.8rem); color: #fff; letter-spacing: 0.1em;">PRISM</div>
+                    <div style="position: absolute; bottom: 15%; right: 10%; font-family: var(--font-mono); font-size: var(--small-size); color: rgba(212,255,0,0.6);">&rsquo;26</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: MOTION TOOLKIT — Visual Data =================== -->
+    <section class="slide halftone-bg" aria-label="Motion Design Toolkit">
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal neon-badge">Approach</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; margin-top: var(--element-gap);">
+                Motion Toolkit Breakdown
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap); max-width: min(70vw, 600px);">
+                Every brand gets a custom motion language &mdash; here's how the asset library breaks down.
+            </p>
+            <!-- CSS Data Viz: Horizontal bars -->
+            <div style="margin-top: var(--content-gap); max-width: min(80vw, 700px); width: 100%;">
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); margin-bottom: clamp(0.6rem, 1.2vh, 1rem);">
+                    <span style="font-size: var(--small-size); color: var(--text-secondary); min-width: clamp(80px, 12vw, 140px); text-align: right;">Logo Animations</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--surface); overflow: hidden; position: relative;">
+                        <div style="width: 85%; height: 100%; background: linear-gradient(90deg, var(--accent-secondary), var(--accent)); position: relative;">
+                            <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: var(--small-size); color: var(--bg-dark); font-weight: 700;">85%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); margin-bottom: clamp(0.6rem, 1.2vh, 1rem);">
+                    <span style="font-size: var(--small-size); color: var(--text-secondary); min-width: clamp(80px, 12vw, 140px); text-align: right;">Transitions</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--surface); overflow: hidden;">
+                        <div style="width: 70%; height: 100%; background: linear-gradient(90deg, var(--accent-secondary), #44aaff); position: relative;">
+                            <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: var(--small-size); color: var(--bg-dark); font-weight: 700;">70%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); margin-bottom: clamp(0.6rem, 1.2vh, 1rem);">
+                    <span style="font-size: var(--small-size); color: var(--text-secondary); min-width: clamp(80px, 12vw, 140px); text-align: right;">Social Loops</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--surface); overflow: hidden;">
+                        <div style="width: 95%; height: 100%; background: linear-gradient(90deg, #d4ff00, #88ff44); position: relative;">
+                            <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: var(--small-size); color: var(--bg-dark); font-weight: 700;">95%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); margin-bottom: clamp(0.6rem, 1.2vh, 1rem);">
+                    <span style="font-size: var(--small-size); color: var(--text-secondary); min-width: clamp(80px, 12vw, 140px); text-align: right;">Title Sequences</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--surface); overflow: hidden;">
+                        <div style="width: 60%; height: 100%; background: linear-gradient(90deg, #6644ff, #aa66ff); position: relative;">
+                            <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: var(--small-size); color: #fff; font-weight: 700;">60%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem);">
+                    <span style="font-size: var(--small-size); color: var(--text-secondary); min-width: clamp(80px, 12vw, 140px); text-align: right;">UI Micro-Motion</span>
+                    <div style="flex: 1; height: clamp(20px, 3vh, 32px); background: var(--surface); overflow: hidden;">
+                        <div style="width: 50%; height: 100%; background: linear-gradient(90deg, #ff4466, #ff8844); position: relative;">
+                            <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: var(--small-size); color: #fff; font-weight: 700;">50%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                Percentage indicates relative time allocation across a typical brand + motion engagement.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: TESTIMONIAL =================== -->
+    <section class="slide" aria-label="Client Testimonial">
+        <div style="position: absolute; inset: 0; overflow: hidden;">
+            <div style="position: absolute; top: -20%; right: -10%; width: clamp(300px, 50vw, 600px); height: clamp(300px, 50vw, 600px); border: 1px solid rgba(212,255,0,0.08); border-radius: 50%;"></div>
+            <div style="position: absolute; bottom: -15%; left: -5%; width: clamp(200px, 35vw, 400px); height: clamp(200px, 35vw, 400px); border: 1px solid rgba(0,102,255,0.1); border-radius: 50%;"></div>
+        </div>
+
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(80vw, 800px); margin: 0 auto; position: relative; z-index: 1;">
+            <div class="reveal" style="font-size: clamp(2rem, 5vw, 4rem); color: var(--accent); line-height: 1; opacity: 0.3; font-family: Georgia, serif;">
+                &ldquo;
+            </div>
+            <blockquote class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 600; line-height: 1.4; margin-top: -0.5em;">
+                Alex didn't just redesign our brand &mdash; he gave it a <em style="font-style: normal; border-bottom: 3px solid var(--accent); padding-bottom: 2px;">pulse</em>. The motion system he built is now the heartbeat of every campaign we run.
+            </blockquote>
+            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal;">
+                &mdash; Sarah Kim, VP Marketing at Volta Energy
+            </cite>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: PROCESS =================== -->
+    <section class="slide halftone-bg" aria-label="Creative Process">
+        <div class="sidebar-label decorative">Process</div>
+
+        <div class="slide-content" style="max-width: min(90vw, 800px);">
+            <div class="reveal neon-badge">Methodology</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap);">
+                How I Build Brand Motion
+            </h2>
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); font-weight: 800; color: var(--accent); min-width: 2em; font-size: var(--body-size);">01</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong>Brand Audit.</strong> I deconstruct the existing identity &mdash; what works, what's broken, what's missing. Every element gets stress-tested across contexts.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); font-weight: 800; color: var(--accent); min-width: 2em; font-size: var(--body-size);">02</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong>Motion DNA.</strong> Before any animation, I define the brand's kinetic personality: speed curves, rhythm patterns, spatial behaviors.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); font-weight: 800; color: var(--accent); min-width: 2em; font-size: var(--body-size);">03</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong>System Build.</strong> I create the full toolkit &mdash; logo variants, color motion rules, type animations, social templates, and transition libraries.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0;">
+                    <span style="font-family: var(--font-display); font-weight: 800; color: var(--accent); min-width: 2em; font-size: var(--body-size);">04</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong>Handoff + Train.</strong> Lottie files, After Effects templates, Figma components. Your team can execute without me in the room.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: CONTACT — Closing =================== -->
+    <section class="slide split-slide closing-slide" aria-label="Contact">
+        <div class="split-left" style="position: relative;">
+            <div style="position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px); background-size: 16px 16px; pointer-events: none;"></div>
+            <div style="position: relative; z-index: 1;">
+                <div class="reveal neon-badge">Get in Touch</div>
+                <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--content-gap); line-height: 1.1;">
+                    Let's make<br>it move.
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: rgba(255,255,255,0.7); margin-top: var(--content-gap); max-width: min(80%, 400px); line-height: 1.6;">
+                    Taking on brand + motion projects for Q2&ndash;Q3 2026. If your brand needs a pulse, let's talk.
+                </p>
+            </div>
+        </div>
+        <div class="split-right" style="position: relative;">
+            <div style="position: relative; z-index: 1;">
+                <div class="reveal" style="margin-bottom: clamp(1rem, 2vh, 2rem);">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Email</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em; color: var(--accent);">alex@alexrivera.design</p>
+                </div>
+                <div class="reveal" style="margin-bottom: clamp(1rem, 2vh, 2rem);">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Portfolio & Reel</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em;">alexrivera.design</p>
+                </div>
+                <div class="reveal" style="margin-bottom: clamp(1rem, 2vh, 2rem);">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Location</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em;">Brooklyn, NY &mdash; remote worldwide</p>
+                </div>
+                <div class="reveal">
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Status</p>
+                    <p style="font-size: var(--body-size); font-weight: 700; margin-top: 0.2em; color: var(--accent);">Open to projects</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5; z-index: 2;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const isDecimal = target % 1 !== 0;
+                    const duration = 1500;
+                    const start = performance.now();
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const current = target * eased;
+                        if (isDecimal) el.textContent = prefix + current.toFixed(1) + suffix;
+                        else el.textContent = prefix + Math.round(current).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

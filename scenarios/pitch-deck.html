@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melo — AI Fitness Coaching That Actually Sticks</title>
+    <title>Lumina AI — AI-Powered Code Review</title>
 
-    <!-- Fonts: Inter Tight (display) + Inter (body) -->
+    <!-- Fonts: Inter Tight (display) + Inter (body) — Keynote Noir -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -13,40 +13,38 @@
     <style>
         /* ===========================================
            CSS CUSTOM PROPERTIES — Keynote Noir
+           Dark, Apple-like, confident, premium
            =========================================== */
         :root {
-            /* --- Color Palette --- */
             --bg-primary: #000000;
             --bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
             --text-primary: #ffffff;
-            --text-secondary: #86868b;
-            --text-muted: #6b7280;
+            --text-secondary: #a1a1a6;
+            --text-muted: #8e8e93;
             --accent: #2997ff;
-            --accent-secondary: #2997ff;
+            --accent-secondary: #5ac8fa;
             --accent-glow: rgba(41, 151, 255, 0.3);
             --accent-glow-secondary: rgba(41, 151, 255, 0.15);
             --border-subtle: rgba(255, 255, 255, 0.08);
             --surface: #1d1d1f;
+            --surface-elevated: #2c2c2e;
 
-            /* --- Typography --- */
             --font-display: 'Inter Tight', sans-serif;
             --font-body: 'Inter', sans-serif;
             --font-mono: 'SF Mono', 'Fira Code', monospace;
 
             --title-size: clamp(2rem, 6vw, 5rem);
-            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
             --h3-size: clamp(1rem, 2.5vw, 1.75rem);
-            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem);
             --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
             --small-size: clamp(0.65rem, 1vw, 0.875rem);
-            --stat-size: clamp(2rem, 8vw, 6rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
 
-            /* --- Spacing --- */
-            --slide-padding: clamp(1.5rem, 4vw, 4rem);
-            --content-gap: clamp(1rem, 2vw, 2rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
             --element-gap: clamp(0.25rem, 1vw, 1rem);
 
-            /* --- Animation --- */
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
             --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -59,100 +57,198 @@
         /* ===========================================
            BASE RESET
            =========================================== */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         /* ===========================================
            VIEWPORT FITTING: MANDATORY BASE STYLES
            =========================================== */
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-        }
-
-        html {
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
-        }
-
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
         body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
         }
 
         .slide {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            scroll-snap-align: start;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
         }
 
         .slide-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-height: 100%;
-            overflow: hidden;
-            padding: var(--slide-padding);
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; max-height: 100%;
+            overflow: hidden; padding: var(--slide-padding);
         }
 
-        :root {
-            --title-size: clamp(1.5rem, 5vw, 4rem);
-            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
-            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
-            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
-            --small-size: clamp(0.65rem, 1vw, 0.875rem);
-            --stat-size: clamp(2rem, 8vw, 6rem);
-            --slide-padding: clamp(1rem, 4vw, 4rem);
-            --content-gap: clamp(0.5rem, 2vw, 2rem);
-            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        /* ===========================================
+           KEYNOTE NOIR — Theme-specific styles
+           =========================================== */
+        .slide { background: var(--bg-primary); }
+
+        /* Ambient glow for hero slides */
+        .ambient-glow {
+            position: absolute; width: 60%; height: 60%;
+            border-radius: 50%; filter: blur(120px); opacity: 0.15;
+            pointer-events: none; z-index: 0;
+        }
+        .ambient-glow.blue { background: var(--accent); top: 20%; left: 20%; }
+        .ambient-glow.cyan { background: var(--accent-secondary); bottom: 10%; right: 10%; }
+
+        /* Slide image with glow */
+        .hero-image {
+            display: block;
+            max-width: min(85vw, 900px);
+            max-height: min(45vh, 400px);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px var(--accent-glow-secondary);
+            object-fit: cover;
         }
 
-        .card, .container, .content-box {
-            max-width: min(90vw, 1000px);
-            max-height: min(80vh, 700px);
+        /* ===========================================
+           ANIMATIONS — Dramatic, cinematic
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity var(--duration-slow) var(--ease-out-expo),
+                        transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+        .reveal-blur {
+            opacity: 0; filter: blur(15px);
+            transition: opacity 1.2s ease, filter 1.2s var(--ease-out-expo);
+        }
+        .slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+        .reveal-scale {
+            opacity: 0; transform: scale(0.9);
+            transition: opacity var(--duration-slow) ease, transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+
+        .reveal-wipe {
+            clip-path: inset(0 50% 0 50%); opacity: 0;
+            transition: clip-path 1s var(--ease-out-expo), opacity 0.6s ease;
+        }
+        .slide.visible .reveal-wipe { clip-path: inset(0 0 0 0); opacity: 1; }
+
+        /* Stagger */
+        .reveal:nth-child(1), .reveal-blur:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2), .reveal-blur:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3), .reveal-blur:nth-child(3) { transition-delay: 0.35s; }
+        .reveal:nth-child(4), .reveal-blur:nth-child(4) { transition-delay: 0.5s; }
+        .reveal:nth-child(5), .reveal-blur:nth-child(5) { transition-delay: 0.65s; }
+        .reveal:nth-child(6), .reveal-blur:nth-child(6) { transition-delay: 0.8s; }
+
+        /* Counter animation */
+        @keyframes countUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Gradient background drift */
+        @keyframes gradientDrift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .feature-list, .bullet-list {
-            gap: clamp(0.4rem, 1vh, 1rem);
+        /* Slow float */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
-        .feature-list li, .bullet-list li {
-            font-size: var(--body-size);
-            line-height: 1.5;
+        /* ===========================================
+           CSS DATA VISUALIZATIONS
+           =========================================== */
+        .bar-chart { display: flex; align-items: flex-end; gap: clamp(6px, 1vw, 12px); height: clamp(100px, 20vh, 200px); }
+        .bar-chart .bar {
+            flex: 1; border-radius: 6px 6px 0 0;
+            background: linear-gradient(180deg, var(--accent), rgba(41, 151, 255, 0.3));
+            transition: height 1.2s var(--ease-out-expo);
+            position: relative; min-width: 20px;
+        }
+        .bar-chart .bar-label {
+            position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+            font-size: var(--small-size); color: var(--text-secondary); white-space: nowrap;
+        }
+        .bar-chart .bar-value {
+            position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+            font-size: var(--small-size); color: var(--accent); font-weight: 600;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-            gap: clamp(0.5rem, 1.5vw, 1rem);
+        /* Donut chart */
+        .donut-chart {
+            width: clamp(100px, 15vw, 160px); height: clamp(100px, 15vw, 160px);
+            border-radius: 50%; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .donut-chart .donut-center {
+            width: 60%; height: 60%; border-radius: 50%;
+            background: var(--bg-primary); display: flex;
+            align-items: center; justify-content: center; z-index: 1;
+            font-family: var(--font-display); font-weight: 700;
+            font-size: clamp(1rem, 2vw, 1.5rem); color: var(--accent);
         }
 
-        img, .image-container {
-            max-width: 100%;
-            max-height: min(50vh, 400px);
-            object-fit: contain;
+        /* Line chart (CSS) */
+        .line-chart-container {
+            position: relative; height: clamp(80px, 15vh, 150px);
+            border-bottom: 1px solid var(--border-subtle);
+            border-left: 1px solid var(--border-subtle);
+        }
+        .line-chart-area {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(41, 151, 255, 0.2) 0%, transparent 100%);
+            clip-path: polygon(0% 80%, 15% 65%, 30% 70%, 45% 50%, 60% 40%, 75% 25%, 90% 15%, 100% 5%, 100% 100%, 0% 100%);
         }
 
-        h1, h2, h3, h4, h5, h6 {
-            overflow-wrap: break-word;
-            hyphens: auto;
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: var(--accent); width: 0%; z-index: 9999;
+            transition: width 0.3s ease;
         }
 
-        p, li, blockquote {
-            overflow-wrap: break-word;
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%;
+            transform: translateY(-50%); display: flex;
+            flex-direction: column; gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--text-muted); border: none; cursor: pointer;
+            transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent); transform: scale(1.4);
+            box-shadow: 0 0 8px var(--accent-glow);
         }
 
-        /* --- Responsive Breakpoints --- */
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px); font-family: var(--font-mono);
+            font-size: var(--small-size); color: var(--text-muted); z-index: 9998;
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
         @media (max-height: 700px) {
             :root {
                 --slide-padding: clamp(0.75rem, 3vw, 2rem);
@@ -161,7 +257,6 @@
                 --h2-size: clamp(1rem, 3vw, 1.75rem);
             }
         }
-
         @media (max-height: 600px) {
             :root {
                 --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
@@ -169,623 +264,338 @@
                 --title-size: clamp(1.1rem, 4vw, 2rem);
                 --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
             }
-            .nav-dots, .keyboard-hint, .decorative {
-                display: none;
-            }
+            .nav-dots, .decorative { display: none; }
         }
-
-        @media (max-height: 500px) {
-            :root {
-                --slide-padding: clamp(0.4rem, 2vw, 1rem);
-                --title-size: clamp(1rem, 3.5vw, 1.5rem);
-                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
-                --body-size: clamp(0.65rem, 1vw, 0.85rem);
-            }
-            .grid {
-                grid-template-columns: 1fr !important;
-            }
-        }
-
         @media (max-width: 600px) {
-            :root {
-                --title-size: clamp(1.25rem, 7vw, 2.5rem);
-            }
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .slide-content[style*="flex-direction: row"] {
-                flex-direction: column !important;
-            }
-            .slide-counter {
-                display: none;
-            }
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .stat-grid { flex-direction: column !important; gap: clamp(1rem, 3vw, 2rem) !important; }
+            .two-col { flex-direction: column !important; }
+            .slide-counter { display: none; }
         }
-
-        @media (max-width: 600px) and (min-height: 700px) {
-            :root {
-                --slide-padding: clamp(1.5rem, 6vw, 3rem);
-                --content-gap: clamp(1rem, 3vw, 2rem);
-            }
-        }
-
         @media (min-width: 2000px) {
-            .slide-content {
-                max-width: 1600px;
-                margin: 0 auto;
-            }
-        }
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .card, .content-box {
-                border-width: 0.5px;
-            }
+            .slide-content { max-width: 1600px; margin: 0 auto; }
         }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.2s !important;
-                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important; scroll-behavior: auto !important;
             }
-            html {
-                scroll-behavior: auto;
-                scroll-snap-type: none;
-            }
-            .reveal, .reveal-scale, .reveal-left, .reveal-right,
-            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
-            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
-            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
-                opacity: 0;
-                transform: none !important;
-                filter: none !important;
-                clip-path: none !important;
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-blur, .reveal-scale, .reveal-wipe {
+                opacity: 0; transform: none !important; filter: none !important; clip-path: none !important;
                 transition: opacity 0.2s ease !important;
             }
-            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
-            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
-            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
-            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
-            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
-            .visible .reveal-quote {
-                opacity: 1;
-            }
+            .slide.visible .reveal, .slide.visible .reveal-blur, .slide.visible .reveal-scale, .slide.visible .reveal-wipe { opacity: 1; }
         }
 
         @media print {
-            html {
-                scroll-snap-type: none;
-            }
-            .slide {
-                height: auto;
-                min-height: 100vh;
-                overflow: visible;
-                page-break-after: always;
-                page-break-inside: avoid;
-            }
-            .progress-bar, .nav-dots, .slide-counter,
-            .edit-hotzone, .edit-toggle {
-                display: none !important;
-            }
-            .reveal, [class*="reveal-"] {
-                opacity: 1 !important;
-                transform: none !important;
-                filter: none !important;
-                clip-path: none !important;
-            }
-        }
-
-        /* ===========================================
-           KEYNOTE NOIR — THEME STYLES
-           Pure black, cinematic, one idea per slide
-           =========================================== */
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
-
-        /* ===========================================
-           REVEAL ANIMATIONS
-           Triggered by .visible class (added by JS)
-           =========================================== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity var(--duration-normal) var(--ease-out-expo),
-                        transform var(--duration-normal) var(--ease-out-expo);
-        }
-        .slide.visible .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Staggered children */
-        .reveal:nth-child(1) { transition-delay: 0.08s; }
-        .reveal:nth-child(2) { transition-delay: 0.16s; }
-        .reveal:nth-child(3) { transition-delay: 0.24s; }
-        .reveal:nth-child(4) { transition-delay: 0.32s; }
-        .reveal:nth-child(5) { transition-delay: 0.40s; }
-        .reveal:nth-child(6) { transition-delay: 0.48s; }
-        .reveal:nth-child(7) { transition-delay: 0.56s; }
-        .reveal:nth-child(8) { transition-delay: 0.64s; }
-
-        /* ===========================================
-           PROGRESS BAR
-           =========================================== */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: var(--accent);
-            width: 0%;
-            z-index: 9999;
-            transition: width 0.3s ease;
-        }
-
-        /* ===========================================
-           NAVIGATION DOTS
-           =========================================== */
-        .nav-dots {
-            position: fixed;
-            right: clamp(12px, 2vw, 24px);
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 9998;
-        }
-        .nav-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 0;
-        }
-        .nav-dot.active {
-            background: var(--accent);
-            transform: scale(1.4);
-            box-shadow: 0 0 8px var(--accent-glow);
-        }
-
-        /* ===========================================
-           SLIDE COUNTER
-           =========================================== */
-        .slide-counter {
-            position: fixed;
-            bottom: clamp(12px, 2vw, 24px);
-            right: clamp(12px, 2vw, 24px);
-            font-family: var(--font-mono);
-            font-size: var(--small-size);
-            color: var(--text-muted);
-            z-index: 9998;
-        }
-
-        /* ===========================================
-           KEYNOTE NOIR — SLIDE-SPECIFIC STYLES
-           =========================================== */
-
-        /* Title slide — cinematic, centered, massive type */
-        .title-slide .slide-content {
-            align-items: center;
-            text-align: center;
-        }
-
-        /* Accent underline for key stats */
-        .stat-accent {
-            color: var(--accent);
-        }
-
-        /* Table styling for comparison matrix */
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: var(--body-size);
-        }
-        .comparison-table th {
-            text-align: center;
-            padding: clamp(0.4rem, 1vw, 0.8rem);
-            border-bottom: 2px solid var(--border-subtle);
-            color: var(--text-muted);
-            font-size: var(--small-size);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 500;
-        }
-        .comparison-table th:first-child {
-            text-align: left;
-        }
-        .comparison-table th.highlight {
-            border-bottom-color: var(--accent);
-            color: var(--accent);
-            font-weight: 700;
-        }
-        .comparison-table td {
-            padding: clamp(0.4rem, 1vw, 0.8rem);
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--text-secondary);
-            text-align: center;
-        }
-        .comparison-table td:first-child {
-            text-align: left;
-            color: var(--text-primary);
-        }
-        .comparison-table .check {
-            color: var(--accent);
-        }
-        .comparison-table .cross {
-            color: var(--text-muted);
-            opacity: 0.5;
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, .reveal-blur, .reveal-scale, .reveal-wipe { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
         }
     </style>
 </head>
 <body>
     <!-- Progress bar -->
     <div class="progress-bar" id="progressBar"></div>
-
-    <!-- Navigation dots -->
     <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
-
-    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
 
-    <!-- =================== SLIDES =================== -->
-
-    <!-- SLIDE 1: Title — Brand + Positioning -->
-    <section class="slide title-slide" aria-label="Title">
-        <div class="slide-content">
-            <h1 class="reveal" style="font-size: clamp(3rem, 10vw, 8rem); font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1;">
-                Melo
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide" aria-label="Title">
+        <div class="ambient-glow blue"></div>
+        <div class="ambient-glow cyan"></div>
+        <div class="slide-content" style="align-items: center; text-align: center; justify-content: center; position: relative; z-index: 1;">
+            <div class="reveal-blur" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent); margin-bottom: var(--element-gap);">
+                Series A Fundraise
+            </div>
+            <h1 class="reveal-blur" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;">
+                Lumina AI
             </h1>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.75rem, 2vw, 1.5rem); font-weight: 300; letter-spacing: 0.02em;">
-                AI fitness coaching that actually sticks.
+            <p class="reveal-blur" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 600px; line-height: 1.6;">
+                The AI that reviews your code<br>before your team does.
             </p>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(2rem, 5vw, 4rem); font-weight: 400;">
-                Series A  |  April 2026  |  Confidential
-            </p>
-        </div>
-    </section>
-
-    <!-- SLIDE 2: Quote / Problem — Bold Pain-Point -->
-    <section class="slide" aria-label="The Problem">
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(85vw, 900px); margin: 0 auto;">
-            <div class="reveal" style="font-size: clamp(3rem, 6vw, 5rem); color: var(--accent); line-height: 1; opacity: 0.25; font-family: Georgia, serif;">
-                &ldquo;
+            <div class="reveal-blur" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted);">
+                Q2 2026 &nbsp;&middot;&nbsp; Confidential
             </div>
-            <blockquote class="reveal" style="font-size: clamp(1.5rem, 4vw, 3.2rem); font-family: var(--font-display); font-weight: 700; line-height: 1.3; margin-top: -0.3em; letter-spacing: -0.02em;">
-                87% of fitness apps are abandoned within 14 days.
-            </blockquote>
-            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal;">
-                &mdash; Flurry Analytics, Mobile Retention Study 2025
-            </cite>
         </div>
     </section>
 
-    <!-- SLIDE 3: Content + Bullets — The Solution -->
-    <section class="slide" aria-label="The Solution">
+    <!-- =================== SLIDE 2: PROBLEM =================== -->
+    <section class="slide" aria-label="Problem">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">The Problem</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); max-width: 800px; line-height: 1.2;">
+                Code reviews are broken.
+            </h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 600px; line-height: 1.7;">
+                Developers spend hours reviewing code manually, yet critical bugs still ship to production.
+            </p>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="4.2" data-decimals="1" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--text-primary);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">hrs/week per developer<br>spent on code reviews</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--text-primary);">
+                        <span class="counter" data-target="67" data-suffix="%">0</span>
+                    </div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">of bugs still slip<br>through human review</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: SOLUTION =================== -->
+    <section class="slide" aria-label="Solution">
+        <div class="ambient-glow blue" style="top: 10%; left: 50%; transform: translateX(-50%);"></div>
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative; z-index: 1;">
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">The Solution</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); line-height: 1.2;">
+                AI that reads code<br>like your best engineer.
+            </h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 550px; line-height: 1.7;">
+                Lumina analyzes every pull request in real-time, catching bugs, security flaws, and performance issues before they reach production.
+            </p>
+            <div style="display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 4rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem) clamp(1.5rem, 3vw, 2.5rem); text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);">
+                        <span class="counter" data-target="94" data-suffix="%">0</span>
+                    </div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em;">Bug Detection Rate</div>
+                </div>
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem) clamp(1.5rem, 3vw, 2.5rem); text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);">
+                        <span class="counter" data-target="73" data-suffix="%">0</span>
+                    </div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em;">Faster Reviews</div>
+                </div>
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem) clamp(1.5rem, 3vw, 2.5rem); text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 3rem); font-family: var(--font-display); font-weight: 800; color: var(--text-primary);">
+                        &lt;2min
+                    </div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em;">Avg. Review Time</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: PRODUCT / DEMO =================== -->
+    <section class="slide" aria-label="Product">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">Product</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap);">
+                Seamless. Intelligent. Instant.
+            </h2>
+            <div class="reveal-wipe" style="margin-top: var(--content-gap);">
+                <img src="images/lumina-code-review-ui.webp" alt="Lumina AI code review interface" loading="lazy" class="hero-image" style="width: min(85vw, 900px);">
+            </div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: 600px; line-height: 1.6;">
+                Plugs into GitHub, GitLab, and Bitbucket. Reviews start automatically on every PR. No config needed.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: MARKET =================== -->
+    <section class="slide" aria-label="Market">
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
-                Melo adapts to you &mdash; not the other way around.
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); text-align: center;">Market Opportunity</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); text-align: center;">
+                $12.4B and growing fast.
             </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(70vw, 600px);">
-                Our AI coach learns your schedule, equipment, energy levels, and goals to build plans that evolve in real time.
-            </p>
-            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
-                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
-                    <span style="color: var(--accent); font-size: 0.6em;">&#9679;</span>
-                    <span><strong style="color: var(--text-primary);">Adaptive Programming</strong> &mdash; Workouts reshape daily based on sleep, soreness, and recovery data</span>
-                </li>
-                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
-                    <span style="color: var(--accent); font-size: 0.6em;">&#9679;</span>
-                    <span><strong style="color: var(--text-primary);">Voice Coaching</strong> &mdash; Real-time form cues and motivation through AirPods during sessions</span>
-                </li>
-                <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
-                    <span style="color: var(--accent); font-size: 0.6em;">&#9679;</span>
-                    <span><strong style="color: var(--text-primary);">Accountability Engine</strong> &mdash; Behavioral nudges timed to your habit patterns, not arbitrary push notifications</span>
-                </li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- SLIDE 4: Stats — Market Size (TAM / SAM / SOM) -->
-    <section class="slide" aria-label="Market Size">
-        <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                Market Opportunity
-            </h2>
-            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
-                <div class="reveal" style="text-align: center;">
-                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">$47B</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">TAM &mdash; Global Fitness App</div>
+            <div class="reveal" style="display: flex; align-items: center; justify-content: center; gap: clamp(2rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <!-- Market size donut -->
+                <div style="text-align: center;">
+                    <div class="donut-chart" role="img" aria-label="Market size breakdown" style="background: conic-gradient(var(--accent) 0deg 83deg, rgba(41,151,255,0.3) 83deg 165deg, rgba(41,151,255,0.1) 165deg 360deg);">
+                        <div class="donut-center">$12.4B</div>
+                    </div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.8em;">Total Addressable Market</div>
                 </div>
-                <div class="reveal" style="text-align: center;">
-                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">$6.2B</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">SAM &mdash; AI-Powered Coaching</div>
-                </div>
-                <div class="reveal" style="text-align: center;">
-                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">$840M</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">SOM &mdash; US + UK Premium</div>
+                <!-- Growth chart -->
+                <div style="flex: 1; min-width: 200px; max-width: 400px;">
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.5em;">Code Quality Market Growth</div>
+                    <div class="line-chart-container">
+                        <div class="line-chart-area"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em;">
+                        <span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026</span>
+                    </div>
                 </div>
             </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
-                Source: Grand View Research, Digital Fitness &amp; Wellness Market, 2025
-            </p>
-        </div>
-    </section>
-
-    <!-- SLIDE 5: Two-Column — Business Model -->
-    <section class="slide" aria-label="Business Model">
-        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
-            <div style="flex: 1; min-width: 0;">
-                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">
-                    How We Make Money
-                </h2>
-                <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
-                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
-                        <span style="color: var(--accent); font-size: 0.6em;">&#9679;</span>
-                        <span><strong>Melo Pro</strong> &mdash; $14.99/mo subscription (78% of revenue)</span>
-                    </li>
-                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
-                        <span style="color: var(--accent); font-size: 0.6em;">&#9679;</span>
-                        <span><strong>Melo Teams</strong> &mdash; B2B corporate wellness, $8/seat/mo (16%)</span>
-                    </li>
-                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
-                        <span style="color: var(--accent); font-size: 0.6em;">&#9679;</span>
-                        <span><strong>Equipment Partners</strong> &mdash; Rev-share with Rogue, Hyperice (6%)</span>
-                    </li>
-                </ul>
-            </div>
-            <div style="flex: 1; min-width: 0;">
-                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(1rem, 2vw, 1.5rem);">
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-bottom: clamp(0.5rem, 1vw, 1rem); font-weight: 600;">Unit Economics</h3>
-                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--body-size);">
-                        <span style="color: var(--text-secondary);">LTV</span>
-                        <span style="color: var(--text-primary); font-weight: 600;">$312</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--body-size);">
-                        <span style="color: var(--text-secondary);">CAC</span>
-                        <span style="color: var(--text-primary); font-weight: 600;">$38</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--body-size);">
-                        <span style="color: var(--text-secondary);">LTV:CAC</span>
-                        <span style="color: var(--accent); font-weight: 700;">8.2x</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: clamp(0.3rem, 0.5vw, 0.5rem) 0; font-size: var(--body-size);">
-                        <span style="color: var(--text-secondary);">Payback</span>
-                        <span style="color: var(--text-primary); font-weight: 600;">2.6 months</span>
-                    </div>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 4rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700; color: var(--accent);">23%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">YoY Growth</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700; color: var(--text-primary);">28M+</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Developers Worldwide</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700; color: var(--text-primary);">$4.1B</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Serviceable Market</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 6: Comparison Matrix — Us vs Competitors -->
-    <section class="slide" aria-label="Competitive Landscape">
-        <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                Competitive Landscape
-            </h2>
-            <div class="reveal" style="margin-top: var(--content-gap); overflow-x: auto;">
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left;">Feature</th>
-                            <th class="highlight">Melo</th>
-                            <th>Peloton</th>
-                            <th>Fitbod</th>
-                            <th>Future</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="color: var(--text-primary);">AI-adaptive programming</td>
-                            <td class="check">&#10003;</td>
-                            <td class="cross">&#10007;</td>
-                            <td style="color: var(--text-muted);">Partial</td>
-                            <td class="cross">&#10007;</td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-primary);">Real-time voice coaching</td>
-                            <td class="check">&#10003;</td>
-                            <td class="cross">&#10007;</td>
-                            <td class="cross">&#10007;</td>
-                            <td class="cross">&#10007;</td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-primary);">Recovery integration</td>
-                            <td class="check">&#10003;</td>
-                            <td class="cross">&#10007;</td>
-                            <td class="check">&#10003;</td>
-                            <td style="color: var(--text-muted);">Partial</td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-primary);">No hardware required</td>
-                            <td class="check">&#10003;</td>
-                            <td class="cross">&#10007;</td>
-                            <td class="check">&#10003;</td>
-                            <td class="check">&#10003;</td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-primary);">Price per month</td>
-                            <td style="color: var(--accent); font-weight: 600;">$14.99</td>
-                            <td style="color: var(--text-muted);">$44</td>
-                            <td style="color: var(--text-muted);">$12.99</td>
-                            <td style="color: var(--text-muted);">$199</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap); text-align: right;">
-                Source: Internal analysis, Q1 2026
-            </p>
-        </div>
-    </section>
-
-    <!-- SLIDE 7: Timeline — Traction & Milestones -->
+    <!-- =================== SLIDE 6: TRACTION =================== -->
     <section class="slide" aria-label="Traction">
-        <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                Traction &amp; Milestones
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); text-align: center;">Traction</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); text-align: center;">
+                Accelerating growth.
             </h2>
-            <div style="display: flex; align-items: flex-start; gap: 0; margin-top: var(--content-gap); position: relative;">
-                <!-- Connecting line -->
-                <div style="position: absolute; top: 20px; left: 20px; right: 20px; height: 2px; background: var(--border-subtle);"></div>
-
-                <!-- Milestone 1 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 2px solid var(--text-muted); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">1</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display);">Founded</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Jan 2024</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">YC W24 batch<br>$2.5M seed from a16z</p>
+            <!-- ARR bar chart -->
+            <div class="reveal" style="margin-top: var(--content-gap); width: min(90vw, 700px);">
+                <div style="font-size: var(--small-size); color: var(--text-secondary); margin-bottom: clamp(0.5rem, 1vh, 1rem);">Annual Recurring Revenue ($M)</div>
+                <div class="bar-chart" id="arrChart">
+                    <div class="bar" style="height: 15%;" data-height="15%"><span class="bar-value">$0.1M</span><span class="bar-label">Q1 '25</span></div>
+                    <div class="bar" style="height: 25%;" data-height="25%"><span class="bar-value">$0.3M</span><span class="bar-label">Q2</span></div>
+                    <div class="bar" style="height: 40%;" data-height="40%"><span class="bar-value">$0.6M</span><span class="bar-label">Q3</span></div>
+                    <div class="bar" style="height: 55%;" data-height="55%"><span class="bar-value">$1.0M</span><span class="bar-label">Q4</span></div>
+                    <div class="bar" style="height: 75%;" data-height="75%"><span class="bar-value">$1.5M</span><span class="bar-label">Q1 '26</span></div>
+                    <div class="bar" style="height: 100%; background: linear-gradient(180deg, var(--accent), rgba(41,151,255,0.6));" data-height="100%"><span class="bar-value" style="font-weight: 800;">$2.1M</span><span class="bar-label">Q2 '26</span></div>
                 </div>
-
-                <!-- Milestone 2 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 2px solid var(--text-muted); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">2</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display);">Beta</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Aug 2024</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">3,200 testers<br>4.8 App Store rating</p>
+            </div>
+            <div class="reveal stat-grid" style="display: flex; justify-content: center; gap: clamp(2rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);"><span class="counter" data-target="340" data-suffix="+">0</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Enterprise Customers</div>
                 </div>
-
-                <!-- Milestone 3 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 2px solid var(--text-muted); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">3</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display);">Launch</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Feb 2025</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">iOS + Android<br>TechCrunch coverage</p>
-                </div>
-
-                <!-- Milestone 4 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--accent); color: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">4</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display);">Today</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Apr 2026</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">147K MAU<br>$4.2M ARR</p>
-                </div>
-
-                <!-- Milestone 5 -->
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--surface); border: 2px dashed var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--small-size);">5</div>
-                    <h3 style="font-size: var(--h3-size); margin-top: 0.6em; font-family: var(--font-display);">Next</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Q4 2026</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; padding: 0 0.3em;">Melo Teams launch<br>UK market expansion</p>
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 800; color: var(--accent);"><span class="counter" data-target="180" data-suffix="%">0</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Net Revenue Retention</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 8: Team Grid — Founding Team -->
-    <section class="slide" aria-label="The Team">
+    <!-- =================== SLIDE 7: BUSINESS MODEL =================== -->
+    <section class="slide" aria-label="Business Model">
         <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                The Team
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); text-align: center;">Business Model</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); text-align: center;">
+                Simple, scalable SaaS pricing.
             </h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 18vw, 180px), 1fr)); gap: var(--content-gap); margin-top: var(--content-gap); max-width: min(90vw, 820px);">
-                <!-- Member 1 -->
-                <div class="reveal" style="text-align: center;">
-                    <div style="width: clamp(60px, 10vw, 90px); height: clamp(60px, 10vw, 90px); border-radius: 50%; background: linear-gradient(135deg, #2997ff, #1a6dcc); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1.2rem, 3vw, 2rem); color: #000; font-family: var(--font-display); font-weight: 700;">
-                        NS
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1rem, 3vw, 2rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <!-- Pro tier -->
+                <div style="background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: clamp(1.5rem, 3vw, 2.5rem); text-align: center; width: clamp(200px, 30vw, 280px);">
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.15em;">Pro</div>
+                    <div style="font-size: clamp(2rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 800; margin-top: 0.3em;">$49</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">per seat / month</div>
+                    <div style="margin-top: 1em; font-size: var(--small-size); color: var(--text-secondary); line-height: 2;">
+                        Unlimited repos<br>Real-time review<br>GitHub + GitLab<br>Standard support
                     </div>
-                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 600;">Nadia Singh</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent);">CEO &amp; Co-founder</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Ex-Peloton Product Lead<br>Stanford CS '18</p>
                 </div>
-                <!-- Member 2 -->
-                <div class="reveal" style="text-align: center;">
-                    <div style="width: clamp(60px, 10vw, 90px); height: clamp(60px, 10vw, 90px); border-radius: 50%; background: linear-gradient(135deg, #2997ff, #1a6dcc); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1.2rem, 3vw, 2rem); color: #000; font-family: var(--font-display); font-weight: 700;">
-                        JK
+                <!-- Enterprise tier -->
+                <div style="background: var(--surface); border: 2px solid var(--accent); border-radius: 20px; padding: clamp(1.5rem, 3vw, 2.5rem); text-align: center; width: clamp(200px, 30vw, 280px); position: relative; box-shadow: 0 0 40px var(--accent-glow-secondary);">
+                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #000; font-size: clamp(0.55rem, 0.8vw, 0.7rem); font-weight: 700; padding: 3px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.1em;" aria-label="Most popular pricing tier">Most Popular</div>
+                    <div style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em;">Enterprise</div>
+                    <div style="font-size: clamp(2rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 800; margin-top: 0.3em;">$149</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">per seat / month</div>
+                    <div style="margin-top: 1em; font-size: var(--small-size); color: var(--text-secondary); line-height: 2;">
+                        Everything in Pro<br>Security scanning<br>SOC 2 compliance<br>SSO + SAML<br>Dedicated support
                     </div>
-                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 600;">James Kovacs</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent);">CTO &amp; Co-founder</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Ex-Apple ML team<br>PhD Robotics, CMU</p>
-                </div>
-                <!-- Member 3 -->
-                <div class="reveal" style="text-align: center;">
-                    <div style="width: clamp(60px, 10vw, 90px); height: clamp(60px, 10vw, 90px); border-radius: 50%; background: linear-gradient(135deg, #2997ff, #1a6dcc); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1.2rem, 3vw, 2rem); color: #000; font-family: var(--font-display); font-weight: 700;">
-                        RM
-                    </div>
-                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 600;">Rachel Moreno</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent);">Head of Science</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">NSCA-CSCS, 12yr trainer<br>Exercise physiology, UCLA</p>
-                </div>
-                <!-- Member 4 -->
-                <div class="reveal" style="text-align: center;">
-                    <div style="width: clamp(60px, 10vw, 90px); height: clamp(60px, 10vw, 90px); border-radius: 50%; background: linear-gradient(135deg, #2997ff, #1a6dcc); margin: 0 auto clamp(0.4rem, 1vw, 0.8rem); display: flex; align-items: center; justify-content: center; font-size: clamp(1.2rem, 3vw, 2rem); color: #000; font-family: var(--font-display); font-weight: 700;">
-                        DL
-                    </div>
-                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 600;">David Liu</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent);">Head of Growth</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">Scaled Calm to 8M users<br>Ex-Google, Wharton MBA</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 9: Stats — Financial Highlights -->
-    <section class="slide" aria-label="Financial Highlights">
+    <!-- =================== SLIDE 8: TEAM =================== -->
+    <section class="slide" aria-label="Team">
         <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; font-weight: 700;">
-                Financial Highlights
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); text-align: center;">Team</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); text-align: center;">
+                Built by engineers who lived the problem.
             </h2>
-            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="4200000" data-prefix="$" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">$0</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">ARR</div>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1.5rem, 3vw, 3rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <!-- Founder 1 -->
+                <div style="text-align: center; width: clamp(140px, 20vw, 200px);">
+                    <div style="width: clamp(56px, 8vw, 80px); height: clamp(56px, 8vw, 80px); border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-secondary)); margin: 0 auto; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem, 2vw, 1.5rem);">SL</div>
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); margin-top: 0.8em;">Sarah Lin</div>
+                    <div style="font-size: var(--small-size); color: var(--accent);">CEO</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">Ex-Google, Staff Eng<br>10+ yrs ML/NLP</div>
                 </div>
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="23" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">0%</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">MoM Growth</div>
+                <!-- Founder 2 -->
+                <div style="text-align: center; width: clamp(140px, 20vw, 200px);">
+                    <div style="width: clamp(56px, 8vw, 80px); height: clamp(56px, 8vw, 80px); border-radius: 50%; background: linear-gradient(135deg, #5ac8fa, var(--accent)); margin: 0 auto; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem, 2vw, 1.5rem);">MK</div>
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); margin-top: 0.8em;">Marcus Kim</div>
+                    <div style="font-size: var(--small-size); color: var(--accent);">CTO</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">Ex-Meta, Infra Lead<br>Built code analysis at scale</div>
                 </div>
-                <div class="reveal" style="text-align: center;">
-                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">18<span style="font-size: 0.5em; vertical-align: baseline; margin-left: 0.1em; font-weight: 500;">mo</span></div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">Runway Remaining</div>
+                <!-- Founder 3 -->
+                <div style="text-align: center; width: clamp(140px, 20vw, 200px);">
+                    <div style="width: clamp(56px, 8vw, 80px); height: clamp(56px, 8vw, 80px); border-radius: 50%; background: linear-gradient(135deg, var(--accent), #a78bfa); margin: 0 auto; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem, 2vw, 1.5rem);">RP</div>
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); margin-top: 0.8em;">Raj Patel</div>
+                    <div style="font-size: var(--small-size); color: var(--accent);">COO</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">Ex-Stripe, Growth<br>Scaled rev 0 to $50M</div>
                 </div>
             </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
-                As of March 2026. MoM calculated on trailing 6-month average.
+            <div class="reveal" style="text-align: center; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary);">
+                28 engineers &nbsp;&middot;&nbsp; San Francisco &nbsp;&middot;&nbsp; Remote-first
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: VISION =================== -->
+    <section class="slide" aria-label="Vision">
+        <div class="ambient-glow blue" style="width: 80%; height: 80%; top: 10%; left: 10%; opacity: 0.1;"></div>
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative; z-index: 1;">
+            <div class="reveal-blur" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">Vision</div>
+            <h2 class="reveal-blur" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); line-height: 1.1; max-width: 800px;">
+                Every line of code,<br>reviewed by AI.
+            </h2>
+            <p class="reveal-blur" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: 600px; line-height: 1.7;">
+                We believe the future of software quality is autonomous. Lumina is building the intelligence layer that makes human code review optional — not by replacing engineers, but by giving them superpowers.
             </p>
+            <div class="reveal-blur" style="margin-top: var(--content-gap);">
+                <img src="images/lumina-neural-network.webp" alt="AI neural network visualization" style="max-width: min(60vw, 500px); max-height: min(25vh, 200px); border-radius: 12px; opacity: 0.7; object-fit: cover;">
+            </div>
         </div>
     </section>
 
-    <!-- SLIDE 10: CTA / Closing — The Ask -->
+    <!-- =================== SLIDE 10: ASK / CTA =================== -->
     <section class="slide" aria-label="The Ask">
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
-            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); font-weight: 500;">
-                Series A
-            </p>
-            <h2 class="reveal" style="font-size: clamp(2rem, 6vw, 4.5rem); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); letter-spacing: -0.02em;">
-                Raising $18M
+        <div class="ambient-glow blue" style="width: 50%; height: 50%; top: 25%; left: 25%; opacity: 0.2;"></div>
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative; z-index: 1;">
+            <div class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent);">The Ask</div>
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); line-height: 1.1;">
+                $15M Series A
             </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(70vw, 550px); line-height: 1.6;">
-                To scale Melo Teams internationally, triple our ML infrastructure, and reach 1M MAU by end of 2027.
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 500px; line-height: 1.7;">
+                To scale our go-to-market engine and expand the product into security and compliance automation.
             </p>
-            <div class="reveal" style="margin-top: clamp(1.5rem, 3vw, 3rem); display: flex; flex-direction: column; gap: clamp(0.3rem, 0.5vw, 0.5rem);">
-                <p style="font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">
-                    nadia@getmelo.com
-                </p>
-                <p style="font-size: var(--small-size); color: var(--text-muted);">
-                    getmelo.com  |  @getmelo
-                </p>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(2rem, 5vw, 4rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;">40%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Product &amp; R&D</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;">35%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Sales &amp; Marketing</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;">25%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">Operations</div>
+                </div>
             </div>
-            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(1.5rem, 3vw, 3rem); font-style: italic; max-width: min(70vw, 500px);">
-                "Fitness isn't a feature &mdash; it's a daily habit. We're building the AI that makes it effortless."
-            </p>
+            <div class="reveal" style="margin-top: var(--content-gap);">
+                <div style="display: inline-block; background: var(--accent); color: #000; font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem); border-radius: 100px; letter-spacing: 0.02em;">
+                    sarah@lumina.ai
+                </div>
+            </div>
         </div>
-        <!-- Watermark -->
         <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
-            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+            Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
         </p>
     </section>
 
     <script>
         /* ===========================================
            SLIDE PRESENTATION CONTROLLER
-           Full-featured, production-ready
            =========================================== */
         class SlidePresentation {
             constructor() {
@@ -794,7 +604,6 @@
                 this.isAnimating = false;
                 this.touchStartY = 0;
                 this.touchStartX = 0;
-
                 this.init();
             }
 
@@ -806,81 +615,51 @@
                 this.setupProgressBar();
                 this.setupNavDots();
                 this.setupSlideCounter();
-
-                // Mark first slide visible
-                if (this.slides[0]) {
-                    this.slides[0].classList.add('visible');
-                }
+                if (this.slides[0]) this.slides[0].classList.add('visible');
             }
 
-            /* --- Intersection Observer: triggers .visible on scroll --- */
             setupIntersectionObserver() {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('visible');
                             const idx = this.slides.indexOf(entry.target);
-                            if (idx !== -1) {
-                                this.currentSlide = idx;
-                                this.updateUI();
-                            }
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
                         }
                     });
                 }, { threshold: 0.5 });
-
                 this.slides.forEach(slide => observer.observe(slide));
             }
 
-            /* --- Keyboard: arrows, space, pgup/pgdown, home/end --- */
             setupKeyboardNav() {
                 document.addEventListener('keydown', (e) => {
                     if (e.target.getAttribute('contenteditable')) return;
-
                     switch (e.key) {
-                        case 'ArrowDown':
-                        case 'ArrowRight':
-                        case ' ':
-                        case 'PageDown':
-                            e.preventDefault();
-                            this.goToSlide(this.currentSlide + 1);
-                            break;
-                        case 'ArrowUp':
-                        case 'ArrowLeft':
-                        case 'PageUp':
-                            e.preventDefault();
-                            this.goToSlide(this.currentSlide - 1);
-                            break;
-                        case 'Home':
-                            e.preventDefault();
-                            this.goToSlide(0);
-                            break;
-                        case 'End':
-                            e.preventDefault();
-                            this.goToSlide(this.slides.length - 1);
-                            break;
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
-            /* --- Touch: swipe up/down with 50px threshold --- */
             setupTouchNav() {
                 document.addEventListener('touchstart', (e) => {
                     this.touchStartY = e.touches[0].clientY;
                     this.touchStartX = e.touches[0].clientX;
                 }, { passive: true });
-
                 document.addEventListener('touchend', (e) => {
                     const deltaY = this.touchStartY - e.changedTouches[0].clientY;
                     const deltaX = this.touchStartX - e.changedTouches[0].clientX;
-
                     if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
-
                     if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
                     else this.goToSlide(this.currentSlide - 1);
                 }, { passive: true });
             }
 
-            /* --- Mouse wheel with debounce --- */
             setupWheelNav() {
                 let wheelTimeout;
                 document.addEventListener('wheel', (e) => {
@@ -892,16 +671,11 @@
                 }, { passive: true });
             }
 
-            /* --- Progress bar --- */
-            setupProgressBar() {
-                this.progressBar = document.getElementById('progressBar');
-            }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
 
-            /* --- Navigation dots --- */
             setupNavDots() {
                 const container = document.getElementById('navDots');
                 if (!container) return;
-
                 this.slides.forEach((_, i) => {
                     const dot = document.createElement('button');
                     dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
@@ -911,13 +685,8 @@
                 });
             }
 
-            /* --- Slide counter --- */
-            setupSlideCounter() {
-                this.counter = document.getElementById('slideCounter');
-                this.updateUI();
-            }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
 
-            /* --- Navigation core --- */
             goToSlide(index) {
                 if (index < 0 || index >= this.slides.length || this.isAnimating) return;
                 this.isAnimating = true;
@@ -927,61 +696,35 @@
                 setTimeout(() => { this.isAnimating = false; }, 600);
             }
 
-            /* --- Update all UI indicators --- */
             updateUI() {
                 const total = this.slides.length;
                 const current = this.currentSlide;
-
-                if (this.progressBar) {
-                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
-                }
-
-                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-                    dot.classList.toggle('active', i === current);
-                });
-
-                if (this.counter) {
-                    this.counter.textContent = `${current + 1} / ${total}`;
-                }
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
             }
         }
 
-        // Initialize on DOM ready
-        document.addEventListener('DOMContentLoaded', () => {
-            new SlidePresentation();
-        });
-
         /* ===========================================
            COUNTER ANIMATION
-           Animate numbers when slide becomes visible
            =========================================== */
         const counters = document.querySelectorAll('.counter');
         const counterObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const el = entry.target;
-                    const target = parseInt(el.dataset.target);
+                    const target = parseFloat(el.dataset.target);
                     const suffix = el.dataset.suffix || '';
                     const prefix = el.dataset.prefix || '';
+                    const decimals = parseInt(el.dataset.decimals) || 0;
                     const duration = 1500;
                     const start = performance.now();
-
                     function tick(now) {
                         const elapsed = now - start;
                         const progress = Math.min(elapsed / duration, 1);
                         const eased = 1 - Math.pow(1 - progress, 3);
-                        const value = Math.round(target * eased);
-
-                        /* Format large numbers with shorthand */
-                        let display;
-                        if (target >= 1000000) {
-                            display = prefix + '$' + (value / 1000000).toFixed(1) + 'M';
-                            if (progress >= 1) display = prefix + '$4.2M';
-                        } else {
-                            display = prefix + value.toLocaleString() + suffix;
-                        }
-                        el.textContent = display;
-
+                        const value = (target * eased).toFixed(decimals);
+                        el.textContent = prefix + (decimals > 0 ? value : Math.round(target * eased).toLocaleString()) + suffix;
                         if (progress < 1) requestAnimationFrame(tick);
                     }
                     requestAnimationFrame(tick);
@@ -990,6 +733,13 @@
             });
         }, { threshold: 0.5 });
         counters.forEach(c => counterObserver.observe(c));
+
+        /* ===========================================
+           INIT
+           =========================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
     </script>
 </body>
 </html>

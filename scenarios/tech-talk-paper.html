@@ -422,7 +422,7 @@
            =========================================== */
         .code-keyword { color: #7b3294; font-weight: 500; }
         .code-string { color: #2c7a2c; }
-        .code-comment { color: #999999; font-style: italic; }
+        .code-comment { color: #767676; font-style: italic; }
         .code-function { color: #c41e3a; }
         .code-type { color: #2c3e50; font-weight: 500; }
         .code-number { color: #2c3e50; }
@@ -861,6 +861,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             /* --- Touch: swipe up/down with 50px threshold --- */

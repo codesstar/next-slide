@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>林之 · 光影叙事 — Keynote Noir</title>
+
+    <!-- Fonts: Inter Tight (display) + Inter (body) + Noto Sans SC / Noto Serif SC (CJK) — Keynote Noir -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700;800&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Keynote Noir
+           =========================================== */
+        :root {
+            --bg-primary: #000000;
+            --bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1a6;
+            --accent: #2997ff;
+            --surface: #1d1d1f;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --text-muted: #48484a;
+            --accent-glow: rgba(41, 151, 255, 0.3);
+            --accent-secondary: #5ac8fa;
+
+            --font-display: 'Inter Tight', 'Noto Sans SC', sans-serif;
+            --font-display-cn: 'Noto Serif SC', 'Noto Sans SC', serif;
+            --font-body: 'Inter', 'Noto Sans SC', sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+
+            --title-size: clamp(2.5rem, 8vw, 7rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            --slide-padding: clamp(2rem, 5vw, 6rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+            --duration-dramatic: 1.5s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* VIEWPORT FITTING */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; max-height: 100%; overflow: hidden;
+            padding: var(--slide-padding);
+        }
+        :lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        /* Responsive */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.5rem, 5vw, 3rem); --h2-size: clamp(1rem, 3vw, 2rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.5rem, 8vw, 3rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-blur, .reveal-scale { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-blur, .visible .reveal-scale { opacity: 1; }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; }
+        }
+
+        /* ===========================================
+           KEYNOTE NOIR — Pure black, minimal
+           =========================================== */
+
+        /* Animations — fade in with subtle blur */
+        .reveal {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity var(--duration-normal) ease-out, transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.25s; }
+        .reveal:nth-child(3) { transition-delay: 0.4s; }
+        .reveal:nth-child(4) { transition-delay: 0.55s; }
+        .reveal:nth-child(5) { transition-delay: 0.7s; }
+        .reveal:nth-child(6) { transition-delay: 0.85s; }
+        .reveal:nth-child(7) { transition-delay: 1.0s; }
+        .reveal:nth-child(8) { transition-delay: 1.15s; }
+
+        .reveal-blur {
+            opacity: 0;
+            filter: blur(15px);
+            transition: opacity 1.2s ease, filter 1.2s var(--ease-out-expo);
+        }
+        .visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity var(--duration-slow) ease, transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .visible .reveal-scale { opacity: 1; transform: scale(1); }
+
+        /* Progress & Nav */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.5); box-shadow: 0 0 10px var(--accent-glow); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-body); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Hero title */
+        .hero-title {
+            font-family: var(--font-display-cn);
+            font-size: var(--title-size);
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            line-height: 1.1;
+        }
+
+        /* Ambient glow behind hero */
+        .ambient-glow {
+            position: absolute;
+            width: clamp(200px, 40vw, 500px);
+            height: clamp(200px, 40vw, 500px);
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* Project card — Noir */
+        .noir-card {
+            background: var(--surface);
+            border-radius: clamp(8px, 1vw, 16px);
+            overflow: hidden;
+            transition: transform 0.4s var(--ease-out-expo);
+        }
+        .noir-card:hover { transform: scale(1.02); }
+        .noir-card-image {
+            width: 100%;
+            aspect-ratio: 16/10;
+        }
+        .noir-card-body {
+            padding: clamp(0.8rem, 1.5vw, 1.2rem);
+        }
+
+        /* Stats block */
+        .stat-block { text-align: center; }
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: var(--stat-size);
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            margin-top: clamp(0.2rem, 0.5vw, 0.4rem);
+        }
+
+        /* Award row */
+        .award-row {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.8rem, 2vw, 1.5rem);
+            padding: clamp(0.8rem, 1.5vw, 1.2rem);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .award-row:last-child { border-bottom: none; }
+        .award-icon {
+            width: clamp(40px, 5vw, 60px);
+            height: clamp(40px, 5vw, 60px);
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* Client grid */
+        .client-item {
+            display: flex; align-items: center; justify-content: center;
+            height: clamp(50px, 8vh, 70px);
+            color: var(--text-secondary);
+            font-size: var(--body-size);
+            transition: color 0.3s ease;
+        }
+        .client-item:hover { color: var(--text-primary); }
+
+        /* Process timeline */
+        .process-line {
+            display: flex;
+            align-items: flex-start;
+            position: relative;
+            max-width: min(85vw, 800px);
+            width: 100%;
+        }
+        .process-node {
+            flex: 1;
+            text-align: center;
+            z-index: 1;
+        }
+        .process-dot {
+            width: clamp(10px, 1.2vw, 14px);
+            height: clamp(10px, 1.2vw, 14px);
+            border-radius: 50%;
+            background: var(--accent);
+            margin: 0 auto;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* CTA */
+        .noir-cta {
+            display: inline-block;
+            padding: clamp(0.7rem, 1.5vw, 1rem) clamp(2rem, 5vw, 4rem);
+            background: var(--accent);
+            color: #000;
+            font-family: var(--font-display);
+            font-size: var(--body-size);
+            font-weight: 700;
+            border: none;
+            border-radius: clamp(6px, 1vw, 12px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .noir-cta:hover { box-shadow: 0 0 30px var(--accent-glow); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div class="ambient-glow" style="background: var(--accent); top: 30%; left: 50%; transform: translateX(-50%);"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <h1 class="reveal-blur hero-title">林之</h1>
+            <p class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 300; letter-spacing: 0.15em; color: var(--text-secondary); margin-top: var(--element-gap);">
+                光影叙事
+            </p>
+            <div class="reveal" style="width: 30px; height: 2px; background: var(--accent); margin-top: var(--content-gap);"></div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap); letter-spacing: 0.2em;">
+                STORYTELLING THROUGH LIGHT
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PHILOSOPHY -->
+    <section class="slide" aria-label="Philosophy">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em; text-transform: uppercase;">Philosophy</p>
+            <h2 class="reveal" style="font-family: var(--font-display-cn); font-size: clamp(1.8rem, 5vw, 4rem); font-weight: 900; margin-top: var(--element-gap); line-height: 1.3;">
+                用光影讲述<br>被忽略的故事
+            </h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: min(65vw, 500px); line-height: 1.8;">
+                我不拍摄风景，我捕捉情感。相机是我的笔，光影是我的墨。在喧嚣城市和沉默山河之间，寻找最真实的人间故事。
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: CITY PULSE -->
+    <section class="slide" aria-label="City Pulse">
+        <div class="slide-content">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em;">01 &mdash; STREET</p>
+            <h2 class="reveal" style="font-family: var(--font-display-cn); font-size: var(--h2-size); font-weight: 900; margin-top: var(--element-gap);">城市脉搏</h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr);">
+                <div class="reveal noir-card">
+                    <div class="noir-card-image" style="background: linear-gradient(135deg, #1a1510 0%, #3d2a15 40%, #d4a843 100%);"></div>
+                    <div class="noir-card-body">
+                        <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700;">暮色通勤</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">上海 &middot; 2023</p>
+                    </div>
+                </div>
+                <div class="reveal noir-card">
+                    <div class="noir-card-image" style="background: linear-gradient(160deg, #0a0f1c 0%, #1a3050 50%, #4a9eff 100%);"></div>
+                    <div class="noir-card-body">
+                        <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700;">街角余温</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">成都 &middot; 2024</p>
+                    </div>
+                </div>
+                <div class="reveal noir-card">
+                    <div class="noir-card-image" style="background: linear-gradient(180deg, #0a0a0a 0%, #2a0a0a 40%, #b22234 90%);"></div>
+                    <div class="noir-card-body">
+                        <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700;">霓虹独白</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">重庆 &middot; 2024</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: LANDSCAPE -->
+    <section class="slide" aria-label="Landscape">
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #0a1520 0%, #1a3050 30%, #4a7090 55%, #c89040 75%, #2a1510 100%); opacity: 0.5;"></div>
+        <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.8) 100%);"></div>
+        <div class="slide-content" style="position: relative; z-index: 1; align-items: center; justify-content: center; text-align: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em;">02 &mdash; LANDSCAPE</p>
+            <h2 class="reveal-blur" style="font-family: var(--font-display-cn); font-size: var(--title-size); font-weight: 900; margin-top: var(--element-gap);">山河远阔</h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: min(60vw, 450px); line-height: 1.7;">
+                从川西高原到西北戈壁，每一次快门都是对天地的敬畏
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: AWARDS -->
+    <section class="slide" aria-label="Awards">
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em;">RECOGNITION</p>
+            <h2 class="reveal" style="font-family: var(--font-display-cn); font-size: var(--h2-size); font-weight: 900; margin-top: var(--element-gap);">荣誉认可</h2>
+            <div style="margin-top: var(--content-gap); max-width: min(80vw, 650px); width: 100%;">
+                <div class="reveal award-row">
+                    <div class="award-icon">IPA</div>
+                    <div>
+                        <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700;">国际摄影奖 金奖</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">2024 &mdash; 街头摄影组</p>
+                    </div>
+                </div>
+                <div class="reveal award-row">
+                    <div class="award-icon">SPA</div>
+                    <div>
+                        <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700;">索尼世界摄影大赛 入围</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">2025 &mdash; 自然与风光</p>
+                    </div>
+                </div>
+                <div class="reveal award-row">
+                    <div class="award-icon">NG</div>
+                    <div>
+                        <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700;">国家地理特约摄影师</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">2023-present</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: CLIENTS -->
+    <section class="slide" aria-label="Clients">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em;">CLIENTS</p>
+            <h2 class="reveal" style="font-family: var(--font-display-cn); font-size: var(--h2-size); font-weight: 900; margin-top: var(--element-gap);">合作伙伴</h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr); max-width: min(75vw, 600px);">
+                <div class="reveal client-item" style="font-family: var(--font-display); font-weight: 600; letter-spacing: 0.1em;">National Geographic</div>
+                <div class="reveal client-item" style="font-family: var(--font-display-cn); font-weight: 700;">故宫博物院</div>
+                <div class="reveal client-item" style="font-family: var(--font-display); font-weight: 600; letter-spacing: 0.05em;">Apple</div>
+                <div class="reveal client-item" style="font-family: var(--font-display-cn); font-weight: 700;">三联生活周刊</div>
+                <div class="reveal client-item" style="font-family: var(--font-display); font-weight: 600; letter-spacing: 0.08em;">LEICA</div>
+                <div class="reveal client-item" style="font-family: var(--font-display-cn); font-weight: 700;">中国国家旅游</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: PROCESS -->
+    <section class="slide" aria-label="Process">
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.3em;">PROCESS</p>
+            <h2 class="reveal" style="font-family: var(--font-display-cn); font-size: var(--h2-size); font-weight: 900; margin-top: var(--element-gap);">创作流程</h2>
+            <div class="process-line" style="margin-top: var(--content-gap);">
+                <div style="position: absolute; top: clamp(5px, 0.6vw, 7px); left: 12.5%; right: 12.5%; height: 1px; background: var(--border-subtle);"></div>
+                <div class="reveal process-node">
+                    <div class="process-dot"></div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700; margin-top: 0.8em;">观察</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">沉浸场景</p>
+                </div>
+                <div class="reveal process-node">
+                    <div class="process-dot"></div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700; margin-top: 0.8em;">等待</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">守候瞬间</p>
+                </div>
+                <div class="reveal process-node">
+                    <div class="process-dot"></div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700; margin-top: 0.8em;">捕捉</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">精准构图</p>
+                </div>
+                <div class="reveal process-node">
+                    <div class="process-dot"></div>
+                    <h3 style="font-family: var(--font-display-cn); font-size: var(--h3-size); font-weight: 700; margin-top: 0.8em;">叙事</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">构建故事线</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: CONTACT -->
+    <section class="slide" aria-label="Contact">
+        <div class="ambient-glow" style="background: var(--accent); bottom: 20%; left: 50%; transform: translateX(-50%);"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <h2 class="reveal-blur" style="font-family: var(--font-display-cn); font-size: var(--title-size); font-weight: 900;">合作洽谈</h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.7;">
+                商业拍摄 &middot; 品牌合作 &middot; 展览策划 &middot; 摄影指导
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap);">
+                <button class="noir-cta" onclick="void(0)">linzhi@photography.com</button>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                WeChat: linzhi_photo &middot; Instagram: @linzhi.stories
+            </p>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1); else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+            setupWheelNav() {
+                let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1); }, 50); }, { passive: true });
+            }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+            setupNavDots() {
+                const c = document.getElementById('navDots'); if (!c) return;
+                this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `Go to slide ${i+1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); });
+            }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true; this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+            updateUI() {
+                const t = this.slides.length, c = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((c+1)/t)*100}%`;
+                document.querySelectorAll('.nav-dot').forEach((d,i) => d.classList.toggle('active', i===c));
+                if (this.counter) this.counter.textContent = `${c+1} / ${t}`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

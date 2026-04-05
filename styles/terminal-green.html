@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminal Green</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d1117;
+  --green: #39d353;
+  --yellow: #e3b341;
+  --red: #f85149;
+  --dim: #8d95a0;
+  --text: #e6edf3;
+  --surface: #161b22;
+  --border: #30363d;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Text selection highlight -- green on dark green */
+::selection {
+  background: rgba(57, 211, 83, 0.3);
+  color: var(--green);
+}
+::-moz-selection {
+  background: rgba(57, 211, 83, 0.3);
+  color: var(--green);
+}
+
+/* CRT scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--green);
+  z-index: 1001;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 2.5vh, 32px);
+  right: clamp(24px, 3vw, 48px);
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--dim);
+  z-index: 1000;
+}
+
+.page-counter .current { color: var(--green); }
+
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Terminal window chrome */
+.terminal {
+  position: absolute;
+  top: clamp(24px, 4vh, 48px);
+  left: clamp(24px, 4vw, 64px);
+  right: clamp(24px, 4vw, 64px);
+  bottom: clamp(24px, 4vh, 48px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Maximized terminal -- no border-radius, no title bar, full screen */
+.terminal-maximized {
+  position: absolute;
+  inset: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.term-bar {
+  height: clamp(32px, 4vh, 44px);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(12px, 1.5vw, 20px);
+  gap: clamp(6px, 0.6vw, 8px);
+  flex-shrink: 0;
+}
+
+.dot {
+  width: clamp(10px, 1vw, 12px);
+  height: clamp(10px, 1vw, 12px);
+  border-radius: 50%;
+}
+
+.dot.r { background: var(--red); }
+.dot.y { background: var(--yellow); }
+.dot.g { background: var(--green); }
+
+.term-title {
+  flex: 1;
+  text-align: center;
+  font-size: clamp(11px, 0.9vw, 13px);
+  color: var(--dim);
+  margin-right: clamp(40px, 4vw, 60px);
+}
+
+.term-body {
+  flex: 1;
+  padding: clamp(24px, 4vh, 48px) clamp(28px, 4vw, 56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.cursor {
+  color: var(--green);
+  animation: blink 1s step-end infinite;
+  font-weight: 700;
+}
+
+/* Typewriter animation for title */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.typewriter-line {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+}
+
+.slide.active .typewriter-line {
+  animation: typing 1.8s steps(16, end) 0.3s forwards;
+}
+
+.slide.active .typewriter-line:nth-child(2) {
+  animation: typing 1.4s steps(12, end) 2.2s forwards;
+}
+
+/* Title */
+.term-heading {
+  font-size: clamp(36px, 6vw, 96px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--green);
+  margin-bottom: clamp(16px, 2.5vh, 28px);
+  letter-spacing: -0.02em;
+}
+
+.term-sub {
+  font-size: clamp(14px, 1.5vw, 20px);
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+.term-sub .prompt {
+  color: var(--yellow);
+  margin-right: 0.5em;
+}
+
+/* Section label */
+.section-tag {
+  font-size: clamp(11px, 1vw, 14px);
+  color: var(--yellow);
+  margin-bottom: clamp(24px, 3.5vh, 40px);
+  letter-spacing: 0.1em;
+}
+
+/* Feature bullets */
+.term-features {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vh, 36px);
+}
+
+.term-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(12px, 1.5vw, 20px);
+}
+
+.term-feat .prompt {
+  color: var(--green);
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.term-feat .feat-title {
+  font-weight: 700;
+  font-size: clamp(18px, 2.2vw, 30px);
+  color: var(--text);
+  margin-bottom: clamp(2px, 0.4vh, 6px);
+}
+
+.term-feat .feat-desc {
+  font-size: clamp(12px, 1.1vw, 16px);
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+/* Stats as key=value */
+.stat-lines {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.5vh, 32px);
+}
+
+.stat-line {
+  font-size: clamp(28px, 4.5vw, 72px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stat-line .key { color: var(--dim); }
+.stat-line .eq { color: var(--yellow); margin: 0 0.2em; }
+.stat-line .val { color: var(--green); }
+.stat-line .comment {
+  font-size: 0.4em;
+  color: var(--dim);
+  margin-left: 0.8em;
+  font-weight: 400;
+}
+
+/* Quote */
+.term-quote {
+  font-size: clamp(24px, 4vw, 64px);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+  max-width: 20ch;
+  margin-bottom: clamp(16px, 2.5vh, 28px);
+}
+
+.term-quote::before {
+  content: '// ';
+  color: var(--green);
+}
+
+.term-attr {
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--dim);
+}
+
+.term-attr .at { color: var(--yellow); }
+
+/* Close */
+.term-close {
+  font-size: clamp(32px, 5.5vw, 88px);
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.1;
+  margin-bottom: clamp(12px, 2vh, 24px);
+}
+
+.term-close-sub {
+  font-size: clamp(13px, 1.3vw, 18px);
+  color: var(--dim);
+}
+
+/* Terminal closed state */
+.terminal-closed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.terminal-closed .close-prompt {
+  font-size: clamp(12px, 1.2vw, 16px);
+  color: var(--dim);
+  margin-bottom: clamp(24px, 4vh, 48px);
+}
+
+/* Reveal */
+.rv {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.slide.active .rv {
+  animation: tUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .rv:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .rv:nth-child(2) { animation-delay: 0.13s; }
+.slide.active .rv:nth-child(3) { animation-delay: 0.23s; }
+.slide.active .rv:nth-child(4) { animation-delay: 0.33s; }
+.slide.active .rv:nth-child(5) { animation-delay: 0.43s; }
+.slide.active .rv:nth-child(6) { animation-delay: 0.53s; }
+
+@keyframes tUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <div class="term-title">vim presentation.md</div>
+    </div>
+    <div class="term-body">
+      <div class="term-heading rv"><span class="typewriter-line">AI 驱动的</span><span class="typewriter-line">设计革命<span class="cursor">_</span></span></div>
+      <div class="term-sub rv"><span class="prompt">$</span> 从像素到体验，重新定义创造力的边界</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <div class="term-title">cat capabilities.json</div>
+    </div>
+    <div class="term-body">
+      <div class="section-tag rv">// CORE MODULES</div>
+      <div class="term-features">
+        <div class="term-feat rv">
+          <span class="prompt">&gt;</span>
+          <div>
+            <div class="feat-title">智能布局<span class="cursor">_</span></div>
+            <div class="feat-desc">- AI 理解内容语义，自动生成视觉层次排版</div>
+          </div>
+        </div>
+        <div class="term-feat rv">
+          <span class="prompt">&gt;</span>
+          <div>
+            <div class="feat-title">风格迁移</div>
+            <div class="feat-desc">- 一键迁移任意参考图的视觉语言</div>
+          </div>
+        </div>
+        <div class="term-feat rv">
+          <span class="prompt">$</span>
+          <div>
+            <div class="feat-title">实时协作</div>
+            <div class="feat-desc">- 多人同步编辑，AI 调和修改意图</div>
+          </div>
+        </div>
+        <div class="term-feat rv">
+          <span class="prompt">$</span>
+          <div>
+            <div class="feat-title">自适应排版</div>
+            <div class="feat-desc">- 一次设计，适配手表到巨幕</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <div class="term-title">cat stats.json</div>
+    </div>
+    <div class="term-body">
+      <div class="section-tag rv">// SYSTEM METRICS</div>
+      <div class="stat-lines">
+        <div class="stat-line rv"><span class="key">efficiency</span><span class="eq">=</span><span class="val">10x</span><span class="comment"># 效率提升</span></div>
+        <div class="stat-line rv"><span class="key">satisfaction</span><span class="eq">=</span><span class="val">93%</span><span class="comment"># 用户满意度</span></div>
+        <div class="stat-line rv"><span class="key">generated</span><span class="eq">=</span><span class="val">50M+</span><span class="comment"># 设计生成</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -- maximized terminal (no border-radius, no title bar dots) -->
+<div class="slide" data-i="3">
+  <div class="terminal-maximized">
+    <div class="term-bar" style="border-radius:0;">
+      <div class="term-title" style="margin-right:0;">echo $QUOTE</div>
+    </div>
+    <div class="term-body">
+      <div class="term-quote rv">好的设计不是装饰，是沟通。<span class="cursor">_</span></div>
+      <div class="term-attr rv"><span class="at">@</span>Dieter Rams</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -- terminal closed state, breaks out of terminal metaphor -->
+<div class="slide" data-i="4">
+  <div class="terminal-closed">
+    <div class="close-prompt rv">user@next-slide ~ % exit</div>
+    <div class="term-close rv">重新定义<br>创造力<span class="cursor">_</span></div>
+    <div class="term-close-sub rv"><span style="color:var(--yellow)">$</span> AI + 人类直觉，设计的下一个十年</div>
+    <div class="close-prompt rv" style="margin-top:clamp(24px, 4vh, 48px);color:var(--green);">[Process completed]</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.rv').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

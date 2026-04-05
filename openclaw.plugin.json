@@ -1,7 +1,7 @@
 {
   "name": "next-slide",
   "displayName": "Next Slide 🦞",
-  "description": "AI-powered HTML presentations. 26+ styles, zero dependencies, bilingual. 你的下个 slide，何必是 PPT",
+  "description": "AI-powered HTML presentations. 50+ styles, zero dependencies, bilingual. 你的下个 ppt，何必是 PPT",
   "version": "0.1.0",
   "kind": "skill",
   "author": "Callum",
@@ -13,6 +13,7 @@
     "viewport-base.css",
     "html-template.md",
     "animation-patterns.md",
+    "style-gallery.html",
     "scripts/extract-pptx.py"
   ],
   "triggers": [

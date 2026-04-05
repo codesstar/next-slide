@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clean Slate - Notion Style</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#ffffff;--text:#37352f;--border:#e3e2e0;
+  --blue:#2eaadc;--surface:#f7f6f3;--text-muted:#6b6b6b;
+  --blue-bg:rgba(46,170,220,0.1);
+}
+body{
+  font-family:'Inter','Noto Sans SC',sans-serif;
+  color:var(--text);background:var(--bg);overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.slide{
+  position:fixed;inset:0;
+  height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.4s cubic-bezier(0.16,1,0.3,1);
+  background:var(--bg);
+}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-inner{
+  width:min(86vw,780px);
+  padding:clamp(1.5rem,3vw,3rem) 0;
+}
+
+.progress-bar{
+  position:fixed;top:0;left:0;height:2px;
+  background:var(--blue);z-index:100;
+  transition:width 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.page-counter{
+  position:fixed;bottom:clamp(1rem,2vw,1.5rem);right:clamp(1.5rem,3vw,3rem);
+  font-family:'Inter','Noto Sans SC',sans-serif;
+  font-size:clamp(0.7rem,0.9vw,0.8rem);
+  color:var(--text-muted);z-index:100;
+}
+
+/* Notion-style cover banner for title slide */
+.notion-cover{
+  width:100%;height:clamp(80px,12vw,160px);
+  background:linear-gradient(135deg,#6366f1 0%,#818cf8 30%,#a78bfa 60%,#c4b5fd 100%);
+  border-radius:0 0 4px 4px;
+  margin-bottom:clamp(-2rem,-3vw,-3rem);
+  position:relative;
+}
+
+/* Page icon -- large character before title */
+.page-icon{
+  width:clamp(56px,8vw,80px);
+  height:clamp(56px,8vw,80px);
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(32px,5vw,48px);
+  font-weight:700;
+  color:var(--text);
+  position:relative;
+  margin-top:clamp(-28px,-4vw,-40px);
+  margin-bottom:clamp(0.8rem,1.5vw,1.2rem);
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+
+h1{
+  font-size:clamp(2rem,4.5vw,3.2rem);
+  font-weight:700;line-height:1.2;color:var(--text);
+  letter-spacing:-0.02em;
+}
+h2{
+  font-size:clamp(1.5rem,3vw,2.2rem);
+  font-weight:700;line-height:1.2;color:var(--text);
+  letter-spacing:-0.02em;
+  margin-bottom:clamp(0.5rem,1vw,0.8rem);
+}
+h3{
+  font-size:clamp(1rem,1.6vw,1.3rem);
+  font-weight:600;color:var(--text);
+}
+p,.body-text{
+  font-size:clamp(0.875rem,1.2vw,1rem);
+  line-height:1.7;color:var(--text);
+}
+
+.fade-up{
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1),transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.15s}
+.active .fade-up.d2{transition-delay:0.3s}
+.active .fade-up.d3{transition-delay:0.45s}
+.active .fade-up.d4{transition-delay:0.6s}
+.active .fade-up.d5{transition-delay:0.75s}
+.active .fade-up.d6{transition-delay:0.9s}
+
+.divider{
+  width:100%;height:1px;background:var(--border);
+  margin:clamp(0.8rem,1.5vw,1.2rem) 0;
+}
+
+/* Breadcrumb */
+.breadcrumb{
+  font-size:clamp(0.75rem,1vw,0.85rem);
+  color:var(--text-muted);
+  margin-bottom:clamp(1rem,2vw,1.5rem);
+}
+.breadcrumb span{color:var(--text-muted)}
+.breadcrumb .sep{margin:0 0.3em;opacity:0.5}
+
+/* Properties table */
+.properties{
+  display:flex;flex-wrap:wrap;gap:0;
+  margin-top:clamp(1rem,2vw,1.5rem);
+  border-top:1px solid var(--border);
+}
+.prop-row{
+  display:flex;width:100%;
+  border-bottom:1px solid var(--border);
+}
+.prop-label{
+  width:140px;flex-shrink:0;
+  padding:clamp(0.4rem,0.8vw,0.6rem) clamp(0.5rem,1vw,0.8rem);
+  font-size:clamp(0.8rem,1vw,0.875rem);
+  color:var(--text-muted);
+  background:var(--surface);
+}
+.prop-value{
+  flex:1;
+  padding:clamp(0.4rem,0.8vw,0.6rem) clamp(0.5rem,1vw,0.8rem);
+  font-size:clamp(0.8rem,1vw,0.875rem);
+}
+.tag{
+  display:inline-block;
+  padding:0.15em 0.5em;border-radius:3px;
+  font-size:clamp(0.7rem,0.9vw,0.8rem);
+  font-weight:600;
+}
+.tag-blue{background:var(--blue-bg);color:#2383a8}
+.tag-yellow{background:rgba(203,145,47,0.15);color:#9f6b16}
+.tag-green{background:rgba(77,171,125,0.15);color:#2e7d5b}
+
+/* Toggle bullets */
+.toggle-list{margin-top:clamp(0.5rem,1vw,0.8rem)}
+.toggle-item{
+  display:flex;align-items:flex-start;
+  padding:clamp(0.5rem,0.8vw,0.6rem) 0;
+}
+.toggle-arrow{
+  width:20px;height:20px;flex-shrink:0;
+  margin-right:0.4rem;margin-top:0.1rem;
+  color:var(--text-muted);
+  font-size:0.6rem;line-height:20px;text-align:center;
+  cursor:default;
+}
+.toggle-content{flex:1}
+.toggle-title{
+  font-size:clamp(0.875rem,1.2vw,1rem);
+  font-weight:600;color:var(--text);margin-bottom:0.2rem;
+}
+.toggle-desc{
+  font-size:clamp(0.8rem,1.1vw,0.9rem);
+  color:var(--text-muted);line-height:1.6;
+}
+
+/* Stats */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:0;margin-top:clamp(1rem,2vw,1.5rem);
+  border:1px solid var(--border);border-radius:4px;
+  overflow:hidden;
+}
+.stat-cell{
+  padding:clamp(1.2rem,2.5vw,2rem);
+  text-align:center;
+}
+.stat-cell+.stat-cell{border-left:1px solid var(--border)}
+.stat-num{
+  font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:700;color:var(--text);
+  letter-spacing:-0.02em;line-height:1.1;
+}
+.stat-label{
+  font-size:clamp(0.75rem,1vw,0.85rem);
+  color:var(--text-muted);margin-top:0.3rem;
+}
+
+/* Callout / Quote */
+.callout{
+  background:var(--surface);
+  border-radius:4px;
+  padding:clamp(1rem,2vw,1.5rem);
+  display:flex;gap:clamp(0.6rem,1vw,1rem);
+  align-items:flex-start;
+}
+.callout-icon{
+  width:24px;height:24px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:0.1rem;
+}
+/* CSS-drawn quotation mark */
+.callout-icon::before{
+  content:'"';
+  font-family:'Inter','Noto Sans SC',sans-serif;
+  font-size:clamp(1.6rem,2.5vw,2.2rem);
+  font-weight:700;
+  line-height:1;
+  color:var(--text);
+  display:block;
+}
+.callout-text{
+  font-size:clamp(0.875rem,1.2vw,1rem);
+  line-height:1.7;color:var(--text);
+}
+
+.inline-code{
+  background:var(--surface);
+  padding:0.15em 0.4em;border-radius:3px;
+  font-family:'SF Mono','Fira Code',monospace;
+  font-size:0.88em;color:#eb5757;
+}
+
+/* Related pages gallery cards for closing slide */
+.related-pages{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:clamp(0.6rem,1.2vw,1rem);
+  margin-top:clamp(1.5rem,3vw,2.5rem);
+}
+.related-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:clamp(0.8rem,1.5vw,1.2rem);
+  text-align:left;
+}
+.related-card-icon{
+  font-size:clamp(1rem,1.5vw,1.3rem);
+  font-weight:700;
+  color:var(--text-muted);
+  margin-bottom:0.4rem;
+}
+.related-card-title{
+  font-size:clamp(0.75rem,1vw,0.85rem);
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:0.2rem;
+}
+.related-card-desc{
+  font-size:clamp(0.65rem,0.85vw,0.75rem);
+  color:var(--text-muted);
+  line-height:1.5;
+}
+
+@media(max-width:640px){
+  .stat-grid{grid-template-columns:1fr}
+  .stat-cell+.stat-cell{border-left:none;border-top:1px solid var(--border)}
+  .related-pages{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" id="slide-0">
+  <div class="slide-inner" style="padding-top:0;">
+    <div class="notion-cover fade-up d1"></div>
+    <div style="padding:0 clamp(0.5rem,1vw,1rem);">
+      <div class="page-icon fade-up d1">A</div>
+      <div class="breadcrumb fade-up d2">
+        <span>AI Design</span><span class="sep">/</span><span>Revolution</span><span class="sep">/</span><span style="color:var(--text)">Overview</span>
+      </div>
+      <h1 class="fade-up d3">AI 驱动的设计革命</h1>
+      <p class="fade-up d4 body-text" style="color:var(--text-muted);margin-top:clamp(0.3rem,0.5vw,0.5rem);">
+        从像素到体验，重新定义创造力的边界
+      </p>
+      <div class="properties fade-up d5">
+        <div class="prop-row">
+          <div class="prop-label">Status</div>
+          <div class="prop-value"><span class="tag tag-green">In Progress</span></div>
+        </div>
+        <div class="prop-row">
+          <div class="prop-label">Priority</div>
+          <div class="prop-value"><span class="tag tag-yellow">High</span></div>
+        </div>
+        <div class="prop-row">
+          <div class="prop-label">Category</div>
+          <div class="prop-value"><span class="tag tag-blue">Design / AI</span></div>
+        </div>
+        <div class="prop-row">
+          <div class="prop-label">Last edited</div>
+          <div class="prop-value" style="color:var(--text-muted)">April 5, 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" id="slide-1">
+  <div class="slide-inner">
+    <h2 class="fade-up d1">核心能力</h2>
+    <div class="divider fade-up d1"></div>
+    <div class="toggle-list">
+      <div class="toggle-item fade-up d2">
+        <div class="toggle-arrow">&#9654;</div>
+        <div class="toggle-content">
+          <div class="toggle-title">智能布局</div>
+          <div class="toggle-desc">自动理解内容层级，生成视觉节奏明确的版面结构。支持多种设备尺寸自适应。</div>
+        </div>
+      </div>
+      <div class="toggle-item fade-up d3">
+        <div class="toggle-arrow">&#9654;</div>
+        <div class="toggle-content">
+          <div class="toggle-title">风格迁移</div>
+          <div class="toggle-desc">一键转换视觉风格，保持信息架构不变。从极简到华丽，风格切换无缝衔接。</div>
+        </div>
+      </div>
+      <div class="toggle-item fade-up d4">
+        <div class="toggle-arrow">&#9654;</div>
+        <div class="toggle-content">
+          <div class="toggle-title">实时协作</div>
+          <div class="toggle-desc">多人同时编辑，AI 智能合并冲突与建议。告别版本混乱。</div>
+        </div>
+      </div>
+      <div class="toggle-item fade-up d5">
+        <div class="toggle-arrow">&#9654;</div>
+        <div class="toggle-content">
+          <div class="toggle-title">自适应排版</div>
+          <div class="toggle-desc">响应式输出，一次设计适配所有终端。Desktop、tablet、mobile 一键搞定。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" id="slide-2">
+  <div class="slide-inner">
+    <h2 class="fade-up d1">数据表现</h2>
+    <div class="divider fade-up d1"></div>
+    <div class="stat-grid fade-up d2">
+      <div class="stat-cell">
+        <div class="stat-num">10x</div>
+        <div class="stat-label">效率提升</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">93%</div>
+        <div class="stat-label">用户满意度</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">50M+</div>
+        <div class="stat-label">设计生成</div>
+      </div>
+    </div>
+    <p class="fade-up d3 body-text" style="color:var(--text-muted);margin-top:clamp(1rem,2vw,1.5rem);">
+      Based on internal metrics as of <span class="inline-code">2026-Q1</span>. Efficiency measured by time-to-first-draft comparison.
+    </p>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" id="slide-3">
+  <div class="slide-inner">
+    <h2 class="fade-up d1" style="font-size:clamp(1rem,1.5vw,1.2rem);font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Quote</h2>
+    <div class="divider fade-up d1"></div>
+    <div class="callout fade-up d2" style="margin-top:clamp(1rem,2vw,1.5rem);">
+      <div class="callout-icon"></div>
+      <div>
+        <div class="callout-text" style="font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:600;line-height:1.4;">
+          好的设计不是装饰，是沟通。
+        </div>
+        <div style="font-size:clamp(0.8rem,1.1vw,0.9rem);color:var(--text-muted);margin-top:clamp(0.6rem,1vw,0.8rem);">
+          -- Dieter Rams
+        </div>
+      </div>
+    </div>
+    <p class="fade-up d3 body-text" style="color:var(--text-muted);margin-top:clamp(1.5rem,3vw,2rem);max-width:520px;">
+      AI 不会取代设计师的直觉。它让直觉有了更精准的表达工具。
+    </p>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" id="slide-4">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="breadcrumb fade-up d1" style="text-align:center;">
+      <span>AI Design</span><span class="sep">/</span><span style="color:var(--text)">Summary</span>
+    </div>
+    <h1 class="fade-up d2" style="font-size:clamp(1.6rem,3.5vw,2.6rem);">让每一次创造，<br>都值得被看见</h1>
+    <div class="divider fade-up d3" style="max-width:120px;margin:clamp(0.8rem,1.5vw,1.2rem) auto;"></div>
+    <p class="fade-up d4 body-text" style="color:var(--text-muted);">设计的未来，从此刻开始。</p>
+    <div class="related-pages fade-up d5">
+      <div class="related-card">
+        <div class="related-card-icon">#</div>
+        <div class="related-card-title">Design System</div>
+        <div class="related-card-desc">Components, tokens, and guidelines for consistent design.</div>
+      </div>
+      <div class="related-card">
+        <div class="related-card-icon">&amp;</div>
+        <div class="related-card-title">Case Studies</div>
+        <div class="related-card-desc">Real-world examples of AI-driven design workflows.</div>
+      </div>
+      <div class="related-card">
+        <div class="related-card-icon">~</div>
+        <div class="related-card-title">Roadmap</div>
+        <div class="related-card-desc">Upcoming features and long-term vision for the platform.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides=document.querySelectorAll('.slide');
+  const total=slides.length;
+  let current=0;
+  const progress=document.getElementById('progress');
+  const counter=document.getElementById('counter');
+  function update(){
+    slides.forEach((s,i)=>{s.classList.toggle('active',i===current)});
+    progress.style.width=((current+1)/total*100)+'%';
+    counter.textContent=(current+1)+' / '+total;
+  }
+  function next(){if(current<total-1){current++;update()}}
+  function prev(){if(current>0){current--;update()}}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')next();
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const diff=e.changedTouches[0].clientX-tx;
+    if(Math.abs(diff)>50){diff<0?next():prev()}
+  },{passive:true});
+  update();
+})();
+</script>
+</body>
+</html>

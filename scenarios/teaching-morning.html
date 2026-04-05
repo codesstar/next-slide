@@ -19,7 +19,7 @@
             --bg-primary: #fefdfb;
             --text-primary: #1c1c1c;
             --text-secondary: #6b6b6b;
-            --text-muted: #999999;
+            --text-muted: #767676;
             --accent-navy: #1a365d;
             --rule-dark: #1c1c1c;
             --rule-light: #d4d0c8;
@@ -968,6 +968,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

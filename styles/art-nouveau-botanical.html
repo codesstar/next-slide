@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art Nouveau Botanical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cream: #FAF6F0;
+  --gold: #C9A84C;
+  --gold-light: #F0D78C;
+  --olive: #5C6B3C;
+  --burgundy: #722F37;
+  --burgundy-dark: #5C2A30;
+  --text: #4A4A4A;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--cream); color: var(--text); }
+
+body {
+  font-family: 'Cormorant Garamond', serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Progress bar */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--olive), var(--gold), var(--burgundy));
+  z-index: 1000;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Page counter */
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 3vh, 36px);
+  right: clamp(20px, 3vw, 44px);
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 700;
+  color: var(--gold);
+  z-index: 1000;
+  letter-spacing: 0.08em;
+}
+.page-counter .current { color: var(--burgundy); }
+
+/* Slide base */
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--cream);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Paper texture on all slides */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(201,168,76,0.04) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 80%, rgba(92,107,60,0.03) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(114,47,55,0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  padding: clamp(36px, 6vh, 72px) clamp(44px, 7vw, 140px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===================== */
+/* Art Nouveau Ornament  */
+/* ===================== */
+
+/* Ornate outer frame */
+.ornate-frame {
+  position: absolute;
+  inset: clamp(12px, 2vh, 20px);
+  border: 2.5px solid var(--gold);
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 2;
+}
+.ornate-frame::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  border-radius: 9px;
+}
+.ornate-frame::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 6px;
+}
+
+/* Vine decorations */
+.vine-left, .vine-right {
+  position: absolute;
+  top: 15%;
+  width: clamp(40px, 6vw, 90px);
+  height: 70%;
+  z-index: 2;
+  pointer-events: none;
+}
+.vine-left { left: clamp(20px, 3vw, 50px); }
+.vine-right { right: clamp(20px, 3vw, 50px); transform: scaleX(-1); }
+
+.vine-left::before, .vine-right::before {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  border-right: 2.5px solid var(--olive);
+  border-radius: 0 0 0 250px;
+  left: 30%;
+}
+
+/* Leaf shapes */
+.leaf {
+  position: absolute;
+  width: clamp(16px, 2vw, 28px);
+  height: clamp(26px, 3vw, 42px);
+  z-index: 2;
+  pointer-events: none;
+}
+.leaf::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(92,107,60,0.15), rgba(92,107,60,0.05));
+  border: 2px solid var(--olive);
+  border-radius: 50% 5px 50% 5px;
+  transform: rotate(-20deg);
+}
+.leaf::after {
+  content: '';
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  background: rgba(92,107,60,0.08);
+  border: 1.5px solid rgba(92,107,60,0.6);
+  border-radius: 50% 3px 50% 3px;
+  transform: rotate(20deg);
+  top: 20%;
+  left: 35%;
+}
+
+/* Flower buds */
+.bud {
+  position: absolute;
+  width: clamp(14px, 1.5vw, 20px);
+  height: clamp(14px, 1.5vw, 20px);
+  z-index: 2;
+  pointer-events: none;
+}
+.bud::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 0 50% 50%;
+  background: rgba(114, 47, 55, 0.12);
+  border: 2px solid var(--burgundy);
+}
+.bud::after {
+  content: '';
+  position: absolute;
+  width: 35%;
+  height: 35%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 50%;
+  top: 33%;
+  left: 33%;
+}
+
+/* Gold divider line */
+.gold-divider {
+  width: clamp(120px, 18vw, 240px);
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+  margin: clamp(12px, 2vh, 20px) auto;
+  position: relative;
+}
+.gold-divider::before {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 50%;
+  top: -5.5px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(201,168,76,0.3);
+}
+
+/* Arch frame (slide 1) */
+.arch-frame {
+  position: absolute;
+  inset: clamp(30px, 4vh, 44px);
+  border: 3px solid var(--olive);
+  border-radius: 200px 200px 16px 16px / 140px 140px 16px 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+.arch-frame::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1.5px solid rgba(92,107,60,0.35);
+  border-radius: 192px 192px 10px 10px / 132px 132px 10px 10px;
+}
+
+/* Tendril curls */
+.tendril {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+.tendril::before {
+  content: '';
+  position: absolute;
+  width: clamp(14px, 1.5vw, 20px);
+  height: clamp(14px, 1.5vw, 20px);
+  border: 1.5px solid rgba(92,107,60,0.5);
+  border-radius: 50%;
+  border-bottom: none;
+  border-right: none;
+}
+
+/* Corner vine decorations */
+.corner-vine {
+  position: absolute;
+  width: clamp(50px, 7vw, 90px);
+  height: clamp(50px, 7vw, 90px);
+  z-index: 2;
+  pointer-events: none;
+}
+.corner-vine::before {
+  content: '';
+  position: absolute;
+  width: 75%;
+  height: 75%;
+  border: 2.5px solid var(--olive);
+  border-radius: 0 0 70px 0;
+  border-top: none;
+  border-left: none;
+}
+.corner-vine::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: rgba(92,107,60,0.15);
+  border: 1.5px solid var(--olive);
+  border-radius: 50% 0 50% 50%;
+  bottom: 8px;
+  right: 8px;
+}
+
+/* ===================== */
+/* Typography            */
+/* ===================== */
+
+.subtitle-top {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  color: var(--olive);
+  text-align: center;
+  margin-bottom: clamp(14px, 2vh, 22px);
+}
+
+.main-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(40px, 6vw, 76px);
+  font-weight: 900;
+  line-height: 1.05;
+  background: linear-gradient(135deg, var(--burgundy) 0%, #8B3A44 40%, var(--burgundy) 60%, var(--burgundy-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 4.5vw, 52px);
+  font-weight: 700;
+  color: var(--burgundy);
+  text-align: center;
+  position: relative;
+  display: inline-block;
+}
+.section-title::before, .section-title::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: clamp(40px, 6vw, 100px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light));
+}
+.section-title::before { right: calc(100% + 16px); }
+.section-title::after { left: calc(100% + 16px); background: linear-gradient(90deg, var(--gold-light), var(--gold), transparent); }
+
+.section-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(11px, 1vw, 14px);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--olive);
+  text-align: center;
+}
+
+.author-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 2vw, 24px);
+  font-style: italic;
+  color: var(--burgundy);
+  text-align: center;
+}
+
+.body-text {
+  font-size: clamp(14px, 1.4vw, 18px);
+  line-height: 1.75;
+  color: var(--text);
+}
+
+/* Content cards with organic curved borders */
+.nouveau-card {
+  position: relative;
+  padding: clamp(20px, 3vh, 32px) clamp(22px, 3vw, 36px);
+}
+.nouveau-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2.5px solid var(--olive);
+  border-radius: 40px 8px 40px 8px;
+  opacity: 0.7;
+  background: rgba(250,246,240,0.5);
+}
+.nouveau-card::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1.5px solid rgba(201,168,76,0.35);
+  border-radius: 36px 4px 36px 4px;
+}
+
+.nouveau-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: 700;
+  color: var(--olive);
+  margin-bottom: clamp(8px, 1vh, 14px);
+  position: relative;
+  padding-left: 30px;
+  z-index: 1;
+}
+.nouveau-card h3::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 4px;
+  width: 16px; height: 16px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 50% 5px 50% 5px;
+  transform: rotate(45deg);
+}
+
+.nouveau-card p, .nouveau-card li {
+  font-size: clamp(13px, 1.3vw, 17px);
+  line-height: 1.7;
+  color: var(--text);
+  position: relative;
+  z-index: 1;
+}
+
+/* Stats */
+.stat-number {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(44px, 7vw, 90px);
+  line-height: 1;
+  background: linear-gradient(135deg, var(--burgundy), #8B3A44);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-unit {
+  font-size: 0.4em;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(13px, 1.2vw, 17px);
+  color: var(--olive);
+  margin-top: clamp(6px, 1vh, 12px);
+  letter-spacing: 2px;
+}
+
+/* Quote */
+.quote-text {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(28px, 4.5vw, 64px);
+  line-height: 1.25;
+  color: var(--burgundy);
+  max-width: 18ch;
+  text-align: center;
+}
+
+.quote-attr {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14px, 1.4vw, 20px);
+  color: var(--olive);
+  font-style: italic;
+  text-align: center;
+}
+
+/* ===================== */
+/* ANIMATIONS            */
+/* ===================== */
+
+/* Vine growth */
+@keyframes vineGrow {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* Petal unfurl */
+@keyframes petalUnfurl {
+  0% { opacity: 0; transform: scale(0.3) rotate(-90deg); }
+  60% { opacity: 1; transform: scale(1.05) rotate(5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Organic fade up */
+@keyframes organicReveal {
+  0% { opacity: 0; transform: translateY(30px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Leaf sway */
+@keyframes leafSway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+/* Bloom from center */
+@keyframes bloom {
+  0% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Frame draw-in */
+@keyframes frameDrawIn {
+  from { clip-path: inset(0 100% 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.slide.active .reveal {
+  animation: organicReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .reveal:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+.slide.active .reveal:nth-child(7) { animation-delay: 0.88s; }
+
+.reveal-vine {
+  opacity: 0;
+  clip-path: inset(100% 0 0 0);
+}
+.slide.active .reveal-vine {
+  animation: vineGrow 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+.reveal-petal {
+  opacity: 0;
+  transform: scale(0.3) rotate(-90deg);
+}
+.slide.active .reveal-petal {
+  animation: petalUnfurl 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.slide.active .reveal-petal:nth-child(1) { animation-delay: 0.3s; }
+.slide.active .reveal-petal:nth-child(2) { animation-delay: 0.45s; }
+.slide.active .reveal-petal:nth-child(3) { animation-delay: 0.6s; }
+.slide.active .reveal-petal:nth-child(4) { animation-delay: 0.75s; }
+
+.reveal-bloom {
+  opacity: 0;
+  transform: scale(0);
+}
+.slide.active .reveal-bloom {
+  animation: bloom 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.reveal-frame {
+  clip-path: inset(0 100% 100% 0);
+}
+.slide.active .reveal-frame {
+  animation: frameDrawIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+.slide.active .leaf-anim {
+  animation: leafSway 4s ease-in-out infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.2s !important;
+  }
+  .reveal, .reveal-vine, .reveal-petal, .reveal-bloom {
+    opacity: 0;
+    transform: none !important;
+    clip-path: none !important;
+    transition: opacity 0.2s ease !important;
+  }
+  .slide.active .reveal, .slide.active .reveal-vine,
+  .slide.active .reveal-petal, .slide.active .reveal-bloom {
+    opacity: 1;
+  }
+}
+
+/* Print */
+@media print {
+  .slide { position: relative; height: auto; min-height: 100vh; opacity: 1; pointer-events: auto; page-break-after: always; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal, .reveal-vine, .reveal-petal, .reveal-bloom, .reveal-frame {
+    opacity: 1 !important; transform: none !important; clip-path: none !important;
+  }
+}
+
+/* ===================== */
+/* SLIDE 1: COVER        */
+/* ===================== */
+.s1 {
+  background: radial-gradient(ellipse at 50% 50%, rgba(250,246,240,1) 30%, rgba(235,222,195,1) 100%);
+}
+
+.s1 .bg-pattern {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 25% 25%, rgba(92,107,60,0.02) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(92,107,60,0.02) 2px, transparent 2px);
+  background-size: 60px 60px;
+  z-index: 0;
+}
+
+/* ===================== */
+/* SLIDE 2: FEATURES     */
+/* ===================== */
+.s2 {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(92,107,60,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(114,47,55,0.04) 0%, transparent 50%),
+    var(--cream);
+}
+
+.s2 .slide-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: clamp(12px, 2vh, 20px) clamp(16px, 2vw, 30px);
+  align-items: start;
+  justify-content: center;
+}
+
+.s2 .header-area {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+/* ===================== */
+/* SLIDE 3: STATS        */
+/* ===================== */
+.s3 {
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(201,168,76,0.06) 0%, transparent 50%),
+    var(--cream);
+}
+
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: clamp(32px, 6vw, 100px);
+  align-items: flex-end;
+}
+
+.stat-block { text-align: center; }
+
+/* ===================== */
+/* SLIDE 4: QUOTE        */
+/* ===================== */
+.s4 {
+  background:
+    radial-gradient(ellipse at 60% 40%, rgba(114,47,55,0.05) 0%, transparent 50%),
+    var(--cream);
+}
+
+.s4 .slide-inner {
+  align-items: center;
+  gap: clamp(16px, 2.5vh, 28px);
+}
+
+/* Large decorative quote mark */
+.quote-mark {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(60px, 8vw, 120px);
+  line-height: 0.6;
+  color: rgba(201,168,76,0.25);
+  font-weight: 900;
+}
+
+/* ===================== */
+/* SLIDE 5: CLOSE        */
+/* ===================== */
+.s5 {
+  background: radial-gradient(ellipse at 50% 50%, rgba(250,246,240,1) 30%, rgba(235,222,195,1) 100%);
+}
+
+.s5 .slide-inner {
+  align-items: center;
+  gap: clamp(10px, 2vh, 22px);
+}
+
+.close-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(36px, 5.5vw, 80px);
+  line-height: 1.1;
+  text-align: center;
+  background: linear-gradient(135deg, var(--burgundy) 0%, #8B3A44 50%, var(--burgundy-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.close-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(15px, 1.8vw, 24px);
+  color: var(--olive);
+  font-style: italic;
+  text-align: center;
+  max-width: 36ch;
+}
+
+/* Bottom ornament */
+.bottom-ornament {
+  width: clamp(100px, 14vw, 200px);
+  height: 40px;
+  position: relative;
+}
+.bottom-ornament::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--olive), var(--gold), var(--olive), transparent);
+  top: 50%;
+}
+.bottom-ornament::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border: 2.5px solid var(--gold);
+  transform: rotate(45deg) translateX(-50%);
+  left: 50%;
+  top: 22%;
+  background: var(--cream);
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- ======================== -->
+<!-- Slide 1: Cover           -->
+<!-- ======================== -->
+<div class="slide s1 active" data-i="0">
+  <div class="bg-pattern"></div>
+  <div class="ornate-frame reveal-frame"></div>
+  <div class="arch-frame reveal-frame" style="animation-delay:0.3s"></div>
+
+  <!-- Vines -->
+  <div class="vine-left reveal-vine"></div>
+  <div class="vine-right reveal-vine" style="animation-delay:0.4s"></div>
+
+  <!-- Leaves -->
+  <div class="leaf leaf-anim reveal-petal" style="top:22%; left:5%; animation-delay:0.5s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:42%; left:4%; transform:rotate(35deg); animation-delay:0.65s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:62%; left:5.5%; transform:rotate(-10deg); animation-delay:0.8s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:22%; right:5%; transform:scaleX(-1); animation-delay:0.55s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:44%; right:4.5%; transform:scaleX(-1) rotate(25deg); animation-delay:0.7s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:64%; right:5%; transform:scaleX(-1) rotate(-15deg); animation-delay:0.85s"></div>
+
+  <!-- Buds -->
+  <div class="bud reveal-bloom" style="top:16%; left:10%; transform:rotate(45deg); animation-delay:0.6s"></div>
+  <div class="bud reveal-bloom" style="top:16%; right:10%; transform:rotate(-45deg); animation-delay:0.7s"></div>
+  <div class="bud reveal-bloom" style="bottom:16%; left:10%; transform:rotate(135deg); animation-delay:0.8s"></div>
+  <div class="bud reveal-bloom" style="bottom:16%; right:10%; transform:rotate(-135deg); animation-delay:0.9s"></div>
+
+  <div class="slide-inner" style="align-items:center; text-align:center; padding:0 14vw;">
+    <div class="subtitle-top reveal">AI 驱动的设计前沿</div>
+    <h1 class="main-title reveal" style="animation-delay:0.15s">设计革命</h1>
+    <div class="gold-divider reveal" style="animation-delay:0.28s"></div>
+    <div class="author-text reveal" style="animation-delay:0.4s">从像素到体验，重新定义创造力的边界</div>
+  </div>
+
+  <div class="bottom-ornament reveal-bloom" style="position:absolute; bottom:clamp(28px,4vh,50px); left:50%; transform:translateX(-50%); animation-delay:0.7s"></div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 2: Features        -->
+<!-- ======================== -->
+<div class="slide s2" data-i="1">
+  <div class="corner-vine reveal-petal" style="top:8px; left:8px; animation-delay:0.2s"></div>
+  <div class="corner-vine reveal-petal" style="top:8px; right:8px; transform:scaleX(-1); animation-delay:0.3s"></div>
+  <div class="corner-vine reveal-petal" style="bottom:8px; left:8px; transform:scaleY(-1); animation-delay:0.4s"></div>
+  <div class="corner-vine reveal-petal" style="bottom:8px; right:8px; transform:scale(-1); animation-delay:0.5s"></div>
+
+  <div class="slide-inner">
+    <div class="header-area">
+      <h2 class="section-title reveal">核心能力</h2>
+      <div class="section-label reveal" style="margin-top:clamp(6px,1vh,12px); animation-delay:0.12s">Core Capabilities</div>
+    </div>
+
+    <div class="nouveau-card reveal" style="animation-delay:0.2s">
+      <h3>智能布局</h3>
+      <p>AI 理解内容语义，自动生成符合视觉层次的排版方案，让每一页都恰到好处</p>
+    </div>
+
+    <div class="nouveau-card reveal" style="animation-delay:0.35s">
+      <h3>风格迁移</h3>
+      <p>一键将任意参考图的视觉语言迁移到你的设计中，灵感不再受限</p>
+    </div>
+
+    <div class="nouveau-card reveal" style="animation-delay:0.5s">
+      <h3>实时协作</h3>
+      <p>多人同步编辑，AI 实时调和不同设计师的修改意图，协作如呼吸般自然</p>
+    </div>
+
+    <div class="nouveau-card reveal" style="animation-delay:0.65s">
+      <h3>自适应排版</h3>
+      <p>一次设计，自动适配从手表到巨幕的所有尺寸，告别重复劳动</p>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 3: Stats           -->
+<!-- ======================== -->
+<div class="slide s3" data-i="2">
+  <div class="ornate-frame reveal-frame"></div>
+
+  <!-- Decorative buds -->
+  <div class="bud reveal-bloom" style="top:12%; left:8%; transform:rotate(45deg); animation-delay:0.4s"></div>
+  <div class="bud reveal-bloom" style="top:12%; right:8%; transform:rotate(-45deg); animation-delay:0.5s"></div>
+  <div class="bud reveal-bloom" style="bottom:12%; left:8%; transform:rotate(135deg); animation-delay:0.6s"></div>
+  <div class="bud reveal-bloom" style="bottom:12%; right:8%; transform:rotate(-135deg); animation-delay:0.7s"></div>
+
+  <div class="slide-inner" style="align-items:center; gap:clamp(24px,4vh,48px);">
+    <div style="text-align:center;">
+      <div class="section-label reveal">By The Numbers</div>
+      <h2 class="section-title reveal" style="animation-delay:0.1s; margin-top:clamp(8px,1.5vh,16px);">数据说话</h2>
+    </div>
+    <div class="gold-divider reveal" style="animation-delay:0.2s"></div>
+    <div class="stats-row">
+      <div class="stat-block reveal" style="animation-delay:0.3s">
+        <div class="stat-number">10<span class="stat-unit">x</span></div>
+        <div class="stat-label">效率提升</div>
+      </div>
+      <div class="stat-block reveal" style="animation-delay:0.45s">
+        <div class="stat-number">93<span class="stat-unit">%</span></div>
+        <div class="stat-label">用户满意度</div>
+      </div>
+      <div class="stat-block reveal" style="animation-delay:0.6s">
+        <div class="stat-number">50<span class="stat-unit">M+</span></div>
+        <div class="stat-label">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 4: Quote           -->
+<!-- ======================== -->
+<div class="slide s4" data-i="3">
+  <!-- Vines -->
+  <div class="vine-left reveal-vine" style="animation-delay:0.1s"></div>
+  <div class="vine-right reveal-vine" style="animation-delay:0.3s"></div>
+
+  <!-- Tendrils -->
+  <div class="tendril reveal-petal" style="top:30%; left:7%; transform:rotate(30deg); animation-delay:0.5s"></div>
+  <div class="tendril reveal-petal" style="top:55%; right:7%; transform:scaleX(-1) rotate(30deg); animation-delay:0.6s"></div>
+
+  <div class="slide-inner">
+    <div class="quote-mark reveal" style="text-align:center;">&ldquo;</div>
+    <div class="gold-divider reveal" style="animation-delay:0.15s"></div>
+    <div class="quote-text reveal" style="animation-delay:0.25s; align-self:center;">好的设计不是装饰，<br>是沟通。</div>
+    <div class="gold-divider reveal" style="animation-delay:0.4s"></div>
+    <div class="quote-attr reveal" style="animation-delay:0.55s">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 5: Close           -->
+<!-- ======================== -->
+<div class="slide s5" data-i="4">
+  <div class="bg-pattern" style="position:absolute;inset:0;background:radial-gradient(circle at 25% 25%,rgba(92,107,60,0.02) 2px,transparent 2px),radial-gradient(circle at 75% 75%,rgba(92,107,60,0.02) 2px,transparent 2px);background-size:60px 60px;z-index:0;"></div>
+  <div class="ornate-frame reveal-frame"></div>
+  <div class="arch-frame reveal-frame" style="animation-delay:0.3s"></div>
+
+  <!-- Buds at corners -->
+  <div class="bud reveal-bloom" style="top:14%; left:9%; transform:rotate(45deg); animation-delay:0.5s"></div>
+  <div class="bud reveal-bloom" style="top:14%; right:9%; transform:rotate(-45deg); animation-delay:0.6s"></div>
+  <div class="bud reveal-bloom" style="bottom:14%; left:9%; transform:rotate(135deg); animation-delay:0.7s"></div>
+  <div class="bud reveal-bloom" style="bottom:14%; right:9%; transform:rotate(-135deg); animation-delay:0.8s"></div>
+
+  <!-- Leaves -->
+  <div class="leaf leaf-anim reveal-petal" style="top:28%; left:5%; animation-delay:0.5s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:50%; left:4%; transform:rotate(20deg); animation-delay:0.65s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:28%; right:5%; transform:scaleX(-1); animation-delay:0.55s"></div>
+  <div class="leaf leaf-anim reveal-petal" style="top:50%; right:4%; transform:scaleX(-1) rotate(20deg); animation-delay:0.7s"></div>
+
+  <div class="slide-inner">
+    <div class="subtitle-top reveal">The Future of Design</div>
+    <div class="close-title reveal" style="animation-delay:0.15s">重新定义<br>创造力</div>
+    <div class="gold-divider reveal" style="animation-delay:0.3s"></div>
+    <p class="close-sub reveal" style="animation-delay:0.45s">AI + 人类直觉，设计的下一个十年从这里开始</p>
+    <div class="bottom-ornament reveal-bloom" style="animation-delay:0.6s"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    // Reset reveal animations
+    slides[c].querySelectorAll('.reveal,.reveal-vine,.reveal-petal,.reveal-bloom,.reveal-frame').forEach(el=>{
+      el.style.animation='none';
+      el.offsetHeight;
+      el.style.animation='';
+    });
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  // Touch support
+  let tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;});
+  document.addEventListener('touchend',function(e){
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50){dx<0?go(c+1):go(c-1);}
+  });
+
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

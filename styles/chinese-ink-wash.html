@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>水墨山水 — 东方美学</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --xuan: #f5f0e8;
+  --xuan-warm: #eee8dc;
+  --ink-black: #1a1a1a;
+  --ink-dark: #2d2d2d;
+  --ink-mid: #666;
+  --ink-light: #999;
+  --ink-faint: #bbb;
+  --seal-red: #c23a2b;
+  --seal-red-light: rgba(194,58,43,0.12);
+  --gold-ochre: #9a7b4f;
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: 'Noto Serif SC', 'Songti SC', serif;
+  background: var(--xuan);
+  color: var(--ink-black);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === SLIDES === */
+.slide {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100vh; height: 100dvh;
+  overflow: hidden;
+  opacity: 0; pointer-events: none;
+  transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex; align-items: center; justify-content: center;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Xuan paper texture on all slides */
+.slide::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(215,205,185,0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 70%, rgba(220,210,190,0.15) 0%, transparent 35%),
+    radial-gradient(ellipse at 50% 50%, rgba(205,195,175,0.08) 0%, transparent 55%);
+  pointer-events: none; z-index: 1;
+}
+.slide::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(185,175,155,0.018) 3px, rgba(185,175,155,0.018) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(185,175,155,0.012) 5px, rgba(185,175,155,0.012) 6px);
+  pointer-events: none; z-index: 1;
+}
+
+/* === PROGRESS BAR === */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--seal-red), rgba(194,58,43,0.6));
+  z-index: 200;
+  transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* === PAGE COUNTER === */
+.page-counter {
+  position: fixed; bottom: clamp(1.2rem, 3vh, 2rem); right: clamp(1.5rem, 3vw, 2.5rem);
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(0.65rem, 0.8vw, 0.75rem);
+  color: var(--ink-light); z-index: 200;
+  letter-spacing: 0.15em;
+}
+
+/* === SEAL STAMP === */
+.seal {
+  width: clamp(36px, 4vw, 52px); height: clamp(36px, 4vw, 52px);
+  border: 2px solid var(--seal-red);
+  display: inline-flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.seal::before {
+  content: ''; position: absolute; inset: 3px;
+  border: 1px solid rgba(194,58,43,0.3);
+}
+.seal::after {
+  content: ''; position: absolute; inset: -1px;
+  border: 1px solid rgba(194,58,43,0.12);
+  transform: rotate(0.8deg);
+}
+.seal-char {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(14px, 1.6vw, 20px); font-weight: 900;
+  color: var(--seal-red); line-height: 1;
+}
+
+/* === VERTICAL TEXT UTIL === */
+.vertical { writing-mode: vertical-rl; text-orientation: mixed; }
+
+/* === INK WASH ATMOSPHERE === */
+.ink-wash {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  filter: blur(40px);
+}
+.ink-wash.dark { background: rgba(26,26,26,0.06); }
+.ink-wash.mid { background: rgba(102,102,102,0.05); }
+.ink-wash.warm { background: rgba(154,123,79,0.04); }
+
+/* === BRUSH STROKE DIVIDER === */
+.brush-stroke {
+  height: 2px; border: none;
+  background: linear-gradient(90deg, transparent, rgba(26,26,26,0.2) 15%, rgba(26,26,26,0.35) 40%, rgba(26,26,26,0.15) 70%, transparent);
+  position: relative;
+}
+.brush-stroke::after {
+  content: ''; position: absolute; top: -1px; left: 10%; right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(26,26,26,0.08) 30%, transparent 80%);
+}
+
+/* === ANIMATIONS === */
+@keyframes brushDown {
+  from { opacity: 0; transform: translateY(clamp(-30px, -3vh, -20px)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes brushUp {
+  from { opacity: 0; transform: translateY(clamp(20px, 2vh, 30px)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes inkSpread {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes brushRight {
+  from { opacity: 0; transform: translateX(clamp(-25px, -2vw, -15px)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes sealStamp {
+  0% { opacity: 0; transform: scale(1.3) rotate(-8deg); }
+  60% { opacity: 1; transform: scale(0.95) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-2deg); }
+}
+
+.anim { opacity: 0; }
+.slide.active .a-d1 { animation: brushDown 0.9s 0.15s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-d2 { animation: brushDown 0.9s 0.35s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-d3 { animation: brushDown 0.9s 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-d4 { animation: brushDown 0.9s 0.75s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-u1 { animation: brushUp 0.9s 0.2s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-u2 { animation: brushUp 0.9s 0.4s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-u3 { animation: brushUp 0.9s 0.6s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-f1 { animation: fadeIn 1.2s 0.3s forwards; }
+.slide.active .a-f2 { animation: fadeIn 1.2s 0.6s forwards; }
+.slide.active .a-f3 { animation: fadeIn 1.2s 0.9s forwards; }
+.slide.active .a-r1 { animation: brushRight 0.8s 0.25s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-r2 { animation: brushRight 0.8s 0.4s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-r3 { animation: brushRight 0.8s 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-r4 { animation: brushRight 0.8s 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-ink { animation: inkSpread 1.4s 0.2s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide.active .a-seal { animation: sealStamp 0.6s 0.9s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* ============================================ */
+/* SLIDE 1 — COVER: 水墨山水：东方美学           */
+/* ============================================ */
+
+/* Mountain silhouettes — layered depth */
+.s1-mountain-far {
+  position: absolute; bottom: 18vh; left: 0; right: 0; height: 45vh; z-index: 2;
+  background:
+    linear-gradient(168deg, transparent 35%, rgba(187,187,187,0.15) 38%, rgba(187,187,187,0.08) 48%, transparent 55%),
+    linear-gradient(175deg, transparent 40%, rgba(187,187,187,0.1) 43%, rgba(187,187,187,0.05) 52%, transparent 58%);
+  filter: blur(6px);
+}
+.s1-mountain-mid {
+  position: absolute; bottom: 12vh; left: 5vw; right: 15vw; height: 42vh; z-index: 3;
+  background:
+    radial-gradient(ellipse at 30% 80%, rgba(80,80,80,0.3) 0%, transparent 35%),
+    radial-gradient(ellipse at 65% 75%, rgba(80,80,80,0.25) 0%, transparent 30%),
+    linear-gradient(170deg, transparent 45%, rgba(80,80,80,0.25) 48%, rgba(80,80,80,0.12) 55%, transparent 62%);
+  filter: blur(2px);
+}
+.s1-mountain-near {
+  position: absolute; bottom: 5vh; left: -5vw; width: 55vw; height: 48vh; z-index: 4;
+  background:
+    radial-gradient(ellipse at 40% 82%, rgba(26,26,26,0.6) 0%, rgba(26,26,26,0.3) 18%, transparent 40%),
+    radial-gradient(ellipse at 60% 78%, rgba(26,26,26,0.4) 0%, transparent 30%),
+    linear-gradient(175deg, transparent 50%, rgba(26,26,26,0.5) 53%, rgba(26,26,26,0.25) 60%, transparent 70%);
+  filter: blur(0.5px);
+}
+
+/* Mist layers */
+.s1-mist {
+  position: absolute; left: 10vw; right: 20vw; bottom: 28vh; height: 8vh; z-index: 5;
+  background: linear-gradient(90deg, transparent 5%, rgba(245,240,232,0.7) 25%, rgba(245,240,232,0.9) 50%, rgba(245,240,232,0.6) 75%, transparent 95%);
+  filter: blur(12px);
+}
+.s1-mist-2 {
+  position: absolute; left: 0; right: 40vw; bottom: 35vh; height: 5vh; z-index: 3;
+  background: linear-gradient(90deg, rgba(245,240,232,0.5), rgba(245,240,232,0.7), transparent);
+  filter: blur(8px);
+}
+
+/* Water at base */
+.s1-water {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 12vh; z-index: 6;
+  background: linear-gradient(180deg, transparent, rgba(245,240,232,0.8) 40%, var(--xuan) 70%);
+}
+
+/* Title — upper right, vertical */
+.s1-title-area {
+  position: absolute; right: clamp(3rem, 10vw, 8rem); top: clamp(2rem, 6vh, 5rem);
+  z-index: 10; display: flex; gap: clamp(1rem, 2vw, 2rem);
+}
+.s1-title-main {
+  font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 900;
+  color: var(--ink-black); letter-spacing: 0.15em;
+  line-height: 1.3;
+}
+.s1-title-sub {
+  font-size: clamp(1rem, 1.8vw, 1.4rem); font-weight: 400;
+  color: var(--ink-mid); letter-spacing: 0.3em;
+  align-self: flex-end;
+}
+.s1-subtitle-en {
+  position: absolute; right: clamp(3rem, 10vw, 8rem); bottom: clamp(4rem, 10vh, 8rem);
+  z-index: 10;
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(0.7rem, 1vw, 0.85rem); color: var(--ink-light);
+  letter-spacing: 0.4em; text-transform: uppercase;
+}
+
+/* Red accent line */
+.s1-red-line {
+  position: absolute; right: clamp(2rem, 8vw, 6rem); top: clamp(2rem, 5vh, 4rem);
+  bottom: clamp(2rem, 5vh, 4rem); width: 1px;
+  background: linear-gradient(180deg, transparent 5%, rgba(194,58,43,0.4) 20%, rgba(194,58,43,0.25) 80%, transparent 95%);
+  z-index: 9;
+}
+
+/* Seal on cover */
+.s1-seal {
+  position: absolute; left: clamp(2rem, 5vw, 4rem); bottom: clamp(3rem, 8vh, 6rem);
+  z-index: 10;
+}
+
+/* Birds */
+.s1-bird {
+  position: absolute; z-index: 8;
+  width: clamp(16px, 2vw, 24px); height: clamp(6px, 0.8vw, 10px);
+  border-top: 2px solid rgba(26,26,26,0.25);
+  border-radius: 50% 50% 0 0;
+}
+.s1-bird-1 { top: 18vh; right: 35vw; }
+.s1-bird-2 { top: 15vh; right: 32vw; transform: scale(0.7) rotate(5deg); }
+.s1-bird-3 { top: 20vh; right: 30vw; transform: scale(0.5) rotate(-3deg); }
+
+/* ============================================ */
+/* SLIDE 2 — 墨分五色：水墨之道                  */
+/* ============================================ */
+.s2-layout {
+  width: 100%; height: 100%; position: relative; z-index: 5;
+  display: grid; grid-template-columns: 1fr 1.2fr;
+  padding: clamp(2rem, 5vh, 4rem) clamp(3rem, 6vw, 5rem);
+}
+.s2-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding-right: clamp(2rem, 4vw, 4rem);
+}
+.s2-right {
+  display: flex; flex-direction: column; justify-content: center;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+  padding-left: clamp(2rem, 4vw, 3rem);
+  border-left: 1px solid rgba(26,26,26,0.08);
+}
+.s2-title {
+  font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 900;
+  color: var(--ink-black); letter-spacing: 0.1em;
+  margin-bottom: clamp(0.5rem, 1vh, 1rem);
+}
+.s2-subtitle {
+  font-size: clamp(0.85rem, 1.2vw, 1rem); font-weight: 400;
+  color: var(--ink-mid); line-height: 1.8; letter-spacing: 0.05em;
+  margin-bottom: clamp(1rem, 2vh, 2rem);
+}
+
+/* Five ink densities display */
+.s2-ink-strip {
+  display: flex; gap: clamp(4px, 0.5vw, 8px); margin-bottom: clamp(1rem, 2vh, 2rem);
+}
+.s2-ink-block {
+  width: clamp(36px, 4vw, 56px); height: clamp(36px, 4vw, 56px);
+  border-radius: 2px; position: relative;
+}
+.s2-ink-block:nth-child(1) { background: #1a1a1a; }
+.s2-ink-block:nth-child(2) { background: #3d3d3d; }
+.s2-ink-block:nth-child(3) { background: #666; }
+.s2-ink-block:nth-child(4) { background: #aaa; }
+.s2-ink-block:nth-child(5) { background: #d4d0c8; }
+.s2-ink-label {
+  font-size: clamp(0.55rem, 0.7vw, 0.65rem); color: var(--ink-light);
+  text-align: center; margin-top: 6px; letter-spacing: 0.15em;
+}
+
+/* Content items */
+.s2-item {
+  padding-left: clamp(1rem, 1.5vw, 1.5rem);
+  border-left: 2px solid rgba(26,26,26,0.1);
+}
+.s2-item-title {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem); font-weight: 700;
+  color: var(--ink-black); margin-bottom: 0.3rem; letter-spacing: 0.08em;
+}
+.s2-item-desc {
+  font-size: clamp(0.78rem, 1vw, 0.9rem); font-weight: 400;
+  color: var(--ink-mid); line-height: 1.7;
+}
+
+/* Decorative seal */
+.s2-seal {
+  position: absolute; right: clamp(2rem, 4vw, 3rem); bottom: clamp(2rem, 4vh, 3rem);
+  z-index: 10; transform: rotate(3deg);
+}
+
+/* Vertical accent */
+.s2-vert {
+  position: absolute; left: clamp(1.5rem, 3vw, 2.5rem); top: 50%;
+  transform: translateY(-50%); z-index: 10;
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: clamp(0.8rem, 1.2vw, 1rem); color: rgba(26,26,26,0.06);
+  letter-spacing: 0.8em;
+}
+
+/* ============================================ */
+/* SLIDE 3 — 山水意境：远近虚实                  */
+/* ============================================ */
+.s3-canvas {
+  position: absolute; inset: 0; z-index: 2;
+}
+
+/* Full landscape scene */
+.s3-sky {
+  position: absolute; top: 0; left: 0; right: 0; height: 35vh;
+  background: linear-gradient(180deg, var(--xuan) 0%, rgba(238,232,220,0.95) 100%);
+  z-index: 2;
+}
+.s3-mtn-far {
+  position: absolute; bottom: 25vh; left: 0; right: 0; height: 40vh; z-index: 3;
+  background:
+    linear-gradient(165deg, transparent 30%, rgba(170,165,155,0.18) 33%, rgba(170,165,155,0.08) 42%, transparent 50%),
+    linear-gradient(175deg, transparent 35%, rgba(170,165,155,0.12) 38%, rgba(170,165,155,0.06) 46%, transparent 52%),
+    radial-gradient(ellipse at 70% 55%, rgba(170,165,155,0.1) 0%, transparent 40%);
+  filter: blur(5px);
+}
+.s3-mtn-mid {
+  position: absolute; bottom: 18vh; left: 10vw; right: 5vw; height: 45vh; z-index: 4;
+  background:
+    radial-gradient(ellipse at 25% 78%, rgba(80,75,65,0.35) 0%, transparent 32%),
+    radial-gradient(ellipse at 70% 80%, rgba(80,75,65,0.28) 0%, transparent 28%),
+    radial-gradient(ellipse at 50% 70%, rgba(80,75,65,0.2) 0%, transparent 35%),
+    linear-gradient(172deg, transparent 45%, rgba(80,75,65,0.3) 48%, rgba(80,75,65,0.15) 55%, transparent 62%);
+  filter: blur(1.5px);
+}
+.s3-mtn-near {
+  position: absolute; bottom: 8vh; right: -5vw; width: 50vw; height: 50vh; z-index: 5;
+  background:
+    radial-gradient(ellipse at 55% 85%, rgba(26,26,26,0.65) 0%, rgba(26,26,26,0.35) 20%, transparent 42%),
+    radial-gradient(ellipse at 35% 78%, rgba(26,26,26,0.5) 0%, transparent 30%),
+    linear-gradient(178deg, transparent 48%, rgba(26,26,26,0.55) 52%, rgba(26,26,26,0.3) 60%, transparent 72%);
+}
+.s3-pine-strokes {
+  position: absolute; bottom: 30vh; right: 8vw; width: 15vw; height: 25vh; z-index: 6;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(26,26,26,0.5) 0%, transparent 25%),
+    radial-gradient(ellipse at 40% 55%, rgba(26,26,26,0.4) 0%, transparent 20%),
+    radial-gradient(ellipse at 60% 70%, rgba(26,26,26,0.35) 0%, transparent 22%);
+}
+.s3-mist-band {
+  position: absolute; left: 0; right: 10vw; bottom: 35vh; height: 10vh; z-index: 7;
+  background: linear-gradient(90deg, transparent 5%, rgba(245,240,232,0.75) 20%, rgba(245,240,232,0.95) 45%, rgba(245,240,232,0.7) 75%, transparent 95%);
+  filter: blur(14px);
+}
+.s3-mist-2 {
+  position: absolute; left: 15vw; right: 0; bottom: 25vh; height: 6vh; z-index: 4;
+  background: linear-gradient(90deg, transparent, rgba(245,240,232,0.5) 30%, rgba(245,240,232,0.7) 60%, transparent);
+  filter: blur(10px);
+}
+.s3-water-surface {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 15vh; z-index: 8;
+  background: linear-gradient(180deg, transparent, rgba(230,225,215,0.6) 30%, var(--xuan-warm) 60%, var(--xuan) 90%);
+}
+.s3-ripple {
+  position: absolute; z-index: 9; height: 1px;
+  background: rgba(170,165,155,0.3);
+}
+.s3-ripple-1 { bottom: 8vh; left: 20vw; width: 12vw; }
+.s3-ripple-2 { bottom: 5vh; left: 35vw; width: 8vw; opacity: 0.6; }
+.s3-ripple-3 { bottom: 3vh; left: 25vw; width: 6vw; opacity: 0.35; }
+
+/* Poem overlay */
+.s3-poem {
+  position: absolute; left: clamp(3rem, 8vw, 6rem); top: clamp(2rem, 5vh, 4rem);
+  z-index: 12;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem); font-weight: 700;
+  color: var(--ink-black); letter-spacing: 0.2em; line-height: 1.8;
+}
+.s3-poem-author {
+  position: absolute; left: clamp(3rem, 8vw, 6rem); bottom: clamp(3rem, 7vh, 5rem);
+  z-index: 12;
+  font-size: clamp(0.75rem, 1vw, 0.9rem); color: var(--ink-light);
+  letter-spacing: 0.15em;
+}
+
+/* Seal */
+.s3-seal {
+  position: absolute; left: clamp(3rem, 8vw, 6rem); bottom: clamp(7rem, 14vh, 10rem);
+  z-index: 12; transform: rotate(-3deg);
+}
+
+/* Birds */
+.s3-bird {
+  position: absolute; z-index: 11;
+  width: clamp(14px, 1.8vw, 22px); height: clamp(5px, 0.7vw, 9px);
+  border-top: 1.5px solid rgba(26,26,26,0.3);
+  border-radius: 50% 50% 0 0;
+}
+.s3-bird-1 { top: 12vh; left: 40vw; }
+.s3-bird-2 { top: 10vh; left: 43vw; transform: scale(0.7) rotate(4deg); }
+.s3-bird-3 { top: 14vh; left: 45vw; transform: scale(0.5) rotate(-6deg); }
+.s3-bird-4 { top: 11vh; left: 38vw; transform: scale(0.6) rotate(2deg); }
+.s3-bird-5 { top: 15vh; left: 42vw; transform: scale(0.4) rotate(-3deg); }
+
+/* ============================================ */
+/* SLIDE 4 — 诗中有画：古诗与水墨                */
+/* ============================================ */
+.s4-layout {
+  width: 100%; height: 100%; position: relative; z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Atmospheric ink wash background */
+.s4-wash-left {
+  position: absolute; left: 0; top: 0; width: 35vw; height: 100vh; z-index: 2;
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(26,26,26,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 70%, rgba(26,26,26,0.04) 0%, transparent 40%);
+}
+.s4-wash-right {
+  position: absolute; right: 0; bottom: 0; width: 25vw; height: 50vh; z-index: 2;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(170,165,155,0.06) 0%, transparent 50%);
+}
+
+/* Poetry container — vertical columns flowing right to left */
+.s4-poetry {
+  position: absolute; right: clamp(6rem, 15vw, 12rem); top: 50%;
+  transform: translateY(-50%);
+  z-index: 10; display: flex; gap: clamp(2rem, 4vw, 3.5rem);
+}
+.s4-verse {
+  font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 700;
+  color: var(--ink-black); letter-spacing: 0.18em; line-height: 1.2;
+}
+.s4-verse.lighter {
+  color: var(--ink-mid); font-weight: 600;
+}
+
+/* Author */
+.s4-author {
+  position: absolute; right: clamp(4rem, 10vw, 8rem); bottom: clamp(4rem, 10vh, 8rem);
+  z-index: 10;
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem); color: var(--ink-light);
+  letter-spacing: 0.2em;
+}
+
+/* Red accent lines */
+.s4-red-line {
+  position: absolute; right: clamp(5rem, 12vw, 10rem); top: clamp(3rem, 7vh, 5rem);
+  height: clamp(50px, 8vh, 80px); width: 1px;
+  background: rgba(194,58,43,0.4); z-index: 9;
+}
+.s4-red-line-2 {
+  position: absolute; left: clamp(6rem, 15vw, 12rem); bottom: clamp(4rem, 8vh, 6rem);
+  height: clamp(30px, 5vh, 50px); width: 1px;
+  background: rgba(194,58,43,0.25); z-index: 9;
+}
+
+/* Ink splash decoration bottom-left */
+.s4-splash {
+  position: absolute; left: clamp(3rem, 8vw, 6rem); bottom: clamp(3rem, 8vh, 6rem);
+  width: clamp(60px, 8vw, 100px); height: clamp(40px, 5vw, 65px); z-index: 3;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(26,26,26,0.07) 0%, transparent 65%);
+  filter: blur(4px);
+}
+
+/* Seal */
+.s4-seal {
+  position: absolute; right: clamp(3rem, 6vw, 5rem); bottom: clamp(3rem, 7vh, 5rem);
+  z-index: 10; transform: rotate(-4deg);
+}
+
+/* Decorative vertical text */
+.s4-vert-deco {
+  position: absolute; left: clamp(2rem, 4vw, 3rem); top: 50%;
+  transform: translateY(-50%); z-index: 10;
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem); color: rgba(194,58,43,0.1);
+  letter-spacing: 1em;
+}
+
+/* ============================================ */
+/* SLIDE 5 — 留白之美：结语                      */
+/* ============================================ */
+.s5-layout {
+  width: 100%; height: 100%; position: relative; z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Central enso-like circle */
+.s5-enso {
+  position: absolute; left: 50%; top: 45%;
+  width: clamp(120px, 15vw, 200px); height: clamp(120px, 15vw, 200px);
+  z-index: 4;
+  border: clamp(3px, 0.4vw, 5px) solid rgba(26,26,26,0.7);
+  border-radius: 50%;
+  border-right-color: transparent;
+  border-bottom-color: rgba(26,26,26,0.2);
+  transform: translate(-50%, -50%) rotate(-30deg);
+}
+.s5-enso-bleed {
+  position: absolute; left: 50%; top: 45%;
+  transform: translate(-50%, -50%);
+  width: clamp(160px, 20vw, 260px); height: clamp(160px, 20vw, 260px);
+  z-index: 3; border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,26,26,0.04) 30%, transparent 65%);
+  filter: blur(8px);
+}
+
+/* Ink tendrils radiating */
+.s5-tendril-1 {
+  position: absolute; left: calc(50% + 5vw); top: 44%;
+  width: clamp(60px, 10vw, 120px); height: 2px; z-index: 3;
+  background: linear-gradient(90deg, rgba(26,26,26,0.12), transparent);
+  transform: rotate(5deg);
+}
+.s5-tendril-2 {
+  position: absolute; right: calc(50% + 4vw); top: 46%;
+  width: clamp(50px, 8vw, 100px); height: 2px; z-index: 3;
+  background: linear-gradient(270deg, rgba(26,26,26,0.08), transparent);
+  transform: rotate(-3deg);
+}
+.s5-tendril-3 {
+  position: absolute; left: calc(50% - 1px); top: calc(45% + 8vw);
+  width: 2px; height: clamp(40px, 6vw, 70px); z-index: 3;
+  background: linear-gradient(180deg, rgba(26,26,26,0.1), transparent);
+}
+
+/* Closing text — bottom right */
+.s5-closing {
+  position: absolute; right: clamp(3rem, 8vw, 6rem); bottom: clamp(3rem, 8vh, 6rem);
+  z-index: 10; display: flex; gap: clamp(1rem, 1.5vw, 1.5rem);
+}
+.s5-closing-main {
+  font-size: clamp(1.2rem, 2vw, 1.7rem); font-weight: 700;
+  color: var(--ink-black); letter-spacing: 0.15em;
+}
+.s5-closing-sub {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(0.65rem, 0.85vw, 0.75rem); color: var(--ink-faint);
+  letter-spacing: 0.3em; align-self: flex-end;
+}
+
+/* Top-left label */
+.s5-corner {
+  position: absolute; left: clamp(2.5rem, 5vw, 4rem); top: clamp(2rem, 5vh, 4rem);
+  z-index: 10;
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(0.6rem, 0.8vw, 0.7rem);
+  color: rgba(170,160,140,0.45); letter-spacing: 0.4em; text-transform: uppercase;
+}
+
+/* Seal */
+.s5-seal {
+  position: absolute; right: clamp(2rem, 5vw, 4rem); bottom: clamp(10rem, 18vh, 14rem);
+  z-index: 10; transform: rotate(2deg);
+}
+
+/* Faint wash */
+.s5-wash-1 {
+  position: absolute; left: 5vw; top: 10vh; width: 25vw; height: 35vh; z-index: 2;
+  background:
+    radial-gradient(ellipse at 60% 40%, rgba(170,165,155,0.05) 0%, transparent 55%);
+}
+.s5-wash-2 {
+  position: absolute; right: 10vw; bottom: 20vh; width: 18vw; height: 25vh; z-index: 2;
+  background:
+    radial-gradient(ellipse at 40% 50%, rgba(170,165,155,0.04) 0%, transparent 55%);
+}
+
+/* Micro dots */
+.s5-dot {
+  position: absolute; border-radius: 50%; background: rgba(26,26,26,0.05); z-index: 3;
+}
+.s5-dot-1 { width: 5px; height: 5px; left: 30vw; top: 25vh; }
+.s5-dot-2 { width: 3px; height: 3px; right: 35vw; bottom: 30vh; opacity: 0.6; }
+.s5-dot-3 { width: 7px; height: 7px; left: 45vw; bottom: 20vh; opacity: 0.3; filter: blur(1px); }
+
+/* ============================================ */
+/* REDUCED MOTION                               */
+/* ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .slide { transition: opacity 0.3s ease; }
+  .progress-bar { transition: width 0.3s ease; }
+  .anim { opacity: 1; }
+  .slide.active .a-d1, .slide.active .a-d2, .slide.active .a-d3, .slide.active .a-d4,
+  .slide.active .a-u1, .slide.active .a-u2, .slide.active .a-u3,
+  .slide.active .a-f1, .slide.active .a-f2, .slide.active .a-f3,
+  .slide.active .a-r1, .slide.active .a-r2, .slide.active .a-r3, .slide.active .a-r4,
+  .slide.active .a-ink, .slide.active .a-seal {
+    animation: none; opacity: 1; transform: none;
+  }
+}
+
+/* ============================================ */
+/* PRINT                                        */
+/* ============================================ */
+@media print {
+  body { overflow: visible; background: white; }
+  .slide {
+    position: relative; opacity: 1; pointer-events: auto;
+    page-break-after: always; page-break-inside: avoid;
+    height: 100vh; width: 100%;
+  }
+  .progress-bar, .page-counter { display: none; }
+  .anim { opacity: 1; }
+  .slide.active .a-d1, .slide.active .a-d2, .slide.active .a-d3, .slide.active .a-d4,
+  .slide.active .a-u1, .slide.active .a-u2, .slide.active .a-u3,
+  .slide.active .a-f1, .slide.active .a-f2, .slide.active .a-f3,
+  .slide.active .a-r1, .slide.active .a-r2, .slide.active .a-r3, .slide.active .a-r4,
+  .slide.active .a-ink, .slide.active .a-seal {
+    animation: none; opacity: 1; transform: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter">01 / 05</div>
+
+<!-- ==================== SLIDE 1: COVER ==================== -->
+<div class="slide active" data-slide="0">
+  <div class="ink-wash dark" style="width:35vw;height:35vw;top:-8vh;left:-5vw;"></div>
+  <div class="ink-wash mid" style="width:25vw;height:25vw;bottom:5vh;right:20vw;"></div>
+
+  <!-- Mountain landscape background -->
+  <div class="s1-mountain-far anim a-f1"></div>
+  <div class="s1-mist-2 anim a-f2"></div>
+  <div class="s1-mountain-mid anim a-f1"></div>
+  <div class="s1-mist anim a-f2"></div>
+  <div class="s1-mountain-near anim a-f1"></div>
+  <div class="s1-water"></div>
+
+  <!-- Birds -->
+  <div class="s1-bird s1-bird-1 anim a-f3"></div>
+  <div class="s1-bird s1-bird-2 anim a-f3"></div>
+  <div class="s1-bird s1-bird-3 anim a-f3"></div>
+
+  <!-- Title -->
+  <div class="s1-red-line anim a-f2"></div>
+  <div class="s1-title-area">
+    <div class="s1-title-main vertical anim a-d1">水墨山水</div>
+    <div class="s1-title-sub vertical anim a-d2">东方美学</div>
+  </div>
+  <div class="s1-subtitle-en anim a-u1">The Aesthetics of Chinese Ink Wash</div>
+
+  <!-- Seal -->
+  <div class="s1-seal anim a-seal">
+    <div class="seal"><span class="seal-char">墨</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: 墨分五色 ==================== -->
+<div class="slide" data-slide="1">
+  <div class="ink-wash dark" style="width:30vw;height:30vw;top:5vh;right:-5vw;"></div>
+  <div class="ink-wash warm" style="width:20vw;height:20vw;bottom:10vh;left:10vw;"></div>
+
+  <div class="s2-vert vertical anim a-f1">墨分五色以少胜多</div>
+
+  <div class="s2-layout">
+    <div class="s2-left">
+      <div class="s2-title anim a-d1">墨分五色</div>
+      <div class="s2-subtitle anim a-d2">一笔落纸，焦浓重淡清五色自现。水墨之道不在色彩的堆砌，而在黑白之间无穷的变化。以最简的材料，表达最丰富的意境。</div>
+      <div class="s2-ink-strip anim a-d3">
+        <div>
+          <div class="s2-ink-block"></div>
+          <div class="s2-ink-label">焦</div>
+        </div>
+        <div>
+          <div class="s2-ink-block"></div>
+          <div class="s2-ink-label">浓</div>
+        </div>
+        <div>
+          <div class="s2-ink-block"></div>
+          <div class="s2-ink-label">重</div>
+        </div>
+        <div>
+          <div class="s2-ink-block"></div>
+          <div class="s2-ink-label">淡</div>
+        </div>
+        <div>
+          <div class="s2-ink-block"></div>
+          <div class="s2-ink-label">清</div>
+        </div>
+      </div>
+      <div class="brush-stroke anim a-d4" style="width:60%;"></div>
+    </div>
+
+    <div class="s2-right">
+      <div class="s2-item anim a-r1">
+        <div class="s2-item-title">以墨代色</div>
+        <div class="s2-item-desc">黑白灰之间藏有万千气象，浓淡干湿皆是造化之功</div>
+      </div>
+      <div class="s2-item anim a-r2">
+        <div class="s2-item-title">笔随心动</div>
+        <div class="s2-item-desc">心手双畅，笔走龙蛇，意在笔先而落笔成趣</div>
+      </div>
+      <div class="s2-item anim a-r3">
+        <div class="s2-item-title">气韵生动</div>
+        <div class="s2-item-desc">六法之首，形神兼备方能气韵贯通，妙在似与不似之间</div>
+      </div>
+      <div class="s2-item anim a-r4">
+        <div class="s2-item-title">计白当黑</div>
+        <div class="s2-item-desc">留白非空，不着一笔之处尽得风流</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="s2-seal anim a-seal">
+    <div class="seal"><span class="seal-char">韵</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: 山水意境 ==================== -->
+<div class="slide" data-slide="2">
+  <!-- Full landscape scene -->
+  <div class="s3-canvas">
+    <div class="s3-sky"></div>
+    <div class="s3-mtn-far anim a-f1"></div>
+    <div class="s3-mist-2 anim a-f2"></div>
+    <div class="s3-mtn-mid anim a-f1"></div>
+    <div class="s3-mist-band anim a-f2"></div>
+    <div class="s3-mtn-near anim a-f1"></div>
+    <div class="s3-pine-strokes anim a-f2"></div>
+    <div class="s3-water-surface"></div>
+    <div class="s3-ripple s3-ripple-1 anim a-f3"></div>
+    <div class="s3-ripple s3-ripple-2 anim a-f3"></div>
+    <div class="s3-ripple s3-ripple-3 anim a-f3"></div>
+  </div>
+
+  <!-- Birds -->
+  <div class="s3-bird s3-bird-1 anim a-f3"></div>
+  <div class="s3-bird s3-bird-2 anim a-f3"></div>
+  <div class="s3-bird s3-bird-3 anim a-f3"></div>
+  <div class="s3-bird s3-bird-4 anim a-f3"></div>
+  <div class="s3-bird s3-bird-5 anim a-f3"></div>
+
+  <!-- Poem text -->
+  <div class="s3-poem vertical anim a-d1">远山含黛<br>近水无声<br>千里烟波<br>万顷空明</div>
+  <div class="s3-poem-author anim a-u1">山水之间 · 意境幽远</div>
+
+  <!-- Seal -->
+  <div class="s3-seal anim a-seal">
+    <div class="seal"><span class="seal-char">山</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: 诗中有画 ==================== -->
+<div class="slide" data-slide="3">
+  <div class="ink-wash dark" style="width:28vw;height:28vw;top:15vh;right:25vw;"></div>
+  <div class="ink-wash warm" style="width:18vw;height:18vw;bottom:12vh;left:18vw;"></div>
+
+  <div class="s4-wash-left"></div>
+  <div class="s4-wash-right"></div>
+  <div class="s4-red-line anim a-f1"></div>
+  <div class="s4-red-line-2 anim a-f2"></div>
+  <div class="s4-splash anim a-f2"></div>
+
+  <div class="s4-vert-deco vertical anim a-f1">诗画同源</div>
+
+  <div class="s4-layout">
+    <div class="s4-poetry">
+      <div class="s4-verse vertical anim a-d1">千山鸟飞绝</div>
+      <div class="s4-verse vertical anim a-d2">万径人踪灭</div>
+      <div class="s4-verse lighter vertical anim a-d3">孤舟蓑笠翁</div>
+      <div class="s4-verse lighter vertical anim a-d4">独钓寒江雪</div>
+    </div>
+  </div>
+
+  <div class="s4-author vertical anim a-u1">唐 · 柳宗元 《江雪》</div>
+
+  <div class="s4-seal anim a-seal">
+    <div class="seal"><span class="seal-char">诗</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: CLOSING ==================== -->
+<div class="slide" data-slide="4">
+  <div class="s5-wash-1 anim a-f1"></div>
+  <div class="s5-wash-2 anim a-f2"></div>
+
+  <!-- Enso circle -->
+  <div class="s5-enso-bleed anim a-ink"></div>
+  <div class="s5-enso anim a-ink"></div>
+
+  <!-- Ink tendrils -->
+  <div class="s5-tendril-1 anim a-f2"></div>
+  <div class="s5-tendril-2 anim a-f2"></div>
+  <div class="s5-tendril-3 anim a-f3"></div>
+
+  <!-- Dots -->
+  <div class="s5-dot s5-dot-1 anim a-f3"></div>
+  <div class="s5-dot s5-dot-2 anim a-f3"></div>
+  <div class="s5-dot s5-dot-3 anim a-f3"></div>
+
+  <!-- Corner text -->
+  <div class="s5-corner anim a-f1">Ink · Silence · Eternity</div>
+
+  <!-- Closing text -->
+  <div class="s5-closing">
+    <span class="s5-closing-main vertical anim a-d1">留白之美</span>
+    <span class="s5-closing-sub vertical anim a-d2">以无胜有 · 东方美学</span>
+  </div>
+
+  <!-- Seal -->
+  <div class="s5-seal anim a-seal">
+    <div class="seal"><span class="seal-char">道</span></div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+let current = 0;
+const total = slides.length;
+let transitioning = false;
+
+function goTo(n) {
+  if (n < 0 || n >= total || n === current || transitioning) return;
+  transitioning = true;
+  slides[current].classList.remove('active');
+  // Reset animations on the leaving slide
+  slides[current].querySelectorAll('.anim').forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+  });
+  current = n;
+  slides[current].classList.add('active');
+  progress.style.width = ((current + 1) / total * 100) + '%';
+  counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+  setTimeout(() => { transitioning = false; }, 800);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  switch (e.key) {
+    case 'ArrowRight':
+    case 'ArrowDown':
+    case ' ':
+      e.preventDefault();
+      goTo(current + 1);
+      break;
+    case 'ArrowLeft':
+    case 'ArrowUp':
+      e.preventDefault();
+      goTo(current - 1);
+      break;
+    case 'Home':
+      e.preventDefault();
+      goTo(0);
+      break;
+    case 'End':
+      e.preventDefault();
+      goTo(total - 1);
+      break;
+  }
+});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+// Touch / swipe support
+let touchStartX = 0;
+let touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    if (dx < 0) goTo(current + 1);
+    else goTo(current - 1);
+  }
+}, { passive: true });
+
+// Initialize
+goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>花西子 · 春季新品 — Bold Signal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;700;900&family=LXGW+WenKai:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #111111; --bg-secondary: #1a1a1a; --bg-tertiary: #222222;
+            --text-primary: #ffffff; --text-secondary: #999999; --text-muted: #555555;
+            --accent: #E64A19; --accent-secondary: #FFB300;
+            --accent-glow: rgba(255, 87, 34, 0.4); --card-bg: #E64A19;
+            --text-on-card: #111111; --border-subtle: rgba(255, 255, 255, 0.06);
+            --surface: rgba(255, 255, 255, 0.04); --rose: #e84393; --jade: #00b894;
+
+            --font-display: 'Archivo Black', 'Noto Sans SC', sans-serif;
+            --font-body: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+            --font-accent: 'LXGW WenKai', serif;
+            --font-mono: 'Space Grotesk', monospace;
+
+            --title-size: clamp(2rem, 6vw, 5rem); --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem); --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem); --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem); --price-size: clamp(1.8rem, 5vw, 3.5rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem); --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-fast: 0.3s; --duration-normal: 0.6s; --duration-slow: 1s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); line-height: 1.8; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        img { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+        :lang(zh), :lang(zh-CN) { line-height: 1.8; word-break: normal; overflow-wrap: break-word; }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots { display: none; } }
+        @media (max-height: 500px) { :root { --title-size: clamp(1rem, 3.5vw, 1.5rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-content[style*="flex-direction: row"] { flex-direction: column !important; } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-slam { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; } .visible .reveal, .visible .reveal-slam { opacity: 1; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.08s; } .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; } .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; } .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; } .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        .reveal-slam { opacity: 0; transform: translateY(-80px) scale(1.1); transition: opacity 0.3s ease, transform 0.4s var(--ease-out-expo); }
+        .slide.visible .reveal-slam { opacity: 1; transform: translateY(0) scale(1); }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-secondary)); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.4); box-shadow: 0 0 8px var(--accent-glow); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Bold Signal: Colored card overlay */
+        .bold-card { background: var(--card-bg); color: var(--text-on-card); border-radius: 16px; padding: clamp(1.5rem, 3vw, 2.5rem); position: relative; }
+        .bold-card-rose { background: var(--rose); }
+        .section-num { font-size: clamp(4rem, 12vw, 10rem); font-family: var(--font-display); font-weight: 900; opacity: 0.08; position: absolute; top: clamp(0.5rem, 1vw, 1rem); left: clamp(1rem, 2vw, 2rem); line-height: 1; }
+
+        .price-current { font-size: clamp(2rem, 6vw, 4rem); font-weight: 900; color: var(--accent); font-family: var(--font-display); }
+        .price-original { font-size: var(--body-size); color: var(--text-muted); text-decoration: line-through; }
+        .swatch { width: clamp(28px, 4vw, 40px); height: clamp(28px, 4vw, 40px); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); transition: transform 0.3s var(--ease-out-back); cursor: pointer; }
+        .swatch:hover { transform: scale(1.2); }
+
+        .cta-btn { display: inline-block; background: var(--accent); color: #fff; font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 900; font-family: var(--font-display); padding: clamp(0.6rem, 1.5vw, 1rem) clamp(2rem, 5vw, 4rem); border-radius: 8px; border: none; cursor: pointer; text-decoration: none; transition: transform 0.2s ease; }
+        .cta-btn:hover { transform: scale(1.05); }
+
+        .feat-card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: clamp(0.8rem, 2vw, 1.2rem); transition: border-color 0.3s ease; }
+        .feat-card:hover { border-color: rgba(255, 87, 34, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="标题" style="background: linear-gradient(160deg, #111111 0%, #1e1e1e 50%, #111111 100%);">
+        <div class="section-num" style="color: var(--accent);">01</div>
+        <div class="slide-content" style="align-items: flex-start; justify-content: flex-end; padding-bottom: clamp(3rem, 8vw, 6rem);">
+            <div class="reveal" style="margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);">
+                <span style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;">FLORASIS 2026 SPRING</span>
+            </div>
+            <h1 class="reveal-slam" style="font-size: clamp(3rem, 8vw, 6rem); font-family: var(--font-display); line-height: 1;">
+                <span style="color: var(--accent);">&#33457;&#35199;&#23376;</span>
+            </h1>
+            <p class="reveal" style="font-size: var(--h2-size); font-family: var(--font-accent); color: var(--accent-secondary); margin-top: 0.2em;">
+                春季限定新品
+            </p>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1.5vw, 1rem); max-width: min(60vw, 450px);">
+                国潮美妆 · 以花养妆 · 东方之美
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: HERO PRODUCT -->
+    <section class="slide" aria-label="明星产品" style="background: var(--bg-primary);">
+        <div class="section-num" style="color: var(--rose);">02</div>
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: var(--content-gap);">
+            <div style="flex: 1; min-width: 0; display: flex; justify-content: center;">
+                <img src="images/ecom-beauty-lipstick.webp" alt="花西子同心锁口红" class="reveal" style="max-height: min(55vh, 380px); filter: drop-shadow(0 12px 40px rgba(255, 87, 34, 0.2)); border-radius: 12px;">
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <span class="reveal" style="font-size: var(--small-size); color: var(--accent); letter-spacing: 0.15em;">HERO PRODUCT</span>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: 0.2em;">同心锁口红</h2>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5em; max-width: 400px; line-height: 1.8;">
+                    花丝镶嵌工艺 · 牡丹花精华养唇 · 轻盈高显色
+                </p>
+                <div class="reveal" style="display: flex; gap: 0.5rem; margin-top: clamp(0.5rem, 1.5vw, 1rem);">
+                    <div class="swatch" style="background: #c53d43;"></div>
+                    <div class="swatch" style="background: #d4767c;"></div>
+                    <div class="swatch" style="background: #b8486a;"></div>
+                    <div class="swatch" style="background: #a0404a;"></div>
+                    <div class="swatch" style="background: #e8a090;"></div>
+                    <div class="swatch" style="background: #8a2030;"></div>
+                </div>
+                <div class="reveal" style="margin-top: clamp(0.8rem, 2vw, 1.2rem);">
+                    <span class="price-original">&#165;249</span>
+                    <span class="price-current" style="margin-left: 0.5em;"><span style="font-size: 0.5em;">&#165;</span>199</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: PALETTE -->
+    <section class="slide" aria-label="眼影盘" style="background: var(--bg-secondary);">
+        <div class="section-num" style="color: var(--accent-secondary);">03</div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent-secondary); letter-spacing: 0.15em;">PALETTE</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display);">十二色眼影盘</h2>
+            <div class="reveal" style="margin-top: clamp(0.5rem, 1.5vw, 1rem);">
+                <img src="images/ecom-beauty-palette.webp" alt="十二色眼影盘" style="max-height: min(35vh, 260px); border-radius: 12px; filter: drop-shadow(0 8px 30px rgba(0,0,0,0.3));">
+            </div>
+            <div class="reveal" style="display: flex; gap: clamp(0.3rem, 0.8vw, 0.5rem); justify-content: center; margin-top: clamp(0.5rem, 1.5vw, 1rem); flex-wrap: wrap;">
+                <div class="swatch" style="background: #1a1a1a; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #4a3728; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #8b6914; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #c53d43; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #d4767c; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #e8b4a0; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #5a8a6a; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #3a5a7a; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #7a5a8a; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #b8860b; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #f5e6d0; width: 24px; height: 24px;"></div>
+                <div class="swatch" style="background: #f0c8d0; width: 24px; height: 24px;"></div>
+            </div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5em;">灵感源自《千里江山图》</p>
+            <div class="reveal" style="margin-top: 0.5em;">
+                <span class="price-original">&#165;359</span>
+                <span style="font-size: var(--h3-size); font-weight: 900; color: var(--accent); margin-left: 0.5em;">&#165;289</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: INGREDIENTS -->
+    <section class="slide" aria-label="成分" style="background: var(--bg-primary);">
+        <div class="section-num">04</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center;">天然花卉成分</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.5vw, 1rem); margin-top: var(--content-gap); max-width: min(90vw, 850px); margin-left: auto; margin-right: auto;">
+                <div class="reveal feat-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 3vw, 2rem);">&#127800;</div>
+                    <h3 style="font-size: var(--h3-size); color: var(--rose); font-family: var(--font-display);">牡丹精华</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">深层滋养修护，富含黄酮类抗氧化成分</p>
+                </div>
+                <div class="reveal feat-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 3vw, 2rem);">&#127807;</div>
+                    <h3 style="font-size: var(--h3-size); color: var(--jade); font-family: var(--font-display);">玉露珠粉</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">古法研磨淡水珍珠，打造天然光泽肌底</p>
+                </div>
+                <div class="reveal feat-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 3vw, 2rem);">&#127803;</div>
+                    <h3 style="font-size: var(--h3-size); color: var(--accent-secondary); font-family: var(--font-display);">桂花养肤油</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.3em;">冷萃桂花精油，长效保湿锁水</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: PRICING -->
+    <section class="slide" aria-label="全线定价" style="background: var(--bg-secondary);">
+        <div class="section-num" style="color: var(--accent);">05</div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center;">春季全线价格</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.5vw, 1rem); margin-top: var(--content-gap); max-width: min(90vw, 850px);">
+                <div class="reveal feat-card" style="text-align: center; border-top: 3px solid var(--accent);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent);">同心锁口红</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">6色 | 花丝镶嵌</p>
+                    <p style="margin-top: 0.5em;"><span class="price-original">&#165;249</span></p>
+                    <p style="font-size: var(--h2-size); font-weight: 900; color: var(--accent);">&#165;199</p>
+                </div>
+                <div class="reveal feat-card" style="text-align: center; border-top: 3px solid var(--accent-secondary);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-secondary);">十二色眼影盘</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">千里江山配色</p>
+                    <p style="margin-top: 0.5em;"><span class="price-original">&#165;359</span></p>
+                    <p style="font-size: var(--h2-size); font-weight: 900; color: var(--accent-secondary);">&#165;289</p>
+                </div>
+                <div class="reveal feat-card" style="text-align: center; border-top: 3px solid var(--jade);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--jade);">玉容养肤套装</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">洁面+精华+面霜</p>
+                    <p style="margin-top: 0.5em;"><span class="price-original">&#165;599</span></p>
+                    <p style="font-size: var(--h2-size); font-weight: 900; color: var(--jade);">&#165;469</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: SOCIAL PROOF -->
+    <section class="slide" aria-label="口碑" style="background: var(--bg-primary);">
+        <div class="section-num">06</div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center;">千万花粉的选择</h2>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="3200" data-suffix="万+" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary);">全网粉丝</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="985" data-decimal="1" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent-secondary);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary);">好评率</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="46" data-suffix="国" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--jade);">0</div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary);">畅销国家</div>
+                </div>
+            </div>
+            <div class="reveal" style="max-width: min(70vw, 550px); margin-top: var(--content-gap); padding: clamp(0.8rem, 2vw, 1.2rem); background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
+                <p style="font-size: var(--body-size); color: var(--text-secondary); font-style: italic; line-height: 1.8;">
+                    "第一次用国货美妆被惊艳到。口红膏体上的雕花太精致了，关键是颜色日常又显白。"
+                </p>
+                <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em;">— @花开半夏 · 小红书</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: LIMITED EDITION -->
+    <section class="slide" aria-label="限定礼盒" style="background: linear-gradient(160deg, #1a1a1a 0%, #111111 100%);">
+        <div class="section-num" style="color: var(--accent-secondary);">07</div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent-secondary); letter-spacing: 0.2em; border: 1px solid var(--accent-secondary); padding: 0.2em 0.8em; border-radius: 999px;">限量 3000 套</span>
+            <h2 class="reveal-slam" style="font-size: clamp(1.8rem, 5vw, 3.5rem); font-family: var(--font-display); margin-top: clamp(0.5rem, 1.5vw, 1rem);">
+                春日花开 · 限定礼盒
+            </h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5em; max-width: min(65vw, 450px);">
+                同心锁口红 + 眼影盘 + 玉容精华 + 丝巾 + 手绘礼盒
+            </p>
+            <div class="reveal" style="margin-top: clamp(0.8rem, 2vw, 1.5rem);">
+                <span class="price-original" style="font-size: var(--subtitle-size);">&#165;907</span>
+            </div>
+            <div class="reveal price-current" style="font-size: clamp(3rem, 8vw, 5rem);">
+                <span style="font-size: 0.5em;">&#165;</span>666
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); font-weight: 700; margin-top: 0.2em;">省 &#165;241 | 含专属编号卡</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: CTA -->
+    <section class="slide" aria-label="购买" style="background: var(--bg-primary);">
+        <div class="section-num" style="color: var(--accent);">08</div>
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <h2 class="reveal-slam" style="font-size: clamp(2rem, 6vw, 4.5rem); font-family: var(--font-display); line-height: 1.1;">
+                <span style="color: var(--accent);">&#33457;&#35199;&#23376;</span><br>
+                <span style="font-size: 0.6em; color: var(--text-secondary);">遇见东方之美</span>
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1.5vw, 1rem);">
+                春季限定 &#165;199 起 | 限定礼盒 &#165;666
+            </p>
+            <a class="reveal cta-btn" href="#" style="margin-top: clamp(1rem, 3vw, 2rem);">立即选购</a>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.8rem, 2vw, 1.2rem);">
+                天猫旗舰店 | 京东自营 | 抖音商城
+            </p>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+            Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init()}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible')}setupIntersectionObserver(){const o=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');const i=this.slides.indexOf(en.target);if(i!==-1){this.currentSlide=i;this.updateUI()}}})},{threshold:0.5});this.slides.forEach(s=>o.observe(s))}setupKeyboardNav(){document.addEventListener('keydown',e=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break}})}setupTouchNav(){document.addEventListener('touchstart',e=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1)},{passive:true})}setupWheelNav(){let t;document.addEventListener('wheel',e=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1)},50)},{passive:true})}setupProgressBar(){this.progressBar=document.getElementById('progressBar')}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`跳转到第${i+1}页`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d)})}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI()}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false},600)}updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters=document.querySelectorAll('.counter');const cObs=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){const el=entry.target,target=parseInt(el.dataset.target),suffix=el.dataset.suffix||'',prefix=el.dataset.prefix||'',decimal=el.dataset.decimal?parseInt(el.dataset.decimal):0,start=performance.now();function tick(now){const p=Math.min((now-start)/1500,1),e=1-Math.pow(1-p,3);if(decimal>0)el.textContent=prefix+(target*e/Math.pow(10,decimal)).toFixed(decimal)+suffix;else el.textContent=prefix+Math.round(target*e).toLocaleString()+suffix;if(p<1)requestAnimationFrame(tick)}requestAnimationFrame(tick);cObs.unobserve(el)}})},{threshold:0.5});counters.forEach(c=>cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation()});
+    </script>
+</body>
+</html>

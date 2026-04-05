@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofia Chen — Product Designer</title>
+
+    <!-- Fonts: Archivo (display) + Nunito (body) — Swiss Modern -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Swiss Modern
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #eeeeee;
+            --text-primary: #0a0a0a;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --accent: #ff3300;
+            --accent-secondary: #cc2900;
+            --accent-glow: rgba(255, 51, 0, 0.2);
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --border: #0a0a0a;
+            --grid-line: rgba(0, 0, 0, 0.06);
+            --surface: rgba(0, 0, 0, 0.03);
+
+            /* --- Typography --- */
+            --font-display: 'Archivo', 'Helvetica Neue', sans-serif;
+            --font-body: 'Nunito', 'Helvetica Neue', sans-serif;
+            --font-mono: 'Archivo', sans-serif;
+
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+            --duration-dramatic: 1.5s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        /* --- Responsive Breakpoints --- */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative, .grid-overlay {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           THEME STYLES — Swiss Modern
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .slide {
+            background: var(--bg-primary);
+        }
+
+        /* ===========================================
+           GRID OVERLAY — Visible grid lines
+           =========================================== */
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                repeating-linear-gradient(90deg, var(--grid-line) 0, var(--grid-line) 1px, transparent 1px, transparent calc(100% / 12)),
+                repeating-linear-gradient(0deg, transparent 0, transparent calc(100vh - 1px), var(--grid-line) calc(100vh));
+            opacity: 0.6;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.06s; }
+        .reveal:nth-child(2) { transition-delay: 0.12s; }
+        .reveal:nth-child(3) { transition-delay: 0.18s; }
+        .reveal:nth-child(4) { transition-delay: 0.24s; }
+        .reveal:nth-child(5) { transition-delay: 0.30s; }
+        .reveal:nth-child(6) { transition-delay: 0.36s; }
+        .reveal:nth-child(7) { transition-delay: 0.42s; }
+        .reveal:nth-child(8) { transition-delay: 0.48s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 0;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.5);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 800;
+            color: var(--text-muted);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           SWISS MODERN — Signature Elements
+           =========================================== */
+
+        /* Red accent bar */
+        .accent-bar {
+            width: clamp(4px, 0.5vw, 6px);
+            background: var(--accent);
+        }
+
+        /* Oversized numbers */
+        .big-number {
+            font-family: var(--font-display);
+            font-weight: 900;
+            color: var(--text-primary);
+            line-height: 0.85;
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-weight: 900;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-family: var(--font-body);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .work-card {
+            transition: transform 0.3s var(--ease-out-expo);
+        }
+        .work-card:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Section label styling */
+        .section-label {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide title-slide" aria-label="Title">
+        <div class="grid-overlay"></div>
+        <!-- Red accent rectangle -->
+        <div style="position: absolute; top: 0; left: 0; width: clamp(6px, 0.8vw, 10px); height: 40%; background: var(--accent);"></div>
+
+        <div class="slide-content" style="align-items: flex-start; justify-content: center; padding-left: clamp(3rem, 8vw, 8rem); position: relative; z-index: 1;">
+            <div style="position: absolute; right: clamp(2rem, 6vw, 6rem); top: 50%; transform: translateY(-50%); font-family: var(--font-display); font-weight: 900; font-size: clamp(8rem, 25vw, 20rem); color: rgba(0,0,0,0.04); line-height: 0.85; pointer-events: none;">
+                SC
+            </div>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; text-transform: uppercase;">
+                Sofia<br>Chen
+            </h1>
+            <p class="reveal" style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; color: var(--text-secondary); margin-top: var(--element-gap); text-transform: uppercase; letter-spacing: 0.05em;">
+                Product Designer
+            </p>
+            <div style="display: flex; align-items: stretch; gap: clamp(0.6rem, 1vw, 1rem); margin-top: var(--content-gap);" class="reveal">
+                <div class="accent-bar" style="min-height: 100%;"></div>
+                <p style="font-size: var(--subtitle-size); color: var(--text-secondary); line-height: 1.6; max-width: min(50vw, 400px);">
+                    Design is decision-making made visible.
+                </p>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-display); font-weight: 700;">
+                Portland, OR &ensp;&middot;&ensp; 8 years experience &ensp;&middot;&ensp; Available Q2 2026
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: SELECTED WORKS =================== -->
+    <section class="slide" aria-label="Selected Works">
+        <div class="grid-overlay"></div>
+
+        <div class="slide-content" style="align-items: flex-start; padding-left: clamp(3rem, 8vw, 8rem); position: relative; z-index: 1;">
+            <span class="reveal section-label">Portfolio</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); text-transform: uppercase; letter-spacing: -0.01em;">
+                Selected Works
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); max-width: min(85vw, 880px); width: 100%;">
+                <!-- Card 1: Healthcare -->
+                <div class="reveal work-card" style="border: 2px solid var(--border); overflow: hidden; cursor: pointer;">
+                    <div style="height: clamp(100px, 18vh, 200px); background: linear-gradient(135deg, #a8d8c8 0%, #7ab8a8 40%, #5a9888 100%); position: relative;">
+                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--accent);"></div>
+                    </div>
+                    <div style="padding: clamp(0.5rem, 1vw, 0.8rem);">
+                        <p style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-display); font-weight: 800;">Healthcare</p>
+                        <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 900; margin-top: 0.15em;">Meridian Health</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.15em;">Patient portal redesign</p>
+                    </div>
+                </div>
+                <!-- Card 2: SaaS -->
+                <div class="reveal work-card" style="border: 2px solid var(--border); overflow: hidden; cursor: pointer;">
+                    <div style="height: clamp(100px, 18vh, 200px); background: linear-gradient(135deg, #c8b8e8 0%, #a090d0 40%, #7868b8 100%); position: relative;">
+                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--accent);"></div>
+                    </div>
+                    <div style="padding: clamp(0.5rem, 1vw, 0.8rem);">
+                        <p style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-display); font-weight: 800;">SaaS</p>
+                        <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 900; margin-top: 0.15em;">Canopy Analytics</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.15em;">Dashboard experience</p>
+                    </div>
+                </div>
+                <!-- Card 3: Brand Identity -->
+                <div class="reveal work-card" style="border: 2px solid var(--border); overflow: hidden; cursor: pointer;">
+                    <div style="height: clamp(100px, 18vh, 200px); background: linear-gradient(135deg, #e8c8a0 0%, #d4a878 40%, #c08850 100%); position: relative;">
+                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--accent);"></div>
+                    </div>
+                    <div style="padding: clamp(0.5rem, 1vw, 0.8rem);">
+                        <p style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-display); font-weight: 800;">Branding</p>
+                        <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 900; margin-top: 0.15em;">Terracotta & Co.</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.15em;">Full brand identity</p>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); font-family: var(--font-body);">
+                Work spanning healthcare, enterprise SaaS, and consumer brands &mdash; 2021&ndash;2026
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: FEATURED PROJECT 1 — Overview =================== -->
+    <section class="slide" aria-label="Meridian Health — Overview">
+        <div class="grid-overlay"></div>
+        <div style="position: absolute; bottom: 0; right: 0; width: clamp(6px, 0.8vw, 10px); height: 50%; background: var(--accent);"></div>
+
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(1.5rem, 4vw, 4rem); position: relative; z-index: 1;">
+            <!-- Left: Project Visual -->
+            <div style="flex: 1.1; min-width: 0; display: flex; justify-content: center;">
+                <div class="reveal" style="width: 100%; max-width: min(45vw, 440px); aspect-ratio: 4/3; overflow: hidden; position: relative; background: linear-gradient(160deg, #b8e0d0 0%, #6ab89a 30%, #3a9070 60%, #2a705a 100%); border: 2px solid var(--border);">
+                    <div style="position: absolute; top: 10%; left: 8%; right: 8%; height: 12%; background: rgba(255,255,255,0.85); border-radius: 0;"></div>
+                    <div style="position: absolute; top: 28%; left: 8%; width: 50%; height: 45%; background: rgba(255,255,255,0.7); border-radius: 0;"></div>
+                    <div style="position: absolute; top: 28%; right: 8%; width: 32%; height: 20%; background: rgba(255,255,255,0.55); border-radius: 0;"></div>
+                    <div style="position: absolute; top: 52%; right: 8%; width: 32%; height: 21%; background: rgba(255,255,255,0.55); border-radius: 0;"></div>
+                    <div style="position: absolute; bottom: 8%; left: 8%; right: 8%; height: 10%; background: rgba(255,255,255,0.4); border-radius: 0;"></div>
+                </div>
+            </div>
+            <!-- Right: Project Brief -->
+            <div style="flex: 1; min-width: 0;">
+                <span class="reveal section-label">Case Study 01</span>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.15; text-transform: uppercase;">
+                    Meridian Health
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                    Redesigning patient access for 1.2M users
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7;">
+                    <p>Meridian's patient portal was losing 67% of users at the appointment booking stage. I led the end-to-end redesign across mobile and web, from research through to implementation hand-off.</p>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Role</p>
+                        <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.15em;">Lead Designer</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Timeline</p>
+                        <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.15em;">14 weeks</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Team</p>
+                        <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.15em;">4 people</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: FEATURED PROJECT 1 — Results =================== -->
+    <section class="slide" aria-label="Meridian Health — Results">
+        <div class="grid-overlay"></div>
+
+        <div class="slide-content" style="align-items: flex-start; padding-left: clamp(3rem, 8vw, 8rem); position: relative; z-index: 1;">
+            <span class="reveal section-label">Impact</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); text-transform: uppercase;">
+                Meridian Health &mdash; Results
+            </h2>
+            <div style="display: flex; justify-content: flex-start; gap: clamp(2rem, 6vw, 5rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: left;">
+                    <div class="stat-number counter" data-target="340" data-prefix="+" data-suffix="%" style="font-size: var(--stat-size);">0</div>
+                    <div style="width: clamp(30px, 4vw, 50px); height: 3px; background: var(--accent); margin-top: clamp(0.2rem, 0.5vw, 0.4rem);"></div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">User Engagement</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em; max-width: 200px;">Booking completion rate, measured 90 days post-launch</p>
+                </div>
+                <div class="reveal" style="text-align: left;">
+                    <div class="stat-number" style="font-size: var(--stat-size);">
+                        <span class="counter" data-target="2.1" data-suffix="M" style="font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit;">0</span>
+                    </div>
+                    <div style="width: clamp(30px, 4vw, 50px); height: 3px; background: var(--accent); margin-top: clamp(0.2rem, 0.5vw, 0.4rem);"></div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">Campaign Views</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em; max-width: 200px;">Launch campaign across social and partner channels</p>
+                </div>
+                <div class="reveal" style="text-align: left;">
+                    <div class="stat-number" style="font-size: var(--stat-size);">
+                        <span class="counter" data-target="3" style="font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit;">0</span>
+                    </div>
+                    <div style="width: clamp(30px, 4vw, 50px); height: 3px; background: var(--accent); margin-top: clamp(0.2rem, 0.5vw, 0.4rem);"></div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">Design Awards</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.3em; max-width: 200px;">Including IxDA and AIGA Healthcare Design</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                Source: Meridian Health internal analytics, Q3 2025. Awards verified via public records.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: FEATURED PROJECT 2 — Overview =================== -->
+    <section class="slide" aria-label="Canopy Analytics — Overview">
+        <div class="grid-overlay"></div>
+        <div style="position: absolute; top: 0; left: 0; width: clamp(6px, 0.8vw, 10px); height: 35%; background: var(--accent);"></div>
+
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(1.5rem, 4vw, 4rem); position: relative; z-index: 1;">
+            <!-- Left: Project Brief -->
+            <div style="flex: 1; min-width: 0;">
+                <span class="reveal section-label">Case Study 02</span>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.15; text-transform: uppercase;">
+                    Canopy Analytics
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                    Making complex data feel simple
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7;">
+                    <p>Canopy's marketing teams were drowning in dashboards. I consolidated 23 separate views into a unified experience that surfaced the right metric at the right moment &mdash; reducing time-to-insight from 12 minutes to under 90 seconds.</p>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1rem, 3vw, 2.5rem); flex-wrap: wrap;">
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Role</p>
+                        <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.15em;">Senior Designer</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Timeline</p>
+                        <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.15em;">8 months</p>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Outcome</p>
+                        <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.15em;">Shipped to 40K users</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Right: Project Visual -->
+            <div style="flex: 1.1; min-width: 0; display: flex; justify-content: center;">
+                <div class="reveal" style="width: 100%; max-width: min(45vw, 440px); aspect-ratio: 4/3; overflow: hidden; position: relative; background: linear-gradient(160deg, #d8c8f0 0%, #a088d0 30%, #7060b0 60%, #504898 100%); border: 2px solid var(--border);">
+                    <div style="position: absolute; top: 6%; left: 5%; right: 5%; height: 8%; background: rgba(255,255,255,0.75); border-radius: 0;"></div>
+                    <div style="position: absolute; top: 18%; left: 5%; width: 18%; bottom: 6%; background: rgba(255,255,255,0.4); border-radius: 0;"></div>
+                    <div style="position: absolute; top: 18%; left: 26%; right: 5%; height: 35%; background: rgba(255,255,255,0.65); border-radius: 0;"></div>
+                    <div style="position: absolute; bottom: 16%; left: 30%; width: 8%; height: 18%; background: rgba(255,255,255,0.5); border-radius: 0;"></div>
+                    <div style="position: absolute; bottom: 16%; left: 42%; width: 8%; height: 28%; background: rgba(255,255,255,0.5); border-radius: 0;"></div>
+                    <div style="position: absolute; bottom: 16%; left: 54%; width: 8%; height: 22%; background: rgba(255,255,255,0.5); border-radius: 0;"></div>
+                    <div style="position: absolute; bottom: 16%; left: 66%; width: 8%; height: 32%; background: rgba(255,255,255,0.6); border-radius: 0;"></div>
+                    <div style="position: absolute; bottom: 16%; left: 78%; width: 8%; height: 15%; background: rgba(255,255,255,0.5); border-radius: 0;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: CLIENT TESTIMONIAL =================== -->
+    <section class="slide" aria-label="Client Testimonial">
+        <div class="grid-overlay"></div>
+        <!-- Large red accent block -->
+        <div style="position: absolute; top: 10%; right: 0; width: clamp(60px, 10vw, 120px); height: clamp(60px, 10vw, 120px); background: var(--accent); opacity: 0.1;"></div>
+
+        <div class="slide-content" style="align-items: flex-start; justify-content: center; padding-left: clamp(3rem, 8vw, 8rem); max-width: min(85vw, 900px); position: relative; z-index: 1;">
+            <div class="reveal" style="display: flex; align-items: stretch; gap: clamp(1rem, 2vw, 2rem);">
+                <div class="accent-bar" style="min-height: 100%;"></div>
+                <div>
+                    <blockquote style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; line-height: 1.3; text-transform: uppercase;">
+                        Sofia doesn't just make things look right &mdash; she makes them <span style="color: var(--accent);">feel</span> right.
+                    </blockquote>
+                    <p style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.6; font-family: var(--font-body);">
+                        The Meridian redesign changed how our patients think about digital healthcare. That's not UI; that's transformation.
+                    </p>
+                </div>
+            </div>
+            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; padding-left: calc(clamp(4px, 0.5vw, 6px) + clamp(1rem, 2vw, 2rem));">
+                &mdash; James Whitfield, CTO at Meridian Health Systems
+            </cite>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: WORKING PROCESS =================== -->
+    <section class="slide" aria-label="Process & Approach">
+        <div class="grid-overlay"></div>
+
+        <div class="slide-content" style="max-width: min(85vw, 800px); padding-left: clamp(3rem, 8vw, 8rem); position: relative; z-index: 1;">
+            <span class="reveal section-label">Methodology</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); text-transform: uppercase;">
+                How I Work
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                Every project is different, but the principles stay the same.
+            </p>
+            <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent); min-width: 2em; font-size: var(--h3-size);">01</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong style="font-weight: 700;">Listen before sketching.</strong> The first two weeks are conversations, not wireframes. I map stakeholder assumptions against user reality.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent); min-width: 2em; font-size: var(--h3-size);">02</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong style="font-weight: 700;">Design in systems, not screens.</strong> Components, tokens, and patterns come before pixels. This is how you scale without losing coherence.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent); min-width: 2em; font-size: var(--h3-size);">03</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong style="font-weight: 700;">Prototype the risk.</strong> I build interactive prototypes of the hardest interaction first &mdash; the part where most projects stall.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0; border-bottom: 2px solid var(--text-primary);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent); min-width: 2em; font-size: var(--h3-size);">04</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong style="font-weight: 700;">Ship, measure, refine.</strong> Design doesn't end at handoff. I stay involved through launch and track outcomes against the original hypothesis.</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.6rem, 1.2vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.7rem) 0;">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent); min-width: 2em; font-size: var(--h3-size);">05</span>
+                    <span style="font-size: var(--body-size); line-height: 1.6;"><strong style="font-weight: 700;">Document the decisions.</strong> Future teams inherit your thinking, not just your files. Every major decision gets a written rationale.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: CLOSING =================== -->
+    <section class="slide closing-slide" aria-label="Contact">
+        <div class="grid-overlay"></div>
+        <div style="position: absolute; top: 0; right: 0; width: clamp(6px, 0.8vw, 10px); height: 45%; background: var(--accent);"></div>
+
+        <div class="slide-content" style="align-items: flex-start; justify-content: center; padding-left: clamp(3rem, 8vw, 8rem); position: relative; z-index: 1;">
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; line-height: 1.05; text-transform: uppercase;">
+                Let's Make<br>Something<br>Together.
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: min(55vw, 480px); line-height: 1.6;">
+                I'm currently taking on select projects for Q2&ndash;Q3 2026. If you're building something that matters, I'd love to hear about it.
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap; padding: clamp(0.8rem, 1.5vw, 1.2rem) 0; border-top: 2px solid var(--border); border-bottom: 2px solid var(--border);">
+                <div>
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Email</p>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.2em;">sofia@sofiachendesign.com</p>
+                </div>
+                <div>
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Portfolio</p>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.2em;">sofiachendesign.com</p>
+                </div>
+                <div>
+                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-display); font-weight: 700;">Status</p>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.2em; color: var(--accent);">Open to projects</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">
+                Portland, OR &ensp;&middot;&ensp; Open to remote collaboration worldwide
+            </p>
+        </div>
+
+        <!-- Watermark -->
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        /* ===========================================
+           COUNTER ANIMATION
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const isDecimal = target % 1 !== 0;
+                    const duration = 1500;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const current = target * eased;
+                        if (isDecimal) {
+                            el.textContent = prefix + current.toFixed(1) + suffix;
+                        } else {
+                            el.textContent = prefix + Math.round(current).toLocaleString() + suffix;
+                        }
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

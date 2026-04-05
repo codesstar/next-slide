@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity — AI Writing Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0a; --bg-white: #ffffff; --accent-blue: #4361ee; --accent-green: #10b981; --accent-violet: #7c3aed;
+            --text-dark: #0a0a0a; --text-light: #ffffff; --text-muted-dark: #666666; --text-muted-light: rgba(255,255,255,0.55);
+            --border-light: rgba(0,0,0,0.08); --border-dark: rgba(255,255,255,0.1); --surface-dark: #141414; --surface-light: #f5f5f5;
+            --font-display: 'Manrope', sans-serif; --font-body: 'Manrope', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem); --h2-size: clamp(1.5rem, 4vw, 3rem); --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem); --body-size: clamp(0.75rem, 1.5vw, 1.125rem); --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem); --content-gap: clamp(1rem, 2.5vw, 2.5rem); --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-dark); color: var(--text-light); -webkit-font-smoothing: antialiased; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        h1, h2, h3 { overflow-wrap: break-word; } p, li { overflow-wrap: break-word; }
+
+        /* Electric Studio: Split panel */
+        .split-slide { display: flex; flex-direction: column; }
+        .panel-top { flex: 1; background: var(--bg-white); color: var(--text-dark); display: flex; align-items: flex-end; padding: var(--slide-padding); position: relative; }
+        .panel-bottom { flex: 1; background: var(--bg-dark); color: var(--text-light); display: flex; align-items: flex-start; padding: var(--slide-padding); border-top: 4px solid var(--accent-blue); position: relative; }
+        .panel-full-dark { background: var(--bg-dark); }
+        .panel-full-light { background: var(--bg-white); color: var(--text-dark); }
+        .corner-mark { position: absolute; font-size: var(--small-size); font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
+        .corner-tl { top: var(--slide-padding); left: var(--slide-padding); }
+        .corner-br { bottom: var(--slide-padding); right: var(--slide-padding); }
+
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.7s ease, transform 0.7s var(--ease-out-expo); }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+        .reveal:nth-child(1) { transition-delay: 0.1s; } .reveal:nth-child(2) { transition-delay: 0.2s; } .reveal:nth-child(3) { transition-delay: 0.3s; } .reveal:nth-child(4) { transition-delay: 0.4s; } .reveal:nth-child(5) { transition-delay: 0.5s; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-blue); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent-blue); transform: scale(1.4); box-shadow: 0 0 8px rgba(67,97,238,0.4); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-size: var(--small-size); color: var(--text-muted-light); z-index: 9998; font-weight: 700; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots { display: none; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } .panel-top, .panel-bottom { justify-content: center; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-scale { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; } .slide.visible .reveal, .slide.visible .reveal-scale { opacity: 1; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, .reveal-scale { opacity: 1 !important; transform: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE — Split panel -->
+    <section class="slide split-slide" aria-label="Title">
+        <div class="panel-top">
+            <div class="corner-mark corner-tl" style="color: var(--accent-blue);">Clarity</div>
+            <div class="reveal" style="max-width: 700px;">
+                <h1 style="font-size: var(--title-size); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--text-dark);">Write better.<br>Faster.</h1>
+            </div>
+        </div>
+        <div class="panel-bottom">
+            <div class="reveal" style="max-width: 700px;">
+                <p style="font-size: var(--subtitle-size); color: var(--text-muted-light); line-height: 1.7;">AI-powered writing assistant for every surface.<br>Browser, desktop, and mobile.</p>
+                <p style="font-size: var(--small-size); color: var(--accent-blue); margin-top: var(--element-gap); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Product Launch 2026</p>
+            </div>
+            <div class="corner-mark corner-br" style="color: var(--text-muted-light);">01 / 08</div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROBLEM — Dark full -->
+    <section class="slide panel-full-dark" aria-label="Problem">
+        <div class="slide-content">
+            <div class="reveal" style="width: clamp(40px, 6vw, 60px); height: 4px; background: var(--accent-blue);"></div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800; line-height: 1.15; margin-top: var(--element-gap); max-width: 700px;">Writing is 28% of your workday.<br>Most tools make it worse.</h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-muted-light); margin-top: var(--element-gap); max-width: 500px; line-height: 1.8;">Grammarly catches typos. ChatGPT needs a tab. There's nothing that works right where you write, in every tool, across every language.</p>
+            <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div>
+                    <div style="font-size: var(--stat-size); font-weight: 800; color: var(--accent-blue);">28%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-light);">of workday writing</div>
+                </div>
+                <div>
+                    <div style="font-size: var(--stat-size); font-weight: 800;">3.2h</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-light);">daily on emails alone</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: PRODUCT — Split panel -->
+    <section class="slide split-slide" aria-label="Product">
+        <div class="panel-top" style="align-items: center; justify-content: center;">
+            <div class="corner-mark corner-tl" style="color: var(--text-muted-dark);">Product</div>
+            <div class="reveal-scale" style="text-align: center;">
+                <img src="images/clarity-app-ui.webp" alt="Clarity AI writing interface" loading="lazy" style="max-width: min(80vw, 700px); max-height: min(38vh, 320px); object-fit: cover; border-radius: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+            </div>
+        </div>
+        <div class="panel-bottom" style="align-items: flex-start;">
+            <div class="reveal" style="max-width: 700px;">
+                <h2 style="font-size: var(--h2-size); font-weight: 800;">One tool. Every surface.</h2>
+                <div style="display: flex; gap: clamp(1.5rem, 3vw, 3rem); margin-top: var(--element-gap); flex-wrap: wrap; font-size: var(--body-size);">
+                    <span style="color: var(--accent-blue); font-weight: 700;">Browser Extension</span>
+                    <span style="font-weight: 700;">Desktop App</span>
+                    <span style="color: var(--accent-green); font-weight: 700;">Mobile Keyboard</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: FEATURES — Light full -->
+    <section class="slide panel-full-light" aria-label="Features">
+        <div class="slide-content">
+            <div class="reveal" style="width: clamp(40px, 6vw, 60px); height: 4px; background: var(--accent-blue);"></div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800; line-height: 1.15; margin-top: var(--element-gap);">Beyond grammar.</h2>
+            <div class="reveal" style="display: flex; gap: clamp(1rem, 2vw, 2rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px; max-width: 280px; border-left: 4px solid var(--accent-blue); padding-left: clamp(0.8rem, 1.5vw, 1.2rem);">
+                    <div style="font-weight: 800; font-size: var(--h3-size);">Smart Rewrite</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted-dark); margin-top: 0.3em; line-height: 1.7;">Adjust tone, switch languages, simplify complex text. All in one click.</p>
+                </div>
+                <div style="flex: 1; min-width: 200px; max-width: 280px; border-left: 4px solid var(--accent-violet); padding-left: clamp(0.8rem, 1.5vw, 1.2rem);">
+                    <div style="font-weight: 800; font-size: var(--h3-size);">Context-Aware</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted-dark); margin-top: 0.3em; line-height: 1.7;">Learns your voice. Works in Slack, Gmail, Notion, and every text field.</p>
+                </div>
+                <div style="flex: 1; min-width: 200px; max-width: 280px; border-left: 4px solid var(--accent-green); padding-left: clamp(0.8rem, 1.5vw, 1.2rem);">
+                    <div style="font-weight: 800; font-size: var(--h3-size);">Team Memory</div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted-dark); margin-top: 0.3em; line-height: 1.7;">Shared style guide. Brand voice enforcement. Team-wide consistency.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: BEFORE/AFTER — Split panel -->
+    <section class="slide split-slide" aria-label="Demo">
+        <div class="panel-top" style="flex-direction: column; align-items: flex-start; justify-content: center;">
+            <div class="corner-mark corner-tl" style="color: rgba(0,0,0,0.25); font-size: clamp(3rem, 10vw, 8rem); font-weight: 800; line-height: 1;">Before</div>
+            <div class="reveal" style="max-width: 500px; position: relative; z-index: 1;">
+                <p style="font-size: var(--body-size); color: var(--text-muted-dark); line-height: 1.8; font-style: italic;">"Hey, I wanted to touch base about the thing we discussed. Can you send me the stuff when you get a chance? Thanks."</p>
+            </div>
+        </div>
+        <div class="panel-bottom" style="flex-direction: column; align-items: flex-start; justify-content: center;">
+            <div class="corner-mark corner-tl" style="color: rgba(255,255,255,0.08); font-size: clamp(3rem, 10vw, 8rem); font-weight: 800; line-height: 1;">After</div>
+            <div class="reveal" style="max-width: 500px; position: relative; z-index: 1;">
+                <p style="font-size: var(--body-size); line-height: 1.8;">"Hi Sarah, following up on our Q3 budget discussion. Could you share the updated forecast by Thursday? Happy to jump on a quick call if helpful."</p>
+                <div style="margin-top: var(--element-gap); font-size: var(--small-size); color: var(--accent-blue); font-weight: 700;">Rewritten with Clarity in 0.3s</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: PRICING — Dark full -->
+    <section class="slide panel-full-dark" aria-label="Pricing">
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal" style="text-align: center;">
+                <div style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-blue); font-weight: 700;">Pricing</div>
+                <h2 style="font-size: var(--h2-size); font-weight: 800; margin-top: var(--element-gap);">Simple. Transparent.</h2>
+            </div>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(0.8rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="background: var(--surface-dark); border: 1px solid var(--border-dark); padding: clamp(1.2rem, 2.5vw, 2rem); text-align: center; width: clamp(160px, 24vw, 220px);">
+                    <div style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted-light);">Free</div>
+                    <div style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-top: 0.2em;">$0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-light);">forever</div>
+                    <div style="margin-top: 0.8em; font-size: var(--small-size); color: var(--text-muted-light); line-height: 2;">Grammar + spelling<br>50 rewrites/mo<br>3 languages</div>
+                </div>
+                <div style="background: var(--surface-dark); border: 2px solid var(--accent-blue); padding: clamp(1.2rem, 2.5vw, 2rem); text-align: center; width: clamp(160px, 24vw, 220px); position: relative;">
+                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent-blue); color: #fff; font-size: clamp(0.5rem, 0.8vw, 0.65rem); font-weight: 700; padding: 3px 12px; text-transform: uppercase; letter-spacing: 0.1em;">Most Popular</div>
+                    <div style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-blue);">Pro</div>
+                    <div style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-top: 0.2em;">$12</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-light);">/month</div>
+                    <div style="margin-top: 0.8em; font-size: var(--small-size); color: var(--text-muted-light); line-height: 2;">Unlimited rewrites<br>30+ languages<br>Tone + style<br>Desktop app</div>
+                </div>
+                <div style="background: var(--surface-dark); border: 1px solid var(--border-dark); padding: clamp(1.2rem, 2.5vw, 2rem); text-align: center; width: clamp(160px, 24vw, 220px);">
+                    <div style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted-light);">Team</div>
+                    <div style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-top: 0.2em;">$29</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-light);">/seat/mo</div>
+                    <div style="margin-top: 0.8em; font-size: var(--small-size); color: var(--text-muted-light); line-height: 2;">Everything in Pro<br>Brand voice<br>Admin + SSO</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: TRACTION — Split panel -->
+    <section class="slide split-slide" aria-label="Traction">
+        <div class="panel-top" style="align-items: flex-end;">
+            <div class="corner-mark corner-tl" style="color: var(--text-muted-dark);">Traction</div>
+            <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap;">
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-weight: 800; color: var(--accent-blue);"><span class="counter" data-target="340" data-suffix="K">0</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-dark);">monthly active users</div>
+                </div>
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-weight: 800; color: var(--text-dark);">4.8<span style="font-size: 0.5em; color: var(--text-muted-dark);">/5</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-dark);">Chrome Web Store</div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-bottom">
+            <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap; align-items: flex-start;">
+                <div>
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-weight: 800; color: var(--accent-green);"><span class="counter" data-target="15" data-suffix="%">0</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted-light);">week-over-week growth</div>
+                </div>
+                <div style="font-size: var(--small-size); color: var(--text-muted-light); line-height: 2; margin-top: 0.5em;">
+                    Product Hunt #1 Product of the Day<br>
+                    Featured in TechCrunch, The Verge
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: CTA — Split panel -->
+    <section class="slide split-slide" aria-label="CTA">
+        <div class="panel-top" style="align-items: flex-end;">
+            <div class="reveal">
+                <h2 style="font-size: var(--title-size); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--text-dark);">Write with<br>Clarity.</h2>
+            </div>
+        </div>
+        <div class="panel-bottom">
+            <div class="reveal" style="max-width: 500px;">
+                <p style="font-size: var(--subtitle-size); color: var(--text-muted-light); line-height: 1.7;">Free forever. Pro when you're ready.<br>Available on every platform today.</p>
+                <div style="margin-top: var(--content-gap);">
+                    <span style="display: inline-block; background: var(--accent-blue); color: #fff; font-weight: 700; font-size: var(--body-size); padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem);">clarity.ai/download</span>
+                </div>
+            </div>
+            <div class="corner-mark corner-br" style="color: var(--text-muted-light);">08 / 08</div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: var(--slide-padding); font-size: var(--small-size); color: var(--text-muted-light); opacity: 0.3;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation { constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); } init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); } setupIntersectionObserver() { const o = new IntersectionObserver((e) => { e.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); const idx = this.slides.indexOf(entry.target); if (idx !== -1) { this.currentSlide = idx; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(s => o.observe(s)); } setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch (e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide + 1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide - 1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break; } }); } setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const dY = this.touchStartY - e.changedTouches[0].clientY; const dX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return; if (dY > 0) this.goToSlide(this.currentSlide + 1); else this.goToSlide(this.currentSlide - 1); }, { passive: true }); } setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1); }, 50); }, { passive: true }); } setupProgressBar() { this.progressBar = document.getElementById('progressBar'); } setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `Slide ${i + 1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); } setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); } goToSlide(i) { if (i < 0 || i >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = i; this.slides[i].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600); } updateUI() { const t = this.slides.length, c = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((c + 1) / t) * 100}%`; document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === c)); if (this.counter) this.counter.textContent = `${c + 1} / ${t}`; } }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters = document.querySelectorAll('.counter'); const cObs = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { const el = entry.target; const target = parseFloat(el.dataset.target); const suffix = el.dataset.suffix || ''; const dur = 1500; const st = performance.now(); function tick(now) { const p = Math.min((now - st) / dur, 1); const eased = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(target * eased).toLocaleString() + suffix; if (p < 1) requestAnimationFrame(tick); } requestAnimationFrame(tick); cObs.unobserve(el); } }); }, { threshold: 0.5 }); counters.forEach(c => cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amber Think</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf9f7;--text:#1a1a1a;--amber:#d97706;
+  --amber-light:#f3ead3;--amber-dark:#92400e;
+  --amber-glow:rgba(217,119,6,0.15);--surface:#f5f0e6;
+}
+body{
+  font-family:'DM Sans','Noto Sans SC',sans-serif;
+  color:var(--text);overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  /* Warm paper texture background */
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(217,160,80,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(180,120,60,0.03) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(200,150,90,0.03) 0%, transparent 45%),
+    var(--bg);
+}
+.slide{
+  position:fixed;inset:0;
+  height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.5s cubic-bezier(0.16,1,0.3,1);
+  background:transparent;
+}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-inner{
+  width:min(88vw,900px);
+  padding:clamp(2rem,4vw,4rem);
+}
+
+/* Bottom amber gradient line -- ONLY on title (slide-0) and closing (slide-4) */
+#slide-0::after,
+#slide-4::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent 5%,var(--amber) 30%,var(--amber) 70%,transparent 95%);
+  opacity:0.4;
+}
+
+.progress-bar{
+  position:fixed;top:0;left:0;height:3px;
+  background:var(--amber);z-index:100;
+  transition:width 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.page-counter{
+  position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);
+  font-family:'DM Sans','Noto Sans SC',sans-serif;
+  font-size:clamp(0.75rem,1vw,0.85rem);
+  color:var(--amber-dark);opacity:0.5;z-index:100;
+}
+
+h1{
+  font-size:clamp(2.2rem,5vw,4rem);
+  font-weight:700;line-height:1.15;
+  color:var(--text);letter-spacing:-0.02em;
+}
+h2{
+  font-size:clamp(1.5rem,3.5vw,2.6rem);
+  font-weight:700;line-height:1.2;
+  color:var(--text);letter-spacing:-0.01em;
+  margin-bottom:clamp(0.8rem,1.5vw,1.2rem);
+}
+p,.body-text{
+  font-size:clamp(0.9rem,1.3vw,1.1rem);
+  line-height:1.75;color:#3d3a36;
+}
+
+.amber-highlight{color:var(--amber);font-weight:700}
+
+.fade-up{
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1),transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.1s}
+.active .fade-up.d2{transition-delay:0.2s}
+.active .fade-up.d3{transition-delay:0.3s}
+.active .fade-up.d4{transition-delay:0.4s}
+.active .fade-up.d5{transition-delay:0.5s}
+
+/* Thinking dots -- only used on title slide */
+.thinking{
+  display:inline-flex;align-items:center;gap:0.3rem;
+  font-size:clamp(0.8rem,1.1vw,0.9rem);
+  color:var(--amber);font-weight:500;
+}
+.thinking-label{margin-right:0.2rem}
+.think-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--amber);
+  animation:pulse 1.4s ease-in-out infinite;
+}
+.think-dot:nth-child(2){animation-delay:0.2s}
+.think-dot:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{
+  0%,80%,100%{opacity:0.3;transform:scale(0.8)}
+  40%{opacity:1;transform:scale(1.2)}
+}
+
+/* Pulsing dot standalone */
+.amber-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--amber);
+  animation:dotpulse 2s ease-in-out infinite;
+  display:inline-block;margin-right:0.6rem;vertical-align:middle;
+}
+@keyframes dotpulse{
+  0%,100%{opacity:0.4;box-shadow:0 0 0 0 rgba(217,119,6,0.3)}
+  50%{opacity:1;box-shadow:0 0 0 8px rgba(217,119,6,0)}
+}
+
+/* Amber cards */
+.amber-card{
+  background:var(--surface);
+  border:1px solid rgba(217,119,6,0.12);
+  border-radius:10px;
+  padding:clamp(1.2rem,2.5vw,2rem);
+}
+.card-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:clamp(0.8rem,1.5vw,1.2rem);
+  margin-top:clamp(1rem,2vw,1.5rem);
+}
+.card-head{
+  font-size:clamp(0.95rem,1.4vw,1.15rem);
+  font-weight:700;color:var(--text);
+  margin-bottom:0.4rem;
+  display:flex;align-items:center;
+}
+
+/* Stats */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(1rem,2vw,2rem);
+  margin-top:clamp(1.5rem,3vw,2.5rem);
+}
+.stat-num{
+  font-size:clamp(2.2rem,5.5vw,4rem);
+  font-weight:700;color:var(--amber);
+  line-height:1.1;letter-spacing:-0.02em;
+}
+.stat-label{
+  font-size:clamp(0.8rem,1.1vw,0.95rem);
+  color:#665e52;margin-top:0.3rem;
+}
+.stat-bar{
+  height:4px;border-radius:2px;
+  background:var(--amber-light);
+  margin-top:0.6rem;overflow:hidden;
+}
+.stat-bar-fill{
+  height:100%;border-radius:2px;
+  background:var(--amber);
+  transition:width 1s cubic-bezier(0.16,1,0.3,1);
+}
+.active .stat-bar-fill{width:var(--fill)}
+
+/* Quote */
+.quote-section{
+  border-left:4px solid var(--amber);
+  padding-left:clamp(1.2rem,2.5vw,2rem);
+}
+.quote-text{
+  font-size:clamp(1.4rem,3vw,2.4rem);
+  font-weight:500;line-height:1.45;
+  color:var(--text);font-style:italic;
+}
+.quote-author{
+  font-size:clamp(0.8rem,1.1vw,0.95rem);
+  color:var(--amber-dark);
+  margin-top:clamp(0.8rem,1.5vw,1.2rem);
+}
+
+/* Amber line decoration */
+.amber-line{
+  width:clamp(40px,8vw,80px);height:3px;
+  background:var(--amber);border-radius:2px;
+}
+
+@media(max-width:640px){
+  .card-grid,.stat-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title -- thinking dots ONLY here -->
+<div class="slide active" id="slide-0">
+  <div class="slide-inner">
+    <div class="thinking fade-up d1">
+      <span class="thinking-label">thinking</span>
+      <span class="think-dot"></span><span class="think-dot"></span><span class="think-dot"></span>
+    </div>
+    <div style="height:clamp(1.2rem,2vw,2rem)"></div>
+    <h1 class="fade-up d2">AI 驱动的<br><span class="amber-highlight">设计革命</span></h1>
+    <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+    <div class="amber-line fade-up d3"></div>
+    <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+    <p class="fade-up d4" style="max-width:480px;">从像素到体验，重新定义创造力的边界</p>
+  </div>
+</div>
+
+<!-- Slide 2: Features -- no thinking dots -->
+<div class="slide" id="slide-1">
+  <div class="slide-inner">
+    <h2 class="fade-up d1">核心能力</h2>
+    <div class="card-grid">
+      <div class="amber-card fade-up d2">
+        <div class="card-head"><span class="amber-dot"></span>智能布局</div>
+        <p class="body-text">自动理解内容层级，生成视觉节奏明确的版面结构。</p>
+      </div>
+      <div class="amber-card fade-up d3">
+        <div class="card-head"><span class="amber-dot"></span>风格迁移</div>
+        <p class="body-text">一键转换视觉风格，保持信息架构不变。</p>
+      </div>
+      <div class="amber-card fade-up d4">
+        <div class="card-head"><span class="amber-dot"></span>实时协作</div>
+        <p class="body-text">多人同时编辑，AI 智能合并冲突与建议。</p>
+      </div>
+      <div class="amber-card fade-up d5">
+        <div class="card-head"><span class="amber-dot"></span>自适应排版</div>
+        <p class="body-text">响应式输出，一次设计适配所有终端。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -- no thinking dots -->
+<div class="slide" id="slide-2">
+  <div class="slide-inner">
+    <h2 class="fade-up d1">数据表现</h2>
+    <div class="amber-line fade-up d1"></div>
+    <div class="stat-grid">
+      <div class="fade-up d2">
+        <div class="stat-num">10x</div>
+        <div class="stat-label">效率提升</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="--fill:85%;width:0"></div></div>
+      </div>
+      <div class="fade-up d3">
+        <div class="stat-num">93%</div>
+        <div class="stat-label">用户满意度</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="--fill:93%;width:0"></div></div>
+      </div>
+      <div class="fade-up d4">
+        <div class="stat-num">50M+</div>
+        <div class="stat-label">设计生成</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="--fill:72%;width:0"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -- no thinking dots -->
+<div class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="quote-section fade-up d1">
+      <div class="quote-text">好的设计不是装饰，<br>是沟通。</div>
+      <div class="quote-author">-- Dieter Rams</div>
+    </div>
+    <div style="height:clamp(2rem,4vw,3rem)"></div>
+    <p class="fade-up d3 body-text" style="max-width:460px;">
+      AI 不是替代品，是<span class="amber-highlight">放大器</span>。它让设计师的每一个想法，都能被准确传达。
+    </p>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -- no thinking dots -->
+<div class="slide" id="slide-4">
+  <div class="slide-inner" style="text-align:center;">
+    <div style="height:clamp(1.2rem,2vw,2rem)"></div>
+    <h1 class="fade-up d2" style="font-size:clamp(1.8rem,4vw,3.2rem);">
+      让每一次创造，<br>都值得被<span class="amber-highlight">看见</span>
+    </h1>
+    <div class="amber-line fade-up d3" style="margin:clamp(1rem,2vw,1.5rem) auto;"></div>
+    <p class="fade-up d4 body-text">设计的未来，从此刻开始。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides=document.querySelectorAll('.slide');
+  const total=slides.length;
+  let current=0;
+  const progress=document.getElementById('progress');
+  const counter=document.getElementById('counter');
+  function update(){
+    slides.forEach((s,i)=>{s.classList.toggle('active',i===current)});
+    progress.style.width=((current+1)/total*100)+'%';
+    counter.textContent=(current+1)+' / '+total;
+  }
+  function next(){if(current<total-1){current++;update()}}
+  function prev(){if(current>0){current--;update()}}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')next();
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const diff=e.changedTouches[0].clientX-tx;
+    if(Math.abs(diff)>50){diff<0?next():prev()}
+  },{passive:true});
+  update();
+})();
+</script>
+</body>
+</html>

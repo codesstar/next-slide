@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbital — Space Logistics SaaS | Series A</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Deep Space Mission Control
+           Dark navy, HUD aesthetics, teal + amber accents
+           =========================================== */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #0d1225;
+            --bg-tertiary: #111830;
+            --text-primary: #e8ecf4;
+            --text-secondary: #8892a8;
+            --text-muted: #556078;
+            --accent: #00D4AA;
+            --accent-secondary: #FFB627;
+            --accent-glow: rgba(0, 212, 170, 0.35);
+            --accent-glow-secondary: rgba(255, 182, 39, 0.25);
+            --border-subtle: rgba(0, 212, 170, 0.1);
+            --border-hud: rgba(0, 212, 170, 0.25);
+            --surface: rgba(0, 212, 170, 0.04);
+            --surface-elevated: rgba(0, 212, 170, 0.08);
+            --danger: #ff4757;
+            --success: #00D4AA;
+            --warning: #FFB627;
+            --font-display: 'Orbitron', 'Noto Sans SC', sans-serif;
+            --font-body: 'IBM Plex Sans', 'Noto Sans SC', sans-serif;
+            --font-mono: 'IBM Plex Mono', 'Fira Code', monospace;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(0.85rem, 2vw, 1.4rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-slow: 1s;
+            --duration-normal: 0.6s;
+        }
+
+        /* ===========================================
+           BASE RESET & VIEWPORT FITTING
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column;
+            position: relative; background: var(--bg-primary);
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; max-height: 100%;
+            overflow: hidden; padding: var(--slide-padding);
+            position: relative; z-index: 2;
+        }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        /* ===========================================
+           STARFIELD — CSS box-shadow particle stars
+           Three layers at different densities/sizes
+           =========================================== */
+        .stars { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .stars::before, .stars::after {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+        .stars::before {
+            box-shadow:
+                42vw 18vh 0 0 rgba(255,255,255,0.7),
+                87vw 32vh 0 0 rgba(255,255,255,0.5),
+                15vw 72vh 0 0 rgba(255,255,255,0.6),
+                63vw 8vh 0 0 rgba(255,255,255,0.4),
+                91vw 65vh 0 0 rgba(255,255,255,0.8),
+                28vw 48vh 0 0 rgba(255,255,255,0.3),
+                73vw 82vh 0 0 rgba(255,255,255,0.5),
+                8vw 35vh 0 0 rgba(255,255,255,0.6),
+                55vw 91vh 0 0 rgba(255,255,255,0.4),
+                36vw 5vh 0 0 rgba(255,255,255,0.7),
+                82vw 52vh 0 0 rgba(255,255,255,0.3),
+                19vw 88vh 0 0 rgba(255,255,255,0.5),
+                67vw 42vh 0 0 rgba(255,255,255,0.6),
+                3vw 62vh 0 0 rgba(255,255,255,0.4),
+                48vw 25vh 0 0 rgba(255,255,255,0.5),
+                95vw 15vh 0 0 rgba(255,255,255,0.3),
+                22vw 95vh 0 0 rgba(255,255,255,0.6),
+                76vw 73vh 0 0 rgba(255,255,255,0.4);
+        }
+        .stars::after {
+            box-shadow:
+                33vw 12vh 1px 0 rgba(0,212,170,0.3),
+                78vw 45vh 1px 0 rgba(255,182,39,0.2),
+                52vw 78vh 1px 0 rgba(0,212,170,0.25),
+                11vw 55vh 0 0 rgba(255,255,255,0.35),
+                89vw 22vh 0 0 rgba(255,255,255,0.45),
+                44vw 67vh 0 0 rgba(255,255,255,0.3),
+                66vw 3vh 0 0 rgba(255,255,255,0.55),
+                7vw 85vh 0 0 rgba(255,255,255,0.4),
+                58vw 38vh 0 0 rgba(255,255,255,0.35),
+                25vw 15vh 1px 0 rgba(0,212,170,0.2);
+        }
+
+        /* ===========================================
+           SCANLINE OVERLAY — subtle CRT effect
+           =========================================== */
+        .scanlines {
+            position: absolute; inset: 0; pointer-events: none; z-index: 1;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.03) 2px,
+                rgba(0,0,0,0.03) 4px
+            );
+            opacity: 0.4;
+        }
+
+        /* ===========================================
+           GRID COORDINATE LINES
+           =========================================== */
+        .grid-lines {
+            position: absolute; inset: 0; pointer-events: none; z-index: 0;
+            background:
+                linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+            background-size: clamp(40px, 8vw, 80px) clamp(40px, 8vw, 80px);
+        }
+
+        /* ===========================================
+           HUD CARD — corner bracket borders
+           =========================================== */
+        .hud-card {
+            position: relative;
+            background: rgba(0, 212, 170, 0.03);
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+        }
+        .hud-card::before, .hud-card::after {
+            content: ''; position: absolute;
+            width: clamp(12px, 2vw, 20px); height: clamp(12px, 2vw, 20px);
+            border-color: var(--accent); border-style: solid;
+        }
+        .hud-card::before {
+            top: 0; left: 0;
+            border-width: 2px 0 0 2px;
+        }
+        .hud-card::after {
+            bottom: 0; right: 0;
+            border-width: 0 2px 2px 0;
+        }
+        .hud-card-inner::before, .hud-card-inner::after {
+            content: ''; position: absolute;
+            width: clamp(12px, 2vw, 20px); height: clamp(12px, 2vw, 20px);
+            border-color: var(--accent); border-style: solid;
+        }
+        .hud-card-inner::before {
+            top: 0; right: 0;
+            border-width: 2px 2px 0 0;
+        }
+        .hud-card-inner::after {
+            bottom: 0; left: 0;
+            border-width: 0 0 2px 2px;
+        }
+
+        /* HUD card with amber accent */
+        .hud-card-amber::before, .hud-card-amber::after { border-color: var(--warning); }
+        .hud-card-amber .hud-card-inner::before, .hud-card-amber .hud-card-inner::after { border-color: var(--warning); }
+
+        /* ===========================================
+           ORBIT PATH VISUALIZATION
+           =========================================== */
+        .orbit-viz {
+            position: absolute; border-radius: 50%;
+            border: 1px solid rgba(0,212,170,0.12);
+            pointer-events: none; z-index: 0;
+        }
+        .orbit-viz::after {
+            content: ''; position: absolute;
+            width: clamp(4px, 0.6vw, 8px); height: clamp(4px, 0.6vw, 8px);
+            background: var(--accent); border-radius: 50%;
+            top: 0; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 0 clamp(6px, 1vw, 12px) var(--accent-glow);
+        }
+
+        /* ===========================================
+           RADAR SWEEP — rotating scan line
+           =========================================== */
+        .radar {
+            position: relative;
+            width: clamp(100px, 18vw, 200px); height: clamp(100px, 18vw, 200px);
+            border-radius: 50%;
+            border: 1px solid rgba(0,212,170,0.25);
+            overflow: hidden;
+            background: radial-gradient(circle, rgba(0,212,170,0.05) 0%, transparent 70%);
+        }
+        .radar::before {
+            content: '';
+            position: absolute; top: 50%; left: 50%;
+            width: 50%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent));
+            transform-origin: left center;
+            animation: radar-sweep 4s linear infinite;
+        }
+        .radar::after {
+            content: '';
+            position: absolute; top: 50%; left: 50%;
+            width: 50%; height: 50%;
+            transform-origin: left top;
+            background: conic-gradient(from 0deg, rgba(0,212,170,0.15), transparent 60deg);
+            animation: radar-sweep 4s linear infinite;
+        }
+        .radar-ring {
+            position: absolute; border-radius: 50%;
+            border: 1px solid rgba(0,212,170,0.1);
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .radar-blip {
+            position: absolute; width: clamp(3px, 0.5vw, 5px); height: clamp(3px, 0.5vw, 5px);
+            background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 6px var(--accent-glow);
+        }
+        .radar-blip-warn {
+            background: var(--warning);
+            box-shadow: 0 0 6px var(--accent-glow-secondary);
+        }
+
+        @keyframes radar-sweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===========================================
+           STATUS INDICATORS — mission control dots
+           =========================================== */
+        .status-dot {
+            display: inline-block;
+            width: clamp(6px, 0.8vw, 10px); height: clamp(6px, 0.8vw, 10px);
+            border-radius: 50%; vertical-align: middle;
+            margin-right: clamp(4px, 0.5vw, 8px);
+        }
+        .status-dot-green { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+        .status-dot-amber { background: var(--warning); box-shadow: 0 0 6px var(--accent-glow-secondary); animation: glow-pulse-amber 2s ease-in-out infinite; }
+        .status-dot-red { background: var(--danger); box-shadow: 0 0 6px rgba(255,71,87,0.4); animation: glow-pulse-red 1.5s ease-in-out infinite; }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(20px) scale(0.97);
+            transition: opacity var(--duration-slow) var(--ease-out-expo),
+                        transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0) scale(1); }
+
+        .reveal-scale {
+            opacity: 0; transform: scale(0.88);
+            transition: opacity var(--duration-slow) ease,
+                        transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+
+        .reveal-blur {
+            opacity: 0; filter: blur(15px);
+            transition: opacity 1.2s ease, filter 1.2s var(--ease-out-expo);
+        }
+        .slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.35s; }
+        .reveal:nth-child(4) { transition-delay: 0.5s; }
+        .reveal:nth-child(5) { transition-delay: 0.65s; }
+        .reveal:nth-child(6) { transition-delay: 0.8s; }
+        .reveal-blur:nth-child(1) { transition-delay: 0.1s; }
+        .reveal-blur:nth-child(2) { transition-delay: 0.2s; }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 clamp(10px, 2vw, 20px) var(--accent-glow), 0 0 clamp(30px, 5vw, 60px) rgba(0,212,170,0.1); }
+            50% { box-shadow: 0 0 clamp(15px, 3vw, 30px) var(--accent-glow), 0 0 clamp(50px, 8vw, 100px) rgba(0,212,170,0.15); }
+        }
+        @keyframes glow-pulse-amber {
+            0%, 100% { box-shadow: 0 0 4px rgba(255,182,39,0.3); }
+            50% { box-shadow: 0 0 10px rgba(255,182,39,0.5); }
+        }
+        @keyframes glow-pulse-red {
+            0%, 100% { box-shadow: 0 0 4px rgba(255,71,87,0.3); }
+            50% { box-shadow: 0 0 10px rgba(255,71,87,0.5); }
+        }
+        @keyframes orbit-rotate {
+            0% { transform: translate(-50%,-50%) rotate(0deg); }
+            100% { transform: translate(-50%,-50%) rotate(360deg); }
+        }
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(clamp(-4px, -0.5vh, -8px)); }
+        }
+        @keyframes text-glow {
+            0%, 100% { text-shadow: 0 0 clamp(10px, 2vw, 20px) rgba(0,212,170,0.3); }
+            50% { text-shadow: 0 0 clamp(20px, 3vw, 40px) rgba(0,212,170,0.5), 0 0 clamp(40px, 6vw, 80px) rgba(0,212,170,0.2); }
+        }
+
+        /* ===========================================
+           SECTION LABELS — HUD style
+           =========================================== */
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            display: flex; align-items: center; gap: clamp(6px, 1vw, 12px);
+        }
+        .section-label::before {
+            content: '';
+            width: clamp(16px, 3vw, 32px); height: 1px;
+            background: var(--accent);
+        }
+        .section-label-warn { color: var(--warning); }
+        .section-label-warn::before { background: var(--warning); }
+
+        /* ===========================================
+           DATA VISUALIZATION — Mission Control style
+           =========================================== */
+        .mc-metric {
+            font-family: var(--font-mono);
+            font-size: var(--stat-size);
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.02em;
+            text-shadow: 0 0 clamp(8px, 1.5vw, 16px) var(--accent-glow);
+        }
+        .mc-metric-warn { color: var(--warning); text-shadow: 0 0 clamp(8px, 1.5vw, 16px) var(--accent-glow-secondary); }
+        .mc-metric-danger { color: var(--danger); text-shadow: 0 0 clamp(8px, 1.5vw, 16px) rgba(255,71,87,0.3); }
+
+        .bar-chart {
+            display: flex; align-items: flex-end;
+            gap: clamp(6px, 1vw, 12px);
+            height: clamp(80px, 18vh, 180px);
+        }
+        .bar-chart .bar {
+            flex: 1; border-radius: 2px 2px 0 0;
+            background: linear-gradient(180deg, var(--accent), rgba(0,212,170,0.15));
+            position: relative; min-width: 20px;
+            transition: height 1.2s var(--ease-out-expo);
+            box-shadow: 0 0 10px rgba(0,212,170,0.15);
+        }
+        .bar-chart .bar-label {
+            position: absolute; bottom: calc(-1 * clamp(18px, 2.5vw, 24px));
+            left: 50%; transform: translateX(-50%);
+            font-size: var(--small-size); color: var(--text-secondary);
+            white-space: nowrap; font-family: var(--font-mono);
+        }
+        .bar-chart .bar-value {
+            position: absolute; top: calc(-1 * clamp(18px, 2.5vw, 24px));
+            left: 50%; transform: translateX(-50%);
+            font-size: var(--small-size); color: var(--accent);
+            font-weight: 600; font-family: var(--font-mono);
+        }
+
+        .donut-chart {
+            width: clamp(80px, 12vw, 130px); height: clamp(80px, 12vw, 130px);
+            border-radius: 50%; position: relative;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(0,212,170,0.1);
+        }
+        .donut-chart .donut-center {
+            width: 60%; height: 60%; border-radius: 50%;
+            background: var(--bg-primary);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1;
+            font-family: var(--font-mono); font-weight: 600;
+            font-size: clamp(0.7rem, 1.5vw, 1.1rem); color: var(--accent);
+        }
+
+        .metric-bar {
+            height: clamp(4px, 0.6vh, 6px);
+            background: rgba(0,212,170,0.1);
+            border-radius: 3px; overflow: hidden;
+        }
+        .metric-bar-fill {
+            height: 100%; border-radius: 3px;
+            background: linear-gradient(90deg, var(--accent), rgba(0,212,170,0.6));
+            transition: width 1.5s var(--ease-out-expo);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* ===========================================
+           DASHBOARD MOCKUP — Mission Control HUD
+           =========================================== */
+        .dashboard-mockup {
+            background: rgba(10, 14, 26, 0.9);
+            border: 1px solid var(--border-hud);
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+            position: relative;
+        }
+        .dashboard-mockup::before, .dashboard-mockup::after {
+            content: ''; position: absolute;
+            width: clamp(16px, 2.5vw, 24px); height: clamp(16px, 2.5vw, 24px);
+            border-color: var(--accent); border-style: solid;
+        }
+        .dashboard-mockup::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .dashboard-mockup::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+        .dashboard-header {
+            display: flex; align-items: center;
+            gap: clamp(0.4rem, 0.8vw, 0.75rem);
+            margin-bottom: clamp(0.4rem, 1vw, 0.75rem);
+            padding-bottom: clamp(0.4rem, 0.8vw, 0.6rem);
+            border-bottom: 1px solid rgba(0,212,170,0.1);
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+            gap: clamp(0.4rem, 1vw, 0.75rem);
+        }
+        .status-card {
+            background: rgba(0, 212, 170, 0.03);
+            border: 1px solid rgba(0, 212, 170, 0.08);
+            padding: clamp(0.4rem, 1vw, 0.75rem);
+            position: relative;
+        }
+        .status-card::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 6px; height: 6px;
+            border-top: 1px solid var(--accent);
+            border-left: 1px solid var(--accent);
+        }
+        .status-card .value {
+            font-family: var(--font-mono);
+            font-size: clamp(1rem, 2.5vw, 1.75rem);
+            font-weight: 600;
+        }
+        .status-card .label {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            margin-top: 0.15em;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ===========================================
+           COMPETITION TABLE — HUD style
+           =========================================== */
+        .comp-table {
+            width: 100%; border-collapse: collapse;
+            font-size: var(--body-size);
+            font-family: var(--font-body);
+        }
+        .comp-table th, .comp-table td {
+            padding: clamp(0.3rem, 0.8vh, 0.6rem) clamp(0.4rem, 1.2vw, 0.8rem);
+            text-align: left;
+            border-bottom: 1px solid rgba(0,212,170,0.08);
+        }
+        .comp-table th {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .comp-table tr.highlight {
+            background: rgba(0, 212, 170, 0.06);
+            border-left: 2px solid var(--accent);
+        }
+
+        /* ===========================================
+           PROGRESS BAR & NAVIGATION
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--warning));
+            width: 0%; z-index: 9999;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px);
+            top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--text-muted); border: 1px solid transparent;
+            cursor: pointer; transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent); border-color: var(--accent);
+            transform: scale(1.6);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted); z-index: 9998;
+            letter-spacing: 0.1em;
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .decorative, .radar { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root {
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .status-grid { grid-template-columns: 1fr 1fr; }
+            .slide-counter { display: none; }
+            .radar { display: none; }
+        }
+        @media (min-width: 2000px) {
+            .slide-content { max-width: 1600px; margin: 0 auto; }
+        }
+
+        /* ===========================================
+           REDUCED MOTION SUPPORT
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-scale, .reveal-blur {
+                opacity: 0; transform: none !important; filter: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .slide.visible .reveal,
+            .slide.visible .reveal-scale,
+            .slide.visible .reveal-blur { opacity: 1; }
+        }
+
+        /* ===========================================
+           PRINT STYLES
+           =========================================== */
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; }
+            .stars, .scanlines, .grid-lines { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- ============================================
+         SLIDE 1: TITLE
+         ============================================ -->
+    <section class="slide" aria-label="Title">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+        <!-- Orbit rings -->
+        <div class="orbit-viz" style="width:clamp(300px,55vw,700px);height:clamp(300px,55vw,700px);top:50%;left:50%;transform:translate(-50%,-50%);animation:orbit-rotate 80s linear infinite;"></div>
+        <div class="orbit-viz" style="width:clamp(200px,35vw,450px);height:clamp(200px,35vw,450px);top:50%;left:50%;transform:translate(-50%,-50%);border-color:rgba(255,182,39,0.08);animation:orbit-rotate 50s linear infinite reverse;"></div>
+        <div class="orbit-viz" style="width:clamp(120px,20vw,280px);height:clamp(120px,20vw,280px);top:50%;left:50%;transform:translate(-50%,-50%);border-color:rgba(0,212,170,0.06);animation:orbit-rotate 30s linear infinite;"></div>
+        <!-- Ambient glow -->
+        <div style="position:absolute;width:40%;height:40%;background:radial-gradient(circle,rgba(0,212,170,0.08),transparent 70%);top:30%;left:30%;pointer-events:none;z-index:0;animation:glow-pulse 6s ease-in-out infinite;border-radius:50%;"></div>
+
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <div class="reveal section-label" style="justify-content:center;">
+                <span style="font-size:var(--small-size);">SERIES A // CONFIDENTIAL</span>
+            </div>
+            <h1 class="reveal-blur" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:800;letter-spacing:0.08em;margin-top:var(--element-gap);animation:text-glow 4s ease-in-out infinite;">ORBITAL</h1>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(70vw,600px);font-family:var(--font-body);font-weight:300;letter-spacing:0.05em;">The operating system for space logistics</p>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-muted);margin-top:var(--content-gap);font-family:var(--font-mono);letter-spacing:0.15em;">APRIL 2026 &mdash; CLASSIFIED</p>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 2: PROBLEM
+         ============================================ -->
+    <section class="slide" aria-label="Problem">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+
+        <div class="slide-content">
+            <span class="reveal section-label section-label-warn">
+                <span>THREAT ASSESSMENT</span>
+            </span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:0.04em;">Space is getting crowded.</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(65vw,700px);line-height:1.7;">Over 10,000 active satellites orbit Earth today. By 2030, that number will triple. Without intelligent coordination, collisions and debris cascades become inevitable.</p>
+
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal hud-card" style="text-align:center;flex:1;min-width:clamp(100px,20vw,160px);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div class="status-dot status-dot-red" style="position:absolute;top:0;right:0;"></div>
+                        <div class="mc-metric mc-metric-danger" style="font-size:var(--stat-size);">36K+</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.3em;">Tracked debris</div>
+                    </div>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;flex:1;min-width:clamp(100px,20vw,160px);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div class="status-dot status-dot-amber" style="position:absolute;top:0;right:0;"></div>
+                        <div class="mc-metric mc-metric-warn" style="font-size:var(--stat-size);">$300M</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.3em;">Lost yearly</div>
+                    </div>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;flex:1;min-width:clamp(100px,20vw,160px);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div class="status-dot status-dot-amber" style="position:absolute;top:0;right:0;"></div>
+                        <div class="mc-metric" style="font-size:var(--stat-size);color:var(--text-primary);">1 in 5</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.3em;">Monthly near-misses</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 3: SOLUTION
+         ============================================ -->
+    <section class="slide" aria-label="Solution">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+        <div style="position:absolute;width:30%;height:30%;background:radial-gradient(circle,rgba(0,212,170,0.06),transparent 70%);top:10%;right:10%;pointer-events:none;z-index:0;border-radius:50%;"></div>
+
+        <div class="slide-content">
+            <span class="reveal section-label">
+                <span>MISSION BRIEF</span>
+            </span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:0.04em;">AI-powered space traffic control</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,600px);line-height:1.7;">Orbital predicts collision risks 72 hours in advance, optimizes constellation maneuvers, and reduces fuel waste by 40%.</p>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal hud-card">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:clamp(1rem,1.8vw,1.3rem);margin-bottom:0.5em;color:var(--accent);">01</div>
+                        <h3 style="font-size:var(--h3-size);font-family:var(--font-display);letter-spacing:0.06em;">PREDICT</h3>
+                        <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.6;">ML models trained on 15 years of orbital data forecast conjunction events</p>
+                    </div>
+                </div>
+                <div class="reveal hud-card hud-card-amber">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:clamp(1rem,1.8vw,1.3rem);margin-bottom:0.5em;color:var(--warning);">02</div>
+                        <h3 style="font-size:var(--h3-size);font-family:var(--font-display);letter-spacing:0.06em;">OPTIMIZE</h3>
+                        <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.6;">Automated maneuver planning minimizes delta-v and fuel expenditure</p>
+                    </div>
+                </div>
+                <div class="reveal hud-card">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:clamp(1rem,1.8vw,1.3rem);margin-bottom:0.5em;color:var(--accent);">03</div>
+                        <h3 style="font-size:var(--h3-size);font-family:var(--font-display);letter-spacing:0.06em;">COORDINATE</h3>
+                        <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.6;">Multi-operator deconfliction through shared orbital awareness</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 4: PRODUCT DEMO with radar
+         ============================================ -->
+    <section class="slide" aria-label="Product">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+
+        <div class="slide-content">
+            <span class="reveal section-label">
+                <span>SYSTEMS OVERVIEW</span>
+            </span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:0.04em;">Mission Control, reimagined</h2>
+
+            <div class="reveal-scale dashboard-mockup" style="margin-top:var(--content-gap);">
+                <div class="dashboard-header">
+                    <span class="status-dot status-dot-green"></span>
+                    <span style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--accent);letter-spacing:0.1em;">SYSTEMS NOMINAL</span>
+                    <span style="font-size:var(--small-size);color:var(--text-muted);margin-left:auto;font-family:var(--font-mono);letter-spacing:0.05em;">ORBITAL DASHBOARD v3.2</span>
+                </div>
+                <div style="display:flex;gap:clamp(0.5rem,1.5vw,1rem);flex-wrap:wrap;">
+                    <div style="flex:1;min-width:0;">
+                        <div class="status-grid">
+                            <div class="status-card">
+                                <div class="value" style="color:var(--accent);">12</div>
+                                <div class="label">Active Sats</div>
+                                <div class="metric-bar" style="margin-top:0.4em;"><div class="metric-bar-fill" style="width:85%;"></div></div>
+                            </div>
+                            <div class="status-card">
+                                <div class="value" style="color:var(--accent);">0</div>
+                                <div class="label">Warnings</div>
+                                <div class="metric-bar" style="margin-top:0.4em;"><div class="metric-bar-fill" style="width:5%;background:var(--accent);"></div></div>
+                            </div>
+                            <div class="status-card">
+                                <div class="value" style="color:var(--warning);">847</div>
+                                <div class="label">Debris</div>
+                                <div class="metric-bar" style="margin-top:0.4em;"><div class="metric-bar-fill" style="width:62%;background:linear-gradient(90deg,var(--warning),rgba(255,182,39,0.4));box-shadow:0 0 8px var(--accent-glow-secondary);"></div></div>
+                            </div>
+                            <div class="status-card">
+                                <div class="value" style="color:var(--text-primary);">99.7%</div>
+                                <div class="label">Accuracy</div>
+                                <div class="metric-bar" style="margin-top:0.4em;"><div class="metric-bar-fill" style="width:99%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Radar visualization -->
+                    <div class="decorative" style="display:flex;align-items:center;justify-content:center;">
+                        <div class="radar">
+                            <div class="radar-ring" style="width:70%;height:70%;"></div>
+                            <div class="radar-ring" style="width:40%;height:40%;"></div>
+                            <div class="radar-blip" style="top:30%;left:55%;"></div>
+                            <div class="radar-blip" style="top:60%;left:35%;"></div>
+                            <div class="radar-blip radar-blip-warn" style="top:40%;left:68%;"></div>
+                            <div class="radar-blip" style="top:72%;left:52%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Orbit visualization strip -->
+                <div style="margin-top:clamp(0.5rem,1.5vw,1rem);height:clamp(30px,6vh,60px);position:relative;background:rgba(0,212,170,0.02);border:1px solid rgba(0,212,170,0.06);overflow:hidden;">
+                    <div style="position:absolute;width:70%;height:160%;border-radius:50%;border:1px solid rgba(0,212,170,0.15);top:30%;left:15%;transform:rotateX(60deg);"></div>
+                    <div style="position:absolute;width:clamp(5px,0.6vw,7px);height:clamp(5px,0.6vw,7px);background:var(--accent);border-radius:50%;top:40%;left:50%;box-shadow:0 0 10px var(--accent-glow);animation:float-gentle 3s ease-in-out infinite;"></div>
+                    <div style="position:absolute;width:clamp(4px,0.5vw,6px);height:clamp(4px,0.5vw,6px);background:var(--accent);border-radius:50%;top:55%;left:35%;box-shadow:0 0 8px var(--accent-glow);animation:float-gentle 4s ease-in-out infinite 1s;opacity:0.7;"></div>
+                    <div style="position:absolute;width:clamp(3px,0.4vw,5px);height:clamp(3px,0.4vw,5px);background:var(--danger);border-radius:50%;top:30%;left:65%;opacity:0.6;box-shadow:0 0 6px rgba(255,71,87,0.3);"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 5: MARKET
+         ============================================ -->
+    <section class="slide" aria-label="Market">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <span class="reveal section-label" style="justify-content:center;">
+                <span>MARKET INTELLIGENCE</span>
+            </span>
+            <h2 class="reveal-blur" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:800;margin-top:var(--element-gap);letter-spacing:0.06em;animation:text-glow 4s ease-in-out infinite;">$400B</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);font-family:var(--font-body);">Global space economy by 2030</p>
+
+            <div style="display:flex;gap:clamp(1rem,3vw,3rem);margin-top:var(--content-gap);flex-wrap:wrap;justify-content:center;">
+                <div class="reveal" style="text-align:center;">
+                    <div class="donut-chart" style="background:conic-gradient(var(--accent) 0deg 108deg, rgba(0,212,170,0.1) 108deg);">
+                        <div class="donut-center">$120B</div>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;">Satellite Services</div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div class="donut-chart" style="background:conic-gradient(var(--warning) 0deg 72deg, rgba(255,182,39,0.1) 72deg);">
+                        <div class="donut-center" style="color:var(--warning);">$80B</div>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;">Launch & Ops</div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div class="donut-chart" style="background:conic-gradient(var(--accent) 0deg 54deg, rgba(0,212,170,0.1) 54deg);box-shadow:0 0 30px rgba(0,212,170,0.15);">
+                        <div class="donut-center">$42B</div>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--accent);margin-top:0.5em;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;">
+                        <span class="status-dot status-dot-green"></span>Space Logistics (SAM)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 6: TRACTION
+         ============================================ -->
+    <section class="slide" aria-label="Traction">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+
+        <div class="slide-content">
+            <span class="reveal section-label">
+                <span>TELEMETRY</span>
+            </span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:0.04em;">From prototype to production</h2>
+
+            <div style="display:flex;gap:clamp(2rem,5vw,5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:center;">
+                    <div class="counter mc-metric" data-target="12" style="font-size:var(--stat-size);">0</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;">
+                        <span class="status-dot status-dot-green"></span>Satellites tracked
+                    </div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div class="counter mc-metric" data-target="3" style="font-size:var(--stat-size);">0</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;">
+                        <span class="status-dot status-dot-green"></span>Agency contracts
+                    </div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div class="counter mc-metric" data-target="847" style="font-size:var(--stat-size);color:var(--warning);text-shadow:0 0 clamp(8px,1.5vw,16px) var(--accent-glow-secondary);">0</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;">
+                        <span class="status-dot status-dot-amber"></span>Debris in catalog
+                    </div>
+                </div>
+            </div>
+
+            <div class="reveal" style="margin-top:var(--content-gap);">
+                <div style="font-size:var(--small-size);color:var(--text-muted);margin-bottom:0.5em;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.12em;">
+                    <span class="status-dot status-dot-green"></span>Revenue Growth (ARR, $K)
+                </div>
+                <div class="bar-chart" style="padding-bottom:clamp(20px,3vw,30px);">
+                    <div class="bar" style="height:15%;"><div class="bar-label">Q1</div><div class="bar-value">$40K</div></div>
+                    <div class="bar" style="height:30%;"><div class="bar-label">Q2</div><div class="bar-value">$120K</div></div>
+                    <div class="bar" style="height:55%;"><div class="bar-label">Q3</div><div class="bar-value">$280K</div></div>
+                    <div class="bar" style="height:85%;background:linear-gradient(180deg,var(--accent),rgba(0,212,170,0.3));box-shadow:0 0 15px var(--accent-glow);"><div class="bar-label">Q4</div><div class="bar-value">$580K</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 7: BUSINESS MODEL
+         ============================================ -->
+    <section class="slide" aria-label="Business Model">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+
+        <div class="slide-content">
+            <span class="reveal section-label">
+                <span>MISSION PACKAGES</span>
+            </span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:0.04em;">SaaS tiers built for scale</h2>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <!-- Scout tier -->
+                <div class="reveal hud-card">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:var(--small-size);text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Scout</div>
+                        <div style="font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;margin-top:0.2em;color:var(--text-primary);">$5K<span style="font-size:var(--small-size);color:var(--text-secondary);font-weight:400;">/mo</span></div>
+                        <ul style="list-style:none;margin-top:0.6em;font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-body);">
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>5 satellites</li>
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>48hr alerts</li>
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>Basic dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Constellation tier (highlighted) -->
+                <div class="reveal hud-card" style="background:rgba(0,212,170,0.06);box-shadow:0 0 30px rgba(0,212,170,0.08);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="position:absolute;top:0;right:clamp(6px,1vw,10px);font-family:var(--font-mono);font-size:clamp(0.45rem,0.7vw,0.6rem);background:var(--accent);color:var(--bg-primary);padding:2px 10px;letter-spacing:0.1em;font-weight:600;">POPULAR</div>
+                        <div style="font-family:var(--font-mono);font-size:var(--small-size);text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);">Constellation</div>
+                        <div style="font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;margin-top:0.2em;color:var(--accent);text-shadow:0 0 10px var(--accent-glow);">$25K<span style="font-size:var(--small-size);color:var(--text-secondary);font-weight:400;">/mo</span></div>
+                        <ul style="list-style:none;margin-top:0.6em;font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-body);">
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>50 satellites</li>
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>72hr AI predictions</li>
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>Maneuver optimization</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Enterprise tier -->
+                <div class="reveal hud-card">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:var(--small-size);text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Enterprise</div>
+                        <div style="font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;margin-top:0.2em;color:var(--text-primary);">Custom</div>
+                        <ul style="list-style:none;margin-top:0.6em;font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-body);">
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>Unlimited satellites</li>
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>Dedicated API</li>
+                            <li style="padding:0.2em 0;"><span class="status-dot status-dot-green"></span>Multi-operator sync</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 8: COMPETITION
+         ============================================ -->
+    <section class="slide" aria-label="Competition">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+
+        <div class="slide-content">
+            <span class="reveal section-label">
+                <span>COMPETITIVE SCAN</span>
+            </span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:0.04em;">Intelligence gap in the market</h2>
+
+            <div class="reveal-scale" style="margin-top:var(--content-gap);overflow-x:auto;">
+                <div class="hud-card" style="padding:0;">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <table class="comp-table" style="margin:clamp(0.3rem,0.8vw,0.6rem);">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>AI Prediction</th>
+                                    <th>Maneuver Opt.</th>
+                                    <th>Multi-Operator</th>
+                                    <th>Real-time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="highlight">
+                                    <td style="font-weight:600;color:var(--accent);font-family:var(--font-display);letter-spacing:0.05em;font-size:var(--small-size);">ORBITAL</td>
+                                    <td><span class="status-dot status-dot-green"></span>&#10003;</td>
+                                    <td><span class="status-dot status-dot-green"></span>&#10003;</td>
+                                    <td><span class="status-dot status-dot-green"></span>&#10003;</td>
+                                    <td><span class="status-dot status-dot-green"></span>&#10003;</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--text-secondary);">LeoLabs</td>
+                                    <td style="color:var(--text-muted);"><span class="status-dot status-dot-amber"></span>Partial</td>
+                                    <td style="color:var(--danger);">&#10007;</td>
+                                    <td style="color:var(--danger);">&#10007;</td>
+                                    <td><span class="status-dot status-dot-green"></span>&#10003;</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--text-secondary);">AGI Space</td>
+                                    <td style="color:var(--danger);">&#10007;</td>
+                                    <td><span class="status-dot status-dot-green"></span>&#10003;</td>
+                                    <td style="color:var(--danger);">&#10007;</td>
+                                    <td style="color:var(--text-muted);"><span class="status-dot status-dot-amber"></span>Partial</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:var(--text-secondary);">18th SDS (Gov)</td>
+                                    <td style="color:var(--text-muted);"><span class="status-dot status-dot-amber"></span>Partial</td>
+                                    <td style="color:var(--danger);">&#10007;</td>
+                                    <td style="color:var(--text-muted);"><span class="status-dot status-dot-amber"></span>Partial</td>
+                                    <td style="color:var(--danger);">&#10007;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 9: TEAM
+         ============================================ -->
+    <section class="slide" aria-label="Team">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+
+        <div class="slide-content">
+            <span class="reveal section-label">
+                <span>CREW MANIFEST</span>
+            </span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:0.04em;">Built by people who know orbits</h2>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(0.75rem,2vw,1.5rem);margin-top:var(--content-gap);">
+                <div class="reveal" style="text-align:center;">
+                    <div style="width:clamp(56px,7vw,80px);height:clamp(56px,7vw,80px);border-radius:50%;border:2px solid var(--accent);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(0.9rem,1.8vw,1.4rem);font-weight:600;font-family:var(--font-mono);color:var(--accent);box-shadow:0 0 15px var(--accent-glow),inset 0 0 15px rgba(0,212,170,0.1);">ER</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);margin-top:0.6em;letter-spacing:0.04em;">Dr. Elena Roskova</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent);font-family:var(--font-mono);letter-spacing:0.1em;">CEO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Former ESA orbital mechanics lead. 12yr astrodynamics.</p>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div style="width:clamp(56px,7vw,80px);height:clamp(56px,7vw,80px);border-radius:50%;border:2px solid var(--warning);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(0.9rem,1.8vw,1.4rem);font-weight:600;font-family:var(--font-mono);color:var(--warning);box-shadow:0 0 15px var(--accent-glow-secondary),inset 0 0 15px rgba(255,182,39,0.1);">MC</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);margin-top:0.6em;letter-spacing:0.04em;">Marcus Chen</h3>
+                    <div style="font-size:var(--small-size);color:var(--warning);font-family:var(--font-mono);letter-spacing:0.1em;">CTO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Ex-SpaceX Starlink. Built ML for 4,000+ satellites.</p>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div style="width:clamp(56px,7vw,80px);height:clamp(56px,7vw,80px);border-radius:50%;border:2px solid var(--accent);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(0.9rem,1.8vw,1.4rem);font-weight:600;font-family:var(--font-mono);color:var(--accent);box-shadow:0 0 15px var(--accent-glow),inset 0 0 15px rgba(0,212,170,0.1);">AK</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);margin-top:0.6em;letter-spacing:0.04em;">Dr. Amara Kone</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent);font-family:var(--font-mono);letter-spacing:0.1em;">COO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Former NASA program manager. Led $200M satellite ops.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 10: THE ASK
+         ============================================ -->
+    <section class="slide" aria-label="The Ask">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="scanlines"></div>
+        <!-- Orbit rings -->
+        <div class="orbit-viz" style="width:clamp(250px,45vw,600px);height:clamp(250px,45vw,600px);top:50%;left:50%;transform:translate(-50%,-50%);animation:orbit-rotate 70s linear infinite;"></div>
+        <div style="position:absolute;width:40%;height:40%;background:radial-gradient(circle,rgba(0,212,170,0.06),transparent 70%);top:30%;left:30%;pointer-events:none;z-index:0;animation:glow-pulse 6s ease-in-out infinite;border-radius:50%;"></div>
+
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <span class="reveal section-label" style="justify-content:center;">
+                <span>MISSION FUNDING</span>
+            </span>
+            <h2 class="reveal-blur" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:800;margin-top:var(--element-gap);letter-spacing:0.06em;animation:text-glow 4s ease-in-out infinite;">$8M SERIES A</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,500px);line-height:1.7;">Scaling the team, expanding coverage to 500+ satellites, and securing 10 enterprise contracts by Q4 2027.</p>
+
+            <div style="display:flex;gap:clamp(1rem,3vw,3rem);margin-top:var(--content-gap);flex-wrap:wrap;justify-content:center;">
+                <div class="reveal hud-card" style="text-align:center;min-width:clamp(60px,12vw,100px);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--accent);text-shadow:0 0 8px var(--accent-glow);">40%</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;">Engineering</div>
+                    </div>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;min-width:clamp(60px,12vw,100px);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--warning);text-shadow:0 0 8px var(--accent-glow-secondary);">30%</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;">Sales</div>
+                    </div>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;min-width:clamp(60px,12vw,100px);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--accent);">20%</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;">Infra</div>
+                    </div>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;min-width:clamp(60px,12vw,100px);">
+                    <div class="hud-card-inner" style="position:relative;">
+                        <div style="font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--text-secondary);">10%</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;">Ops</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-muted);margin-top:var(--content-gap);font-family:var(--font-mono);letter-spacing:0.08em;">elena@orbital.space &nbsp;|&nbsp; orbital.space</p>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.4;font-family:var(--font-mono);">Made with <a href="https://nextslide.app" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <!-- ===========================================
+         SLIDE PRESENTATION CONTROLLER
+         Full-featured navigation with counters
+         =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const dY = this.touchStartY - e.changedTouches[0].clientY;
+                    const dX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return;
+                    if (dY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let t;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+            }
+        }
+
+        /* Animate counters when slide becomes visible */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 1500;
+                    const start = performance.now();
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

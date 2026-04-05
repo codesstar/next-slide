@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Collage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lato:wght@300;400;700&family=Dancing+Script:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE (INLINE) === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .decorative { display: none; } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } .two-col { flex-direction: column !important; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+  .reveal, .reveal-left, .reveal-right { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal, .slide.active .reveal-left, .slide.active .reveal-right { opacity: 1; }
+}
+@media print {
+  .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; position: relative !important; opacity: 1 !important; pointer-events: auto !important; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; }
+}
+
+/* === STYLE: BLUE COLLAGE === */
+:root {
+  --bg: #f0ebe0;
+  --text: #111;
+  --royal-blue: #2b4cdb;
+  --sage: #7a8b6f;
+  --warm-gray: #c8bfb0;
+  --muted: #777;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body { background: var(--bg); color: var(--text); font-family: 'Lato', 'Noto Sans SC', sans-serif; }
+
+/* Paper texture */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(180,170,155,0.08) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 1000;
+  background: var(--royal-blue); transition: width 0.5s var(--ease-out-expo);
+}
+
+.page-counter {
+  position: fixed; bottom: clamp(16px, 2.5vh, 32px); right: clamp(24px, 3vw, 48px);
+  font-family: 'Lato', sans-serif; font-size: clamp(9px, 0.8vw, 12px);
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); z-index: 1000;
+}
+.page-counter .current { color: var(--text); font-weight: 700; }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; opacity: 0; pointer-events: none;
+  transition: opacity 0.7s var(--ease-out-expo); background: var(--bg);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(32px, 5vh, 56px) clamp(36px, 6vw, 80px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+/* Typography */
+.serif { font-family: 'Playfair Display', 'Noto Sans SC', serif; }
+.script { font-family: 'Dancing Script', cursive; }
+
+.title-bold {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-weight: 900; font-size: clamp(48px, 8vw, 120px);
+  line-height: 0.95; color: var(--text); letter-spacing: -0.02em;
+}
+
+/* Torn photo placeholder */
+.torn-photo {
+  background: var(--warm-gray); position: absolute;
+  clip-path: polygon(3% 0%, 8% 2%, 15% 0%, 22% 1%, 30% 0%, 38% 2%, 45% 0%, 52% 1%, 60% 0%, 68% 2%, 75% 0%, 82% 1%, 90% 0%, 95% 1%, 100% 0%, 100% 5%, 98% 12%, 100% 20%, 99% 28%, 100% 35%, 98% 42%, 100% 50%, 99% 58%, 100% 65%, 98% 72%, 100% 80%, 99% 88%, 100% 95%, 98% 100%, 92% 100%, 85% 98%, 78% 100%, 70% 99%, 62% 100%, 55% 98%, 48% 100%, 40% 99%, 32% 100%, 25% 98%, 18% 100%, 10% 99%, 5% 100%, 0% 98%, 0% 92%, 2% 85%, 0% 78%, 1% 70%, 0% 62%, 2% 55%, 0% 48%, 1% 40%, 0% 32%, 2% 25%, 0% 18%, 1% 10%, 0% 5%);
+}
+
+/* Halftone dots */
+.halftone {
+  background-image: radial-gradient(circle, var(--royal-blue) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+
+/* Butterfly */
+.butterfly { position: absolute; width: clamp(30px, 4vw, 50px); height: clamp(24px, 3vw, 40px); }
+.butterfly .wing-l, .butterfly .wing-r {
+  position: absolute; top: 0; width: 44%; height: 85%;
+  background: var(--royal-blue); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+.butterfly .wing-l { left: 2px; transform: rotate(-10deg); }
+.butterfly .wing-r { right: 2px; transform: rotate(10deg); }
+.butterfly .body-bf {
+  position: absolute; left: 50%; top: 10%; width: 3px; height: 75%;
+  background: #1a2e80; transform: translateX(-50%); border-radius: 2px;
+}
+
+/* Leaf cluster */
+.leaf-cluster { position: absolute; width: clamp(50px, 6vw, 80px); height: clamp(70px, 9vh, 120px); }
+.leaf-cluster .lf { position: absolute; background: var(--royal-blue); border-radius: 50% 0 50% 0; }
+.leaf-cluster .stem { position: absolute; width: 2px; background: var(--royal-blue); }
+
+/* Blue accent strip */
+.blue-strip { width: clamp(120px, 16vw, 200px); height: clamp(4px, 0.5vh, 8px); background: var(--royal-blue); }
+
+/* Feature grid */
+.feature-grid-2col {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 3vw, 48px); max-width: 700px;
+}
+.feat-item h3 { font-family: 'Playfair Display', serif; font-size: clamp(14px, 1.5vw, 18px); font-weight: 700; margin-bottom: clamp(4px, 0.6vh, 8px); }
+.feat-item .year-tag { font-size: clamp(9px, 0.8vw, 11px); letter-spacing: 2px; color: var(--royal-blue); margin-bottom: 4px; }
+.feat-item p { font-size: var(--body-size); line-height: 1.7; color: #666; }
+
+/* Stats */
+.stats-row { display: flex; gap: clamp(32px, 5vw, 72px); align-items: flex-end; flex-wrap: wrap; }
+.stat-block .number {
+  font-family: 'Playfair Display', 'Noto Sans SC', serif;
+  font-weight: 900; font-size: clamp(40px, 7vw, 100px); line-height: 1;
+}
+.stat-block .number .unit { font-size: 0.4em; color: var(--royal-blue); }
+.stat-block .label { font-size: var(--body-size); color: var(--muted); margin-top: clamp(4px, 0.6vh, 8px); }
+
+/* Circle botanical */
+.circle-botanical {
+  position: absolute; border-radius: 50%; background: #1a1a2e; overflow: hidden;
+}
+.circle-botanical .inner-leaf {
+  position: absolute; background: var(--royal-blue); border-radius: 50% 0 50% 0; opacity: 0.7;
+}
+
+/* Animations */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo); }
+.reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo); }
+.reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo); }
+.slide.active .reveal, .slide.active .reveal-left, .slide.active .reveal-right { opacity: 1; transform: translate(0); }
+.slide.active .d1 { transition-delay: 0.05s; }
+.slide.active .d2 { transition-delay: 0.15s; }
+.slide.active .d3 { transition-delay: 0.28s; }
+.slide.active .d4 { transition-delay: 0.40s; }
+.slide.active .d5 { transition-delay: 0.52s; }
+.slide.active .d6 { transition-delay: 0.64s; }
+
+@media (max-width: 600px) { .feature-grid-2col { grid-template-columns: 1fr; } .stats-row { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide active" data-i="0">
+  <div class="slide-inner">
+    <div style="display:flex; justify-content:space-between; padding-bottom:clamp(8px,1vh,16px);">
+      <span class="reveal d1" style="font-size:var(--small-size); letter-spacing:3px; text-transform:uppercase; color:#555;">Design Revolution</span>
+      <span class="reveal d1" style="font-size:var(--small-size); letter-spacing:3px; text-transform:uppercase; color:#555;">AI-Powered</span>
+    </div>
+    <div class="title-bold reveal d2" style="margin-bottom:clamp(16px,3vh,32px);">设计革命</div>
+    <div class="two-col" style="display:flex; gap:clamp(32px,5vw,64px);">
+      <div class="reveal d3" style="flex:1;">
+        <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(13px,1.3vw,16px); margin-bottom:2px;">智能布局引擎</div>
+        <div style="font-size:var(--small-size); letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:clamp(8px,1.5vh,16px);">AI Layout Engine</div>
+        <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(13px,1.3vw,16px); margin-bottom:2px;">风格迁移系统</div>
+        <div style="font-size:var(--small-size); letter-spacing:2px; text-transform:uppercase; color:var(--muted);">Style Transfer</div>
+      </div>
+      <div class="reveal d4" style="flex:1;">
+        <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(13px,1.3vw,16px); margin-bottom:2px;">实时协作平台</div>
+        <div style="font-size:var(--small-size); letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:clamp(8px,1.5vh,16px);">Real-time Collab</div>
+        <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(13px,1.3vw,16px); margin-bottom:2px;">自适应排版</div>
+        <div style="font-size:var(--small-size); letter-spacing:2px; text-transform:uppercase; color:var(--muted);">Adaptive Typography</div>
+      </div>
+    </div>
+    <div class="blue-strip reveal d5" style="margin-top:clamp(24px,4vh,40px);"></div>
+    <!-- Torn photo decorations -->
+    <div class="decorative torn-photo reveal-right d4" style="width:clamp(140px,15vw,220px); height:clamp(180px,22vh,280px); right:clamp(32px,5vw,60px); top:clamp(100px,15vh,180px); transform:rotate(3deg);"></div>
+    <!-- Butterfly -->
+    <div class="decorative butterfly reveal d5" style="right:clamp(200px,22vw,320px); top:clamp(80px,13vh,160px); transform:rotate(-15deg) scale(0.8);">
+      <div class="wing-l"></div><div class="wing-r"></div><div class="body-bf"></div>
+    </div>
+    <!-- Leaf cluster -->
+    <div class="decorative leaf-cluster reveal d6" style="right:clamp(24px,4vw,48px); bottom:clamp(80px,12vh,140px);">
+      <div class="lf" style="width:28px; height:50px; top:0; left:20px; transform:rotate(-30deg);"></div>
+      <div class="lf" style="width:22px; height:40px; top:30px; left:40px; transform:rotate(15deg);"></div>
+      <div class="stem" style="left:35px; top:20px; height:70px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="slide-inner" style="flex-direction:row; gap:clamp(32px,5vw,64px); align-items:center;">
+    <div style="flex:1;">
+      <div style="position:absolute; top:clamp(20px,3vh,40px); left:clamp(24px,4vw,48px); writing-mode:vertical-rl; font-family:'Playfair Display',serif; font-weight:900; font-size:clamp(28px,4vw,48px); letter-spacing:8px; color:var(--text);" class="reveal-left d1">PERSONAL SKILLS</div>
+      <!-- Circle frame -->
+      <div class="reveal d2" style="width:clamp(180px,25vw,320px); height:clamp(180px,25vw,320px); border-radius:50%; background:var(--warm-gray); border:3px solid #bbb3a4; margin-left:clamp(48px,8vw,100px);"></div>
+    </div>
+    <div style="flex:1;">
+      <div class="reveal d2" style="margin-bottom:clamp(24px,3vh,36px);">
+        <div style="font-family:'Playfair Display',serif; font-size:clamp(12px,1.1vw,14px); color:var(--royal-blue); font-weight:700; margin-bottom:4px;">01.</div>
+        <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(16px,2vw,22px); letter-spacing:3px; margin-bottom:6px;">智能布局</div>
+        <div style="font-size:var(--body-size); line-height:1.7; color:#666; max-width:320px;">AI 理解内容语义结构，自动生成符合视觉层次的排版方案</div>
+      </div>
+      <div class="reveal d3" style="margin-bottom:clamp(24px,3vh,36px);">
+        <div style="font-family:'Playfair Display',serif; font-size:clamp(12px,1.1vw,14px); color:var(--royal-blue); font-weight:700; margin-bottom:4px;">02.</div>
+        <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(16px,2vw,22px); letter-spacing:3px; margin-bottom:6px;">风格迁移</div>
+        <div style="font-size:var(--body-size); line-height:1.7; color:#666; max-width:320px;">一键将任意参考图的视觉语言迁移到你的设计中</div>
+      </div>
+      <div class="reveal d4">
+        <div style="font-family:'Playfair Display',serif; font-size:clamp(12px,1.1vw,14px); color:var(--royal-blue); font-weight:700; margin-bottom:4px;">03.</div>
+        <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(16px,2vw,22px); letter-spacing:3px; margin-bottom:6px;">自适应排版</div>
+        <div style="font-size:var(--body-size); line-height:1.7; color:#666; max-width:320px;">一次设计，自动适配所有终端尺寸</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="slide-inner">
+    <div class="title-bold reveal d1" style="font-size:clamp(48px,8vw,100px); margin-bottom:clamp(24px,4vh,40px);">
+      <span class="script" style="font-size:clamp(28px,4vw,42px); color:var(--royal-blue); display:block; font-weight:400;">performance</span>
+      METRICS
+    </div>
+    <div class="stats-row">
+      <div class="stat-block reveal d2">
+        <div class="number">10<span class="unit">x</span></div>
+        <div class="label">效率提升</div>
+      </div>
+      <div class="stat-block reveal d3">
+        <div class="number">93<span class="unit">%</span></div>
+        <div class="label">用户满意度</div>
+      </div>
+      <div class="stat-block reveal d4">
+        <div class="number">50<span class="unit">M+</span></div>
+        <div class="label">设计生成</div>
+      </div>
+    </div>
+    <!-- Circle botanical -->
+    <div class="decorative circle-botanical reveal d5" style="right:clamp(40px,6vw,80px); top:50%; transform:translateY(-50%); width:clamp(180px,22vw,300px); height:clamp(180px,22vw,300px);">
+      <div class="inner-leaf" style="width:50px; height:85px; top:50px; left:70px; transform:rotate(-30deg);"></div>
+      <div class="inner-leaf" style="width:40px; height:70px; top:85px; left:130px; transform:rotate(20deg); border-radius:0 50% 0 50%;"></div>
+      <div class="inner-leaf" style="width:35px; height:60px; top:35px; left:150px; transform:rotate(-10deg);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="slide-inner" style="align-items:flex-start;">
+    <div class="title-bold reveal d1" style="font-size:clamp(36px,6vw,80px); line-height:1.1; max-width:18ch; margin-bottom:clamp(16px,3vh,32px);">
+      "设计是从混沌中创造秩序。"
+    </div>
+    <div class="script reveal d2" style="font-size:clamp(20px,3vw,36px); color:var(--royal-blue); margin-bottom:clamp(8px,1.5vh,16px);">creativity</div>
+    <div class="reveal d3" style="font-size:var(--body-size); color:var(--muted);">Massimo Vignelli</div>
+    <div class="decorative halftone reveal d4" style="position:absolute; width:clamp(50px,6vw,80px); height:clamp(50px,6vw,80px); right:clamp(180px,22vw,300px); top:clamp(120px,18vh,200px); opacity:0.12; border-radius:50%;"></div>
+    <div class="decorative butterfly reveal d5" style="right:clamp(100px,14vw,200px); bottom:clamp(100px,15vh,160px); transform:rotate(20deg) scale(0.6);">
+      <div class="wing-l"></div><div class="wing-r"></div><div class="body-bf"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="slide-inner">
+    <div style="display:flex; justify-content:space-between; padding-bottom:clamp(4px,0.8vh,8px);">
+      <span class="reveal d1" style="font-size:var(--small-size); letter-spacing:3px; text-transform:uppercase; color:var(--muted);">Design Revolution</span>
+      <span class="reveal d1" style="font-size:var(--small-size); letter-spacing:3px; text-transform:uppercase; color:var(--muted);">AI-Powered</span>
+    </div>
+    <div class="title-bold reveal d2" style="font-size:clamp(42px,7vw,82px); line-height:0.95; max-width:16ch; margin-bottom:clamp(24px,4vh,40px);">
+      LET'S CREATE TOGETHER
+    </div>
+    <div class="feature-grid-2col" style="margin-bottom:clamp(16px,3vh,32px);">
+      <div class="feat-item reveal d3">
+        <div class="year-tag">2024 - 2026</div>
+        <h3>Verdant Rebranding</h3>
+        <p>完整的视觉身份重塑，涵盖排版、品牌材料和新的字体系统</p>
+      </div>
+      <div class="feat-item reveal d4">
+        <div class="year-tag">2025 - 2026</div>
+        <h3>Meridian Exhibition</h3>
+        <p>将复古印刷技术与现代极简主义融合的展览设计</p>
+      </div>
+    </div>
+    <div class="blue-strip reveal d5"></div>
+    <div class="script reveal d5" style="position:absolute; bottom:clamp(24px,4vh,40px); right:clamp(32px,5vw,60px); font-size:clamp(16px,2vw,24px); color:#555;">By Design Revolution</div>
+    <!-- Torn photo -->
+    <div class="decorative torn-photo reveal-right d4" style="width:clamp(180px,20vw,300px); height:clamp(220px,28vh,380px); right:clamp(32px,5vw,60px); top:clamp(100px,14vh,180px); transform:rotate(2deg);"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click',function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

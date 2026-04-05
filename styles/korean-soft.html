@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Korean Soft - 设计革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== VIEWPORT BASE (inlined) ========== */
+html, body { height: 100%; overflow: hidden; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+  .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+  :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+}
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+}
+
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+  .reveal { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal { opacity: 1; }
+}
+
+@media print {
+  .slide { position: relative !important; height: auto; min-height: 100vh; overflow: visible; page-break-after: always; opacity: 1 !important; pointer-events: auto !important; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+/* ========== KOREAN SOFT CORE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #F7F5F2;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  color: #333;
+}
+
+/* -- Progress bar -- */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: clamp(2px, 0.3vh, 3px);
+  background: linear-gradient(90deg, #E8D5CC, #C4A882);
+  z-index: 1000;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 0 2px 2px 0;
+}
+
+/* -- Page counter -- */
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 3vh, 36px);
+  right: clamp(20px, 3vw, 48px);
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 400;
+  color: #ccc;
+  letter-spacing: 0.12em;
+  z-index: 1000;
+}
+.page-counter .current { color: #C4A882; font-weight: 500; }
+
+/* -- Slide container -- */
+.slide {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1);
+  background: #F7F5F2;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Subtle cream texture on all slides */
+.slide::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* -- Reveal animation (soft Korean style) -- */
+.reveal {
+  opacity: 0;
+  transform: translateY(clamp(12px, 2vh, 24px));
+  filter: blur(2px);
+}
+
+.slide.active .reveal {
+  animation: softReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.slide.active .reveal:nth-child(1) { animation-delay: 0.1s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.25s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.4s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.55s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.7s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.85s; }
+.slide.active .reveal:nth-child(7) { animation-delay: 1.0s; }
+
+@keyframes softReveal {
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Floating soft shapes */
+@keyframes gentleFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8px, -12px) scale(1.02); }
+}
+
+@keyframes gentlePulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+}
+
+/* -- Shared decorative elements -- */
+.warm-gradient {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+}
+
+.soft-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: gentleFloat 12s ease-in-out infinite;
+}
+
+.dot-grid {
+  position: absolute;
+  pointer-events: none;
+}
+
+.corner-line {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ==================== SLIDE 1: COVER ==================== */
+.slide-1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-1 .warm-gradient {
+  background:
+    radial-gradient(ellipse at 25% 35%, rgba(232, 213, 204, 0.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 78% 65%, rgba(196, 168, 130, 0.2) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 20%, rgba(212, 197, 190, 0.15) 0%, transparent 40%);
+}
+
+.slide-1 .shape-1 {
+  width: clamp(200px, 28vw, 360px); height: clamp(200px, 28vw, 360px);
+  background: rgba(232, 213, 204, 0.2);
+  top: -6%; right: -5%;
+  animation-duration: 14s;
+}
+
+.slide-1 .shape-2 {
+  width: clamp(140px, 19vw, 240px); height: clamp(140px, 19vw, 240px);
+  background: rgba(196, 168, 130, 0.1);
+  bottom: -8%; left: -3%;
+  animation-duration: 16s; animation-delay: -3s;
+}
+
+.slide-1 .shape-3 {
+  width: clamp(90px, 12vw, 160px); height: clamp(90px, 12vw, 160px);
+  background: rgba(212, 197, 190, 0.12);
+  top: 17%; left: 14%;
+  animation-duration: 18s; animation-delay: -6s;
+}
+
+.slide-1 .dot-grid-a {
+  top: clamp(30px, 7vh, 52px); right: clamp(40px, 6vw, 72px);
+  width: clamp(80px, 11vw, 140px); height: clamp(80px, 11vw, 140px);
+  background-image: radial-gradient(circle, #D4C5BE 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+  opacity: 0.35;
+}
+
+.slide-1 .dot-grid-b {
+  bottom: clamp(40px, 10vh, 72px); left: clamp(50px, 7vw, 88px);
+  width: clamp(56px, 7.5vw, 96px); height: clamp(56px, 7.5vw, 96px);
+  background-image: radial-gradient(circle, #D4C5BE 1px, transparent 1px);
+  background-size: 12px 12px;
+  opacity: 0.25;
+}
+
+.slide-1 .corner-tl {
+  top: clamp(28px, 6vh, 44px); left: clamp(32px, 4.5vw, 56px);
+  width: clamp(28px, 3.5vw, 44px); height: clamp(28px, 3.5vw, 44px);
+  border-top: 1px solid #D4C5BE;
+  border-left: 1px solid #D4C5BE;
+}
+
+.slide-1 .corner-br {
+  bottom: clamp(28px, 6vh, 44px); right: clamp(32px, 4.5vw, 56px);
+  width: clamp(28px, 3.5vw, 44px); height: clamp(28px, 3.5vw, 44px);
+  border-bottom: 1px solid #D4C5BE;
+  border-right: 1px solid #D4C5BE;
+}
+
+.slide-1 .corner-tr {
+  top: clamp(28px, 6vh, 44px); right: clamp(32px, 4.5vw, 56px);
+  width: clamp(28px, 3.5vw, 44px); height: clamp(28px, 3.5vw, 44px);
+  border-top: 1px solid rgba(212, 197, 190, 0.3);
+  border-right: 1px solid rgba(212, 197, 190, 0.3);
+}
+
+.slide-1 .corner-bl {
+  bottom: clamp(28px, 6vh, 44px); left: clamp(32px, 4.5vw, 56px);
+  width: clamp(28px, 3.5vw, 44px); height: clamp(28px, 3.5vw, 44px);
+  border-bottom: 1px solid rgba(212, 197, 190, 0.3);
+  border-left: 1px solid rgba(212, 197, 190, 0.3);
+}
+
+.slide-1 .thin-line-v {
+  position: absolute;
+  left: clamp(80px, 9.5vw, 120px); top: clamp(100px, 22vh, 160px);
+  width: 1px; height: clamp(60px, 14vh, 100px);
+  background: linear-gradient(180deg, transparent, #E8D5CC, transparent);
+}
+
+.slide-1 .thin-line-h {
+  position: absolute;
+  right: clamp(100px, 12.5vw, 160px); bottom: clamp(100px, 19vh, 140px);
+  width: clamp(48px, 6vw, 80px); height: 1px;
+  background: linear-gradient(90deg, transparent, #E8D5CC, transparent);
+}
+
+.slide-1 .wave-line {
+  position: absolute;
+  bottom: clamp(100px, 22vh, 160px); left: 50%;
+  transform: translateX(-50%);
+  width: clamp(120px, 14vw, 180px); height: 16px;
+  opacity: 0.12;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20'%3E%3Cpath d='M0 10 Q25 0 50 10 T100 10 T150 10 T200 10' fill='none' stroke='%23C4A882' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+.slide-1 .center-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: clamp(400px, 55vw, 700px);
+  padding: 0 clamp(16px, 3vw, 40px);
+}
+
+.slide-1 .label {
+  font-size: clamp(10px, 0.95vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #C4A882;
+  margin-bottom: clamp(20px, 5.5vh, 40px);
+}
+
+.slide-1 .title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 5.6vw, 72px);
+  font-weight: 400;
+  color: #333;
+  line-height: 1.15;
+  margin-bottom: clamp(16px, 3.8vh, 28px);
+  letter-spacing: -0.01em;
+}
+
+.slide-1 .subtitle {
+  font-size: clamp(13px, 1.25vw, 16px);
+  font-weight: 300;
+  color: #999;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+}
+
+.slide-1 .line-h-center {
+  width: clamp(36px, 4.7vw, 60px);
+  height: 1px;
+  background: #D4C5BE;
+  margin: clamp(20px, 4.4vh, 32px) auto 0;
+}
+
+.slide-1 .bottom-tag {
+  position: absolute;
+  bottom: clamp(32px, 7.2vh, 52px); left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(9px, 0.86vw, 11px);
+  font-weight: 400;
+  color: #ccc;
+  letter-spacing: 0.15em;
+  z-index: 10;
+}
+
+/* ==================== SLIDE 2: THREE PRINCIPLES ==================== */
+.slide-2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(36px, 8.3vh, 60px) clamp(48px, 6.25vw, 80px);
+}
+
+.slide-2 .bg-gradient {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(232, 213, 204, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 80%, rgba(196, 168, 130, 0.1) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.slide-2 .side-line {
+  position: absolute;
+  right: clamp(24px, 3.1vw, 40px); top: clamp(80px, 16.7vh, 120px);
+  width: 1px; height: clamp(120px, 27.8vh, 200px);
+  background: linear-gradient(180deg, transparent, rgba(212, 197, 190, 0.3), transparent);
+  pointer-events: none;
+}
+
+.slide-2 .section-label {
+  font-size: clamp(10px, 0.95vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #C4A882;
+  margin-bottom: clamp(8px, 1.7vh, 12px);
+  position: relative;
+  z-index: 10;
+}
+
+.slide-2 .section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 2.8vw, 36px);
+  font-weight: 400;
+  color: #333;
+  margin-bottom: clamp(24px, 6.1vh, 44px);
+  position: relative;
+  z-index: 10;
+}
+
+.slide-2 .section-title-line {
+  display: inline-block;
+  width: clamp(20px, 2.5vw, 32px);
+  height: 1px;
+  background: #D4C5BE;
+  vertical-align: middle;
+  margin-left: clamp(10px, 1.25vw, 16px);
+}
+
+.slide-2 .cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2.2vw, 28px);
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 700px) {
+  .slide-2 .cards-grid { grid-template-columns: 1fr; }
+}
+
+.slide-2 .card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: clamp(14px, 1.6vw, 20px);
+  padding: clamp(24px, 5.5vh, 40px) clamp(20px, 2.5vw, 32px);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+  position: relative;
+  border: 1px solid rgba(232, 213, 204, 0.3);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slide-2 .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(196, 168, 130, 0.12);
+}
+
+.slide-2 .card-accent {
+  position: absolute;
+  top: 0; left: clamp(20px, 2.5vw, 32px);
+  width: clamp(28px, 3.1vw, 40px); height: 3px;
+  border-radius: 0 0 3px 3px;
+}
+
+.slide-2 .accent-pink { background: #E8D5CC; }
+.slide-2 .accent-mauve { background: #D4C5BE; }
+.slide-2 .accent-tea { background: #C4A882; }
+
+.slide-2 .card-number {
+  font-size: clamp(32px, 3.75vw, 48px);
+  font-weight: 300;
+  color: #E8D5CC;
+  margin-bottom: clamp(12px, 2.8vh, 20px);
+  line-height: 1;
+}
+
+.slide-2 .card h3 {
+  font-size: clamp(16px, 1.6vw, 20px);
+  font-weight: 500;
+  color: #333;
+  margin-bottom: clamp(8px, 1.7vh, 12px);
+  letter-spacing: 0.02em;
+}
+
+.slide-2 .card p {
+  font-size: clamp(12px, 1.1vw, 14px);
+  font-weight: 300;
+  color: #888;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.slide-2 .card-dot {
+  position: absolute;
+  bottom: clamp(16px, 3.9vh, 28px); right: clamp(16px, 2.2vw, 28px);
+  width: clamp(18px, 1.9vw, 24px); height: clamp(18px, 1.9vw, 24px);
+  border-radius: 50%;
+  border: 1px solid rgba(212, 197, 190, 0.3);
+}
+
+.slide-2 .card-dot-inner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+.slide-2 .dot-inner-pink { background: rgba(232, 213, 204, 0.6); }
+.slide-2 .dot-inner-mauve { background: rgba(212, 197, 190, 0.6); }
+.slide-2 .dot-inner-tea { background: rgba(196, 168, 130, 0.6); }
+
+.slide-2 .separator-dots {
+  position: absolute;
+  bottom: clamp(24px, 5.5vh, 40px); right: clamp(48px, 6.25vw, 80px);
+  display: flex; gap: 8px;
+  z-index: 10;
+}
+
+.slide-2 .sep-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #D4C5BE;
+}
+
+/* ==================== SLIDE 3: FEATURE (ASYMMETRIC) ==================== */
+.slide-3 {
+  display: flex;
+}
+
+.slide-3 .bg-gradient {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(232, 213, 204, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.slide-3 .left-panel {
+  width: 45%;
+  height: 100%;
+  padding: clamp(48px, 11.1vh, 80px) clamp(32px, 4.4vw, 56px) clamp(48px, 11.1vh, 80px) clamp(48px, 6.25vw, 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+.slide-3 .left-panel .label {
+  font-size: clamp(10px, 0.95vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #C4A882;
+  margin-bottom: clamp(14px, 3.3vh, 24px);
+}
+
+.slide-3 .left-panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 400;
+  color: #333;
+  line-height: 1.25;
+  margin-bottom: clamp(14px, 3.3vh, 24px);
+}
+
+.slide-3 .left-panel .thin-line {
+  width: clamp(28px, 3.1vw, 40px);
+  height: 1px;
+  background: #D4C5BE;
+  margin: clamp(16px, 3.9vh, 28px) 0;
+}
+
+.slide-3 .left-panel p {
+  font-size: clamp(13px, 1.17vw, 15px);
+  font-weight: 300;
+  color: #888;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+}
+
+.slide-3 .detail-row {
+  display: flex;
+  gap: clamp(16px, 2.5vw, 32px);
+  margin-top: clamp(16px, 3.9vh, 28px);
+}
+
+.slide-3 .detail-item {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.8vw, 10px);
+}
+
+.slide-3 .detail-dot {
+  width: clamp(6px, 0.6vw, 8px); height: clamp(6px, 0.6vw, 8px);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.slide-3 .detail-text {
+  font-size: clamp(10px, 0.95vw, 12px);
+  font-weight: 400;
+  color: #aaa;
+  letter-spacing: 0.05em;
+}
+
+.slide-3 .v-line {
+  position: absolute;
+  left: 45%; top: clamp(48px, 10vh, 72px); bottom: clamp(48px, 10vh, 72px);
+  width: 1px;
+  background: linear-gradient(180deg, transparent, #E8D5CC, transparent);
+  z-index: 10;
+}
+
+.slide-3 .right-panel {
+  flex: 1;
+  padding: clamp(32px, 6.7vh, 48px) clamp(36px, 4.7vw, 60px) clamp(32px, 6.7vh, 48px) clamp(24px, 3.1vw, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+.slide-3 .image-area {
+  width: min(clamp(300px, 42vw, 540px), 100%);
+  aspect-ratio: 540 / 520;
+  border-radius: clamp(16px, 1.9vw, 24px);
+  background: linear-gradient(155deg, #F0EBE5, #E8D5CC 40%, #D4C5BE 80%, #C4A882);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-3 .image-area .inner-shape {
+  position: absolute;
+  border-radius: 50%;
+  animation: gentlePulse 8s ease-in-out infinite;
+}
+
+.slide-3 .inner-s1 {
+  width: 56%; height: 56%;
+  background: rgba(247, 245, 242, 0.35);
+  top: -10%; right: -13%;
+}
+
+.slide-3 .inner-s2 {
+  width: 41%; height: 41%;
+  background: rgba(196, 168, 130, 0.2);
+  bottom: 6%; left: 9%;
+  animation-delay: -2s !important;
+}
+
+.slide-3 .inner-s3 {
+  width: 26%; height: 26%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: clamp(12px, 1.6vw, 20px) !important;
+  top: 15%; left: 7%;
+  transform: rotate(12deg);
+  animation-delay: -4s !important;
+}
+
+.slide-3 .inner-s4 {
+  width: 19%; height: 19%;
+  background: rgba(255, 255, 255, 0.2);
+  top: 38%; right: 15%;
+  animation-delay: -6s !important;
+}
+
+.slide-3 .image-area .inner-dots {
+  position: absolute;
+  top: 7%; left: 7%;
+  display: flex; gap: 6px;
+}
+
+.slide-3 .image-area .inner-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(247, 245, 242, 0.4);
+}
+
+.slide-3 .image-area .grid-pattern {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 37%; height: 23%;
+  background-image: radial-gradient(circle, rgba(247,245,242,0.15) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+/* ==================== SLIDE 4: QUOTE ==================== */
+.slide-4 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-4 .warm-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(232, 213, 204, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 20%, rgba(196, 168, 130, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 80%, rgba(212, 197, 190, 0.1) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.slide-4 .soft-circle-bg {
+  position: absolute;
+  width: clamp(300px, 40vw, 500px); height: clamp(300px, 40vw, 500px);
+  border-radius: 50%;
+  background: rgba(232, 213, 204, 0.08);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: gentleFloat 16s ease-in-out infinite;
+}
+
+.slide-4 .frame-outer {
+  position: absolute;
+  top: clamp(24px, 5.5vh, 40px); left: clamp(28px, 3.75vw, 48px);
+  right: clamp(28px, 3.75vw, 48px); bottom: clamp(24px, 5.5vh, 40px);
+  border: 1px solid rgba(212, 197, 190, 0.2);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.slide-4 .frame-inner {
+  position: absolute;
+  top: clamp(36px, 7.8vh, 56px); left: clamp(40px, 5vw, 64px);
+  right: clamp(40px, 5vw, 64px); bottom: clamp(36px, 7.8vh, 56px);
+  border: 1px solid rgba(212, 197, 190, 0.12);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.slide-4 .corner-accent-tl {
+  position: absolute;
+  top: clamp(36px, 7.8vh, 56px); left: clamp(40px, 5vw, 64px);
+  width: 24px; height: 24px;
+  border-top: 1px solid rgba(196, 168, 130, 0.35);
+  border-left: 1px solid rgba(196, 168, 130, 0.35);
+  pointer-events: none;
+}
+
+.slide-4 .corner-accent-br {
+  position: absolute;
+  bottom: clamp(36px, 7.8vh, 56px); right: clamp(40px, 5vw, 64px);
+  width: 24px; height: 24px;
+  border-bottom: 1px solid rgba(196, 168, 130, 0.35);
+  border-right: 1px solid rgba(196, 168, 130, 0.35);
+  pointer-events: none;
+}
+
+.slide-4 .side-dots {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.slide-4 .side-dots-left { left: clamp(48px, 6.25vw, 80px); }
+.slide-4 .side-dots-right { right: clamp(48px, 6.25vw, 80px); }
+
+.slide-4 .s-dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #D4C5BE;
+}
+
+.slide-4 .top-line {
+  position: absolute;
+  top: clamp(48px, 11.1vh, 80px); left: 50%;
+  transform: translateX(-50%);
+  width: 1px; height: clamp(24px, 5.5vh, 40px);
+  background: linear-gradient(180deg, rgba(212, 197, 190, 0.3), transparent);
+  pointer-events: none;
+}
+
+.slide-4 .bottom-line {
+  position: absolute;
+  bottom: clamp(48px, 11.1vh, 80px); left: 50%;
+  transform: translateX(-50%);
+  width: 1px; height: clamp(24px, 5.5vh, 40px);
+  background: linear-gradient(180deg, transparent, rgba(212, 197, 190, 0.3));
+  pointer-events: none;
+}
+
+.slide-4 .quote-block {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: clamp(400px, 61vw, 780px);
+  padding: 0 clamp(24px, 4.7vw, 60px);
+}
+
+.slide-4 .quote-mark {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(60px, 9.4vw, 120px);
+  color: #E8D5CC;
+  line-height: 0.6;
+  margin-bottom: clamp(8px, 2.2vh, 16px);
+}
+
+.slide-4 .quote-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(22px, 2.8vw, 36px);
+  font-weight: 400;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: clamp(24px, 5.5vh, 40px);
+  letter-spacing: 0.01em;
+}
+
+.slide-4 .quote-line {
+  width: clamp(28px, 3.1vw, 40px);
+  height: 1px;
+  background: #D4C5BE;
+  margin: 0 auto clamp(14px, 3.3vh, 24px);
+}
+
+.slide-4 .quote-author {
+  font-size: clamp(12px, 1.1vw, 14px);
+  font-weight: 500;
+  color: #C4A882;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.slide-4 .quote-role {
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 300;
+  color: #aaa;
+  margin-top: clamp(4px, 1.1vh, 8px);
+  letter-spacing: 0.05em;
+}
+
+.slide-4 .wave-subtle {
+  position: absolute;
+  bottom: clamp(64px, 13.9vh, 100px); left: 50%;
+  transform: translateX(-50%);
+  width: clamp(100px, 12.5vw, 160px); height: 12px;
+  opacity: 0.12;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 12'%3E%3Cpath d='M0 6 Q20 0 40 6 T80 6 T120 6 T160 6' fill='none' stroke='%23C4A882' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+  pointer-events: none;
+}
+
+/* ==================== SLIDE 5: CLOSING ==================== */
+.slide-5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-5 .bg-warmth {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(232, 213, 204, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(196, 168, 130, 0.15) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(212, 197, 190, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.slide-5 .wave-closing {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%; height: 30px;
+  opacity: 0.04;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 30'%3E%3Cpath d='M0 15 Q40 5 80 15 T160 15 T240 15 T320 15 T400 15 T480 15 T560 15 T640 15 T720 15 T800 15 T880 15 T960 15 T1040 15 T1120 15 T1200 15 T1280 15' fill='none' stroke='%23C4A882' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.slide-5 .thin-frame {
+  position: absolute;
+  top: clamp(16px, 3.9vh, 28px); left: clamp(24px, 3.1vw, 40px);
+  right: clamp(24px, 3.1vw, 40px); bottom: clamp(16px, 3.9vh, 28px);
+  border: 1px solid rgba(232, 213, 204, 0.2);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.slide-5 .soft-circle-1 {
+  width: clamp(240px, 33vw, 420px); height: clamp(240px, 33vw, 420px);
+  background: rgba(232, 213, 204, 0.15);
+  top: -19%; right: -6%;
+  animation-duration: 14s;
+}
+
+.slide-5 .soft-circle-2 {
+  width: clamp(160px, 22vw, 280px); height: clamp(160px, 22vw, 280px);
+  background: rgba(196, 168, 130, 0.1);
+  bottom: -14%; left: -4%;
+  animation-duration: 18s; animation-delay: -4s;
+}
+
+.slide-5 .soft-circle-3 {
+  width: clamp(100px, 14vw, 180px); height: clamp(100px, 14vw, 180px);
+  background: rgba(212, 197, 190, 0.08);
+  top: 11%; left: 9%;
+  animation-duration: 20s; animation-delay: -8s;
+}
+
+.slide-5 .corner-5-tl {
+  position: absolute;
+  top: clamp(20px, 5vh, 36px); left: clamp(28px, 3.75vw, 48px);
+  width: clamp(24px, 2.8vw, 36px); height: clamp(24px, 2.8vw, 36px);
+  border-top: 1px solid #E8D5CC;
+  border-left: 1px solid #E8D5CC;
+  pointer-events: none;
+}
+
+.slide-5 .corner-5-br {
+  position: absolute;
+  bottom: clamp(20px, 5vh, 36px); right: clamp(28px, 3.75vw, 48px);
+  width: clamp(24px, 2.8vw, 36px); height: clamp(24px, 2.8vw, 36px);
+  border-bottom: 1px solid #E8D5CC;
+  border-right: 1px solid #E8D5CC;
+  pointer-events: none;
+}
+
+.slide-5 .corner-5-tr {
+  position: absolute;
+  top: clamp(20px, 5vh, 36px); right: clamp(28px, 3.75vw, 48px);
+  width: clamp(24px, 2.8vw, 36px); height: clamp(24px, 2.8vw, 36px);
+  border-top: 1px solid rgba(232, 213, 204, 0.4);
+  border-right: 1px solid rgba(232, 213, 204, 0.4);
+  pointer-events: none;
+}
+
+.slide-5 .corner-5-bl {
+  position: absolute;
+  bottom: clamp(20px, 5vh, 36px); left: clamp(28px, 3.75vw, 48px);
+  width: clamp(24px, 2.8vw, 36px); height: clamp(24px, 2.8vw, 36px);
+  border-bottom: 1px solid rgba(232, 213, 204, 0.4);
+  border-left: 1px solid rgba(232, 213, 204, 0.4);
+  pointer-events: none;
+}
+
+.slide-5 .dot-pattern-left {
+  position: absolute;
+  top: clamp(60px, 13.9vh, 100px); left: clamp(36px, 4.7vw, 60px);
+  width: clamp(36px, 4.7vw, 60px); height: clamp(36px, 4.7vw, 60px);
+  background-image: radial-gradient(circle, #D4C5BE 1px, transparent 1px);
+  background-size: 10px 10px;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.slide-5 .dot-pattern-right {
+  position: absolute;
+  bottom: clamp(60px, 13.9vh, 100px); right: clamp(36px, 4.7vw, 60px);
+  width: clamp(36px, 4.7vw, 60px); height: clamp(36px, 4.7vw, 60px);
+  background-image: radial-gradient(circle, #D4C5BE 1px, transparent 1px);
+  background-size: 10px 10px;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.slide-5 .closing-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+}
+
+.slide-5 .closing-label {
+  font-size: clamp(10px, 0.95vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #C4A882;
+  margin-bottom: clamp(20px, 4.4vh, 32px);
+}
+
+.slide-5 .closing-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 4.7vw, 60px);
+  font-weight: 400;
+  color: #333;
+  margin-bottom: clamp(12px, 2.8vh, 20px);
+}
+
+.slide-5 .closing-sub {
+  font-size: clamp(13px, 1.25vw, 16px);
+  font-weight: 300;
+  color: #999;
+  letter-spacing: 0.05em;
+}
+
+.slide-5 .closing-line {
+  width: clamp(32px, 3.75vw, 48px);
+  height: 1px;
+  background: #D4C5BE;
+  margin: clamp(20px, 5vh, 36px) auto;
+}
+
+.slide-5 .contact-row {
+  display: flex;
+  gap: clamp(20px, 3.1vw, 40px);
+  justify-content: center;
+  margin-top: clamp(4px, 1.1vh, 8px);
+}
+
+.slide-5 .contact-item {
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 400;
+  color: #aaa;
+  letter-spacing: 0.05em;
+}
+
+.slide-5 .contact-sep {
+  color: #ddd;
+  font-weight: 300;
+}
+
+.slide-5 .closing-dots {
+  position: absolute;
+  bottom: clamp(28px, 6.1vh, 44px); left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px;
+  z-index: 10;
+}
+
+.slide-5 .c-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #D4C5BE;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- ==================== SLIDE 1: COVER ==================== -->
+<div class="slide slide-1 active" data-i="0">
+  <div class="warm-gradient"></div>
+  <div class="soft-shape shape-1"></div>
+  <div class="soft-shape shape-2"></div>
+  <div class="soft-shape shape-3"></div>
+  <div class="dot-grid dot-grid-a"></div>
+  <div class="dot-grid dot-grid-b"></div>
+  <div class="corner-line corner-tl"></div>
+  <div class="corner-line corner-br"></div>
+  <div class="corner-line corner-tr"></div>
+  <div class="corner-line corner-bl"></div>
+  <div class="thin-line-v"></div>
+  <div class="thin-line-h"></div>
+  <div class="wave-line decorative"></div>
+
+  <div class="center-content">
+    <div class="label reveal">设计前沿 &middot; 2026</div>
+    <div class="title reveal">温柔的<br>设计革命</div>
+    <div class="subtitle reveal">以柔软的力量重塑视觉语言，<br>在安静中创造持久的美</div>
+    <div class="line-h-center reveal"></div>
+  </div>
+
+  <div class="bottom-tag">Korean Soft / 2026</div>
+</div>
+
+<!-- ==================== SLIDE 2: THREE PRINCIPLES ==================== -->
+<div class="slide slide-2" data-i="1">
+  <div class="bg-gradient"></div>
+  <div class="side-line decorative"></div>
+
+  <div class="section-label reveal">设计理念</div>
+  <div class="section-title reveal">三个核心原则 <span class="section-title-line"></span></div>
+
+  <div class="cards-grid">
+    <div class="card reveal">
+      <div class="card-accent accent-pink"></div>
+      <div class="card-number">01</div>
+      <h3>呼吸感留白</h3>
+      <p>每一个元素都需要空间来呼吸。慷慨的留白创造出一种平静与从容，让视觉自然流动。</p>
+      <div class="card-dot"><div class="card-dot-inner dot-inner-pink"></div></div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-accent accent-mauve"></div>
+      <div class="card-number">02</div>
+      <h3>暖色中性调</h3>
+      <p>纯白显得冰冷。我们用奶油色、柔粉色和奶茶色调，创造如午后阳光透过纱帘般的温暖。</p>
+      <div class="card-dot"><div class="card-dot-inner dot-inner-mauve"></div></div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-accent accent-tea"></div>
+      <div class="card-number">03</div>
+      <h3>安静的细节</h3>
+      <p>细线、轻柔的圆点和微妙的阴影取代强烈的表达。美就藏在你第一眼差点忽略的地方。</p>
+      <div class="card-dot"><div class="card-dot-inner dot-inner-tea"></div></div>
+    </div>
+  </div>
+
+  <div class="separator-dots decorative">
+    <div class="sep-dot"></div>
+    <div class="sep-dot"></div>
+    <div class="sep-dot"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: FEATURE (ASYMMETRIC) ==================== -->
+<div class="slide slide-3" data-i="2">
+  <div class="bg-gradient"></div>
+
+  <div class="left-panel">
+    <div class="label reveal">核心特征</div>
+    <h2 class="reveal">为安静的<br>力量而设计</h2>
+    <div class="thin-line reveal"></div>
+    <p class="reveal">最有力量的设计从不喧嚣。它用温暖邀请你走近，用细腻的细节留住你的目光，最终留下一种让你想要再次回归的感受。</p>
+    <div class="detail-row reveal">
+      <div class="detail-item">
+        <div class="detail-dot" style="background: #E8D5CC;"></div>
+        <div class="detail-text">温度</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-dot" style="background: #D4C5BE;"></div>
+        <div class="detail-text">平衡</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-dot" style="background: #C4A882;"></div>
+        <div class="detail-text">精确</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-line decorative"></div>
+
+  <div class="right-panel">
+    <div class="image-area reveal">
+      <div class="inner-shape inner-s1"></div>
+      <div class="inner-shape inner-s2"></div>
+      <div class="inner-shape inner-s3"></div>
+      <div class="inner-shape inner-s4"></div>
+      <div class="inner-dots">
+        <div class="inner-dot"></div>
+        <div class="inner-dot"></div>
+        <div class="inner-dot"></div>
+      </div>
+      <div class="grid-pattern"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: QUOTE ==================== -->
+<div class="slide slide-4" data-i="3">
+  <div class="warm-bg"></div>
+  <div class="soft-circle-bg"></div>
+  <div class="frame-outer decorative"></div>
+  <div class="frame-inner decorative"></div>
+  <div class="corner-accent-tl decorative"></div>
+  <div class="corner-accent-br decorative"></div>
+  <div class="top-line decorative"></div>
+  <div class="bottom-line decorative"></div>
+
+  <div class="side-dots side-dots-left decorative">
+    <div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div>
+  </div>
+  <div class="side-dots side-dots-right decorative">
+    <div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div>
+  </div>
+
+  <div class="quote-block">
+    <div class="quote-mark reveal">&ldquo;</div>
+    <div class="quote-text reveal">好的设计如同少即是多，因为它专注于本质，让每一处留白都有意义。</div>
+    <div class="quote-line reveal"></div>
+    <div class="quote-author reveal">Dieter Rams</div>
+    <div class="quote-role reveal">工业设计大师</div>
+  </div>
+
+  <div class="wave-subtle decorative"></div>
+</div>
+
+<!-- ==================== SLIDE 5: CLOSING ==================== -->
+<div class="slide slide-5" data-i="4">
+  <div class="bg-warmth"></div>
+  <div class="wave-closing decorative"></div>
+  <div class="thin-frame decorative"></div>
+  <div class="soft-shape soft-circle-1"></div>
+  <div class="soft-shape soft-circle-2"></div>
+  <div class="soft-shape soft-circle-3"></div>
+  <div class="corner-5-tl"></div>
+  <div class="corner-5-br"></div>
+  <div class="corner-5-tr"></div>
+  <div class="corner-5-bl"></div>
+  <div class="dot-pattern-left decorative"></div>
+  <div class="dot-pattern-right decorative"></div>
+
+  <div class="closing-content">
+    <div class="closing-label reveal">感谢聆听</div>
+    <div class="closing-title reveal">保持温柔</div>
+    <div class="closing-sub reveal">用温度做设计，永远</div>
+    <div class="closing-line reveal"></div>
+    <div class="contact-row reveal">
+      <div class="contact-item">hello@studio.com</div>
+      <div class="contact-sep">/</div>
+      <div class="contact-item">studio.com</div>
+    </div>
+  </div>
+
+  <div class="closing-dots decorative">
+    <div class="c-dot"></div>
+    <div class="c-dot"></div>
+    <div class="c-dot"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var bar = document.getElementById('progress');
+  var cur = document.getElementById('cur');
+  var c = 0;
+
+  function go(i) {
+    if (i < 0 || i >= total) return;
+    slides[c].classList.remove('active');
+    // Reset reveal animations for the leaving slide
+    slides[c].querySelectorAll('.reveal').forEach(function(el) {
+      el.style.animation = 'none';
+      el.offsetHeight; // force reflow
+      el.style.animation = '';
+    });
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c + 1) / total * 100) + '%';
+    cur.textContent = String(c + 1).padStart(2, '0');
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      go(c + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      go(c - 1);
+    }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  // Touch swipe support
+  var touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].screenX - touchStartX;
+    var dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) go(c + 1); else go(c - 1);
+    } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 50) {
+      if (dy < 0) go(c + 1); else go(c - 1);
+    }
+  }, { passive: true });
+
+  // Initialize progress bar
+  bar.style.width = (1 / total * 100) + '%';
+})();
+</script>
+</body>
+</html>

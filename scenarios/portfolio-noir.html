@@ -20,8 +20,8 @@
             --bg-secondary: #0a0a0a;
             --bg-tertiary: #1d1d1f;
             --text-primary: #ffffff;
-            --text-secondary: #86868b;
-            --text-muted: #6e6e73;
+            --text-secondary: #a1a1a6;
+            --text-muted: #8e8e93;
             --accent: #2997ff;
             --accent-secondary: #2997ff;
             --accent-glow: rgba(41, 151, 255, 0.3);
@@ -310,6 +310,11 @@
         .reveal:nth-child(6) { transition-delay: 0.6s; }
         .reveal:nth-child(7) { transition-delay: 0.7s; }
         .reveal:nth-child(8) { transition-delay: 0.8s; }
+
+        /* --- Bar chart animation --- */
+        .slide.visible .bar-fill {
+            transform: scaleX(1) !important;
+        }
 
         /* ===========================================
            PROGRESS BAR
@@ -665,7 +670,107 @@
         </div>
     </section>
 
-    <!-- =================== SLIDE 8: CLOSING =================== -->
+    <!-- =================== SLIDE 8: DESIGN TOOLKIT (Data Viz — Donut Charts) =================== -->
+    <section class="slide" aria-label="Design Toolkit">
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent);">
+                Expertise
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-align: center; margin-top: var(--element-gap);">
+                Design Toolkit
+            </h2>
+            <div style="display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 4rem); margin-top: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(80px, 12vw, 120px); height: clamp(80px, 12vw, 120px); border-radius: 50%; background: conic-gradient(var(--accent) 0deg, var(--accent) 331deg, var(--surface) 331deg); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div style="width: 65%; height: 65%; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: var(--body-size); font-weight: 700; color: var(--accent);">92%</span>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 1vh, 0.8rem);">UX Research</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(80px, 12vw, 120px); height: clamp(80px, 12vw, 120px); border-radius: 50%; background: conic-gradient(var(--accent) 0deg, var(--accent) 342deg, var(--surface) 342deg); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div style="width: 65%; height: 65%; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: var(--body-size); font-weight: 700; color: var(--accent);">95%</span>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 1vh, 0.8rem);">Prototyping</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(80px, 12vw, 120px); height: clamp(80px, 12vw, 120px); border-radius: 50%; background: conic-gradient(var(--accent) 0deg, var(--accent) 317deg, var(--surface) 317deg); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div style="width: 65%; height: 65%; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: var(--body-size); font-weight: 700; color: var(--accent);">88%</span>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 1vh, 0.8rem);">Design Systems</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(80px, 12vw, 120px); height: clamp(80px, 12vw, 120px); border-radius: 50%; background: conic-gradient(var(--accent) 0deg, var(--accent) 306deg, var(--surface) 306deg); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div style="width: 65%; height: 65%; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: var(--body-size); font-weight: 700; color: var(--accent);">85%</span>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 1vh, 0.8rem);">Visual Design</p>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="width: clamp(80px, 12vw, 120px); height: clamp(80px, 12vw, 120px); border-radius: 50%; background: conic-gradient(var(--accent) 0deg, var(--accent) 288deg, var(--surface) 288deg); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div style="width: 65%; height: 65%; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: var(--body-size); font-weight: 700; color: var(--accent);">80%</span>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 1vh, 0.8rem);">Accessibility</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center;">
+                Tools: Figma &middot; Framer &middot; Principle &middot; Storybook &middot; Notion &middot; Linear
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: CAREER JOURNEY (Timeline) =================== -->
+    <section class="slide" aria-label="Career Journey">
+        <div class="slide-content" style="max-width: min(90vw, 800px);">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent);">
+                Journey
+            </p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap);">
+                Career Timeline
+            </h2>
+            <div style="margin-top: var(--content-gap); position: relative; padding-left: clamp(1.5rem, 3vw, 2.5rem);">
+                <div style="position: absolute; left: clamp(6px, 0.8vw, 10px); top: 0; bottom: 0; width: 1px; background: var(--border-subtle);"></div>
+
+                <div class="reveal" style="position: relative; padding-bottom: clamp(1rem, 2vh, 1.5rem);">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(2px, 0.4vw, 6px)); top: 0.4em; width: clamp(10px, 1.2vw, 14px); height: clamp(10px, 1.2vw, 14px); border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent-glow);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em;">2026 &mdash; Present</p>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.2em;">Independent Design Consultant</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; font-weight: 300;">Select projects in healthcare, SaaS, and consumer brands</p>
+                </div>
+
+                <div class="reveal" style="position: relative; padding-bottom: clamp(1rem, 2vh, 1.5rem);">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(2px, 0.4vw, 6px)); top: 0.4em; width: clamp(10px, 1.2vw, 14px); height: clamp(10px, 1.2vw, 14px); border-radius: 50%; background: var(--text-muted);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em;">2022 &mdash; 2025</p>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.2em;">Senior Product Designer &mdash; Canopy Analytics</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; font-weight: 300;">Led design systems team, shipped to 40K+ enterprise users</p>
+                </div>
+
+                <div class="reveal" style="position: relative; padding-bottom: clamp(1rem, 2vh, 1.5rem);">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(2px, 0.4vw, 6px)); top: 0.4em; width: clamp(10px, 1.2vw, 14px); height: clamp(10px, 1.2vw, 14px); border-radius: 50%; background: var(--text-muted);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em;">2019 &mdash; 2022</p>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.2em;">Product Designer &mdash; Meridian Health Systems</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; font-weight: 300;">Patient portal redesign, 1.2M users, 3 design awards</p>
+                </div>
+
+                <div class="reveal" style="position: relative;">
+                    <div style="position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) + clamp(2px, 0.4vw, 6px)); top: 0.4em; width: clamp(10px, 1.2vw, 14px); height: clamp(10px, 1.2vw, 14px); border-radius: 50%; background: var(--text-muted);"></div>
+                    <p style="font-size: var(--small-size); color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em;">2018</p>
+                    <p style="font-size: var(--body-size); font-weight: 600; margin-top: 0.2em;">BFA Interaction Design &mdash; RISD</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; font-weight: 300;">Graduated with honors, thesis on healthcare accessibility</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: CLOSING =================== -->
     <section class="slide closing-slide" aria-label="Contact">
         <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
             <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--content-gap); line-height: 1.1; letter-spacing: -0.02em;">
@@ -773,6 +878,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

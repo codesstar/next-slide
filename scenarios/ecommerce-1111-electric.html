@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双十一 数码好物 — Electric Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0a0a; --bg-white: #ffffff; --bg-secondary: #141414;
+            --text-primary: #ffffff; --text-dark: #0a0a0a; --text-secondary: #999999; --text-muted: #555555;
+            --accent-blue: #4361ee; --accent-light: #6b83f5; --accent-glow: rgba(67,97,238,0.3);
+            --green: #22c55e; --red: #ef4444;
+            --border-subtle: rgba(255,255,255,0.08); --surface: rgba(255,255,255,0.04);
+
+            --font-display: 'Manrope', 'Noto Sans SC', sans-serif;
+            --font-body: 'Manrope', 'Noto Sans SC', sans-serif;
+            --font-mono: 'Manrope', monospace;
+
+            --title-size: clamp(2rem, 6vw, 5rem); --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem); --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem); --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem); --price-size: clamp(1.8rem, 5vw, 3.5rem);
+            --price-big: clamp(2.5rem, 7vw, 5rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem); --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-normal: 0.6s;
+        }
+
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html,body{height:100%;overflow-x:hidden}
+        html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+        body{-webkit-font-smoothing:antialiased;font-family:var(--font-body);background:var(--bg-dark);color:var(--text-primary);line-height:1.8}
+        .slide{width:100vw;height:100vh;height:100dvh;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column;position:relative}
+        .slide-content{flex:1;display:flex;flex-direction:column;justify-content:center;max-height:100%;overflow:hidden;padding:var(--slide-padding)}
+        img{max-width:100%;max-height:min(50vh,400px);object-fit:contain}
+        :lang(zh),:lang(zh-CN){line-height:1.8;word-break:normal;overflow-wrap:break-word}
+        h1,h2,h3{overflow-wrap:break-word}p,li{overflow-wrap:break-word}
+
+        @media(max-height:700px){:root{--slide-padding:clamp(0.75rem,3vw,2rem);--title-size:clamp(1.25rem,4.5vw,2.5rem);--h2-size:clamp(1rem,3vw,1.75rem)}}
+        @media(max-height:600px){:root{--slide-padding:clamp(0.5rem,2.5vw,1.5rem);--title-size:clamp(1.1rem,4vw,2rem);--body-size:clamp(0.7rem,1.2vw,0.95rem)}.nav-dots{display:none}}
+        @media(max-width:600px){:root{--title-size:clamp(1.25rem,7vw,2.5rem)}.slide-content[style*="flex-direction: row"]{flex-direction:column !important}.slide-counter{display:none}}
+        @media(min-width:2000px){.slide-content{max-width:1600px;margin:0 auto}}
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.2s !important}html{scroll-behavior:auto;scroll-snap-type:none}.reveal,.reveal-slam{opacity:0;transform:none !important;transition:opacity 0.2s ease !important}.visible .reveal,.visible .reveal-slam{opacity:1}}
+        @media print{html{scroll-snap-type:none}.slide{height:auto;min-height:100vh;overflow:visible;page-break-after:always}.progress-bar,.nav-dots,.slide-counter{display:none !important}.reveal,[class*="reveal-"]{opacity:1 !important;transform:none !important}}
+
+        .reveal{opacity:0;transform:translateY(30px);transition:opacity var(--duration-normal) var(--ease-out-expo),transform var(--duration-normal) var(--ease-out-expo)}
+        .slide.visible .reveal{opacity:1;transform:translateY(0)}
+        .reveal:nth-child(1){transition-delay:.08s}.reveal:nth-child(2){transition-delay:.16s}.reveal:nth-child(3){transition-delay:.24s}.reveal:nth-child(4){transition-delay:.32s}.reveal:nth-child(5){transition-delay:.4s}.reveal:nth-child(6){transition-delay:.48s}.reveal:nth-child(7){transition-delay:.56s}
+        .reveal-slam{opacity:0;transform:translateY(-80px) scale(1.1);transition:opacity 0.3s ease,transform 0.4s var(--ease-out-expo)}.slide.visible .reveal-slam{opacity:1;transform:translateY(0) scale(1)}
+
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:var(--accent-blue);width:0%;z-index:9999;transition:width 0.3s ease}
+        .nav-dots{position:fixed;right:clamp(12px,2vw,24px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:9998}
+        .nav-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);border:none;cursor:pointer;transition:all 0.3s ease;padding:0}
+        .nav-dot.active{background:var(--accent-blue);transform:scale(1.4);box-shadow:0 0 8px var(--accent-glow)}
+        .slide-counter{position:fixed;bottom:clamp(12px,2vw,24px);right:clamp(12px,2vw,24px);font-family:var(--font-mono);font-size:var(--small-size);color:var(--text-muted);z-index:9998}
+
+        /* Electric Studio: split panel */
+        .split-top{position:absolute;top:0;left:0;right:0;height:50%;background:var(--bg-white)}
+        .split-bottom{position:absolute;bottom:0;left:0;right:0;height:50%;background:var(--bg-dark)}
+        .accent-bar{position:absolute;left:0;right:0;height:4px;background:var(--accent-blue);top:50%;z-index:2}
+
+        .e-card{background:var(--surface);border:1px solid var(--border-subtle);border-radius:12px;padding:clamp(0.8rem,2vw,1.5rem);transition:border-color 0.3s ease}
+        .e-card:hover{border-color:rgba(67,97,238,0.3)}
+
+        .cd-block{background:var(--accent-blue);color:#fff;font-weight:800;font-size:clamp(1.5rem,4vw,3rem);padding:clamp(0.3rem,0.8vw,0.5rem) clamp(0.6rem,1.2vw,0.9rem);border-radius:6px;min-width:clamp(40px,6vw,60px);text-align:center;font-family:var(--font-display)}
+        .cd-sep{font-size:clamp(1.2rem,3vw,2.5rem);color:var(--accent-blue);font-weight:800;animation:blink 1s step-end infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+        .flash-tag{display:inline-block;background:var(--accent-blue);color:#fff;font-size:var(--small-size);font-weight:700;padding:0.2em 0.8em;border-radius:4px}
+        .price-blue{font-size:var(--price-big);font-weight:800;color:var(--accent-blue);font-family:var(--font-display)}
+        .price-original{font-size:var(--body-size);color:var(--text-muted);text-decoration:line-through}
+        .spec{display:flex;align-items:baseline;gap:0.5em;padding:0.2em 0;font-size:var(--body-size)}
+        .spec-label{color:var(--text-muted);min-width:4em;text-align:right}.spec-value{color:var(--text-primary)}
+
+        .cta-btn{display:inline-block;background:var(--accent-blue);color:#fff;font-size:clamp(1rem,2.5vw,1.3rem);font-weight:800;font-family:var(--font-display);padding:clamp(0.6rem,1.5vw,1rem) clamp(2rem,5vw,4rem);border-radius:8px;border:none;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px var(--accent-glow);transition:transform 0.2s ease}
+        .cta-btn:hover{transform:scale(1.05)}
+
+        .live-badge{display:inline-flex;align-items:center;gap:0.4em;background:var(--red);color:#fff;font-size:var(--small-size);font-weight:700;padding:0.2em 0.8em;border-radius:999px}
+        .live-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1.2s ease-in-out infinite}
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: COUNTDOWN -->
+    <section class="slide" aria-label="倒计时" style="background:var(--bg-dark);">
+        <div class="split-top"></div>
+        <div class="accent-bar"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;position:relative;z-index:3;">
+            <div class="reveal"><span class="live-badge">LIVE</span></div>
+            <h1 class="reveal-slam" style="font-size:clamp(3rem,9vw,7rem);font-family:var(--font-display);font-weight:800;line-height:1;margin-top:0.2em;">
+                <span style="color:var(--text-dark);">11</span><span style="color:var(--accent-blue);">.</span><span style="color:var(--text-dark);">11</span>
+            </h1>
+            <p class="reveal" style="font-size:var(--h2-size);color:var(--accent-blue);font-weight:800;">数码好物清单</p>
+            <div class="reveal" style="margin-top:clamp(1rem,3vw,2rem);display:flex;gap:clamp(0.2rem,0.8vw,0.6rem);align-items:center;justify-content:center;">
+                <div class="cd-block" id="cd-hours">02</div><span class="cd-sep">:</span>
+                <div class="cd-block" id="cd-mins">38</div><span class="cd-sep">:</span>
+                <div class="cd-block" id="cd-secs">15</div>
+            </div>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:clamp(1rem,2.5vw,2rem);">3款数码好物 + 配件 限时闪购</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: EARBUDS -->
+    <section class="slide" aria-label="耳机" style="background:var(--bg-dark);">
+        <div class="slide-content" style="flex-direction:row;align-items:center;gap:var(--content-gap);">
+            <div style="flex:1;min-width:0;display:flex;justify-content:center;">
+                <img src="images/ecom-1111-earbuds.webp" alt="降噪耳机" class="reveal" style="max-height:min(55vh,380px);filter:drop-shadow(0 8px 30px var(--accent-glow));border-radius:12px;">
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div class="reveal" style="display:flex;gap:0.5em;align-items:center;margin-bottom:0.3em;"><span class="flash-tag">01 闪购</span></div>
+                <h2 class="reveal" style="font-size:var(--h2-size);font-weight:800;">SoundAir Pro</h2>
+                <div class="reveal" style="margin-top:0.5em;">
+                    <div class="spec"><span class="spec-label">降噪</span><span class="spec-value" style="color:var(--accent-blue);">-45dB 深度降噪</span></div>
+                    <div class="spec"><span class="spec-label">续航</span><span class="spec-value">36h</span></div>
+                    <div class="spec"><span class="spec-label">连接</span><span class="spec-value">BT 5.3</span></div>
+                    <div class="spec"><span class="spec-label">防水</span><span class="spec-value">IPX5</span></div>
+                </div>
+                <div class="reveal" style="margin-top:clamp(0.8rem,2vw,1.2rem);">
+                    <span class="price-original">&#165;599</span>
+                    <span class="price-blue" style="margin-left:0.3em;font-size:var(--price-size);">&#165;299</span>
+                    <span style="font-size:var(--small-size);color:var(--green);margin-left:0.5em;font-weight:700;">-50%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: SMARTWATCH -->
+    <section class="slide" aria-label="手表" style="background:var(--bg-secondary);">
+        <div class="slide-content" style="flex-direction:row;align-items:center;gap:var(--content-gap);">
+            <div style="flex:1;min-width:0;">
+                <div class="reveal" style="display:flex;gap:0.5em;align-items:center;margin-bottom:0.3em;"><span class="flash-tag" style="background:var(--accent-light);">02 主推</span></div>
+                <h2 class="reveal" style="font-size:var(--h2-size);font-weight:800;">FitPulse GT</h2>
+                <div class="reveal" style="margin-top:0.5em;">
+                    <div class="spec"><span class="spec-label">屏幕</span><span class="spec-value" style="color:var(--accent-blue);">1.43" AMOLED</span></div>
+                    <div class="spec"><span class="spec-label">健康</span><span class="spec-value">心率+血氧+体温</span></div>
+                    <div class="spec"><span class="spec-label">续航</span><span class="spec-value">14天</span></div>
+                    <div class="spec"><span class="spec-label">防水</span><span class="spec-value">5ATM</span></div>
+                </div>
+                <div class="reveal" style="margin-top:clamp(0.8rem,2vw,1.2rem);">
+                    <span class="price-original">&#165;899</span>
+                    <span class="price-blue" style="margin-left:0.3em;font-size:var(--price-size);">&#165;449</span>
+                    <span style="font-size:var(--small-size);color:var(--green);margin-left:0.5em;font-weight:700;">-50%</span>
+                </div>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;justify-content:center;">
+                <img src="images/ecom-1111-watch.webp" alt="智能手表" class="reveal" style="max-height:min(55vh,380px);filter:drop-shadow(0 8px 30px rgba(67,97,238,0.15));border-radius:12px;">
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: POWERBANK -->
+    <section class="slide" aria-label="充电宝" style="background:var(--bg-dark);">
+        <div class="slide-content" style="flex-direction:row;align-items:center;gap:var(--content-gap);">
+            <div style="flex:1;min-width:0;display:flex;justify-content:center;">
+                <img src="images/ecom-1111-powerbank.webp" alt="充电宝" class="reveal" style="max-height:min(55vh,380px);filter:drop-shadow(0 8px 25px rgba(67,97,238,0.1));border-radius:12px;">
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div class="reveal" style="display:flex;gap:0.5em;align-items:center;margin-bottom:0.3em;"><span class="flash-tag">03 闪购</span></div>
+                <h2 class="reveal" style="font-size:var(--h2-size);font-weight:800;">PowerMax 20000</h2>
+                <div class="reveal" style="margin-top:0.5em;">
+                    <div class="spec"><span class="spec-label">容量</span><span class="spec-value" style="color:var(--accent-blue);">20000mAh</span></div>
+                    <div class="spec"><span class="spec-label">快充</span><span class="spec-value">65W PD</span></div>
+                    <div class="spec"><span class="spec-label">接口</span><span class="spec-value">USB-C x2 + USB-A</span></div>
+                    <div class="spec"><span class="spec-label">重量</span><span class="spec-value">380g</span></div>
+                </div>
+                <div class="reveal" style="margin-top:clamp(0.8rem,2vw,1.2rem);">
+                    <span class="price-original">&#165;299</span>
+                    <span class="price-blue" style="margin-left:0.3em;font-size:var(--price-size);">&#165;149</span>
+                    <span style="font-size:var(--small-size);color:var(--green);margin-left:0.5em;font-weight:700;">-50%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: ACCESSORIES -->
+    <section class="slide" aria-label="配件" style="background:var(--bg-secondary);">
+        <div class="slide-content" style="flex-direction:row;align-items:center;gap:var(--content-gap);">
+            <div style="flex:1;min-width:0;">
+                <div class="reveal" style="display:flex;gap:0.5em;align-items:center;margin-bottom:0.3em;"><span class="flash-tag" style="background:var(--accent-light);">配件专区</span></div>
+                <h2 class="reveal" style="font-size:var(--h2-size);font-weight:800;">精选配件</h2>
+                <div class="reveal" style="margin-top:clamp(0.5rem,1.5vw,1rem);display:flex;flex-direction:column;gap:clamp(0.4rem,1vw,0.8rem);">
+                    <div class="e-card" style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <div style="font-size:var(--body-size);font-weight:700;">硅胶保护套</div>
+                            <div style="font-size:var(--small-size);color:var(--text-secondary);">耳机 / 手表通用</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="price-original" style="font-size:var(--small-size);">&#165;79</span>
+                            <span style="font-size:var(--body-size);color:var(--accent-blue);font-weight:800;margin-left:0.3em;">&#165;29</span>
+                        </div>
+                    </div>
+                    <div class="e-card" style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <div style="font-size:var(--body-size);font-weight:700;">Type-C 编织线 1.5m</div>
+                            <div style="font-size:var(--small-size);color:var(--text-secondary);">100W 快充 · 数据传输</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="price-original" style="font-size:var(--small-size);">&#165;59</span>
+                            <span style="font-size:var(--body-size);color:var(--accent-blue);font-weight:800;margin-left:0.3em;">&#165;19</span>
+                        </div>
+                    </div>
+                    <div class="e-card" style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <div style="font-size:var(--body-size);font-weight:700;">运动表带套装 x3</div>
+                            <div style="font-size:var(--small-size);color:var(--text-secondary);">亲肤硅胶 · 多色可选</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="price-original" style="font-size:var(--small-size);">&#165;129</span>
+                            <span style="font-size:var(--body-size);color:var(--accent-blue);font-weight:800;margin-left:0.3em;">&#165;49</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;justify-content:center;">
+                <img src="images/ecom-1111-accessories.webp" alt="数码配件" class="reveal" style="max-height:min(55vh,380px);filter:drop-shadow(0 8px 25px rgba(67,97,238,0.1));border-radius:12px;">
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: BUNDLE -->
+    <section class="slide" aria-label="组合优惠" style="background:var(--bg-dark);">
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <div class="reveal"><span class="flash-tag" style="font-size:clamp(0.7rem,1.3vw,1rem);">限时组合</span></div>
+            <h2 class="reveal-slam" style="font-size:clamp(1.8rem,5vw,3.5rem);font-weight:800;margin-top:0.3em;">
+                三件套 <span style="color:var(--accent-blue);">全包价</span>
+            </h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.5em;">耳机 + 手表 + 充电宝</p>
+            <div class="reveal" style="margin-top:0.5em;"><span class="price-original" style="font-size:var(--subtitle-size);">&#165;1,797</span></div>
+            <div class="reveal price-blue" style="font-size:clamp(3rem,9vw,6rem);">&#165;799</div>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--green);font-weight:700;">省 &#165;998 | 4.4折</p>
+            <div class="reveal" style="margin-top:clamp(0.8rem,2vw,1.5rem);display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;font-size:var(--small-size);color:var(--text-secondary);">
+                <span>&#10003; 顺丰包邮</span><span>&#10003; 7天无理由</span><span>&#10003; 一年质保</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: LOYALTY -->
+    <section class="slide" aria-label="会员" style="background:var(--bg-secondary);">
+        <div class="split-top" style="height:40%;"></div>
+        <div class="accent-bar" style="top:40%;"></div>
+        <div class="slide-content" style="position:relative;z-index:3;align-items:center;text-align:center;">
+            <div class="reveal"><span class="flash-tag" style="background:var(--accent-light);font-size:clamp(0.7rem,1.3vw,1rem);">会员专属</span></div>
+            <h2 class="reveal-slam" style="font-size:var(--h2-size);font-weight:800;margin-top:0.3em;">
+                <span style="color:var(--text-dark);">双十一</span> <span style="color:var(--accent-blue);">会员特权</span>
+            </h2>
+            <div class="reveal" style="margin-top:clamp(0.8rem,2vw,1.5rem);display:flex;gap:clamp(0.6rem,1.5vw,1.2rem);justify-content:center;flex-wrap:wrap;">
+                <div class="e-card" style="text-align:center;min-width:clamp(100px,18vw,160px);">
+                    <div style="font-size:clamp(1.5rem,4vw,2.5rem);font-weight:800;color:var(--accent-blue);font-family:var(--font-display);">2X</div>
+                    <div style="font-size:var(--body-size);font-weight:700;">积分翻倍</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">全场消费可抵现</div>
+                </div>
+                <div class="e-card" style="text-align:center;min-width:clamp(100px,18vw,160px);">
+                    <div style="font-size:clamp(1.5rem,4vw,2.5rem);font-weight:800;color:var(--accent-blue);font-family:var(--font-display);">0%</div>
+                    <div style="font-size:var(--body-size);font-weight:700;">免息分期</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">满500享12期</div>
+                </div>
+                <div class="e-card" style="text-align:center;min-width:clamp(100px,18vw,160px);">
+                    <div style="font-size:clamp(1.5rem,4vw,2.5rem);font-weight:800;color:var(--accent-blue);font-family:var(--font-display);">VIP</div>
+                    <div style="font-size:var(--body-size);font-weight:700;">专属券</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">满800减120</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-secondary);margin-top:clamp(0.5rem,1.5vw,1rem);">新会员注册即享 &#165;50 无门槛券</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: CTA -->
+    <section class="slide" aria-label="下单" style="background:var(--bg-dark);">
+        <div class="split-top"></div>
+        <div class="accent-bar"></div>
+        <div class="slide-content" style="align-items:center;justify-content:center;text-align:center;position:relative;z-index:3;">
+            <div class="reveal"><span class="live-badge">LIVE</span></div>
+            <h2 class="reveal-slam" style="font-size:clamp(2.5rem,7vw,5rem);font-weight:800;line-height:1.1;margin-top:0.2em;">
+                <span style="color:var(--text-dark);">双十一</span> <span style="color:var(--accent-blue);">不等了</span>
+            </h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:clamp(0.5rem,1.5vw,1rem);">
+                单品 &#165;149 起 | 三件套 &#165;799
+            </p>
+            <a class="reveal cta-btn" href="#" style="margin-top:clamp(1rem,3vw,2rem);">立即下单</a>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-muted);margin-top:clamp(0.8rem,2vw,1.2rem);">天猫 | 京东 | 抖音直播间</p>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.5;">Made with <a href="https://nextslide.app" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init()}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible')}setupIntersectionObserver(){const o=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');const i=this.slides.indexOf(en.target);if(i!==-1){this.currentSlide=i;this.updateUI()}}})},{threshold:0.5});this.slides.forEach(s=>o.observe(s))}setupKeyboardNav(){document.addEventListener('keydown',e=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break}})}setupTouchNav(){document.addEventListener('touchstart',e=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1)},{passive:true})}setupWheelNav(){let t;document.addEventListener('wheel',e=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1)},50)},{passive:true})}setupProgressBar(){this.progressBar=document.getElementById('progressBar')}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`跳转到第${i+1}页`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d)})}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI()}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false},600)}updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        let cdTotal=2*3600+38*60+15;function updateCD(){if(cdTotal<=0)return;cdTotal--;const h=Math.floor(cdTotal/3600),m=Math.floor((cdTotal%3600)/60),s=cdTotal%60;const hE=document.getElementById('cd-hours'),mE=document.getElementById('cd-mins'),sE=document.getElementById('cd-secs');if(hE)hE.textContent=String(h).padStart(2,'0');if(mE)mE.textContent=String(m).padStart(2,'0');if(sE)sE.textContent=String(s).padStart(2,'0')}setInterval(updateCD,1000);
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation()});
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+    </script>
+</body>
+</html>

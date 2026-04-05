@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python 数据分析入门 — Notebook Tabs</title>
+
+    <!-- Fonts: Notebook Tabs (Bodoni Moda + DM Sans) + CJK (LXGW WenKai + Noto Sans SC) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700;6..96,900&family=DM+Sans:wght@400;500;700&family=LXGW+WenKai:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-outer: #2d2d2d;
+            --bg-page: #f8f6f1;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5a5a5a;
+            --text-muted: #767676;
+            --tab-1: #98d4bb; --tab-2: #c7b8ea; --tab-3: #f4b8c5; --tab-4: #a8d8ea; --tab-5: #ffe6a7;
+            --border: #d4cfc5;
+            --border-subtle: rgba(0,0,0,0.06);
+            --surface: #efeade;
+            --accent: #5a4a3a;
+            --accent-highlight: #c7b8ea;
+            --ruled-line: rgba(0,0,0,0.06);
+            --margin-line: rgba(220,80,80,0.15);
+            --code-bg: #2a2520; --code-text: #e8e0d4;
+
+            --font-display: 'LXGW WenKai', 'Bodoni Moda', Georgia, serif;
+            --font-body: 'Noto Sans SC', 'DM Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-handwritten: 'Caveat', cursive;
+
+            --title-size: clamp(1.6rem, 4.5vw, 3.2rem);
+            --h2-size: clamp(1.2rem, 3vw, 2.2rem);
+            --h3-size: clamp(0.95rem, 2.2vw, 1.5rem);
+            --subtitle-size: clamp(0.85rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --code-size: clamp(0.7rem, 1.3vw, 0.95rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-normal: 0.6s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; font-family: var(--font-body); background: var(--bg-outer); color: var(--text-primary); }
+
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; position: relative; }
+
+        /* Notebook page container */
+        .notebook-page {
+            width: min(92vw, 920px); height: min(88vh, 680px);
+            background: var(--bg-page); border-radius: clamp(8px, 1.2vw, 16px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.15);
+            display: flex; position: relative; overflow: hidden;
+        }
+
+        /* Binder holes */
+        .notebook-page::before {
+            content: '';
+            position: absolute; left: clamp(16px, 2.5vw, 30px); top: 0; bottom: 0;
+            width: 1px; background: var(--margin-line); z-index: 1;
+        }
+        .binder-holes { position: absolute; left: clamp(6px, 1.2vw, 14px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: clamp(30px, 5vh, 50px); z-index: 2; }
+        .binder-holes span { width: clamp(10px, 1.5vw, 14px); height: clamp(10px, 1.5vw, 14px); border-radius: 50%; border: 2px solid #c0b8a8; background: var(--bg-outer); }
+
+        /* Content area */
+        .page-content {
+            flex: 1; padding: var(--slide-padding);
+            padding-left: clamp(2.5rem, 5vw, 4rem);
+            display: flex; flex-direction: column; justify-content: center;
+            overflow: hidden;
+            background-image: repeating-linear-gradient(transparent, transparent clamp(24px, 3.5vh, 32px), var(--ruled-line) clamp(24px, 3.5vh, 32px));
+        }
+
+        /* Section tabs */
+        .tab-strip { position: absolute; right: calc(-1 * clamp(2px, 0.3vw, 4px)); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: clamp(4px, 0.8vh, 8px); z-index: 3; }
+        .tab { width: clamp(24px, 3.5vw, 36px); border-radius: clamp(4px, 0.6vw, 8px) 0 0 clamp(4px, 0.6vw, 8px); writing-mode: vertical-rl; text-orientation: mixed; font-size: clamp(0.5rem, 1vh, 0.7rem); font-weight: 600; display: flex; align-items: center; justify-content: center; padding: clamp(6px, 1vh, 10px) 0; letter-spacing: 0.05em; color: var(--text-primary); opacity: 0.5; transition: opacity 0.3s ease; cursor: pointer; }
+        .tab.active { opacity: 1; box-shadow: -2px 0 8px rgba(0,0,0,0.1); }
+        .tab:nth-child(1) { background: var(--tab-1); height: clamp(50px, 8vh, 70px); }
+        .tab:nth-child(2) { background: var(--tab-2); height: clamp(60px, 10vh, 85px); }
+        .tab:nth-child(3) { background: var(--tab-3); height: clamp(70px, 12vh, 100px); }
+        .tab:nth-child(4) { background: var(--tab-4); height: clamp(60px, 10vh, 85px); }
+        .tab:nth-child(5) { background: var(--tab-5); height: clamp(50px, 8vh, 70px); }
+
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.08s; } .reveal:nth-child(2) { transition-delay: 0.16s; } .reveal:nth-child(3) { transition-delay: 0.24s; } .reveal:nth-child(4) { transition-delay: 0.32s; } .reveal:nth-child(5) { transition-delay: 0.40s; } .reveal:nth-child(6) { transition-delay: 0.48s; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--tab-1), var(--tab-2), var(--tab-3)); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--tab-2); transform: scale(1.4); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-mono); font-size: var(--small-size); color: rgba(255,255,255,0.4); z-index: 9998; }
+
+        /* Code block */
+        .code-block { background: var(--code-bg); border-radius: clamp(6px, 1vw, 10px); overflow: hidden; }
+        .code-header { padding: clamp(0.3rem, 0.6vw, 0.5rem) clamp(0.6rem, 1.2vw, 1rem); background: rgba(0,0,0,0.3); font-size: var(--small-size); color: rgba(255,255,255,0.5); font-family: var(--font-mono); display: flex; justify-content: space-between; }
+        .code-block pre { padding: clamp(0.6rem, 1.2vw, 1rem); font-family: var(--font-mono); font-size: var(--code-size); line-height: 1.6; color: var(--code-text); overflow-x: auto; }
+        .kw { color: #c792ea; } .fn { color: #82aaff; } .str { color: #c3e88d; } .num { color: #f78c6c; } .cm { color: #546e7a; font-style: italic; } .op { color: #89ddff; } .var { color: #eeffff; } .cls { color: #ffcb6b; }
+
+        .handwritten { font-family: var(--font-handwritten); color: var(--accent); }
+        .note-callout { background: var(--surface); border-radius: clamp(6px, 1vw, 8px); padding: clamp(0.5rem, 1vw, 0.8rem); font-size: var(--small-size); color: var(--text-secondary); border: 1px dashed var(--border); }
+
+        :lang(zh), :lang(zh-CN) { line-height: 1.8; word-break: normal; overflow-wrap: break-word; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4vw, 2.5rem); } .notebook-page { height: min(92vh, 680px); } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .tab-strip { display: none; } .binder-holes { display: none; } .notebook-page::before { display: none; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .tab-strip { display: none; } .slide-counter { display: none; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; } .visible .reveal { opacity: 1; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal { opacity: 1 !important; transform: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="标题">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content" style="align-items: center; text-align: center;">
+                <p class="reveal handwritten" style="font-size: var(--subtitle-size);">第 4 讲</p>
+                <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap);">
+                    Python 数据分析入门
+                </h1>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                    从 Pandas 基础到数据可视化
+                </p>
+                <div class="reveal" style="width: 40px; height: 2px; background: var(--accent); margin: var(--content-gap) auto;"></div>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); max-width: min(80%, 500px);">
+                    掌握 Pandas 数据加载、清洗、聚合和 Matplotlib 可视化的完整流程
+                </p>
+                <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">2026年4月 &middot; 约 15 分钟</p>
+            </div>
+            <div class="tab-strip">
+                <div class="tab active" style="background: var(--tab-1);">概述</div>
+                <div class="tab" style="background: var(--tab-2);">加载</div>
+                <div class="tab" style="background: var(--tab-3);">清洗</div>
+                <div class="tab" style="background: var(--tab-4);">分析</div>
+                <div class="tab" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: 加载数据 -->
+    <section class="slide" aria-label="加载数据">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">读取 CSV 文件</h2>
+                <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                    <div class="code-header"><span>load_data.py</span></div>
+                    <pre><code><span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="var">df</span> <span class="op">=</span> <span class="var">pd</span><span class="op">.</span><span class="fn">read_csv</span>(<span class="str">"sales_2025.csv"</span>)
+<span class="fn">print</span>(<span class="var">df</span><span class="op">.</span><span class="fn">head</span>())
+<span class="fn">print</span>(<span class="var">df</span><span class="op">.</span><span class="var">shape</span>)    <span class="cm"># (10000, 8)</span></code></pre>
+                </div>
+                <div class="reveal note-callout" style="margin-top: var(--content-gap);">
+                    <span class="handwritten" style="font-size: var(--body-size);">常用读取方法：</span>
+                    <code style="font-family: var(--font-mono); font-size: var(--small-size);">read_excel()</code> &middot;
+                    <code style="font-family: var(--font-mono); font-size: var(--small-size);">read_json()</code> &middot;
+                    <code style="font-family: var(--font-mono); font-size: var(--small-size);">read_sql()</code>
+                </div>
+            </div>
+            <div class="tab-strip">
+                <div class="tab" style="background: var(--tab-1);">概述</div>
+                <div class="tab active" style="background: var(--tab-2);">加载</div>
+                <div class="tab" style="background: var(--tab-3);">清洗</div>
+                <div class="tab" style="background: var(--tab-4);">分析</div>
+                <div class="tab" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: 数据清洗 -->
+    <section class="slide" aria-label="数据清洗">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">处理缺失值</h2>
+                <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                    <div class="code-header"><span>clean_data.py</span></div>
+                    <pre><code><span class="cm"># 查看缺失值</span>
+<span class="fn">print</span>(<span class="var">df</span><span class="op">.</span><span class="fn">isnull</span>()<span class="op">.</span><span class="fn">sum</span>())
+
+<span class="cm"># 填充（中位数）</span>
+<span class="var">df</span>[<span class="str">"price"</span>]<span class="op">.</span><span class="fn">fillna</span>(<span class="var">df</span>[<span class="str">"price"</span>]<span class="op">.</span><span class="fn">median</span>(), <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="cm"># 删除</span>
+<span class="var">df</span><span class="op">.</span><span class="fn">dropna</span>(<span class="var">subset</span><span class="op">=</span>[<span class="str">"customer_id"</span>], <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)</code></pre>
+                </div>
+                <div class="reveal note-callout" style="margin-top: var(--content-gap);">
+                    <span class="handwritten" style="font-size: var(--body-size);">清洗前先用 df.describe() 了解分布！</span>
+                </div>
+            </div>
+            <div class="tab-strip">
+                <div class="tab" style="background: var(--tab-1);">概述</div>
+                <div class="tab" style="background: var(--tab-2);">加载</div>
+                <div class="tab active" style="background: var(--tab-3);">清洗</div>
+                <div class="tab" style="background: var(--tab-4);">分析</div>
+                <div class="tab" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: GroupBy -->
+    <section class="slide" aria-label="分组聚合">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">GroupBy 分组聚合</h2>
+                <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                    <div class="code-header"><span>groupby.py</span></div>
+                    <pre><code><span class="var">result</span> <span class="op">=</span> <span class="var">df</span><span class="op">.</span><span class="fn">groupby</span>(<span class="str">"category"</span>)[<span class="str">"revenue"</span>]<span class="op">.</span><span class="fn">agg</span>([
+    <span class="str">"sum"</span>, <span class="str">"mean"</span>, <span class="str">"count"</span>
+])<span class="op">.</span><span class="fn">sort_values</span>(<span class="str">"sum"</span>, <span class="var">ascending</span><span class="op">=</span><span class="kw">False</span>)
+
+<span class="cm"># 按月统计</span>
+<span class="var">df</span>[<span class="str">"month"</span>] <span class="op">=</span> <span class="var">pd</span><span class="op">.</span><span class="fn">to_datetime</span>(<span class="var">df</span>[<span class="str">"date"</span>])<span class="op">.</span><span class="var">dt</span><span class="op">.</span><span class="var">month</span>
+<span class="var">monthly</span> <span class="op">=</span> <span class="var">df</span><span class="op">.</span><span class="fn">groupby</span>(<span class="str">"month"</span>)[<span class="str">"revenue"</span>]<span class="op">.</span><span class="fn">sum</span>()</code></pre>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); background: #f0ede5; border-radius: 8px; padding: clamp(0.5rem, 1vw, 0.8rem); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary);">
+                    电子产品 &nbsp; 1,245,600 &nbsp; 328.5 &nbsp; 3,792<br>
+                    服装 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 892,300 &nbsp;&nbsp; 215.8 &nbsp; 4,134
+                </div>
+            </div>
+            <div class="tab-strip">
+                <div class="tab" style="background: var(--tab-1);">概述</div>
+                <div class="tab" style="background: var(--tab-2);">加载</div>
+                <div class="tab" style="background: var(--tab-3);">清洗</div>
+                <div class="tab active" style="background: var(--tab-4);">分析</div>
+                <div class="tab" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: 可视化 -->
+    <section class="slide" aria-label="可视化">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">Matplotlib 绘图</h2>
+                <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                    <div class="code-header"><span>visualize.py</span></div>
+                    <pre><code><span class="kw">import</span> <span class="cls">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+
+<span class="var">fig</span>, <span class="var">ax</span> <span class="op">=</span> <span class="var">plt</span><span class="op">.</span><span class="fn">subplots</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">8</span>, <span class="num">5</span>))
+<span class="var">result</span>[<span class="str">"sum"</span>]<span class="op">.</span><span class="fn">plot</span>(<span class="var">kind</span><span class="op">=</span><span class="str">"bar"</span>, <span class="var">ax</span><span class="op">=</span><span class="var">ax</span>,
+    <span class="var">color</span><span class="op">=</span>[<span class="str">"#98d4bb"</span>,<span class="str">"#c7b8ea"</span>,<span class="str">"#f4b8c5"</span>])
+<span class="var">ax</span><span class="op">.</span><span class="fn">set_title</span>(<span class="str">"各类别销售额"</span>)
+<span class="var">plt</span><span class="op">.</span><span class="fn">tight_layout</span>()</code></pre>
+                </div>
+                <div class="reveal note-callout" style="margin-top: var(--content-gap);">
+                    <span class="handwritten" style="font-size: var(--body-size);">图表类型：</span>
+                    bar 柱状 &middot; line 折线 &middot; scatter 散点 &middot; hist 直方图 &middot; pie 饼图
+                </div>
+            </div>
+            <div class="tab-strip">
+                <div class="tab" style="background: var(--tab-1);">概述</div>
+                <div class="tab" style="background: var(--tab-2);">加载</div>
+                <div class="tab" style="background: var(--tab-3);">清洗</div>
+                <div class="tab" style="background: var(--tab-4);">分析</div>
+                <div class="tab active" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: 趋势分析 -->
+    <section class="slide" aria-label="趋势">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">时间序列趋势</h2>
+                <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                    <div class="code-header"><span>trend.py</span></div>
+                    <pre><code><span class="var">monthly</span><span class="op">.</span><span class="fn">plot</span>(<span class="var">kind</span><span class="op">=</span><span class="str">"line"</span>, <span class="var">marker</span><span class="op">=</span><span class="str">"o"</span>)
+<span class="var">ax</span><span class="op">.</span><span class="fn">fill_between</span>(<span class="var">monthly</span><span class="op">.</span><span class="var">index</span>,
+    <span class="var">monthly</span><span class="op">.</span><span class="var">values</span>, <span class="var">alpha</span><span class="op">=</span><span class="num">0.15</span>)
+
+<span class="cm"># 移动平均</span>
+<span class="var">rolling</span> <span class="op">=</span> <span class="var">monthly</span><span class="op">.</span><span class="fn">rolling</span>(<span class="num">3</span>)<span class="op">.</span><span class="fn">mean</span>()
+<span class="var">ax</span><span class="op">.</span><span class="fn">plot</span>(<span class="var">rolling</span>, <span class="str">"--"</span>, <span class="var">label</span><span class="op">=</span><span class="str">"3月均线"</span>)</code></pre>
+                </div>
+                <div class="reveal note-callout" style="margin-top: var(--content-gap);">
+                    <span class="handwritten" style="font-size: var(--body-size);">进阶推荐：</span>
+                    Seaborn (<code style="font-family: var(--font-mono); font-size: var(--small-size);">sns.lineplot</code>) 和 Plotly 交互式图表
+                </div>
+            </div>
+            <div class="tab-strip">
+                <div class="tab" style="background: var(--tab-1);">概述</div>
+                <div class="tab" style="background: var(--tab-2);">加载</div>
+                <div class="tab" style="background: var(--tab-3);">清洗</div>
+                <div class="tab" style="background: var(--tab-4);">分析</div>
+                <div class="tab active" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: 练习 -->
+    <section class="slide" aria-label="练习">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">课堂练习</h2>
+                <div class="reveal" style="margin-top: var(--content-gap); background: rgba(152, 212, 187, 0.15); border: 1px solid rgba(152, 212, 187, 0.4); border-radius: 10px; padding: clamp(0.8rem, 1.5vw, 1.2rem);">
+                    <h3 style="font-size: var(--h3-size); color: var(--accent); font-weight: 700; margin-bottom: 0.4em;">练习 1：数据概览</h3>
+                    <ol style="font-size: var(--body-size); color: var(--text-secondary); line-height: 2; padding-left: 1.5em;">
+                        <li>加载 <code style="font-family: var(--font-mono);">supermarket_sales.csv</code></li>
+                        <li>检查缺失值数量</li>
+                        <li>输出行数、列数和内存占用</li>
+                    </ol>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); background: rgba(199, 184, 234, 0.15); border: 1px solid rgba(199, 184, 234, 0.4); border-radius: 10px; padding: clamp(0.8rem, 1.5vw, 1.2rem);">
+                    <h3 style="font-size: var(--h3-size); color: var(--accent); font-weight: 700; margin-bottom: 0.4em;">练习 2：分组 + 可视化</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        按城市统计总销售额，绘制柱状图，标注最高和最低城市。
+                    </p>
+                </div>
+            </div>
+            <div class="tab-strip">
+                <div class="tab" style="background: var(--tab-1);">概述</div>
+                <div class="tab" style="background: var(--tab-2);">加载</div>
+                <div class="tab" style="background: var(--tab-3);">清洗</div>
+                <div class="tab" style="background: var(--tab-4);">分析</div>
+                <div class="tab" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: 总结 -->
+    <section class="slide" aria-label="总结">
+        <div class="notebook-page">
+            <div class="binder-holes"><span></span><span></span><span></span></div>
+            <div class="page-content" style="align-items: center; text-align: center;">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">本讲要点</h2>
+                <div class="reveal" style="margin-top: var(--content-gap); display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); text-align: left; max-width: 500px;">
+                    <div style="font-size: var(--body-size); line-height: 2;"><span style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">01</span> read_csv() 加载</div>
+                    <div style="font-size: var(--body-size); line-height: 2;"><span style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">02</span> fillna/dropna 清洗</div>
+                    <div style="font-size: var(--body-size); line-height: 2;"><span style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">03</span> groupby 聚合</div>
+                    <div style="font-size: var(--body-size); line-height: 2;"><span style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">04</span> Matplotlib 绘图</div>
+                </div>
+                <div class="reveal note-callout" style="margin-top: var(--content-gap); text-align: left; max-width: 450px;">
+                    <span class="handwritten" style="font-size: var(--body-size);">下一讲：</span> Seaborn 高级可视化 + 数据透视表
+                </div>
+            </div>
+            <div class="tab-strip">
+                <div class="tab active" style="background: var(--tab-1);">概述</div>
+                <div class="tab" style="background: var(--tab-2);">加载</div>
+                <div class="tab" style="background: var(--tab-3);">清洗</div>
+                <div class="tab" style="background: var(--tab-4);">分析</div>
+                <div class="tab" style="background: var(--tab-5);">绘图</div>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: rgba(255,255,255,0.3); opacity: 0.5;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation { constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); } init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); } setupIntersectionObserver() { const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); const idx = this.slides.indexOf(entry.target); if (idx !== -1) { this.currentSlide = idx; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(slide => observer.observe(slide)); } setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch (e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide + 1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide - 1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break; } }); } setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const deltaY = this.touchStartY - e.changedTouches[0].clientY; const deltaX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return; if (deltaY > 0) this.goToSlide(this.currentSlide + 1); else this.goToSlide(this.currentSlide - 1); }, { passive: true }); } setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1); }, 50); }, { passive: true }); } setupProgressBar() { this.progressBar = document.getElementById('progressBar'); } setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `跳转至第 ${i + 1} 页`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); } setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); } goToSlide(index) { if (index < 0 || index >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = index; this.slides[index].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600); } updateUI() { const total = this.slides.length; const current = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`; document.querySelectorAll('.nav-dot').forEach((dot, i) => { dot.classList.toggle('active', i === current); }); if (this.counter) this.counter.textContent = `${current + 1} / ${total}`; } }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+    </script>
+</body>
+</html>

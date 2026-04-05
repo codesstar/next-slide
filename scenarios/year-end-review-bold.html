@@ -24,11 +24,11 @@
             --bg-tertiary: #222222;
             --text-primary: #ffffff;
             --text-secondary: #aaaaaa;
-            --text-muted: #666666;
-            --card-bg: #FF5722;
+            --text-muted: #878787;
+            --card-bg: #E64A19;
             --card-bg-secondary: #FF7043;
             --text-on-card: #111111;
-            --accent: #FF5722;
+            --accent: #E64A19;
             --accent-secondary: #FFB300;
             --accent-glow: rgba(255, 87, 34, 0.3);
             --accent-glow-secondary: rgba(255, 179, 0, 0.2);
@@ -142,7 +142,7 @@
 
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
             line-height: 1.8;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: break-word;
         }
 
@@ -936,6 +936,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

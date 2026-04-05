@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro Arcade -- AI 驱动的设计革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #1a1c2c;
+  --screen: #262b44;
+  --green: #38b764;
+  --red: #e43b44;
+  --yellow: #fee761;
+  --blue: #3978a8;
+  --text: #e8e8e8;
+  --dim: #9aaac8;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.slide {
+  position: fixed; inset: 0;
+  height: 100vh; height: 100dvh;
+  overflow: hidden; opacity: 0; pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 4px;
+  background: var(--green); z-index: 100;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 0;
+}
+
+.page-counter {
+  position: fixed; bottom: 1.5rem; right: 2rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.55rem, 0.8vw, 0.7rem);
+  color: var(--dim); z-index: 100;
+}
+
+.pixel-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+.game-frame {
+  height: 100%; padding: 1.5rem;
+  display: flex; flex-direction: column;
+}
+.frame-top {
+  height: 3px; background: var(--green); margin-bottom: 0;
+}
+.frame-body {
+  flex: 1; background: var(--screen); border: 3px solid var(--dim);
+  border-radius: 0; display: flex; flex-direction: column; position: relative;
+}
+.frame-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.8rem 1.5rem; border-bottom: 2px solid var(--dim);
+  font-family: 'Press Start 2P', monospace; font-size: clamp(0.45rem, 0.65vw, 0.55rem);
+  color: var(--dim);
+}
+.frame-content {
+  flex: 1; padding: 2.5rem 3rem; overflow: hidden;
+}
+
+/* Health bar */
+.health-bar {
+  display: flex; gap: 3px; margin-top: 0.5rem;
+}
+.health-bar .block {
+  width: 20px; height: 12px; border-radius: 0;
+}
+.health-bar .block.filled { background: var(--green); }
+.health-bar .block.empty { background: var(--dim); opacity: 0.3; }
+.health-bar .block.red { background: var(--red); }
+.health-bar .block.yellow { background: var(--yellow); }
+.health-bar .block.blue { background: var(--blue); }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Glitch flicker for title */
+@keyframes glitchIn {
+  0% { opacity: 0; transform: translateX(-4px); filter: hue-rotate(90deg); }
+  20% { opacity: 1; transform: translateX(2px); filter: hue-rotate(0deg); }
+  22% { opacity: 0.7; transform: translateX(-1px) skewX(2deg); }
+  24% { opacity: 1; transform: translateX(0) skewX(0); }
+  100% { opacity: 1; transform: translateX(0); filter: hue-rotate(0deg); }
+}
+
+/* Pixel dissolve for general elements */
+@keyframes pixelDissolve {
+  0% { opacity: 0; clip-path: inset(0 100% 0 0); }
+  40% { opacity: 0.6; clip-path: inset(0 60% 0 0); }
+  60% { opacity: 0.8; clip-path: inset(0 30% 0 0); }
+  100% { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes typeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pixelFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.anim { opacity: 0; }
+.slide.active .a-glitch1 { animation: glitchIn 0.6s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-glitch2 { animation: glitchIn 0.6s 0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-t1 { animation: typeIn 0.4s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-t2 { animation: typeIn 0.4s 0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-t3 { animation: typeIn 0.4s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-t4 { animation: typeIn 0.4s 0.55s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-t5 { animation: typeIn 0.4s 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-px1 { animation: pixelDissolve 0.5s 0.15s forwards; }
+.slide.active .a-px2 { animation: pixelDissolve 0.5s 0.3s forwards; }
+.slide.active .a-px3 { animation: pixelDissolve 0.5s 0.45s forwards; }
+.slide.active .a-px4 { animation: pixelDissolve 0.5s 0.6s forwards; }
+
+/* ===== SLIDE 1 ===== */
+.s1-content {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  height: 100%; padding: 2rem;
+}
+.s1-content .press-start {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.6rem, 0.85vw, 0.75rem);
+  color: var(--green); margin-bottom: 2.5rem;
+  animation: blink 1.2s step-end infinite;
+}
+.s1-content .title {
+  font-family: 'Silkscreen', sans-serif; font-weight: 700;
+  font-size: clamp(2rem, 4.5vw, 3.8rem); color: var(--yellow); line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+.s1-content .title .line2 { color: var(--green); }
+.s1-content .subtitle {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 400;
+  font-size: clamp(0.8rem, 1.2vw, 1rem); color: var(--dim); line-height: 1.7;
+  max-width: 500px;
+}
+.s1-content .health-row {
+  margin-top: 2rem; display: flex; align-items: center; gap: 1rem;
+}
+.s1-content .health-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.45rem, 0.65vw, 0.55rem); color: var(--dim);
+}
+
+/* ===== SLIDE 2 ===== */
+.s2-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; height: 100%;
+}
+.feat-box {
+  background: var(--bg); border: 2px solid var(--dim); padding: 2rem;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.feat-box .feat-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.5rem, 0.7vw, 0.6rem); margin-bottom: 1rem;
+}
+.feat-box:nth-child(1) .feat-num { color: var(--green); }
+.feat-box:nth-child(2) .feat-num { color: var(--red); }
+.feat-box:nth-child(3) .feat-num { color: var(--yellow); }
+.feat-box:nth-child(4) .feat-num { color: var(--blue); }
+.feat-box .feat-name {
+  font-family: 'Silkscreen', sans-serif; font-weight: 700;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem); color: var(--text); margin-bottom: 0.5rem;
+}
+.feat-box .feat-desc {
+  font-size: clamp(0.75rem, 1vw, 0.85rem); color: var(--dim); line-height: 1.6;
+}
+.feat-box .health-bar { margin-top: auto; padding-top: 1rem; }
+
+/* ===== SLIDE 3 ===== (horizontal score ticker layout) */
+.s3-ticker {
+  display: flex; gap: 2rem; justify-content: center; align-items: stretch;
+  height: 100%; padding: 1rem 0;
+}
+.ticker-item {
+  flex: 1; background: var(--bg); border: 2px solid var(--dim);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2rem 1.5rem; text-align: center; position: relative;
+}
+.ticker-item::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.ticker-item:nth-child(1)::before { background: var(--green); }
+.ticker-item:nth-child(2)::before { background: var(--yellow); }
+.ticker-item:nth-child(3)::before { background: var(--red); }
+.ticker-item .ticker-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.45rem, 0.65vw, 0.55rem); color: var(--dim); margin-bottom: 1.5rem;
+}
+.ticker-item .ticker-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.8rem, 3.5vw, 3rem); line-height: 1; margin-bottom: 1rem;
+}
+.ticker-item:nth-child(1) .ticker-value { color: var(--green); }
+.ticker-item:nth-child(2) .ticker-value { color: var(--yellow); }
+.ticker-item:nth-child(3) .ticker-value { color: var(--red); }
+.ticker-item .ticker-desc {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 400;
+  font-size: clamp(0.7rem, 0.9vw, 0.8rem); color: var(--dim);
+}
+.ticker-item .health-bar { margin-top: 1rem; }
+
+/* ===== SLIDE 4 ===== (dialog box with character portrait area) */
+.s4-layout {
+  display: grid; grid-template-columns: clamp(80px, 15vw, 160px) 1fr;
+  gap: 2rem; height: 100%; align-items: center; padding: 2rem;
+}
+.s4-portrait {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+}
+.s4-portrait .portrait-frame {
+  width: clamp(60px, 12vw, 120px); height: clamp(60px, 12vw, 120px);
+  border: 3px solid var(--green); background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Press Start 2P', monospace; font-size: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--green);
+}
+.s4-portrait .portrait-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.35rem, 0.5vw, 0.45rem); color: var(--green);
+  text-align: center;
+}
+.s4-dialog {
+  display: flex; flex-direction: column; justify-content: center;
+}
+.s4-dialog .dialog-box {
+  background: var(--bg); border: 3px solid var(--green);
+  padding: 3rem; position: relative;
+}
+.s4-dialog .dialog-box::before {
+  content: ''; position: absolute; top: -3px; left: -3px; right: -3px;
+  height: 2rem; background: var(--green);
+}
+.s4-dialog .dialog-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.5rem, 0.7vw, 0.6rem); color: var(--bg);
+  position: relative; z-index: 1; margin-bottom: 2rem; margin-top: -0.8rem;
+}
+.s4-dialog .quote-text {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 700;
+  font-size: clamp(1.3rem, 2.2vw, 1.9rem); color: var(--yellow); line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+.s4-dialog .quote-author {
+  font-family: 'Silkscreen', sans-serif; font-weight: 400;
+  font-size: clamp(0.75rem, 1vw, 0.85rem); color: var(--dim);
+}
+.s4-dialog .continue {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.45rem, 0.6vw, 0.5rem); color: var(--green);
+  margin-top: 2rem; animation: blink 1.2s step-end infinite;
+}
+
+/* ===== SLIDE 5 ===== */
+.s5-content {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; height: 100%; padding: 2rem;
+}
+.s5-content .game-over {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.6rem, 0.85vw, 0.75rem); color: var(--red);
+  margin-bottom: 2rem; letter-spacing: 0.2em;
+}
+.s5-content .final-title {
+  font-family: 'Silkscreen', sans-serif; font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3.5rem); color: var(--yellow); line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+.s5-content .final-sub {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 400;
+  font-size: clamp(0.85rem, 1.2vw, 1rem); color: var(--dim);
+  line-height: 1.7; max-width: 500px; margin-bottom: 2.5rem;
+}
+.s5-content .final-scores {
+  display: flex; gap: 3rem;
+}
+.s5-content .final-scores .fs-item {
+  text-align: center;
+}
+.s5-content .final-scores .fs-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.9rem, 1.5vw, 1.3rem); margin-bottom: 0.3rem;
+}
+.s5-content .final-scores .fs-item:nth-child(1) .fs-value { color: var(--green); }
+.s5-content .final-scores .fs-item:nth-child(2) .fs-value { color: var(--yellow); }
+.s5-content .final-scores .fs-item:nth-child(3) .fs-value { color: var(--red); }
+.s5-content .final-scores .fs-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.35rem, 0.5vw, 0.42rem); color: var(--dim);
+}
+.s5-content .press-start-final {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.5rem, 0.7vw, 0.6rem); color: var(--green);
+  margin-top: 2.5rem; animation: blink 1.2s step-end infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter">01 / 05</div>
+
+<!-- SLIDE 1 -->
+<div class="slide active" data-slide="0">
+  <div class="game-frame pixel-grid">
+    <div class="frame-top"></div>
+    <div class="frame-body">
+      <div class="frame-header">
+        <span>SCORE: 000,000</span>
+        <span>STAGE 01</span>
+        <span>LIVES: 3</span>
+      </div>
+      <div class="frame-content">
+        <div class="s1-content">
+          <div class="press-start">PRESS START</div>
+          <div class="title anim a-glitch1">
+            AI 驱动的<br><span class="line2">设计革命</span>
+          </div>
+          <div class="subtitle anim a-t2">从像素到体验，重新定义创造力的边界</div>
+          <div class="health-row anim a-t3">
+            <span class="health-label">POWER</span>
+            <div class="health-bar">
+              <div class="block filled"></div>
+              <div class="block filled"></div>
+              <div class="block filled"></div>
+              <div class="block filled"></div>
+              <div class="block filled"></div>
+              <div class="block filled"></div>
+              <div class="block filled"></div>
+              <div class="block filled"></div>
+              <div class="block empty"></div>
+              <div class="block empty"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" data-slide="1">
+  <div class="game-frame pixel-grid">
+    <div class="frame-top"></div>
+    <div class="frame-body">
+      <div class="frame-header">
+        <span>SCORE: 001,200</span>
+        <span>STAGE 02</span>
+        <span>FEATURES</span>
+      </div>
+      <div class="frame-content">
+        <div class="s2-grid">
+          <div class="feat-box anim a-px1">
+            <div class="feat-num">SKILL 01</div>
+            <div class="feat-name">智能布局</div>
+            <div class="feat-desc">AI 驱动的自适应排版引擎</div>
+            <div class="health-bar">
+              <div class="block filled"></div><div class="block filled"></div>
+              <div class="block filled"></div><div class="block filled"></div>
+              <div class="block filled"></div><div class="block empty"></div>
+            </div>
+          </div>
+          <div class="feat-box anim a-px2">
+            <div class="feat-num">SKILL 02</div>
+            <div class="feat-name">风格迁移</div>
+            <div class="feat-desc">一键转换视觉风格与品牌调性</div>
+            <div class="health-bar">
+              <div class="block red"></div><div class="block red"></div>
+              <div class="block red"></div><div class="block red"></div>
+              <div class="block empty"></div><div class="block empty"></div>
+            </div>
+          </div>
+          <div class="feat-box anim a-px3">
+            <div class="feat-num">SKILL 03</div>
+            <div class="feat-name">实时协作</div>
+            <div class="feat-desc">多人同步编辑，智能冲突解决</div>
+            <div class="health-bar">
+              <div class="block yellow"></div><div class="block yellow"></div>
+              <div class="block yellow"></div><div class="block yellow"></div>
+              <div class="block yellow"></div><div class="block empty"></div>
+            </div>
+          </div>
+          <div class="feat-box anim a-px4">
+            <div class="feat-num">SKILL 04</div>
+            <div class="feat-name">自适应排版</div>
+            <div class="feat-desc">跨设备完美呈现，零手动调整</div>
+            <div class="health-bar">
+              <div class="block blue"></div><div class="block blue"></div>
+              <div class="block blue"></div><div class="block empty"></div>
+              <div class="block empty"></div><div class="block empty"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide" data-slide="2">
+  <div class="game-frame pixel-grid">
+    <div class="frame-top"></div>
+    <div class="frame-body">
+      <div class="frame-header">
+        <span>HIGH SCORES</span>
+        <span>STAGE 03</span>
+        <span>RANKING</span>
+      </div>
+      <div class="frame-content">
+        <div class="s3-ticker">
+          <div class="ticker-item anim a-px1">
+            <div class="ticker-label">EFFICIENCY</div>
+            <div class="ticker-value">10x</div>
+            <div class="ticker-desc">效率提升</div>
+            <div class="health-bar">
+              <div class="block" style="background:var(--green)"></div>
+              <div class="block" style="background:var(--green)"></div>
+              <div class="block" style="background:var(--green)"></div>
+              <div class="block" style="background:var(--green)"></div>
+              <div class="block" style="background:var(--green)"></div>
+            </div>
+          </div>
+          <div class="ticker-item anim a-px2">
+            <div class="ticker-label">SATISFACTION</div>
+            <div class="ticker-value">93%</div>
+            <div class="ticker-desc">用户满意度</div>
+            <div class="health-bar">
+              <div class="block" style="background:var(--yellow)"></div>
+              <div class="block" style="background:var(--yellow)"></div>
+              <div class="block" style="background:var(--yellow)"></div>
+              <div class="block" style="background:var(--yellow)"></div>
+              <div class="block" style="background:var(--dim);opacity:0.3"></div>
+            </div>
+          </div>
+          <div class="ticker-item anim a-px3">
+            <div class="ticker-label">GENERATED</div>
+            <div class="ticker-value">50M+</div>
+            <div class="ticker-desc">设计生成</div>
+            <div class="health-bar">
+              <div class="block" style="background:var(--red)"></div>
+              <div class="block" style="background:var(--red)"></div>
+              <div class="block" style="background:var(--red)"></div>
+              <div class="block" style="background:var(--red)"></div>
+              <div class="block" style="background:var(--red)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide" data-slide="3">
+  <div class="game-frame pixel-grid">
+    <div class="frame-top"></div>
+    <div class="frame-body">
+      <div class="frame-header">
+        <span>SCORE: 042,800</span>
+        <span>STAGE 04</span>
+        <span>WISDOM</span>
+      </div>
+      <div class="frame-content">
+        <div class="s4-layout">
+          <div class="s4-portrait anim a-px1">
+            <div class="portrait-frame">NPC</div>
+            <div class="portrait-name">DIETER<br>RAMS</div>
+          </div>
+          <div class="s4-dialog">
+            <div class="dialog-box anim a-t1">
+              <div class="dialog-title">NPC DIALOG</div>
+              <div class="quote-text anim a-t2">好的设计不是装饰，是沟通。</div>
+              <div class="quote-author anim a-t3">-- Dieter Rams</div>
+              <div class="continue">PRESS ANY KEY TO CONTINUE...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide" data-slide="4">
+  <div class="game-frame pixel-grid">
+    <div class="frame-top"></div>
+    <div class="frame-body">
+      <div class="frame-header">
+        <span>FINAL SCORE</span>
+        <span>STAGE 05</span>
+        <span>COMPLETE</span>
+      </div>
+      <div class="frame-content">
+        <div class="s5-content">
+          <div class="game-over anim a-glitch1">MISSION COMPLETE</div>
+          <div class="final-title anim a-glitch2">重新定义创造力</div>
+          <div class="final-sub anim a-t3">AI 与人类设计师的协同，不是未来的愿景，而是今天的现实。</div>
+          <div class="final-scores anim a-t4">
+            <div class="fs-item">
+              <div class="fs-value">10x</div>
+              <div class="fs-label">EFFICIENCY</div>
+            </div>
+            <div class="fs-item">
+              <div class="fs-value">93%</div>
+              <div class="fs-label">SATISFACTION</div>
+            </div>
+            <div class="fs-item">
+              <div class="fs-value">50M+</div>
+              <div class="fs-label">GENERATED</div>
+            </div>
+          </div>
+          <div class="press-start-final">PRESS START TO PLAY AGAIN</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+let current = 0;
+const total = slides.length;
+
+function goTo(n) {
+  if (n < 0 || n >= total) return;
+  slides[current].classList.remove('active');
+  current = n;
+  slides[current].classList.add('active');
+  progress.style.width = ((current + 1) / total * 100) + '%';
+  counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+goTo(0);
+</script>
+</body>
+</html>

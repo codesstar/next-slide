@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claymorphism 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-1: linear-gradient(145deg, #e8f5e9 0%, #f3e5f5 50%, #fff3e0 100%);
+  --bg-2: linear-gradient(160deg, #f3e5f5 0%, #e8f5e9 60%, #fff8e1 100%);
+  --bg-3: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #fff8e1 100%);
+  --bg-4: linear-gradient(160deg, #fff8e1 0%, #f3e5f5 50%, #e8f5e9 100%);
+  --bg-5: linear-gradient(145deg, #f3e5f5 0%, #e8f5e9 50%, #fff3e0 100%);
+  --text: #3a3a3a;
+  --text-mid: #666;
+  --text-light: #999;
+  --mint: #7dc64d;
+  --peach: #ff9a76;
+  --lavender: #b39ddb;
+  --blue: #64b5f6;
+  --yellow: #ffc107;
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --title-size: clamp(2rem, 5vw, 4rem);
+  --h2-size: clamp(1.5rem, 3.5vw, 3rem);
+  --h3-size: clamp(1.1rem, 2vw, 1.5rem);
+  --body-size: clamp(0.8rem, 1.2vw, 0.95rem);
+  --small-size: clamp(0.65rem, 0.9vw, 0.8rem);
+  --stat-size: clamp(2rem, 4vw, 3.25rem);
+  --slide-padding: clamp(2rem, 5vw, 5rem);
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 4px; z-index: 1000;
+  background: linear-gradient(90deg, var(--mint), var(--peach), var(--lavender));
+  border-radius: 0 4px 4px 0;
+  transition: width 0.5s var(--ease-out-expo);
+}
+.page-counter {
+  position: fixed; bottom: clamp(16px,2.5vh,32px); right: clamp(20px,3vw,40px);
+  font-size: clamp(11px,1vw,14px); font-weight: 800;
+  color: var(--text-light); z-index: 1000;
+  background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(255,255,255,0.3));
+  padding: 6px 16px; border-radius: 20px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.06), inset 2px 2px 4px rgba(255,255,255,0.6);
+}
+.page-counter .current { color: var(--text); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; opacity: 0; pointer-events: none;
+  transition: opacity 0.6s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  position: relative; z-index: 10;
+}
+
+/* Clay ball */
+.clay-ball {
+  position: absolute; border-radius: 50%; z-index: 2; pointer-events: none;
+}
+
+/* Animations */
+.reveal-bounce {
+  opacity: 0; transform: translateY(40px) scale(0.92);
+  transition: opacity 0.5s ease, transform 0.6s var(--ease-out-back);
+}
+.reveal-pop {
+  opacity: 0; transform: scale(0.7);
+  transition: opacity 0.4s ease, transform 0.5s var(--ease-spring);
+}
+.slide.active .reveal-bounce { opacity: 1; transform: translateY(0) scale(1); }
+.slide.active .reveal-pop { opacity: 1; transform: scale(1); }
+.slide.active .d1 { transition-delay: 0.05s; }
+.slide.active .d2 { transition-delay: 0.15s; }
+.slide.active .d3 { transition-delay: 0.25s; }
+.slide.active .d4 { transition-delay: 0.35s; }
+.slide.active .d5 { transition-delay: 0.45s; }
+
+/* Clay card mixin */
+.clay-card {
+  border-radius: clamp(20px,3vw,40px);
+  padding: clamp(24px,3.5vh,48px) clamp(20px,3vw,40px);
+  text-align: center;
+}
+.clay-mint {
+  background: linear-gradient(145deg, #c8f7c5, #a3e09f);
+  box-shadow: 0px 8px 32px rgba(125,198,77,0.3), inset 8px 8px 16px rgba(255,255,255,0.6), inset -6px -6px 14px rgba(80,150,50,0.15);
+}
+.clay-peach {
+  background: linear-gradient(145deg, #ffd4bc, #ffb99a);
+  box-shadow: 0px 8px 32px rgba(255,154,118,0.3), inset 8px 8px 16px rgba(255,255,255,0.6), inset -6px -6px 14px rgba(200,100,60,0.15);
+}
+.clay-lavender {
+  background: linear-gradient(145deg, #ddd0ee, #c4b3db);
+  box-shadow: 0px 8px 32px rgba(179,157,219,0.3), inset 8px 8px 16px rgba(255,255,255,0.5), inset -6px -6px 14px rgba(120,100,160,0.15);
+}
+.clay-blue {
+  background: linear-gradient(145deg, #bbdefb, #90caf9);
+  box-shadow: 0px 8px 32px rgba(100,181,246,0.3), inset 8px 8px 16px rgba(255,255,255,0.6), inset -6px -6px 14px rgba(60,120,180,0.15);
+}
+.clay-yellow {
+  background: linear-gradient(145deg, #fff3c4, #ffe082);
+  box-shadow: 0px 8px 32px rgba(255,193,7,0.25), inset 7px 7px 14px rgba(255,255,255,0.7), inset -6px -6px 12px rgba(200,150,0,0.12);
+}
+.clay-white {
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+  box-shadow: 0px 8px 40px rgba(125,198,77,0.2), inset 8px 8px 16px rgba(255,255,255,0.9), inset -8px -8px 16px rgba(125,198,77,0.12);
+}
+
+/* Icon */
+.card-icon {
+  width: clamp(48px,5.5vw,72px); height: clamp(48px,5.5vw,72px);
+  border-radius: clamp(14px,1.8vw,24px); margin: 0 auto clamp(12px,2vh,24px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px,2vw,28px); font-weight: 900; color: #fff;
+}
+.icon-mint { background: linear-gradient(145deg, var(--mint), #5a9e2e); box-shadow: inset 4px 4px 8px rgba(255,255,255,0.4), inset -3px -3px 6px rgba(50,100,20,0.3); }
+.icon-peach { background: linear-gradient(145deg, var(--peach), #e07050); box-shadow: inset 4px 4px 8px rgba(255,255,255,0.4), inset -3px -3px 6px rgba(160,70,30,0.3); }
+.icon-lavender { background: linear-gradient(145deg, var(--lavender), #8e6fbf); box-shadow: inset 4px 4px 8px rgba(255,255,255,0.4), inset -3px -3px 6px rgba(100,70,150,0.3); }
+
+/* Pill */
+.clay-pill {
+  display: inline-block; padding: clamp(6px,0.8vh,10px) clamp(16px,2vw,28px);
+  border-radius: 50px; font-size: var(--small-size);
+  font-weight: 700; color: #fff;
+}
+.pill-mint { background: linear-gradient(145deg, var(--mint), #5a9e2e); box-shadow: 0px 4px 16px rgba(125,198,77,0.3), inset 3px 3px 6px rgba(255,255,255,0.3); }
+.pill-peach { background: linear-gradient(145deg, var(--peach), #e07050); box-shadow: 0px 4px 16px rgba(255,154,118,0.3), inset 3px 3px 6px rgba(255,255,255,0.3); }
+.pill-blue { background: linear-gradient(145deg, var(--blue), #42a0e0); box-shadow: 0px 4px 16px rgba(100,181,246,0.3), inset 3px 3px 6px rgba(255,255,255,0.3); }
+.pill-lavender { background: linear-gradient(145deg, var(--lavender), #8e6fbf); box-shadow: 0px 4px 16px rgba(179,157,219,0.3), inset 3px 3px 6px rgba(255,255,255,0.3); }
+
+/* BG blobs */
+.bg-blob {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+}
+
+/* === SLIDE 1: COVER === */
+.s1 { background: var(--bg-1); }
+.s1 .main-card {
+  max-width: clamp(400px,55vw,700px);
+  padding: clamp(32px,5vh,64px) clamp(36px,5.5vw,72px);
+  text-align: center; z-index: 10;
+}
+.s1 .main-card h1 {
+  font-size: var(--title-size); font-weight: 900;
+  line-height: 1.15; margin-bottom: clamp(10px,1.5vh,20px);
+}
+.s1 .main-card p {
+  font-size: clamp(0.9rem,1.5vw,1.25rem); color: var(--text-mid); font-weight: 600;
+}
+.s1 .tag-pill {
+  display: inline-block; padding: clamp(6px,0.8vh,10px) clamp(16px,2vw,28px);
+  border-radius: 50px; font-size: var(--small-size);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+  margin-top: clamp(12px,2vh,24px);
+  background: linear-gradient(145deg, #b5e48c, #76c04a); color: #fff;
+  box-shadow: 0px 4px 16px rgba(125,198,77,0.3), inset 3px 3px 6px rgba(255,255,255,0.3);
+}
+
+/* === SLIDE 2: FEATURES === */
+.s2 { background: var(--bg-2); }
+.s2 .page-title {
+  position: absolute; top: clamp(24px,4vh,48px); left: var(--slide-padding);
+  font-size: var(--small-size); font-weight: 800; color: #aaa;
+  text-transform: uppercase; letter-spacing: 3px; z-index: 10;
+}
+.s2 .cards-row {
+  display: flex; gap: clamp(20px,3vw,40px);
+  max-width: 1100px; z-index: 10;
+}
+.s2 .clay-card h3 {
+  font-size: var(--h3-size); font-weight: 800; margin-bottom: clamp(6px,1vh,12px);
+}
+.s2 .clay-card p {
+  font-size: var(--body-size); color: var(--text-mid); line-height: 1.7; font-weight: 600;
+}
+
+/* === SLIDE 3: STATS === */
+.s3 { background: var(--bg-3); }
+.s3 .stats-title {
+  font-size: var(--h2-size); font-weight: 900;
+  margin-bottom: clamp(20px,3.5vh,40px); z-index: 10;
+}
+.s3 .stats-row {
+  display: flex; gap: clamp(16px,2.5vw,36px);
+  width: 100%; max-width: 1100px; z-index: 10;
+}
+.s3 .stat-card {
+  flex: 1; padding: clamp(20px,3vh,36px) clamp(14px,2vw,28px);
+  border-radius: clamp(18px,2.5vw,28px); text-align: center;
+}
+.s3 .stat-number {
+  font-size: var(--stat-size); font-weight: 900; margin-bottom: clamp(4px,0.5vh,8px);
+}
+.s3 .stat-label {
+  font-size: var(--body-size); font-weight: 700; color: var(--text-mid);
+  margin-bottom: clamp(10px,1.5vh,20px);
+}
+.s3 .bar-track {
+  width: 100%; height: clamp(10px,1.3vh,18px); border-radius: 12px;
+  background: rgba(255,255,255,0.5);
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.s3 .bar-fill {
+  height: 100%; border-radius: 12px;
+  box-shadow: inset 3px 3px 5px rgba(255,255,255,0.5), inset -2px -2px 4px rgba(0,0,0,0.1);
+}
+
+/* === SLIDE 4: QUOTE === */
+.s4 { background: var(--bg-4); }
+.s4 .quote-card {
+  max-width: clamp(500px,65vw,800px);
+  padding: clamp(32px,5vh,64px) clamp(36px,6vw,80px);
+  text-align: center; z-index: 10;
+}
+.s4 .quote-text {
+  font-size: clamp(1.25rem, 3vw, 2.25rem); font-weight: 800;
+  line-height: 1.5; margin-bottom: clamp(16px,3vh,32px);
+  color: var(--text);
+}
+.s4 .quote-line {
+  width: 48px; height: 4px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--mint), var(--peach));
+  margin: 0 auto clamp(12px,2vh,20px);
+}
+.s4 .quote-author { font-size: var(--body-size); font-weight: 700; color: var(--lavender); }
+.s4 .quote-role { font-size: var(--small-size); font-weight: 600; color: var(--text-light); margin-top: 4px; }
+
+/* === SLIDE 5: CLOSING === */
+.s5 { background: var(--bg-5); }
+.s5 .badge-circle {
+  width: clamp(120px,15vw,200px); height: clamp(120px,15vw,200px);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, #c8b4e0, #9a80c0);
+  box-shadow: 0px 12px 48px rgba(179,157,219,0.4), inset 10px 10px 20px rgba(255,255,255,0.4), inset -8px -8px 18px rgba(100,70,150,0.25);
+  margin-bottom: clamp(20px,3vh,36px);
+}
+.s5 .badge-inner {
+  width: 70%; height: 70%; border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(230,220,240,0.4));
+  box-shadow: inset 5px 5px 10px rgba(255,255,255,0.6), inset -4px -4px 8px rgba(130,100,170,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(2rem,3.5vw,3rem); font-weight: 900; color: #7c5dad;
+}
+.s5 .closing-title {
+  font-size: var(--h2-size); font-weight: 900; margin-bottom: clamp(6px,1vh,12px);
+}
+.s5 .closing-sub {
+  font-size: var(--body-size); font-weight: 600; color: var(--text-light);
+}
+.s5 .bottom-pills {
+  display: flex; gap: clamp(8px,1.2vw,16px);
+  margin-top: clamp(24px,4vh,40px);
+}
+
+@media (max-width: 600px) {
+  .s2 .cards-row { flex-direction: column; }
+  .s3 .stats-row { flex-direction: column; }
+  .page-counter { display: none; }
+}
+@media (max-height: 600px) {
+  :root { --title-size: clamp(1.5rem, 4vw, 2.5rem); --stat-size: clamp(1.5rem, 3vw, 2.25rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-bounce, .reveal-pop { transform: none !important; opacity: 0; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal-bounce, .slide.active .reveal-pop { opacity: 1; }
+}
+@media print {
+  .slide { position: relative; opacity: 1; pointer-events: auto; page-break-after: always; height: auto; min-height: 100vh; }
+  .progress-bar, .page-counter { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide s1 active" data-i="0">
+  <div class="bg-blob" style="width:clamp(300px,45vw,600px);height:clamp(300px,45vw,600px);background:radial-gradient(circle,rgba(125,198,77,0.15),transparent 70%);top:-10%;left:-8%;"></div>
+  <div class="bg-blob" style="width:clamp(250px,38vw,500px);height:clamp(250px,38vw,500px);background:radial-gradient(circle,rgba(179,157,219,0.15),transparent 70%);bottom:-10%;right:-5%;"></div>
+  <div class="clay-ball" style="width:clamp(50px,7.5vw,100px);height:clamp(50px,7.5vw,100px);background:linear-gradient(145deg,#9ae06e,#6ab33f);box-shadow:0px 6px 24px rgba(125,198,77,0.4),inset 6px 6px 12px rgba(255,255,255,0.5),inset -4px -4px 10px rgba(80,140,40,0.3);top:14%;left:12%;"></div>
+  <div class="clay-ball" style="width:clamp(40px,6vw,80px);height:clamp(40px,6vw,80px);background:linear-gradient(145deg,#ffb99a,#ff8a5c);box-shadow:0px 6px 24px rgba(255,154,118,0.4),inset 5px 5px 10px rgba(255,255,255,0.5),inset -4px -4px 8px rgba(200,100,60,0.3);top:11%;right:17%;"></div>
+  <div class="clay-ball" style="width:clamp(60px,9vw,120px);height:clamp(60px,9vw,120px);background:linear-gradient(145deg,#c8b4e0,#9a80c0);box-shadow:0px 8px 30px rgba(179,157,219,0.4),inset 7px 7px 14px rgba(255,255,255,0.4),inset -5px -5px 12px rgba(120,100,160,0.3);bottom:12%;left:9%;"></div>
+  <div class="clay-ball" style="width:clamp(35px,5vw,70px);height:clamp(35px,5vw,70px);background:linear-gradient(145deg,#90caf9,#5096dc);box-shadow:0px 5px 20px rgba(100,181,246,0.4),inset 5px 5px 10px rgba(255,255,255,0.5),inset -3px -3px 8px rgba(60,120,180,0.3);bottom:18%;right:14%;"></div>
+  <div class="slide-inner">
+    <div class="main-card clay-white reveal-bounce d1">
+      <h1>AI 驱动的<br>设计革命</h1>
+      <p>柔软、可触摸、充满愉悦的创造力</p>
+      <div class="tag-pill">Toybox UI</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide s2" data-i="1">
+  <div class="bg-blob" style="width:400px;height:400px;background:radial-gradient(circle,rgba(179,157,219,0.12),transparent 70%);top:-80px;right:-80px;"></div>
+  <div class="page-title reveal-bounce d1">核心能力</div>
+  <div class="slide-inner">
+    <div class="cards-row">
+      <div class="clay-card clay-mint reveal-bounce d2">
+        <div class="card-icon icon-mint">01</div>
+        <h3>智能布局</h3>
+        <p>AI 理解内容语义，自动生成有视觉层次的排版方案</p>
+      </div>
+      <div class="clay-card clay-peach reveal-bounce d3">
+        <div class="card-icon icon-peach">02</div>
+        <h3>风格迁移</h3>
+        <p>一键将任意参考图的视觉语言迁移到你的设计中</p>
+      </div>
+      <div class="clay-card clay-lavender reveal-bounce d4">
+        <div class="card-icon icon-lavender">03</div>
+        <h3>实时协作</h3>
+        <p>多人同步编辑，AI 实时调和不同设计师的修改意图</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide s3" data-i="2">
+  <div class="bg-blob" style="width:350px;height:350px;background:radial-gradient(circle,rgba(255,193,7,0.08),transparent 70%);top:-60px;right:-40px;"></div>
+  <div class="slide-inner" style="align-items:flex-start;">
+    <div class="stats-title reveal-bounce d1">设计革命 — 数据说话</div>
+    <div class="stats-row">
+      <div class="stat-card clay-yellow reveal-bounce d2">
+        <div class="stat-number">10x</div>
+        <div class="stat-label">效率提升</div>
+        <div class="bar-track"><div class="bar-fill" style="width:85%;background:linear-gradient(90deg,#ffc107,#ffb300);"></div></div>
+      </div>
+      <div class="stat-card clay-mint reveal-bounce d3">
+        <div class="stat-number">93%</div>
+        <div class="stat-label">用户满意度</div>
+        <div class="bar-track"><div class="bar-fill" style="width:93%;background:linear-gradient(90deg,var(--mint),#5a9e2e);"></div></div>
+      </div>
+      <div class="stat-card clay-blue reveal-bounce d4">
+        <div class="stat-number">50M+</div>
+        <div class="stat-label">设计生成</div>
+        <div class="bar-track"><div class="bar-fill" style="width:78%;background:linear-gradient(90deg,var(--blue),#42a5f5);"></div></div>
+      </div>
+      <div class="stat-card clay-peach reveal-bounce d5">
+        <div class="stat-number">3.2x</div>
+        <div class="stat-label">协作倍增</div>
+        <div class="bar-track"><div class="bar-fill" style="width:68%;background:linear-gradient(90deg,var(--peach),#e07050);"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide s4" data-i="3">
+  <div class="bg-blob" style="width:500px;height:500px;background:radial-gradient(circle,rgba(232,213,204,0.15),transparent 60%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="clay-ball" style="width:36px;height:36px;background:linear-gradient(145deg,#9ae06e,#6ab33f);box-shadow:0 3px 12px rgba(125,198,77,0.3),inset 3px 3px 6px rgba(255,255,255,0.4);top:15%;left:12%;"></div>
+  <div class="clay-ball" style="width:28px;height:28px;background:linear-gradient(145deg,#ffb99a,#ff8a5c);box-shadow:0 3px 10px rgba(255,154,118,0.3),inset 2px 2px 5px rgba(255,255,255,0.4);bottom:18%;right:10%;"></div>
+  <div class="slide-inner">
+    <div class="quote-card clay-white reveal-bounce d1">
+      <div class="quote-text">好的设计不是装饰，是沟通。AI 让这种沟通变得触手可及。</div>
+      <div class="quote-line"></div>
+      <div class="quote-author">Dieter Rams</div>
+      <div class="quote-role">工业设计大师</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide s5" data-i="4">
+  <div class="bg-blob" style="width:200px;height:200px;background:radial-gradient(circle,rgba(125,198,77,0.12),transparent 70%);top:40px;left:60px;"></div>
+  <div class="bg-blob" style="width:280px;height:280px;background:radial-gradient(circle,rgba(255,154,118,0.1),transparent 70%);top:-40px;right:80px;"></div>
+  <div class="clay-ball" style="width:48px;height:48px;background:linear-gradient(145deg,#9ae06e,#6ab33f);box-shadow:0 4px 16px rgba(125,198,77,0.35),inset 4px 4px 8px rgba(255,255,255,0.4);top:14%;left:14%;"></div>
+  <div class="clay-ball" style="width:36px;height:36px;background:linear-gradient(145deg,#ffb99a,#ff8a5c);box-shadow:0 3px 12px rgba(255,154,118,0.35),inset 3px 3px 6px rgba(255,255,255,0.4);top:11%;right:20%;"></div>
+  <div class="clay-ball" style="width:40px;height:40px;background:linear-gradient(145deg,#ffe082,#ffc107);box-shadow:0 3px 14px rgba(255,193,7,0.3),inset 3px 3px 6px rgba(255,255,255,0.4);bottom:18%;right:15%;"></div>
+  <div class="slide-inner">
+    <div class="badge-circle reveal-pop d1">
+      <div class="badge-inner">C</div>
+    </div>
+    <div class="closing-title reveal-bounce d2">重新定义创造力</div>
+    <div class="closing-sub reveal-bounce d3">AI + 人类直觉 / 柔软触感的设计革命</div>
+    <div class="bottom-pills reveal-bounce d4">
+      <div class="clay-pill pill-mint">设计</div>
+      <div class="clay-pill pill-peach">创造</div>
+      <div class="clay-pill pill-blue">构建</div>
+      <div class="clay-pill pill-lavender">发布</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total) return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal-bounce,.reveal-pop').forEach(el => {
+      el.style.transition = 'none'; el.offsetHeight; el.style.transition = '';
+    });
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c+1)/total*100)+'%';
+    cur.textContent = String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(c-1);}
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click', function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width = (1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Design 101 — Morning Brief</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Libre+Franklin:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Morning Brief
+           Newspaper editorial, calm informative
+           =========================================== */
+        :root {
+            --bg-primary: #fefdfb; --bg-highlight: #fdf6e3; --bg-sidebar: #f8f5ef;
+            --text-primary: #1c1c1c; --text-secondary: #6b6b6b; --text-muted: #767676;
+            --accent-navy: #1a365d; --accent: #1a365d; --accent-secondary: #8b4513;
+            --rule-dark: #1c1c1c; --rule-light: #d4d0c8; --border-subtle: rgba(0,0,0,0.08);
+            --surface: #f8f5ef;
+            --font-display: 'Playfair Display', 'Noto Sans SC', Georgia, serif;
+            --font-body: 'Libre Franklin', 'Noto Sans SC', sans-serif;
+            --font-mono: 'Courier New', monospace;
+            --title-size: clamp(2rem, 6vw, 5rem); --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem); --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem); --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem); --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-fast: 0.3s; --duration-normal: 0.6s; --duration-slow: 1s;
+        }
+
+        /* ===========================================
+           BASE RESET + VIEWPORT FITTING
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+        :lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } .multi-col { column-count: 1 !important; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-mask, .reveal-left { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-mask, .visible .reveal-left { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; clip-path: none !important; } }
+
+        /* ===========================================
+           MORNING BRIEF THEME
+           Newspaper editorial aesthetic
+           =========================================== */
+
+        /* Masthead — newspaper top bar */
+        .masthead {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+            padding: clamp(0.4rem, 1vw, 0.8rem) var(--slide-padding);
+            border-top: 3px double var(--rule-dark);
+            border-bottom: 1px solid var(--rule-light);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .masthead-title {
+            font-family: var(--font-display); font-size: var(--small-size);
+            font-weight: 700; letter-spacing: 0.05em; color: var(--text-primary);
+        }
+        .masthead-date {
+            font-family: var(--font-body); font-size: var(--small-size);
+            font-variant: small-caps; letter-spacing: 0.1em; color: var(--text-secondary);
+        }
+
+        /* Category label */
+        .category {
+            font-family: var(--font-body); font-size: var(--small-size);
+            text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-navy);
+            font-weight: 600;
+        }
+
+        /* Section rule — bold horizontal rule */
+        .section-rule { border: none; border-top: 2px solid var(--rule-dark); margin: var(--element-gap) 0; }
+        .section-rule-light { border: none; border-top: 1px solid var(--rule-light); margin: var(--element-gap) 0; }
+
+        /* Multi-column layout */
+        .multi-col {
+            column-count: 2; column-gap: clamp(1.5rem, 3vw, 3rem);
+            column-rule: 1px solid var(--rule-light);
+        }
+        .multi-col-3 {
+            column-count: 3; column-gap: clamp(1rem, 2.5vw, 2.5rem);
+            column-rule: 1px solid var(--rule-light);
+        }
+
+        /* Headline styles */
+        .headline {
+            font-family: var(--font-display); font-weight: 800; line-height: 1.1;
+            color: var(--text-primary); letter-spacing: -0.01em;
+        }
+        .subheadline {
+            font-family: var(--font-body); font-weight: 300; font-style: italic;
+            color: var(--text-secondary); font-size: var(--subtitle-size);
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: var(--bg-highlight); border-left: 3px solid var(--accent-navy);
+            padding: clamp(0.5rem, 1.5vw, 1rem) clamp(0.75rem, 2vw, 1.5rem);
+            font-size: var(--body-size); line-height: 1.6;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            font-family: var(--font-display); font-size: var(--h3-size);
+            font-weight: 700; font-style: italic; line-height: 1.35;
+            border-top: 2px solid var(--rule-dark); border-bottom: 2px solid var(--rule-dark);
+            padding: var(--element-gap) 0; color: var(--accent-navy);
+        }
+
+        /* Stat block */
+        .stat-block {
+            text-align: center; padding: var(--element-gap);
+        }
+        .stat-number {
+            font-family: var(--font-display); font-size: var(--stat-size);
+            font-weight: 800; color: var(--accent-navy); line-height: 1;
+        }
+        .stat-label {
+            font-family: var(--font-body); font-size: var(--small-size);
+            text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-secondary);
+            margin-top: clamp(0.2rem, 0.5vw, 0.4rem);
+        }
+
+        /* Byline */
+        .byline {
+            font-family: var(--font-body); font-size: var(--small-size);
+            color: var(--text-secondary); font-style: italic;
+        }
+
+        /* Column card — for grid items */
+        .col-card {
+            padding: clamp(0.5rem, 1.5vw, 1rem);
+            border-top: 2px solid var(--rule-dark);
+        }
+        .col-card h3 {
+            font-family: var(--font-display); font-size: var(--h3-size);
+            font-weight: 700; margin-bottom: clamp(0.2rem, 0.5vw, 0.5rem);
+        }
+        .col-card p {
+            font-size: var(--body-size); color: var(--text-secondary); line-height: 1.6;
+        }
+
+        /* Timeline newspaper style */
+        .timeline-row {
+            display: flex; align-items: flex-start; gap: clamp(0.75rem, 2vw, 1.5rem);
+            padding: clamp(0.3rem, 0.8vw, 0.6rem) 0;
+            border-bottom: 1px solid var(--rule-light);
+        }
+        .timeline-num {
+            font-family: var(--font-display); font-size: var(--h2-size);
+            font-weight: 800; color: var(--accent-navy); min-width: clamp(1.5rem, 3vw, 2.5rem);
+            line-height: 1;
+        }
+        .timeline-content h4 {
+            font-family: var(--font-display); font-size: var(--h3-size);
+            font-weight: 700;
+        }
+        .timeline-content p {
+            font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5;
+            margin-top: clamp(0.1rem, 0.3vw, 0.25rem);
+        }
+
+        /* Iceberg CSS visualization */
+        .iceberg-wrap {
+            display: flex; justify-content: center; align-items: center;
+            gap: clamp(1rem, 3vw, 3rem); flex-wrap: wrap;
+        }
+        .iceberg {
+            width: clamp(120px, 20vw, 200px); position: relative;
+        }
+        .iceberg-above {
+            height: clamp(30px, 5vh, 50px);
+            background: var(--accent-navy); clip-path: polygon(30% 100%, 50% 0%, 70% 100%);
+            opacity: 0.6;
+        }
+        .iceberg-waterline {
+            height: 2px; background: var(--rule-dark); margin: 2px 0;
+        }
+        .iceberg-below {
+            height: clamp(80px, 15vh, 150px);
+            background: var(--accent-navy);
+            clip-path: polygon(10% 0%, 90% 0%, 75% 100%, 25% 100%);
+        }
+        .iceberg-labels {
+            flex: 1; min-width: clamp(150px, 30vw, 300px);
+        }
+        .iceberg-label {
+            font-size: var(--body-size); line-height: 1.6; padding: clamp(0.15rem, 0.4vw, 0.3rem) 0;
+        }
+        .iceberg-label-title {
+            font-family: var(--font-display); font-weight: 700; font-size: var(--h3-size);
+        }
+
+        /* Bar chart newspaper style */
+        .bar-chart { display: flex; flex-direction: column; gap: clamp(0.3rem, 0.8vw, 0.6rem); }
+        .bar-row { display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); }
+        .bar-label { font-size: var(--small-size); min-width: clamp(60px, 10vw, 100px); text-align: right; color: var(--text-secondary); }
+        .bar-track { flex: 1; height: clamp(14px, 2.5vh, 22px); background: var(--rule-light); position: relative; }
+        .bar-fill { height: 100%; background: var(--accent-navy); transition: width 1.2s var(--ease-out-expo); }
+        .bar-value { font-size: var(--small-size); min-width: 2.5em; font-weight: 600; color: var(--text-primary); }
+
+        /* Tool grid */
+        .tool-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+            gap: clamp(0.5rem, 1vw, 1rem);
+        }
+        .tool-item {
+            padding: clamp(0.5rem, 1vw, 0.8rem);
+            background: var(--bg-sidebar);
+            border-top: 2px solid var(--accent-navy);
+        }
+        .tool-item h4 {
+            font-family: var(--font-display); font-size: var(--body-size); font-weight: 700;
+        }
+        .tool-item p {
+            font-size: var(--small-size); color: var(--text-secondary); line-height: 1.5;
+            margin-top: clamp(0.1rem, 0.3vw, 0.2rem);
+        }
+
+        /* Key takeaway list */
+        .takeaway-list { list-style: none; padding: 0; }
+        .takeaway-list li {
+            display: flex; align-items: baseline; gap: clamp(0.5rem, 1vw, 1rem);
+            padding: clamp(0.3rem, 0.6vw, 0.5rem) 0;
+            border-bottom: 1px solid var(--rule-light);
+            font-size: var(--body-size); line-height: 1.5;
+        }
+        .takeaway-num {
+            font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size);
+            color: var(--accent-navy); min-width: 1.5em;
+        }
+
+        /* ===========================================
+           ANIMATIONS — Editorial: mask reveal
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+        .reveal-mask {
+            clip-path: inset(0 0 100% 0);
+            transition: clip-path 0.7s var(--ease-out-expo);
+        }
+        .visible .reveal-mask { clip-path: inset(0 0 0 0); }
+
+        .reveal-left {
+            opacity: 0; transform: translateX(-30px);
+            transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+        }
+        .visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+        /* Stagger delays */
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: var(--accent-navy); width: 0%; z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 6px; height: 6px; border-radius: 0;
+            background: var(--rule-light); border: none; cursor: pointer;
+            transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active { background: var(--accent-navy); transform: scaleY(2.5); }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-body); font-size: var(--small-size);
+            color: var(--text-muted); z-index: 9998; letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide" aria-label="Title">
+        <div class="slide-content" style="align-items: center; text-align: center; justify-content: center;">
+            <div class="reveal" style="width: 100%; max-width: 800px;">
+                <div style="border-top: 3px double var(--rule-dark); border-bottom: 3px double var(--rule-dark); padding: clamp(0.3rem, 1vw, 0.6rem) 0; margin-bottom: var(--content-gap);">
+                    <span class="category">Design Education Series</span>
+                </div>
+                <h1 class="headline reveal-mask" style="font-size: var(--title-size);">UX Design 101</h1>
+                <hr class="section-rule reveal" style="max-width: 200px; margin: var(--element-gap) auto;">
+                <p class="subheadline reveal" style="margin-top: var(--element-gap);">A Comprehensive Introduction to User Experience Design</p>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; justify-content: center; gap: clamp(1rem, 3vw, 3rem); flex-wrap: wrap;">
+                    <span class="byline">10 Essential Topics</span>
+                    <span style="color: var(--rule-light);">|</span>
+                    <span class="byline">From Theory to Practice</span>
+                    <span style="color: var(--rule-light);">|</span>
+                    <span class="byline">2026 Edition</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: WHAT IS UX (ICEBERG) =================== -->
+    <section class="slide" aria-label="What is UX">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 01</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Fundamentals</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">What Is User Experience?</h2>
+            <hr class="section-rule reveal">
+            <div class="reveal" style="display: flex; gap: clamp(1.5rem, 4vw, 4rem); align-items: center; flex-wrap: wrap; margin-top: var(--content-gap);">
+                <!-- Iceberg diagram -->
+                <div class="iceberg">
+                    <div style="text-align: center; font-size: var(--small-size); color: var(--text-secondary); margin-bottom: 4px;">Visible 10%</div>
+                    <div class="iceberg-above"></div>
+                    <div class="iceberg-waterline"></div>
+                    <div class="iceberg-below"></div>
+                    <div style="text-align: center; font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px;">Hidden 90%</div>
+                </div>
+                <!-- Labels -->
+                <div class="iceberg-labels">
+                    <div class="iceberg-label">
+                        <span class="iceberg-label-title">Above the Surface</span><br>
+                        Visual design, colors, layout, branding
+                    </div>
+                    <hr class="section-rule-light">
+                    <div class="iceberg-label">
+                        <span class="iceberg-label-title">Below the Surface</span><br>
+                        Information architecture, interaction patterns, user research, content strategy, accessibility, performance
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-box reveal" style="margin-top: var(--content-gap);">
+                <strong>Key Insight:</strong> What users see is only the tip. Great UX lives in the invisible decisions — the research, structure, and logic underneath.
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: DESIGN THINKING =================== -->
+    <section class="slide" aria-label="Design Thinking Process">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 02</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Methodology</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">The Design Thinking Process</h2>
+            <hr class="section-rule reveal">
+            <div style="margin-top: var(--content-gap);">
+                <div class="timeline-row reveal">
+                    <span class="timeline-num">1</span>
+                    <div class="timeline-content">
+                        <h4>Empathize</h4>
+                        <p>Understand users through observation, interviews, and immersion in their context</p>
+                    </div>
+                </div>
+                <div class="timeline-row reveal">
+                    <span class="timeline-num">2</span>
+                    <div class="timeline-content">
+                        <h4>Define</h4>
+                        <p>Synthesize research into clear problem statements and user need articulations</p>
+                    </div>
+                </div>
+                <div class="timeline-row reveal">
+                    <span class="timeline-num">3</span>
+                    <div class="timeline-content">
+                        <h4>Ideate</h4>
+                        <p>Generate a wide range of creative solutions without premature judgment</p>
+                    </div>
+                </div>
+                <div class="timeline-row reveal">
+                    <span class="timeline-num">4</span>
+                    <div class="timeline-content">
+                        <h4>Prototype</h4>
+                        <p>Build quick, low-fidelity representations to explore ideas tangibly</p>
+                    </div>
+                </div>
+                <div class="timeline-row reveal">
+                    <span class="timeline-num">5</span>
+                    <div class="timeline-content">
+                        <h4>Test</h4>
+                        <p>Validate with real users, gather feedback, iterate on what you learn</p>
+                    </div>
+                </div>
+            </div>
+            <p class="byline reveal" style="margin-top: var(--element-gap);">Based on Stanford d.school methodology — iterative, not linear</p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: USER RESEARCH METHODS =================== -->
+    <section class="slide" aria-label="User Research Methods">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 03</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Research</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">User Research Methods</h2>
+            <hr class="section-rule reveal">
+            <div class="reveal" style="margin-top: var(--content-gap); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(1rem, 2vw, 2rem);">
+                <!-- Qualitative column -->
+                <div>
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--h3-size); border-bottom: 2px solid var(--rule-dark); padding-bottom: clamp(0.2rem, 0.5vw, 0.4rem); margin-bottom: var(--element-gap);">Qualitative</div>
+                    <div style="font-size: var(--body-size); line-height: 1.8; color: var(--text-secondary);">
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);"><strong style="color: var(--text-primary);">User Interviews</strong> — Deep 1-on-1 conversations</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);"><strong style="color: var(--text-primary);">Contextual Inquiry</strong> — Observe in natural environment</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);"><strong style="color: var(--text-primary);">Diary Studies</strong> — Longitudinal self-reporting</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;"><strong style="color: var(--text-primary);">Focus Groups</strong> — Group discussion dynamics</div>
+                    </div>
+                </div>
+                <!-- Quantitative column -->
+                <div>
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--h3-size); border-bottom: 2px solid var(--rule-dark); padding-bottom: clamp(0.2rem, 0.5vw, 0.4rem); margin-bottom: var(--element-gap);">Quantitative</div>
+                    <div style="font-size: var(--body-size); line-height: 1.8; color: var(--text-secondary);">
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);"><strong style="color: var(--text-primary);">Surveys</strong> — Large-scale data collection</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);"><strong style="color: var(--text-primary);">A/B Testing</strong> — Compare variant performance</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);"><strong style="color: var(--text-primary);">Analytics</strong> — Behavioral data patterns</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;"><strong style="color: var(--text-primary);">Usability Testing</strong> — Task completion metrics</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pull-quote reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); text-align: center;">
+                "The best research combines both — qualitative for the why, quantitative for the what."
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: INFORMATION ARCHITECTURE =================== -->
+    <section class="slide" aria-label="Information Architecture">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 04</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Structure</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">Information Architecture</h2>
+            <hr class="section-rule reveal">
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 700px;">
+                The structural design of shared information environments — how content is organized, labeled, and navigated.
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1.5rem);">
+                <div class="col-card">
+                    <h3>Organization</h3>
+                    <p>Grouping content into meaningful categories and hierarchies</p>
+                </div>
+                <div class="col-card">
+                    <h3>Labeling</h3>
+                    <p>Choosing clear, consistent terms that users understand</p>
+                </div>
+                <div class="col-card">
+                    <h3>Navigation</h3>
+                    <p>Designing pathways that help users find what they need</p>
+                </div>
+                <div class="col-card">
+                    <h3>Search</h3>
+                    <p>Enabling discovery beyond hierarchical browsing</p>
+                </div>
+            </div>
+            <div class="highlight-box reveal" style="margin-top: var(--content-gap);">
+                <strong>Methods:</strong> Card sorting, tree testing, site maps, and user flow diagrams are core IA tools.
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: WIREFRAMING VS PROTOTYPING =================== -->
+    <section class="slide" aria-label="Wireframing vs Prototyping">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 05</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Craft</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">Wireframing vs. Prototyping</h2>
+            <hr class="section-rule reveal">
+            <div class="reveal" style="margin-top: var(--content-gap); display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); align-items: start;">
+                <!-- Wireframing -->
+                <div>
+                    <div style="font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); margin-bottom: var(--element-gap);">Wireframes</div>
+                    <div style="font-size: var(--body-size); line-height: 1.7; color: var(--text-secondary);">
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);">Static layout blueprints</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);">Focus on structure, not style</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);">Low fidelity, fast iteration</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">Grayscale, no real content</div>
+                    </div>
+                    <!-- Mini wireframe viz -->
+                    <div style="margin-top: var(--element-gap); border: 1px solid var(--rule-light); padding: clamp(0.4rem, 1vw, 0.8rem); background: var(--surface);">
+                        <div style="height: 8px; width: 60%; background: var(--rule-light); margin-bottom: 6px;"></div>
+                        <div style="height: 5px; width: 80%; background: var(--rule-light); margin-bottom: 4px;"></div>
+                        <div style="height: 5px; width: 70%; background: var(--rule-light); margin-bottom: 8px;"></div>
+                        <div style="display: flex; gap: 6px;">
+                            <div style="flex: 1; height: 30px; background: var(--rule-light);"></div>
+                            <div style="flex: 1; height: 30px; background: var(--rule-light);"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Divider -->
+                <div style="width: 1px; background: var(--rule-light); align-self: stretch; margin-top: 2rem;"></div>
+                <!-- Prototyping -->
+                <div>
+                    <div style="font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); margin-bottom: var(--element-gap);">Prototypes</div>
+                    <div style="font-size: var(--body-size); line-height: 1.7; color: var(--text-secondary);">
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);">Interactive simulations</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);">Test real user flows</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0; border-bottom: 1px solid var(--rule-light);">Low to high fidelity range</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">Clickable, animated</div>
+                    </div>
+                    <!-- Mini prototype viz -->
+                    <div style="margin-top: var(--element-gap); border: 1px solid var(--accent-navy); padding: clamp(0.4rem, 1vw, 0.8rem); background: white;">
+                        <div style="height: 8px; width: 60%; background: var(--accent-navy); margin-bottom: 6px; border-radius: 2px;"></div>
+                        <div style="height: 5px; width: 80%; background: var(--rule-light); margin-bottom: 4px;"></div>
+                        <div style="height: 5px; width: 70%; background: var(--rule-light); margin-bottom: 8px;"></div>
+                        <div style="display: flex; gap: 6px;">
+                            <div style="flex: 1; height: 30px; background: var(--accent-navy); border-radius: 3px; opacity: 0.8;"></div>
+                            <div style="flex: 1; height: 30px; border: 1px solid var(--accent-navy); border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="byline reveal" style="margin-top: var(--content-gap); text-align: center;">Start with wireframes for speed, prototype when you need to test interactions</p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: VISUAL HIERARCHY =================== -->
+    <section class="slide" aria-label="Visual Hierarchy">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 06</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Principles</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">Visual Hierarchy Principles</h2>
+            <hr class="section-rule reveal">
+            <div style="margin-top: var(--content-gap); display: flex; gap: clamp(1.5rem, 4vw, 4rem); flex-wrap: wrap;">
+                <!-- Bar chart showing influence -->
+                <div class="reveal" style="flex: 1; min-width: clamp(200px, 40vw, 350px);">
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); margin-bottom: var(--element-gap); text-transform: uppercase; letter-spacing: 0.1em;">Influence on Attention</div>
+                    <div class="bar-chart">
+                        <div class="bar-row">
+                            <span class="bar-label">Size</span>
+                            <div class="bar-track"><div class="bar-fill" data-width="95" style="width: 0;"></div></div>
+                            <span class="bar-value">95%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label">Color</span>
+                            <div class="bar-track"><div class="bar-fill" data-width="88" style="width: 0;"></div></div>
+                            <span class="bar-value">88%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label">Contrast</span>
+                            <div class="bar-track"><div class="bar-fill" data-width="82" style="width: 0;"></div></div>
+                            <span class="bar-value">82%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label">Position</span>
+                            <div class="bar-track"><div class="bar-fill" data-width="75" style="width: 0;"></div></div>
+                            <span class="bar-value">75%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label">Whitespace</span>
+                            <div class="bar-track"><div class="bar-fill" data-width="68" style="width: 0;"></div></div>
+                            <span class="bar-value">68%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label">Typography</span>
+                            <div class="bar-track"><div class="bar-fill" data-width="72" style="width: 0;"></div></div>
+                            <span class="bar-value">72%</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Principles list -->
+                <div class="reveal" style="flex: 1; min-width: clamp(180px, 30vw, 280px);">
+                    <div class="highlight-box" style="margin-bottom: var(--element-gap);">
+                        <strong>F-Pattern:</strong> Users scan in an F-shape — top horizontal, then down the left side. Place key info accordingly.
+                    </div>
+                    <div class="highlight-box">
+                        <strong>Z-Pattern:</strong> For minimal layouts, eyes follow a Z path — top-left to top-right, diagonal to bottom-left, then across.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: ACCESSIBILITY =================== -->
+    <section class="slide" aria-label="Accessibility">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 07</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Inclusive Design</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">Accessibility Is Not Optional</h2>
+            <hr class="section-rule reveal">
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1.5rem, 3vw, 3rem); align-items: start; flex-wrap: wrap;">
+                <!-- Stats -->
+                <div style="flex: 1; min-width: clamp(150px, 25vw, 250px); display: flex; flex-direction: column; gap: var(--element-gap);">
+                    <div class="stat-block" style="border-top: 2px solid var(--accent-navy);">
+                        <div class="stat-number counter" data-target="16" data-suffix="%">0</div>
+                        <div class="stat-label">of world population has a disability</div>
+                    </div>
+                    <div class="stat-block" style="border-top: 2px solid var(--accent-navy);">
+                        <div class="stat-number counter" data-target="1" data-prefix="" data-suffix="B+">0</div>
+                        <div class="stat-label">people affected globally</div>
+                    </div>
+                </div>
+                <!-- WCAG principles -->
+                <div style="flex: 2; min-width: clamp(200px, 40vw, 400px);">
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--element-gap);">WCAG Principles (POUR)</div>
+                    <div style="font-size: var(--body-size); line-height: 1.8;">
+                        <div style="padding: clamp(0.2rem, 0.5vw, 0.4rem) 0; border-bottom: 1px solid var(--rule-light);">
+                            <strong>Perceivable</strong> — Content must be presentable in ways all users can perceive
+                        </div>
+                        <div style="padding: clamp(0.2rem, 0.5vw, 0.4rem) 0; border-bottom: 1px solid var(--rule-light);">
+                            <strong>Operable</strong> — Interface components must be navigable and usable
+                        </div>
+                        <div style="padding: clamp(0.2rem, 0.5vw, 0.4rem) 0; border-bottom: 1px solid var(--rule-light);">
+                            <strong>Understandable</strong> — Content and operation must be comprehensible
+                        </div>
+                        <div style="padding: clamp(0.2rem, 0.5vw, 0.4rem) 0;">
+                            <strong>Robust</strong> — Content must work across diverse technologies
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pull-quote reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); text-align: center;">
+                "Accessible design is not a feature — it is a quality standard."
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: CASE STUDY =================== -->
+    <section class="slide" aria-label="Case Study">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 08</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Case Study</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">E-Commerce Checkout Redesign</h2>
+            <hr class="section-rule reveal">
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1.5rem, 4vw, 4rem); align-items: start; flex-wrap: wrap;">
+                <!-- The story -->
+                <div style="flex: 2; min-width: clamp(200px, 40vw, 400px);">
+                    <p style="font-size: var(--body-size); line-height: 1.7; color: var(--text-secondary); margin-bottom: var(--element-gap);">
+                        A mid-size e-commerce platform suffered from a 72% cart abandonment rate. User research revealed friction in their 5-step checkout process.
+                    </p>
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); margin-bottom: var(--element-gap);">What Changed:</div>
+                    <div style="font-size: var(--body-size); line-height: 1.8; color: var(--text-secondary);">
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.25rem) 0; border-bottom: 1px solid var(--rule-light);">Reduced checkout from 5 steps to 2</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.25rem) 0; border-bottom: 1px solid var(--rule-light);">Added guest checkout option</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.25rem) 0; border-bottom: 1px solid var(--rule-light);">Simplified form fields from 23 to 8</div>
+                        <div style="padding: clamp(0.15rem, 0.3vw, 0.25rem) 0;">Added progress indicator and trust signals</div>
+                    </div>
+                </div>
+                <!-- Results -->
+                <div style="flex: 1; min-width: clamp(150px, 25vw, 250px);">
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--element-gap); border-bottom: 2px solid var(--rule-dark); padding-bottom: clamp(0.2rem, 0.5vw, 0.4rem);">Results</div>
+                    <div class="stat-block" style="text-align: left;">
+                        <div class="stat-number counter" data-target="40" data-suffix="%" style="font-size: clamp(1.5rem, 5vw, 3.5rem);">0</div>
+                        <div class="stat-label" style="text-align: left;">increase in conversion</div>
+                    </div>
+                    <hr class="section-rule-light">
+                    <div class="stat-block" style="text-align: left;">
+                        <div class="stat-number counter" data-target="58" data-suffix="%" style="font-size: clamp(1.5rem, 5vw, 3.5rem);">0</div>
+                        <div class="stat-label" style="text-align: left;">reduction in abandonment</div>
+                    </div>
+                    <hr class="section-rule-light">
+                    <div class="stat-block" style="text-align: left;">
+                        <div class="stat-number counter" data-target="2" data-suffix="min" style="font-size: clamp(1.5rem, 5vw, 3.5rem);">0</div>
+                        <div class="stat-label" style="text-align: left;">avg. completion time (was 6)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: TOOLS OF THE TRADE =================== -->
+    <section class="slide" aria-label="Tools">
+        <div class="masthead">
+            <span class="masthead-title">UX Design 101</span>
+            <span class="masthead-date">Section 09</span>
+        </div>
+        <div class="slide-content" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <span class="category reveal">Resources</span>
+            <h2 class="headline reveal" style="font-size: var(--h2-size); margin-top: var(--element-gap);">Tools of the Trade</h2>
+            <hr class="section-rule reveal">
+            <div class="tool-grid reveal" style="margin-top: var(--content-gap);">
+                <div class="tool-item">
+                    <h4>Figma</h4>
+                    <p>Collaborative interface design, prototyping, and design systems</p>
+                </div>
+                <div class="tool-item">
+                    <h4>Maze</h4>
+                    <p>Unmoderated usability testing and rapid validation</p>
+                </div>
+                <div class="tool-item">
+                    <h4>Miro</h4>
+                    <p>Workshops, affinity mapping, journey mapping, ideation</p>
+                </div>
+                <div class="tool-item">
+                    <h4>Hotjar</h4>
+                    <p>Heatmaps, session recordings, and user feedback collection</p>
+                </div>
+                <div class="tool-item">
+                    <h4>Optimal Workshop</h4>
+                    <p>Card sorting, tree testing, and IA validation</p>
+                </div>
+                <div class="tool-item">
+                    <h4>Notion</h4>
+                    <p>Research repositories, documentation, and team wikis</p>
+                </div>
+            </div>
+            <div class="highlight-box reveal" style="margin-top: var(--content-gap);">
+                <strong>Pro tip:</strong> Tools change frequently. Focus on mastering principles — the right tool is whichever helps you think and collaborate best.
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 11: KEY TAKEAWAYS / CLOSING =================== -->
+    <section class="slide" aria-label="Key Takeaways">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div style="width: 100%; max-width: 700px;">
+                <div class="reveal" style="border-top: 3px double var(--rule-dark); border-bottom: 3px double var(--rule-dark); padding: clamp(0.3rem, 1vw, 0.6rem) 0; margin-bottom: var(--content-gap); text-align: center;">
+                    <span class="category">Final Edition</span>
+                </div>
+                <h2 class="headline reveal" style="font-size: var(--h2-size); text-align: center; margin-bottom: var(--content-gap);">Key Takeaways</h2>
+                <ul class="takeaway-list">
+                    <li class="reveal">
+                        <span class="takeaway-num">1</span>
+                        <span>UX is mostly invisible — the best experiences feel effortless</span>
+                    </li>
+                    <li class="reveal">
+                        <span class="takeaway-num">2</span>
+                        <span>Design Thinking is iterative, not linear — embrace going back</span>
+                    </li>
+                    <li class="reveal">
+                        <span class="takeaway-num">3</span>
+                        <span>Research before designing — assumptions are your biggest risk</span>
+                    </li>
+                    <li class="reveal">
+                        <span class="takeaway-num">4</span>
+                        <span>Accessibility benefits everyone, not just those with disabilities</span>
+                    </li>
+                    <li class="reveal">
+                        <span class="takeaway-num">5</span>
+                        <span>Good UX has measurable impact — 40% conversion lifts are real</span>
+                    </li>
+                </ul>
+                <div class="reveal" style="margin-top: var(--content-gap); text-align: center;">
+                    <hr class="section-rule" style="max-width: 200px; margin: 0 auto var(--element-gap);">
+                    <p style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; font-style: italic; color: var(--accent-navy);">
+                        Design is not just what it looks like.<br>Design is how it works.
+                    </p>
+                    <p class="byline" style="margin-top: var(--element-gap);">— Steve Jobs</p>
+                </div>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <!-- =================== JAVASCRIPT =================== -->
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+
+            /* Animate counters when slide becomes visible */
+            const counters = document.querySelectorAll('.counter');
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const target = parseInt(el.dataset.target);
+                        const suffix = el.dataset.suffix || '';
+                        const prefix = el.dataset.prefix || '';
+                        const duration = 1500;
+                        const start = performance.now();
+                        function tick(now) {
+                            const elapsed = now - start;
+                            const progress = Math.min(elapsed / duration, 1);
+                            const eased = 1 - Math.pow(1 - progress, 3);
+                            el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                            if (progress < 1) requestAnimationFrame(tick);
+                        }
+                        requestAnimationFrame(tick);
+                        counterObserver.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.5 });
+            counters.forEach(c => counterObserver.observe(c));
+
+            /* Animate bar chart fills when visible */
+            const barFills = document.querySelectorAll('.bar-fill[data-width]');
+            const barObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.width = entry.target.dataset.width + '%';
+                        barObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+            barFills.forEach(b => barObserver.observe(b));
+        });
+    </script>
+</body>
+</html>

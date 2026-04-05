@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Botanical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;1,400;1,600&family=IBM+Plex+Sans:wght@300;400&family=Noto+Sans+SC:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0f0f0f;
+  --text: #e8e4df;
+  --warm: #d4a574;
+  --pink: #e8b4b8;
+  --sage: #7a9a7a;
+  --dim: #9a9590;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'IBM Plex Sans', 'Noto Sans SC', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--warm);
+  z-index: 1000;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--dim);
+  z-index: 1000;
+  letter-spacing: 0.08em;
+}
+
+.page-counter .current { color: var(--warm); }
+
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  padding: clamp(48px, 7vh, 96px) clamp(56px, 9vw, 180px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* Gradient blobs with drift animation */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(clamp(60px, 8vw, 120px));
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.blob-pink {
+  width: clamp(250px, 35vw, 500px);
+  height: clamp(250px, 35vw, 500px);
+  background: var(--pink);
+  animation: blobDrift1 20s ease-in-out infinite;
+}
+
+.blob-gold {
+  width: clamp(200px, 28vw, 400px);
+  height: clamp(200px, 28vw, 400px);
+  background: var(--warm);
+  animation: blobDrift2 24s ease-in-out infinite;
+}
+
+.blob-sage {
+  width: clamp(220px, 30vw, 420px);
+  height: clamp(220px, 30vw, 420px);
+  background: var(--sage);
+  animation: blobDrift3 22s ease-in-out infinite;
+}
+
+@keyframes blobDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15px, -20px) scale(1.04); }
+  66% { transform: translate(-10px, 12px) scale(0.97); }
+}
+@keyframes blobDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-18px, 10px) scale(0.96); }
+  66% { transform: translate(12px, -15px) scale(1.03); }
+}
+@keyframes blobDrift3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(10px, 18px) scale(1.05); }
+  66% { transform: translate(-14px, -8px) scale(0.98); }
+}
+
+/* Decorative vertical lines */
+.vline {
+  position: absolute;
+  width: 1px;
+  background: rgba(232, 228, 223, 0.08);
+  pointer-events: none;
+}
+
+/* Botanical SVG leaf motif */
+.leaf-motif {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.12;
+}
+
+/* Typography */
+.display-title {
+  font-family: 'Cormorant', 'Noto Sans SC', serif;
+  font-weight: 600;
+  font-size: clamp(44px, 7.5vw, 128px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+
+.display-title .warm { color: var(--warm); }
+.display-title .pink { color: var(--pink); }
+.display-title .sage { color: var(--sage); }
+
+.body-text {
+  font-size: clamp(15px, 1.6vw, 22px);
+  color: var(--dim);
+  line-height: 1.65;
+  max-width: 48ch;
+}
+
+.tag-label {
+  font-size: clamp(10px, 0.9vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: clamp(28px, 4vh, 52px);
+}
+
+.tag-label .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: clamp(8px, 1vw, 14px);
+  vertical-align: middle;
+}
+
+/* Features */
+.feat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(36px, 5vh, 64px) clamp(48px, 6vw, 96px);
+  max-width: 860px;
+}
+
+.feat-card h3 {
+  font-family: 'Cormorant', 'Noto Sans SC', serif;
+  font-weight: 600;
+  font-size: clamp(24px, 2.8vw, 40px);
+  margin-bottom: clamp(6px, 1vh, 14px);
+}
+
+.feat-card p {
+  font-size: clamp(13px, 1.2vw, 17px);
+  color: var(--dim);
+  line-height: 1.6;
+  max-width: 32ch;
+}
+
+.feat-card:nth-child(1) h3 { color: var(--warm); }
+.feat-card:nth-child(2) h3 { color: var(--pink); }
+.feat-card:nth-child(3) h3 { color: var(--sage); }
+.feat-card:nth-child(4) h3 { color: var(--warm); }
+
+/* Stats */
+.stats-botanical {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+}
+
+.sb-item .num {
+  font-family: 'Cormorant', serif;
+  font-weight: 600;
+  font-size: clamp(56px, 9vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.sb-item:nth-child(1) .num { color: var(--warm); }
+.sb-item:nth-child(2) .num { color: var(--pink); }
+.sb-item:nth-child(3) .num { color: var(--sage); }
+
+.sb-item .lbl {
+  font-size: clamp(12px, 1.1vw, 16px);
+  color: var(--dim);
+  margin-top: clamp(6px, 1vh, 14px);
+  letter-spacing: 0.05em;
+}
+
+/* Quote */
+.bot-quote {
+  font-family: 'Cormorant', 'Noto Sans SC', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(30px, 5vw, 80px);
+  line-height: 1.2;
+  max-width: 16ch;
+  margin-bottom: clamp(20px, 3vh, 36px);
+  color: var(--text);
+}
+
+.bot-attr {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--warm);
+  letter-spacing: 0.1em;
+  font-weight: 400;
+}
+
+/* Close */
+.close-bot {
+  font-family: 'Cormorant', 'Noto Sans SC', serif;
+  font-weight: 600;
+  font-size: clamp(40px, 7vw, 110px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: clamp(14px, 2vh, 28px);
+}
+
+.close-sub-bot {
+  font-size: clamp(15px, 1.6vw, 22px);
+  color: var(--dim);
+  font-weight: 300;
+}
+
+/* Bloom/grow reveal animation */
+.rv {
+  opacity: 0;
+  transform: scale(0.92) translateY(16px);
+}
+
+.slide.active .rv {
+  animation: bloom 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .rv:nth-child(1) { animation-delay: 0.1s; }
+.slide.active .rv:nth-child(2) { animation-delay: 0.22s; }
+.slide.active .rv:nth-child(3) { animation-delay: 0.36s; }
+.slide.active .rv:nth-child(4) { animation-delay: 0.5s; }
+.slide.active .rv:nth-child(5) { animation-delay: 0.64s; }
+.slide.active .rv:nth-child(6) { animation-delay: 0.78s; }
+
+@keyframes bloom {
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="blob blob-pink" style="top: 10%; right: 15%;"></div>
+  <div class="blob blob-gold" style="bottom: 20%; right: 35%;"></div>
+  <div class="blob blob-sage" style="top: 40%; left: -5%;"></div>
+  <div class="vline" style="left: 12%; top: 0; bottom: 0;"></div>
+  <div class="vline" style="right: 20%; top: 0; bottom: 0;"></div>
+  <!-- Botanical leaf -->
+  <svg class="leaf-motif" style="right:8%;top:15%;width:clamp(80px,12vw,180px);height:auto;" viewBox="0 0 100 160" fill="none">
+    <path d="M50 0 C20 40, 5 80, 50 160 C95 80, 80 40, 50 0Z" fill="var(--sage)"/>
+    <path d="M50 20 L50 140" stroke="rgba(232,228,223,0.15)" stroke-width="1"/>
+    <path d="M50 50 L30 35" stroke="rgba(232,228,223,0.1)" stroke-width="0.8"/>
+    <path d="M50 70 L70 55" stroke="rgba(232,228,223,0.1)" stroke-width="0.8"/>
+    <path d="M50 90 L32 78" stroke="rgba(232,228,223,0.1)" stroke-width="0.8"/>
+    <path d="M50 110 L68 95" stroke="rgba(232,228,223,0.1)" stroke-width="0.8"/>
+  </svg>
+  <div class="slide-inner">
+    <div class="tag-label rv"><span class="dot" style="background:var(--warm);"></span>Design Frontier 2026</div>
+    <h1 class="display-title rv">AI 驱动的<br><span class="warm">设计革命</span></h1>
+    <p class="body-text rv">从像素到体验，重新定义创造力的边界</p>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="blob blob-sage" style="top: 5%; left: 60%;"></div>
+  <div class="blob blob-pink" style="bottom: 10%; left: 10%;"></div>
+  <div class="vline" style="left: 50%; top: 0; bottom: 0;"></div>
+  <svg class="leaf-motif" style="left:3%;bottom:10%;width:clamp(60px,8vw,120px);height:auto;transform:rotate(25deg);" viewBox="0 0 100 160" fill="none">
+    <path d="M50 0 C20 40, 5 80, 50 160 C95 80, 80 40, 50 0Z" fill="var(--sage)"/>
+    <path d="M50 20 L50 140" stroke="rgba(232,228,223,0.15)" stroke-width="1"/>
+  </svg>
+  <div class="slide-inner">
+    <div class="tag-label rv"><span class="dot" style="background:var(--sage);"></span>Core Capabilities</div>
+    <div class="feat-grid">
+      <div class="feat-card rv">
+        <h3>智能布局</h3>
+        <p>AI 理解内容语义，自动生成符合视觉层次的排版方案</p>
+      </div>
+      <div class="feat-card rv">
+        <h3>风格迁移</h3>
+        <p>一键将任意参考图的视觉语言迁移到你的设计中</p>
+      </div>
+      <div class="feat-card rv">
+        <h3>实时协作</h3>
+        <p>多人同步编辑，AI 实时调和不同设计师的修改意图</p>
+      </div>
+      <div class="feat-card rv">
+        <h3>自适应排版</h3>
+        <p>一次设计，自动适配从手表到巨幕的所有尺寸</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="blob blob-gold" style="top: 15%; left: 20%;"></div>
+  <div class="blob blob-sage" style="bottom: 15%; right: 10%;"></div>
+  <div class="vline" style="left: 8%; top: 0; bottom: 0;"></div>
+  <div class="vline" style="right: 30%; top: 0; bottom: 0;"></div>
+  <svg class="leaf-motif" style="right:5%;top:8%;width:clamp(50px,7vw,100px);height:auto;transform:rotate(-15deg);" viewBox="0 0 100 160" fill="none">
+    <path d="M50 0 C20 40, 5 80, 50 160 C95 80, 80 40, 50 0Z" fill="var(--warm)"/>
+    <path d="M50 20 L50 140" stroke="rgba(232,228,223,0.15)" stroke-width="1"/>
+  </svg>
+  <div class="slide-inner">
+    <div class="tag-label rv"><span class="dot" style="background:var(--pink);"></span>By The Numbers</div>
+    <div class="stats-botanical">
+      <div class="sb-item rv">
+        <div class="num">10x</div>
+        <div class="lbl">效率提升</div>
+      </div>
+      <div class="sb-item rv">
+        <div class="num">93%</div>
+        <div class="lbl">用户满意度</div>
+      </div>
+      <div class="sb-item rv">
+        <div class="num">50M+</div>
+        <div class="lbl">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="blob blob-pink" style="top: 20%; right: 20%;"></div>
+  <div class="blob blob-gold" style="bottom: 25%; left: 30%;"></div>
+  <div class="vline" style="right: 15%; top: 0; bottom: 0;"></div>
+  <svg class="leaf-motif" style="left:6%;top:20%;width:clamp(70px,10vw,150px);height:auto;transform:rotate(10deg);" viewBox="0 0 100 160" fill="none">
+    <path d="M50 0 C20 40, 5 80, 50 160 C95 80, 80 40, 50 0Z" fill="var(--pink)"/>
+    <path d="M50 20 L50 140" stroke="rgba(232,228,223,0.15)" stroke-width="1"/>
+  </svg>
+  <div class="slide-inner">
+    <div class="bot-quote rv">好的设计不是装饰，是沟通。</div>
+    <div class="bot-attr rv">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="blob blob-sage" style="top: 10%; left: 50%;"></div>
+  <div class="blob blob-pink" style="bottom: 5%; right: 25%;"></div>
+  <div class="blob blob-gold" style="top: 50%; left: -5%;"></div>
+  <div class="vline" style="left: 25%; top: 0; bottom: 0;"></div>
+  <svg class="leaf-motif" style="right:10%;bottom:15%;width:clamp(90px,14vw,200px);height:auto;transform:rotate(-20deg);" viewBox="0 0 100 160" fill="none">
+    <path d="M50 0 C20 40, 5 80, 50 160 C95 80, 80 40, 50 0Z" fill="var(--sage)"/>
+    <path d="M50 20 L50 140" stroke="rgba(232,228,223,0.15)" stroke-width="1"/>
+    <path d="M50 50 L30 35" stroke="rgba(232,228,223,0.1)" stroke-width="0.8"/>
+    <path d="M50 70 L70 55" stroke="rgba(232,228,223,0.1)" stroke-width="0.8"/>
+    <path d="M50 90 L32 78" stroke="rgba(232,228,223,0.1)" stroke-width="0.8"/>
+  </svg>
+  <div class="slide-inner">
+    <div class="close-bot rv">重新定义<br><span style="color:var(--sage)">创造力</span></div>
+    <p class="close-sub-bot rv">AI + 人类直觉，设计的下一个十年从这里开始</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.rv').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

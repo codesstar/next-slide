@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星辰科技 · 销售部 2025年度总结</title>
+
+    <!-- Fonts: Sora (display + body) + Noto Sans SC (CJK) — Bold Signal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Bold Signal
+           Warm, energetic, sales-forward identity
+           =========================================== */
+        :root {
+            --bg-primary: #1A1412;
+            --bg-card: #241E1A;
+            --bg-card-hover: #2E2622;
+            --text-primary: #F5F0EB;
+            --text-secondary: #B8A99A;
+            --text-muted: #6B5D52;
+            --accent-red: #E64A19;
+            --accent-gold: #F5B800;
+            --accent-green: #4CAF50;
+            --accent-red-glow: rgba(230, 74, 25, 0.35);
+            --accent-gold-glow: rgba(245, 184, 0, 0.25);
+            --border: #3A302A;
+            --border-subtle: #2E2622;
+            --surface: rgba(255, 255, 255, 0.04);
+            --surface-hover: #2E2622;
+
+            --font-display: 'Sora', 'Noto Sans SC', sans-serif;
+            --font-body: 'Sora', 'Noto Sans SC', sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+
+            --title-size: clamp(2rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.4s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+
+        /* ===========================================
+           BASE RESET & VIEWPORT FITTING
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-family: var(--font-body); font-weight: 400;
+            background: var(--bg-primary); color: var(--text-primary);
+        }
+
+        /* Diagonal stripe background pattern */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 40px,
+                rgba(230, 74, 25, 0.02) 40px,
+                rgba(230, 74, 25, 0.02) 42px
+            );
+        }
+
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+            position: relative; z-index: 1;
+        }
+
+        :lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .decorative { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .grid { grid-template-columns: 1fr; }
+            .slide-counter { display: none; }
+            .two-col { flex-direction: column !important; }
+        }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important; scroll-behavior: auto !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-punch, .reveal-scale { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-punch, .visible .reveal-scale { opacity: 1; }
+            @keyframes none {}
+        }
+
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* ===========================================
+           ANIMATIONS — Punchy, fast (0.4-0.6s)
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity var(--duration-fast) var(--ease-out-expo),
+                        transform var(--duration-fast) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+        .reveal-punch {
+            opacity: 0; transform: scale(0.85);
+            transition: opacity var(--duration-fast) var(--ease-out-back),
+                        transform var(--duration-fast) var(--ease-out-back);
+        }
+        .slide.visible .reveal-punch { opacity: 1; transform: scale(1); }
+
+        .reveal-scale {
+            opacity: 0; transform: scale(0.6);
+            transition: opacity 0.5s var(--ease-spring),
+                        transform 0.5s var(--ease-spring);
+        }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+
+        /* Stagger delays */
+        .reveal:nth-child(1), .reveal-punch:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2), .reveal-punch:nth-child(2) { transition-delay: 0.1s; }
+        .reveal:nth-child(3), .reveal-punch:nth-child(3) { transition-delay: 0.15s; }
+        .reveal:nth-child(4), .reveal-punch:nth-child(4) { transition-delay: 0.2s; }
+        .reveal:nth-child(5), .reveal-punch:nth-child(5) { transition-delay: 0.25s; }
+        .reveal:nth-child(6), .reveal-punch:nth-child(6) { transition-delay: 0.3s; }
+        .reveal:nth-child(7), .reveal-punch:nth-child(7) { transition-delay: 0.35s; }
+        .reveal:nth-child(8), .reveal-punch:nth-child(8) { transition-delay: 0.4s; }
+
+        /* ===========================================
+           PROGRESS BAR & NAVIGATION
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-gold));
+            width: 0%; z-index: 9999; transition: width 0.3s ease;
+        }
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%;
+            transform: translateY(-50%); display: flex; flex-direction: column;
+            gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--text-muted); border: none; cursor: pointer;
+            transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent-red); transform: scale(1.3);
+            box-shadow: 0 0 10px var(--accent-red-glow);
+        }
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px);
+            font-size: var(--small-size); color: var(--text-muted); z-index: 9998;
+            font-family: var(--font-mono);
+        }
+
+        /* ===========================================
+           LOGO WATERMARK
+           =========================================== */
+        .logo-watermark {
+            position: absolute; top: var(--slide-padding); left: var(--slide-padding);
+            font-family: var(--font-display); font-size: var(--small-size); font-weight: 800;
+            color: var(--accent-red); opacity: 0.12; letter-spacing: 0.15em; z-index: 5;
+            text-transform: uppercase;
+        }
+
+        /* ===========================================
+           DATA CARDS — warm glass with red left accent
+           =========================================== */
+        .data-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1vw, 12px);
+            padding: clamp(0.8rem, 1.8vw, 1.5rem);
+            transition: transform 0.25s var(--ease-out-back), box-shadow 0.25s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--accent-red-glow);
+        }
+
+        /* ===========================================
+           STAT HIGHLIGHTS
+           =========================================== */
+        .stat-big {
+            font-family: var(--font-display); font-size: var(--stat-size);
+            font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+        }
+        .stat-label {
+            font-size: var(--body-size); color: var(--text-secondary);
+            margin-top: clamp(0.2rem, 0.5vw, 0.5rem); font-weight: 300;
+        }
+
+        /* ===========================================
+           BAR CHART — dramatic gradient fills
+           =========================================== */
+        .bar-chart {
+            display: flex; align-items: flex-end;
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+            height: clamp(120px, 25vh, 220px);
+        }
+        .bar-col {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; gap: clamp(0.2rem, 0.5vw, 0.4rem);
+            height: 100%; justify-content: flex-end;
+        }
+        .bar {
+            width: 100%;
+            border-radius: clamp(4px, 0.5vw, 8px) clamp(4px, 0.5vw, 8px) 0 0;
+            transition: height 0.8s var(--ease-out-expo);
+            min-height: 4px; position: relative;
+        }
+        .bar-label { font-size: var(--small-size); color: var(--text-secondary); font-weight: 600; }
+        .bar-value { font-size: var(--small-size); font-weight: 700; color: var(--text-primary); }
+
+        /* ===========================================
+           DONUT CHART
+           =========================================== */
+        .donut-chart {
+            width: clamp(100px, 18vw, 160px); height: clamp(100px, 18vw, 160px);
+            border-radius: 50%; position: relative;
+        }
+        .donut-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60%; height: 60%; border-radius: 50%; background: var(--bg-primary);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;
+        }
+
+        /* ===========================================
+           ACHIEVEMENT BADGES — gold circles with checks
+           =========================================== */
+        .badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: clamp(28px, 3.5vw, 40px); height: clamp(28px, 3.5vw, 40px);
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), #D4960A);
+            color: #1A1412; font-weight: 800; font-size: clamp(14px, 1.8vw, 20px);
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px var(--accent-gold-glow);
+        }
+        .badge::after { content: '\2713'; }
+
+        /* ===========================================
+           LEADERBOARD — podium style
+           =========================================== */
+        .leaderboard-row {
+            display: flex; align-items: center; gap: clamp(0.5rem, 1.5vw, 1rem);
+            padding: clamp(0.5rem, 1vw, 0.8rem) clamp(0.5rem, 1.2vw, 1rem);
+            border-radius: clamp(6px, 0.8vw, 10px);
+            transition: background 0.2s ease;
+            margin-bottom: clamp(0.25rem, 0.5vw, 0.5rem);
+        }
+        .leaderboard-row:hover { background: var(--surface); }
+
+        .lb-rank {
+            width: clamp(28px, 3.5vw, 38px); height: clamp(28px, 3.5vw, 38px);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display); font-size: var(--small-size); font-weight: 800;
+            flex-shrink: 0;
+        }
+        /* Trophy/medal colors for top 3 */
+        .lb-rank.gold {
+            background: linear-gradient(135deg, #F5B800, #D4960A);
+            color: #1A1412;
+            box-shadow: 0 2px 10px var(--accent-gold-glow);
+        }
+        .lb-rank.silver {
+            background: linear-gradient(135deg, #C0C0C0, #8891A4);
+            color: #1A1412;
+        }
+        .lb-rank.bronze {
+            background: linear-gradient(135deg, #CD7F32, #8B5E2A);
+            color: #fff;
+        }
+        .lb-rank.plain {
+            background: var(--surface-hover); color: var(--text-secondary);
+        }
+
+        .lb-bar {
+            flex: 1; height: clamp(8px, 1.2vw, 12px);
+            background: var(--surface-hover); border-radius: 99px; overflow: hidden;
+        }
+        .lb-bar-fill {
+            height: 100%; border-radius: 99px;
+            transition: width 0.8s var(--ease-out-expo);
+        }
+        .lb-value {
+            font-size: var(--small-size); font-weight: 700;
+            min-width: clamp(50px, 7vw, 70px); text-align: right;
+        }
+        .lb-name {
+            min-width: clamp(50px, 8vw, 80px);
+            font-weight: 600; font-size: var(--body-size);
+        }
+
+        /* ===========================================
+           TARGET vs ACTUAL color coding
+           =========================================== */
+        .status-beat { color: var(--accent-green); }
+        .status-miss { color: #EF5350; }
+
+        /* ===========================================
+           NPS / SATISFACTION RINGS
+           =========================================== */
+        .nps-ring {
+            width: clamp(80px, 14vw, 130px); height: clamp(80px, 14vw, 130px);
+            border-radius: 50%; position: relative;
+            background: conic-gradient(var(--accent-green) 0deg, var(--accent-green) calc(var(--pct) * 3.6deg), var(--surface-hover) calc(var(--pct) * 3.6deg));
+        }
+        .nps-ring-inner {
+            position: absolute; top: 12%; left: 12%; width: 76%; height: 76%;
+            border-radius: 50%; background: var(--bg-primary);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        /* ===========================================
+           TWO COLUMN LAYOUT
+           =========================================== */
+        .two-col { display: flex; gap: var(--content-gap); align-items: center; }
+        .two-col > * { flex: 1; min-width: 0; }
+
+        /* ===========================================
+           SECTION LABEL (slide category tag)
+           =========================================== */
+        .section-label {
+            font-size: var(--small-size); font-weight: 700;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--accent-red);
+            display: inline-flex; align-items: center; gap: 0.6em;
+        }
+        .section-label::before {
+            content: ''; display: block;
+            width: clamp(16px, 2.5vw, 32px); height: 2px;
+            background: var(--accent-red);
+        }
+
+        /* ===========================================
+           CHALLENGE CARDS — red/amber borders
+           =========================================== */
+        .challenge-severe { border-left: 3px solid #EF5350; }
+        .challenge-moderate { border-left: 3px solid var(--accent-gold); }
+
+        /* ===========================================
+           TITLE SLIDE special decoration
+           =========================================== */
+        .title-accent-bar {
+            width: clamp(60px, 10vw, 120px); height: 4px;
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-gold));
+            border-radius: 2px;
+        }
+
+        /* Warm radial glow for title/closing slides */
+        .warm-glow {
+            background: radial-gradient(ellipse at 50% 40%, #2A1A12 0%, var(--bg-primary) 70%);
+        }
+        .warm-glow-bottom {
+            background: radial-gradient(ellipse at 50% 60%, #2A1A12 0%, var(--bg-primary) 70%);
+        }
+
+        /* ===========================================
+           KEY WIN CARDS — glass with gold top border
+           =========================================== */
+        .win-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--accent-gold);
+            border-radius: clamp(8px, 1vw, 12px);
+            padding: clamp(0.8rem, 1.8vw, 1.5rem);
+            transition: transform 0.25s var(--ease-out-back), box-shadow 0.25s ease;
+            position: relative;
+        }
+        .win-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        .win-card .deal-value {
+            font-family: var(--font-display); font-weight: 800;
+            color: var(--accent-gold); font-size: var(--body-size);
+        }
+
+        /* ===========================================
+           GOAL CARDS — 2026 targets
+           =========================================== */
+        .goal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1vw, 12px);
+            padding: clamp(0.8rem, 1.8vw, 1.5rem);
+            text-align: center;
+            transition: transform 0.25s var(--ease-out-back);
+        }
+        .goal-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide warm-glow" aria-label="Title">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal section-label" style="color: var(--accent-gold); justify-content: center;">
+                <span style="display: none;"></span>Annual Sales Review
+            </div>
+            <h1 class="reveal" style="font-family: var(--font-display); font-size: var(--title-size); font-weight: 800; margin-top: var(--element-gap); letter-spacing: -0.02em;">
+                星辰科技 · 销售部
+            </h1>
+            <p class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; color: var(--accent-red); margin-top: var(--element-gap);">2025年度总结</p>
+            <div class="reveal title-accent-bar" style="margin-top: var(--content-gap);"></div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap); font-weight: 300;">销售部 · 2026年1月</p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: EXECUTIVE SUMMARY =================== -->
+    <section class="slide" aria-label="Executive Summary">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal section-label">EXECUTIVE SUMMARY</div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">核心指标一览</h2>
+            <div style="display: flex; justify-content: center; gap: clamp(1.5rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal-punch" style="text-align: center;">
+                    <div class="stat-big" style="color: var(--accent-red);">
+                        <span class="counter" data-target="2.8" data-prefix="¥" data-suffix="亿" data-decimal="1">¥0</span>
+                    </div>
+                    <div class="stat-label">年度营收</div>
+                </div>
+                <div class="reveal-punch" style="text-align: center;">
+                    <div class="stat-big" style="color: var(--accent-gold);">
+                        <span class="counter" data-target="127" data-suffix="%" data-decimal="0">0</span>
+                    </div>
+                    <div class="stat-label">目标达成率 <span class="badge" style="width: clamp(20px, 2.5vw, 28px); height: clamp(20px, 2.5vw, 28px); font-size: clamp(10px, 1.3vw, 14px); vertical-align: middle; margin-left: 0.3em;"></span></div>
+                </div>
+                <div class="reveal-punch" style="text-align: center;">
+                    <div class="stat-big" style="color: var(--accent-green);">
+                        <span class="counter" data-target="68" data-decimal="0">0</span>
+                    </div>
+                    <div class="stat-label">新签客户</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: REVENUE BREAKDOWN Q1-Q4 =================== -->
+    <section class="slide" aria-label="Revenue Breakdown">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content">
+            <div class="reveal section-label">QUARTERLY REVENUE</div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">季度营收分布</h2>
+            <div class="reveal bar-chart" style="margin-top: var(--content-gap); max-width: min(85vw, 700px); margin-left: auto; margin-right: auto;">
+                <div class="bar-col">
+                    <div class="bar-value">¥5,200万</div>
+                    <div class="bar animated-bar" data-height="45" style="background: linear-gradient(180deg, var(--accent-red), #8B2A0F); height: 0; box-shadow: 0 0 20px rgba(230, 74, 25, 0.15);"></div>
+                    <div class="bar-label">Q1</div>
+                </div>
+                <div class="bar-col">
+                    <div class="bar-value">¥6,800万</div>
+                    <div class="bar animated-bar" data-height="60" style="background: linear-gradient(180deg, var(--accent-red), #8B2A0F); height: 0; box-shadow: 0 0 20px rgba(230, 74, 25, 0.15);"></div>
+                    <div class="bar-label">Q2</div>
+                </div>
+                <div class="bar-col">
+                    <div class="bar-value">¥7,500万</div>
+                    <div class="bar animated-bar" data-height="70" style="background: linear-gradient(180deg, var(--accent-gold), #A07800); height: 0; box-shadow: 0 0 20px rgba(245, 184, 0, 0.15);"></div>
+                    <div class="bar-label">Q3</div>
+                </div>
+                <div class="bar-col">
+                    <div class="bar-value" style="color: var(--accent-gold);">¥8,500万</div>
+                    <div class="bar animated-bar" data-height="85" style="background: linear-gradient(180deg, var(--accent-gold), #A07800); height: 0; box-shadow: 0 0 24px rgba(245, 184, 0, 0.2);"></div>
+                    <div class="bar-label">Q4</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap);">Q4 环比增长 <span style="color: var(--accent-green); font-weight: 700;">13.3%</span>，全年呈持续上升趋势</p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: TOP PRODUCTS =================== -->
+    <section class="slide" aria-label="Top Products">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content">
+            <div class="reveal section-label">PRODUCT MIX</div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">产品线收入占比</h2>
+            <div class="two-col" style="margin-top: var(--content-gap);">
+                <div class="reveal" style="display: flex; justify-content: center;">
+                    <div class="donut-chart" style="background: conic-gradient(var(--accent-red) 0deg 180deg, var(--accent-gold) 180deg 288deg, #8B5E2A 288deg 360deg);">
+                        <div class="donut-center" style="color: var(--text-primary);">¥2.8亿</div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 1rem);">
+                    <div class="reveal data-card" style="border-left: 3px solid var(--accent-red);">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">星云 SaaS 平台</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">50% &mdash; ¥1.4亿 &mdash; 同比<span class="status-beat">+35%</span></p>
+                    </div>
+                    <div class="reveal data-card" style="border-left: 3px solid var(--accent-gold);">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">数据中台解决方案</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">30% &mdash; ¥8,400万 &mdash; 同比<span class="status-beat">+22%</span></p>
+                    </div>
+                    <div class="reveal data-card" style="border-left: 3px solid #8B5E2A;">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">定制化开发服务</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">20% &mdash; ¥5,600万 &mdash; 同比<span class="status-beat">+15%</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: KEY WINS =================== -->
+    <section class="slide" aria-label="Key Wins">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content">
+            <div class="reveal section-label" style="color: var(--accent-gold);">
+                <span style="display: none;"></span>KEY WINS
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">标杆客户突破</h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr);">
+                <div class="reveal-punch win-card">
+                    <div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.4em;">
+                        <span class="badge" style="width: clamp(22px, 2.5vw, 30px); height: clamp(22px, 2.5vw, 30px); font-size: clamp(11px, 1.3vw, 15px);"></span>
+                        <span class="deal-value">¥3,200万</span>
+                    </div>
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">华为</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.5;">全球供应链数字化平台，3年期合约</p>
+                </div>
+                <div class="reveal-punch win-card">
+                    <div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.4em;">
+                        <span class="badge" style="width: clamp(22px, 2.5vw, 30px); height: clamp(22px, 2.5vw, 30px); font-size: clamp(11px, 1.3vw, 15px);"></span>
+                        <span class="deal-value">¥2,800万</span>
+                    </div>
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">中国银行</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.5;">智能风控数据中台，替换原有IBM方案</p>
+                </div>
+                <div class="reveal-punch win-card">
+                    <div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.4em;">
+                        <span class="badge" style="width: clamp(22px, 2.5vw, 30px); height: clamp(22px, 2.5vw, 30px); font-size: clamp(11px, 1.3vw, 15px);"></span>
+                        <span class="deal-value">¥1,500万</span>
+                    </div>
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">比亚迪</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.5;">新能源产线IoT数据分析平台</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: TEAM PERFORMANCE / LEADERBOARD =================== -->
+    <section class="slide" aria-label="Team Performance">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content">
+            <div class="reveal section-label">TEAM PERFORMANCE</div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">销售精英排行榜</h2>
+            <div style="margin-top: var(--content-gap); max-width: min(85vw, 700px); margin-left: auto; margin-right: auto;">
+                <!-- #1 Gold -->
+                <div class="reveal leaderboard-row" style="background: rgba(245, 184, 0, 0.06); border: 1px solid rgba(245, 184, 0, 0.15); border-radius: clamp(6px, 0.8vw, 10px);">
+                    <div class="lb-rank gold">1</div>
+                    <div class="lb-name">张伟</div>
+                    <div class="lb-bar"><div class="lb-bar-fill animated-lb" data-width="100" style="background: linear-gradient(90deg, var(--accent-red), var(--accent-gold)); width: 0;"></div></div>
+                    <div class="lb-value" style="color: var(--accent-gold);">¥4,800万</div>
+                </div>
+                <!-- #2 Silver -->
+                <div class="reveal leaderboard-row">
+                    <div class="lb-rank silver">2</div>
+                    <div class="lb-name">李雨晴</div>
+                    <div class="lb-bar"><div class="lb-bar-fill animated-lb" data-width="88" style="background: linear-gradient(90deg, var(--accent-red), var(--accent-gold)); width: 0;"></div></div>
+                    <div class="lb-value">¥4,200万</div>
+                </div>
+                <!-- #3 Bronze -->
+                <div class="reveal leaderboard-row">
+                    <div class="lb-rank bronze">3</div>
+                    <div class="lb-name">王磊</div>
+                    <div class="lb-bar"><div class="lb-bar-fill animated-lb" data-width="75" style="background: var(--accent-red); width: 0;"></div></div>
+                    <div class="lb-value">¥3,600万</div>
+                </div>
+                <!-- #4 -->
+                <div class="reveal leaderboard-row">
+                    <div class="lb-rank plain">4</div>
+                    <div class="lb-name">陈思</div>
+                    <div class="lb-bar"><div class="lb-bar-fill animated-lb" data-width="65" style="background: var(--accent-red); opacity: 0.7; width: 0;"></div></div>
+                    <div class="lb-value">¥3,100万</div>
+                </div>
+                <!-- #5 -->
+                <div class="reveal leaderboard-row">
+                    <div class="lb-rank plain">5</div>
+                    <div class="lb-name">赵明</div>
+                    <div class="lb-bar"><div class="lb-bar-fill animated-lb" data-width="56" style="background: var(--accent-red); opacity: 0.5; width: 0;"></div></div>
+                    <div class="lb-value">¥2,700万</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: CHANNEL ANALYSIS =================== -->
+    <section class="slide" aria-label="Channel Analysis">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content">
+            <div class="reveal section-label">CHANNEL MIX</div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">渠道分析</h2>
+            <div class="two-col" style="margin-top: var(--content-gap);">
+                <div class="reveal" style="display: flex; justify-content: center;">
+                    <div class="donut-chart" style="background: conic-gradient(var(--accent-red) 0deg 194deg, var(--accent-gold) 194deg 302deg, #8B5E2A 302deg 360deg);">
+                        <div class="donut-center" style="font-size: var(--body-size); color: var(--text-secondary);">渠道</div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 1rem);">
+                    <div class="reveal data-card" style="border-left: 3px solid var(--accent-red);">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">直销团队</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">54% &mdash; ¥1.51亿 &mdash; 核心驱动力</p>
+                    </div>
+                    <div class="reveal data-card" style="border-left: 3px solid var(--accent-gold);">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">渠道合作伙伴</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">30% &mdash; ¥8,400万 &mdash; 增速最快 <span class="status-beat">+45%</span></p>
+                    </div>
+                    <div class="reveal data-card" style="border-left: 3px solid #8B5E2A;">
+                        <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">线上自助</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary);">16% &mdash; ¥4,480万 &mdash; 中小客户入口</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: CUSTOMER SATISFACTION =================== -->
+    <section class="slide" aria-label="Customer Satisfaction">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal section-label">SATISFACTION</div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">客户满意度</h2>
+            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal-punch" style="text-align: center;">
+                    <div class="nps-ring" style="--pct: 72;">
+                        <div class="nps-ring-inner">
+                            <span style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 800; color: var(--accent-green);">72</span>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.6em;">NPS 净推荐值</p>
+                    <p style="font-size: var(--small-size); color: var(--accent-green); font-weight: 600;">行业平均 45</p>
+                </div>
+                <div class="reveal-punch" style="text-align: center;">
+                    <div class="nps-ring" style="--pct: 92; background: conic-gradient(var(--accent-gold) 0deg, var(--accent-gold) calc(var(--pct) * 3.6deg), var(--surface-hover) calc(var(--pct) * 3.6deg));">
+                        <div class="nps-ring-inner">
+                            <span style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 800; color: var(--accent-gold);">4.6</span>
+                            <span style="font-size: var(--small-size); color: var(--text-secondary);">/5</span>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.6em;">CSAT 客户满意度</p>
+                    <p style="font-size: var(--small-size); color: var(--accent-gold); font-weight: 600;">同比提升 0.3</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: CHALLENGES =================== -->
+    <section class="slide" aria-label="Challenges">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content">
+            <div class="reveal section-label">LESSONS LEARNED</div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">挑战与反思</h2>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(2, 1fr); max-width: min(85vw, 800px); margin-left: auto; margin-right: auto;">
+                <div class="reveal data-card challenge-severe">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: #EF5350;">销售周期延长</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">大客户决策链加长，平均成交周期从90天增至120天</p>
+                </div>
+                <div class="reveal data-card challenge-severe">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: #EF5350;">人才梯队不足</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">高级销售经理缺口3人，新人培养周期需压缩</p>
+                </div>
+                <div class="reveal data-card challenge-moderate">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: var(--accent-gold);">跨区域协同</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">华南区增速低于预期，需加强本地化团队建设</p>
+                </div>
+                <div class="reveal data-card challenge-moderate">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: var(--accent-gold);">续约率提升空间</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.6;">SaaS续约率82%，距离90%目标仍有差距</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: 2026 GOALS =================== -->
+    <section class="slide warm-glow-bottom" aria-label="2026 Goals">
+        <div class="logo-watermark">STELLAR TECH</div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal section-label" style="color: var(--accent-gold); justify-content: center;">
+                <span style="display: none;"></span>2026 TARGETS
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 700; margin-top: var(--element-gap);">2026 年度目标</h2>
+            <div class="reveal-scale" style="margin-top: var(--content-gap);">
+                <span class="stat-big" style="color: var(--accent-gold); font-size: clamp(3rem, 10vw, 8rem); text-shadow: 0 0 40px rgba(245, 184, 0, 0.2);">¥4亿</span>
+                <p style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300;">营收目标 &mdash; 同比增长 <span style="color: var(--accent-green); font-weight: 700;">43%</span></p>
+            </div>
+            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr); max-width: min(80vw, 650px);">
+                <div class="reveal goal-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: var(--accent-red);">华南扩张</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">深圳设立分部</p>
+                </div>
+                <div class="reveal goal-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: var(--accent-gold);">团队扩编</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">销售团队35→50人</p>
+                </div>
+                <div class="reveal goal-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: var(--accent-green);">续约90%</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">客户成功体系升级</p>
+                </div>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <!-- ===========================================
+         JAVASCRIPT — Presentation Controller
+         =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const dy = this.touchStartY - e.changedTouches[0].clientY;
+                    const dx = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(dy) < 50 || Math.abs(dx) > Math.abs(dy)) return;
+                    if (dy > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+
+        /* ===========================================
+           ANIMATED COUNTERS
+           Number count-up with ease-out cubic
+           =========================================== */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const decimal = parseInt(el.dataset.decimal) || 0;
+                    const duration = 1200;
+                    const start = performance.now();
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const val = (target * eased).toFixed(decimal);
+                        el.textContent = prefix + val + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        /* ===========================================
+           ANIMATED BARS & LEADERBOARD
+           Staggered reveal with race effect
+           =========================================== */
+        const barObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.animated-bar').forEach((bar, i) => {
+                        setTimeout(() => { bar.style.height = bar.dataset.height + '%'; }, i * 120);
+                    });
+                    entry.target.querySelectorAll('.animated-lb').forEach((bar, i) => {
+                        setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, i * 80);
+                    });
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.slide').forEach(s => barObserver.observe(s));
+    </script>
+</body>
+</html>

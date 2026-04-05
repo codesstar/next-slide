@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keynote Noir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800&family=Inter:wght@300;400&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #000;
+  --text: #fff;
+  --accent: #2997ff;
+  --secondary: #98989d;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+
+body {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent);
+  z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(20px, 3vh, 40px);
+  right: clamp(24px, 3vw, 48px);
+  font-family: 'Inter Tight', 'Noto Sans SC', sans-serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 700;
+  color: var(--secondary);
+  z-index: 1000;
+  letter-spacing: 0.05em;
+}
+
+.page-counter .current { color: var(--text); }
+
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.glow-orb {
+  position: absolute;
+  width: clamp(300px, 40vw, 600px);
+  height: clamp(300px, 40vw, 600px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(41, 151, 255, 0.15) 0%, transparent 70%);
+  filter: blur(80px);
+  animation: orbFloat 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+.badge {
+  display: inline-block;
+  width: fit-content;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: var(--secondary);
+  border: 1px solid rgba(134, 134, 139, 0.3);
+  border-radius: 100px;
+  padding: clamp(6px, 0.8vh, 10px) clamp(14px, 1.5vw, 24px);
+  margin-bottom: clamp(24px, 4vh, 48px);
+}
+
+.title-huge {
+  font-family: 'Inter Tight', 'Noto Sans SC', sans-serif;
+  font-weight: 800;
+  font-size: clamp(42px, 7vw, 120px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+
+.title-huge .accent { color: var(--accent); }
+
+.subtitle {
+  font-size: clamp(16px, 2vw, 28px);
+  color: var(--secondary);
+  font-weight: 300;
+  max-width: 60ch;
+  line-height: 1.5;
+}
+
+.section-label {
+  font-family: 'Inter Tight', 'Noto Sans SC', sans-serif;
+  font-size: clamp(11px, 0.9vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(32px, 5vh, 56px);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 4vw, 56px) clamp(48px, 6vw, 96px);
+  max-width: 900px;
+}
+
+.feature-item h3 {
+  font-family: 'Inter Tight', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 2.5vw, 36px);
+  margin-bottom: clamp(8px, 1vh, 16px);
+  letter-spacing: -0.01em;
+}
+
+.feature-item p {
+  font-size: clamp(14px, 1.3vw, 18px);
+  color: var(--secondary);
+  line-height: 1.6;
+  max-width: 35ch;
+}
+
+.stats-row {
+  display: flex;
+  gap: clamp(48px, 7vw, 120px);
+  align-items: flex-end;
+}
+
+.stat-block .number {
+  font-family: 'Inter Tight', 'Noto Sans SC', sans-serif;
+  font-weight: 800;
+  font-size: clamp(52px, 9vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.stat-block .number .unit {
+  font-size: 0.45em;
+  color: var(--accent);
+}
+
+.stat-block .label {
+  font-size: clamp(13px, 1.2vw, 18px);
+  color: var(--secondary);
+  margin-top: clamp(8px, 1vh, 16px);
+}
+
+.quote-text {
+  font-family: 'Inter Tight', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 76px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  max-width: 16ch;
+  margin-bottom: clamp(24px, 3vh, 40px);
+}
+
+.quote-bar {
+  width: clamp(40px, 4vw, 64px);
+  height: 4px;
+  background: var(--accent);
+  margin-bottom: clamp(24px, 3vh, 40px);
+}
+
+.quote-attr {
+  font-size: clamp(14px, 1.3vw, 20px);
+  color: var(--secondary);
+  font-weight: 400;
+}
+
+.close-title {
+  font-family: 'Inter Tight', 'Noto Sans SC', sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 7vw, 110px);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: clamp(16px, 2vh, 32px);
+}
+
+.close-sub {
+  font-size: clamp(16px, 1.8vw, 26px);
+  color: var(--secondary);
+  font-weight: 300;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.slide.active .reveal {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .reveal:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.6s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.74s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Title -->
+<div class="slide active" data-i="0">
+  <div class="glow-orb" style="top: 15%; right: -8%;"></div>
+  <div class="slide-inner">
+    <div class="badge reveal">设计前沿 &middot; 2026</div>
+    <h1 class="title-huge reveal">AI 驱动的<br><span class="accent">设计革命</span></h1>
+    <p class="subtitle reveal">从像素到体验，重新定义创造力的边界</p>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1">
+  <div class="glow-orb" style="bottom: -15%; left: -10%;"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">Core Capabilities</div>
+    <div class="feature-grid">
+      <div class="feature-item reveal">
+        <h3>智能布局</h3>
+        <p>AI 理解内容语义，自动生成符合视觉层次的排版方案</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>风格迁移</h3>
+        <p>一键将任意参考图的视觉语言迁移到你的设计中</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>实时协作</h3>
+        <p>多人同步编辑，AI 实时调和不同设计师的修改意图</p>
+      </div>
+      <div class="feature-item reveal">
+        <h3>自适应排版</h3>
+        <p>一次设计，自动适配从手表到巨幕的所有尺寸</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2">
+  <div class="glow-orb" style="top: 5%; left: 25%;"></div>
+  <div class="slide-inner">
+    <div class="section-label reveal">By The Numbers</div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="number">10<span class="unit">x</span></div>
+        <div class="label">效率提升</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">93<span class="unit">%</span></div>
+        <div class="label">用户满意度</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="number">50<span class="unit">M+</span></div>
+        <div class="label">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3">
+  <div class="glow-orb" style="top: 25%; right: 5%;"></div>
+  <div class="slide-inner">
+    <div class="quote-bar reveal"></div>
+    <div class="quote-text reveal">好的设计不是装饰，是沟通。</div>
+    <div class="quote-attr reveal">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- Slide 5: Close -->
+<div class="slide" data-i="4">
+  <div class="glow-orb" style="bottom: -5%; left: 15%;"></div>
+  <div class="slide-inner">
+    <div class="close-title reveal">重新定义<br>创造力</div>
+    <p class="close-sub reveal">AI + 人类直觉，设计的下一个十年从这里开始</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    // reset reveal animations
+    slides[c].querySelectorAll('.reveal').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

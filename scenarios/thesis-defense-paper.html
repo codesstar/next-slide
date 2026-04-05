@@ -22,7 +22,7 @@
             --bg-pullquote: #f0ede8;
             --text-primary: #1a1a1a;
             --text-secondary: #555555;
-            --text-muted: #999999;
+            --text-muted: #767676;
             --accent-crimson: #c41e3a;
             --accent-crimson-light: rgba(196, 30, 58, 0.08);
             --accent-ink: #2c3e50;
@@ -133,7 +133,7 @@
 
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
             line-height: 1.8;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: break-word;
         }
 
@@ -978,6 +978,7 @@
                         case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

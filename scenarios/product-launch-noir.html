@@ -3,739 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shipfast — From Commit to Production in 45 Seconds</title>
+    <title>Sonance Arc — Keynote Noir</title>
 
-    <!-- Fonts: Keynote Noir — Inter Tight + Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
         /* ===========================================
-           CSS CUSTOM PROPERTIES — Keynote Noir
-           Pure black, blue accent, Apple keynote feel
+           KEYNOTE NOIR — Apple keynote style
+           Pure black, minimal, aspirational
            =========================================== */
         :root {
-            /* --- Color Palette --- */
             --bg-primary: #000000;
-            --bg-secondary: #0a0a0a;
-            --bg-tertiary: #1d1d1f;
-            --accent: #2997ff;
-            --accent-secondary: #2997ff;
-            --accent-glow: rgba(41, 151, 255, 0.3);
+            --bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
             --text-primary: #ffffff;
-            --text-secondary: #86868b;
+            --text-secondary: #999999;
             --text-muted: #48484a;
-            --border-subtle: rgba(255, 255, 255, 0.08);
+            --accent: #2997ff;
+            --accent-glow: rgba(41, 151, 255, 0.2);
             --surface: #1d1d1f;
+            --border-subtle: rgba(255, 255, 255, 0.06);
 
-            /* --- Typography — ALL sizes use clamp() --- */
             --font-display: 'Inter Tight', sans-serif;
             --font-body: 'Inter', sans-serif;
-            --font-mono: 'Inter', sans-serif;
+            --font-mono: 'Inter', monospace;
 
-            --title-size: clamp(2rem, 7vw, 5.5rem);
-            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --title-size: clamp(2.5rem, 8vw, 6rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
             --h3-size: clamp(1rem, 2.5vw, 1.75rem);
-            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.5rem);
             --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
             --small-size: clamp(0.65rem, 1vw, 0.875rem);
-            --stat-size: clamp(2rem, 8vw, 6rem);
+            --stat-size: clamp(2.5rem, 10vw, 7rem);
 
-            /* --- Spacing --- */
-            --slide-padding: clamp(1.5rem, 5vw, 5rem);
-            --content-gap: clamp(1rem, 2vw, 2rem);
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
             --element-gap: clamp(0.25rem, 1vw, 1rem);
 
-            /* --- Animation --- */
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --duration-fast: 0.3s;
-            --duration-normal: 0.6s;
-            --duration-slow: 1s;
+            --duration-normal: 0.8s;
+            --duration-slow: 1.2s;
+            --duration-dramatic: 1.8s;
         }
 
-        /* ===========================================
-           BASE RESET
-           =========================================== */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); font-weight: 300; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; background: var(--bg-primary); }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        img { max-width: 100%; object-fit: contain; }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
 
-        /* ===========================================
-           VIEWPORT FITTING: MANDATORY BASE STYLES
-           =========================================== */
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-        }
+        @media (max-height: 700px) { :root { --slide-padding: clamp(1rem, 3vw, 2.5rem); --content-gap: clamp(0.5rem, 1.5vw, 1.5rem); --title-size: clamp(1.5rem, 5vw, 3rem); --h2-size: clamp(1.2rem, 3vw, 2rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.75rem, 2.5vw, 1.5rem); --title-size: clamp(1.2rem, 4vw, 2.5rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots { display: none; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.5rem, 8vw, 3rem); } .slide-counter { display: none; } .two-col { flex-direction: column !important; } .feature-grid { grid-template-columns: 1fr 1fr !important; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-scale, .reveal-blur, .reveal-wipe { opacity: 0; transform: none !important; filter: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; } .visible .reveal, .visible .reveal-scale, .visible .reveal-blur, .visible .reveal-wipe { opacity: 1; } }
 
-        html {
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
-        }
+        /* Animations — slower, more cinematic */
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity var(--duration-normal) ease, transform var(--duration-normal) var(--ease-out-expo); }
+        .reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity var(--duration-slow) ease, transform var(--duration-dramatic) var(--ease-out-expo); }
+        .reveal-blur { opacity: 0; filter: blur(20px); transition: opacity var(--duration-slow) ease, filter var(--duration-dramatic) var(--ease-out-expo); }
+        .reveal-wipe { clip-path: inset(50%); opacity: 0; transition: clip-path var(--duration-dramatic) var(--ease-out-expo), opacity 0.8s ease; }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+        .slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+        .slide.visible .reveal-wipe { clip-path: inset(0); opacity: 1; }
+        .reveal:nth-child(1){transition-delay:.1s}.reveal:nth-child(2){transition-delay:.3s}.reveal:nth-child(3){transition-delay:.5s}.reveal:nth-child(4){transition-delay:.7s}.reveal:nth-child(5){transition-delay:.9s}
 
-        body {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-        }
+        /* Keynote Noir signature */
+        .product-ambient { position: relative; }
+        .product-ambient::after { content: ''; position: absolute; bottom: -20%; left: 10%; right: 10%; height: 60%; background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%); filter: blur(60px); pointer-events: none; z-index: -1; }
 
-        .slide {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            scroll-snap-align: start;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+        /* Spec pill */
+        .spec-pill { display: inline-flex; align-items: center; gap: 0.5em; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 100px; padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1.2rem); font-size: var(--body-size); }
+        .spec-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
-        .slide-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-height: 100%;
-            overflow: hidden;
-            padding: var(--slide-padding);
-        }
+        /* Feature grid for noir */
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--content-gap); max-width: 800px; }
+        .feature-grid-item { text-align: center; }
+        .feature-grid-value { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 700; }
+        .feature-grid-label { font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3rem; }
 
-        .card, .container, .content-box {
-            max-width: min(90vw, 1000px);
-            max-height: min(80vh, 700px);
-        }
+        /* Comparison — minimal Apple style */
+        .compare-table { max-width: 700px; width: 100%; }
+        .compare-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; padding: clamp(0.5rem, 1vw, 0.75rem) 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--body-size); text-align: center; }
+        .compare-row:first-child { font-family: var(--font-display); font-weight: 600; font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); border-bottom-color: rgba(255,255,255,0.15); }
+        .compare-row span:first-child { text-align: left; }
+        .compare-win { color: var(--accent); font-weight: 500; }
 
-        .feature-list, .bullet-list {
-            gap: clamp(0.4rem, 1vh, 1rem);
-        }
+        /* Review quote */
+        .quote-block { max-width: 650px; }
+        .quote-mark { font-size: clamp(3rem, 6vw, 5rem); color: var(--accent); opacity: 0.3; line-height: 0.5; font-family: Georgia, serif; }
 
-        .feature-list li, .bullet-list li {
-            font-size: var(--body-size);
-            line-height: 1.5;
-        }
+        /* Price display */
+        .price-display { display: flex; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+        .price-option { text-align: center; min-width: 200px; }
+        .price-option-amount { font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; }
+        .price-option-label { font-size: var(--small-size); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+        .price-option-desc { font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5rem; max-width: 220px; line-height: 1.5; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-            gap: clamp(0.5rem, 1.5vw, 1rem);
-        }
+        /* Stars */
+        .stars { color: #ffd700; letter-spacing: 2px; }
 
-        img, .image-container {
-            max-width: 100%;
-            max-height: min(50vh, 400px);
-            object-fit: contain;
-        }
-
-        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
-            line-height: 1.6;
-            word-break: break-all;
-            overflow-wrap: break-word;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            overflow-wrap: break-word;
-            hyphens: auto;
-        }
-
-        p, li, blockquote {
-            overflow-wrap: break-word;
-        }
-
-        @media (max-height: 700px) {
-            :root {
-                --slide-padding: clamp(0.75rem, 3vw, 2rem);
-                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
-                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
-                --h2-size: clamp(1rem, 3vw, 1.75rem);
-            }
-        }
-
-        @media (max-height: 600px) {
-            :root {
-                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
-                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
-                --title-size: clamp(1.1rem, 4vw, 2rem);
-                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
-            }
-            .nav-dots, .keyboard-hint, .decorative {
-                display: none;
-            }
-        }
-
-        @media (max-height: 500px) {
-            :root {
-                --slide-padding: clamp(0.4rem, 2vw, 1rem);
-                --title-size: clamp(1rem, 3.5vw, 1.5rem);
-                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
-                --body-size: clamp(0.65rem, 1vw, 0.85rem);
-            }
-            .grid {
-                grid-template-columns: 1fr !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            :root {
-                --title-size: clamp(1.25rem, 7vw, 2.5rem);
-            }
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .slide-content[style*="flex-direction: row"] {
-                flex-direction: column !important;
-            }
-            .slide-counter {
-                display: none;
-            }
-        }
-
-        @media (max-width: 600px) and (min-height: 700px) {
-            :root {
-                --slide-padding: clamp(1.5rem, 6vw, 3rem);
-                --content-gap: clamp(1rem, 3vw, 2rem);
-            }
-        }
-
-        @media (min-width: 2000px) {
-            .slide-content {
-                max-width: 1600px;
-                margin: 0 auto;
-            }
-        }
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .card, .content-box {
-                border-width: 0.5px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.2s !important;
-                scroll-behavior: auto !important;
-            }
-            html {
-                scroll-behavior: auto;
-                scroll-snap-type: none;
-            }
-            .reveal {
-                opacity: 0;
-                transform: none !important;
-                filter: none !important;
-                clip-path: none !important;
-                transition: opacity 0.2s ease !important;
-            }
-            .visible .reveal {
-                opacity: 1;
-            }
-        }
-
-        @media print {
-            html { scroll-snap-type: none; }
-            .slide {
-                height: auto;
-                min-height: 100vh;
-                overflow: visible;
-                page-break-after: always;
-                page-break-inside: avoid;
-            }
-            .progress-bar, .nav-dots, .slide-counter {
-                display: none !important;
-            }
-            .reveal, [class*="reveal-"] {
-                opacity: 1 !important;
-                transform: none !important;
-            }
-        }
-
-        /* ===========================================
-           BODY & GLOBAL — Keynote Noir
-           =========================================== */
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
-
-        /* ===========================================
-           ANIMATIONS
-           =========================================== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity var(--duration-normal) var(--ease-out-expo),
-                        transform var(--duration-normal) var(--ease-out-expo);
-        }
-        .slide.visible .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .reveal:nth-child(1) { transition-delay: 0.1s; }
-        .reveal:nth-child(2) { transition-delay: 0.2s; }
-        .reveal:nth-child(3) { transition-delay: 0.3s; }
-        .reveal:nth-child(4) { transition-delay: 0.4s; }
-        .reveal:nth-child(5) { transition-delay: 0.5s; }
-        .reveal:nth-child(6) { transition-delay: 0.6s; }
-        .reveal:nth-child(7) { transition-delay: 0.7s; }
-        .reveal:nth-child(8) { transition-delay: 0.8s; }
-
-        /* ===========================================
-           PROGRESS BAR
-           =========================================== */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 2px;
-            background: var(--accent);
-            width: 0%;
-            z-index: 9999;
-            transition: width 0.3s ease;
-        }
-
-        /* ===========================================
-           NAVIGATION DOTS
-           =========================================== */
-        .nav-dots {
-            position: fixed;
-            right: clamp(12px, 2vw, 24px);
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 9998;
-        }
-        .nav-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 0;
-        }
-        .nav-dot.active {
-            background: var(--accent);
-            transform: scale(1.4);
-        }
-
-        /* ===========================================
-           SLIDE COUNTER
-           =========================================== */
-        .slide-counter {
-            position: fixed;
-            bottom: clamp(12px, 2vw, 24px);
-            right: clamp(12px, 2vw, 24px);
-            font-family: var(--font-body);
-            font-size: var(--small-size);
-            color: var(--text-muted);
-            z-index: 9998;
-            font-weight: 300;
-        }
-
-        /* ===========================================
-           KEYNOTE NOIR — All slides pure black
-           =========================================== */
-        .slide {
-            background: var(--bg-primary);
-        }
-
-        /* Blue accent text */
-        .accent-text {
-            color: var(--accent);
-        }
+        /* UI chrome */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 9998; }
+        .nav-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.4s ease; padding: 0; position: relative; }
+        .nav-dot::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; }
+        .nav-dot.active { background: var(--text-primary); transform: scale(1.5); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-body); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; font-weight: 300; }
+        @media (hover: hover) { .price-option:hover { transform: translateY(-2px); } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, .reveal-scale, .reveal-blur, .reveal-wipe, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; } }
+        /* CTA button */
+        .cta-btn-noir { display: inline-block; padding: clamp(0.75rem, 1.5vw, 1rem) clamp(2rem, 4vw, 3rem); background: var(--accent); color: var(--text-primary); font-family: var(--font-display); font-size: var(--body-size); font-weight: 600; text-decoration: none; border-radius: 100px; min-height: 44px; transition: background 0.3s ease, transform 0.3s ease; }
+        @media (hover: hover) { .cta-btn-noir:hover { background: #0a84ff; transform: translateY(-2px); } }
     </style>
 </head>
 <body>
-    <!-- Progress bar -->
     <div class="progress-bar" id="progressBar"></div>
-
-    <!-- Navigation dots -->
     <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
-
-    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
 
-    <!-- =================== SLIDES =================== -->
-
-    <!-- SLIDE 1: Title -->
-    <section class="slide" aria-label="Title">
-        <div class="slide-content" style="align-items: center; text-align: center;">
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 400;">
-                Public Launch &mdash; April 15, 2026
-            </p>
-            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--content-gap); line-height: 1.05; letter-spacing: -0.03em;">
-                Shipfast
-            </h1>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(70vw, 550px); line-height: 1.5; font-weight: 300;">
-                From commit to production in 45 seconds.
-            </p>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
-                &darr;
-            </p>
-        </div>
-    </section>
-
-    <!-- SLIDE 2: Section Divider — "The Problem" -->
-    <section class="slide" aria-label="The Problem">
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
-            <span class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); font-weight: 500;">
-                Part 01
-            </span>
-            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); letter-spacing: -0.03em;">
-                The Problem
-            </h2>
-        </div>
-    </section>
-
-    <!-- SLIDE 3: Quote -->
-    <section class="slide" aria-label="Quote">
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(75vw, 750px); margin: 0 auto;">
-            <blockquote class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em;">
-                &ldquo;I spend more time configuring CI/CD pipelines than writing actual features. Last Tuesday I burned 4 hours debugging a deploy script.&rdquo;
-            </blockquote>
-            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; font-weight: 300;">
-                Ava Torres, Senior Engineer at Lattice
-            </cite>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap);">
-                Stack Overflow Developer Survey, 2025<sup style="color: var(--accent);">1</sup>
-            </p>
-        </div>
-    </section>
-
-    <!-- SLIDE 4: Features -->
-    <section class="slide" aria-label="Features">
+    <!-- SLIDE 1: HERO — massive type, pure black -->
+    <section class="slide" aria-label="Hero">
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center; letter-spacing: -0.02em;">
-                What Shipfast Does
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.3em; color: var(--text-secondary);">Sonance Audio</p>
+            <h1 class="reveal-blur" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); letter-spacing: -0.02em;">
+                Arc
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300;">
+                Sound Without Boundaries
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PRODUCT HERO -->
+    <section class="slide" aria-label="Product Hero">
+        <div class="slide-content">
+            <div class="product-ambient reveal-wipe" style="max-width: min(80vw, 700px);">
+                <img src="images/arc-noir-hero.webp" alt="Sonance Arc earbuds on black background with dramatic lighting" style="width: 100%; max-height: min(50vh, 450px); object-fit: contain;">
+            </div>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: 500px; font-weight: 300; line-height: 1.6;">
+                Wireless earbuds reimagined with a dual-driver system, 50dB noise cancellation, and 12-hour battery life.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: VISION — one idea, big type -->
+    <section class="slide" aria-label="Vision">
+        <div class="slide-content">
+            <h2 class="reveal-blur" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; max-width: 700px; line-height: 1.3; letter-spacing: -0.01em;">
+                We asked a simple question: what if earbuds had no compromises?
             </h2>
-            <div class="grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(3, 1fr);">
-                <div class="reveal card" style="background: var(--surface); border-radius: 16px; padding: clamp(1.2rem, 2.5vw, 2rem);">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.4rem, 1vw, 0.6rem);">&#9889;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem);">Zero-Config Deploy</h3>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.6; font-weight: 300;">Push to main. That's it. Shipfast detects your framework, builds, and ships automatically.</p>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: 500px; font-weight: 300; line-height: 1.6;">
+                Better sound. Longer battery. Lighter weight. At a price that makes sense. We built Arc to be the answer.
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: KEY FEATURES — grid of stats -->
+    <section class="slide" aria-label="Key Features">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">The specs speak for themselves.</h2>
+            <div class="feature-grid" style="margin-top: var(--content-gap);">
+                <div class="feature-grid-item reveal" style="transition-delay: 0.1s;">
+                    <div class="feature-grid-value" style="color: var(--accent);">50dB</div>
+                    <div class="feature-grid-label">Active Noise Cancellation</div>
                 </div>
-                <div class="reveal card" style="background: var(--surface); border-radius: 16px; padding: clamp(1.2rem, 2.5vw, 2rem);">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.4rem, 1vw, 0.6rem);">&#128274;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem);">Built-in Rollbacks</h3>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.6; font-weight: 300;">Every deploy is atomic. One-click rollback to any previous version in under 3 seconds.</p>
+                <div class="feature-grid-item reveal" style="transition-delay: 0.2s;">
+                    <div class="feature-grid-value">12hr</div>
+                    <div class="feature-grid-label">Battery Life</div>
                 </div>
-                <div class="reveal card" style="background: var(--surface); border-radius: 16px; padding: clamp(1.2rem, 2.5vw, 2rem);">
-                    <div style="font-size: clamp(1.2rem, 2.5vw, 1.8rem); margin-bottom: clamp(0.4rem, 1vw, 0.6rem);">&#127760;</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem);">Edge-First</h3>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.6; font-weight: 300;">Deploys to 42 edge locations worldwide. P95 cold start under 18ms. No region config needed.</p>
+                <div class="feature-grid-item reveal" style="transition-delay: 0.3s;">
+                    <div class="feature-grid-value">5.2g</div>
+                    <div class="feature-grid-label">Per Earbud</div>
+                </div>
+                <div class="feature-grid-item reveal" style="transition-delay: 0.4s;">
+                    <div class="feature-grid-value" style="color: var(--accent);">Dual</div>
+                    <div class="feature-grid-label">Driver System</div>
+                </div>
+                <div class="feature-grid-item reveal" style="transition-delay: 0.5s;">
+                    <div class="feature-grid-value">38hr</div>
+                    <div class="feature-grid-label">Total with Case</div>
+                </div>
+                <div class="feature-grid-item reveal" style="transition-delay: 0.6s;">
+                    <div class="feature-grid-value">IPX5</div>
+                    <div class="feature-grid-label">Water Resistant</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 5: Comparison -->
-    <section class="slide" aria-label="Before vs After">
+    <!-- SLIDE 5: CHARGING CASE -->
+    <section class="slide" aria-label="Charging Case">
         <div class="slide-content">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center; letter-spacing: -0.02em;">
-                Before vs After
-            </h2>
-            <div class="reveal" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch;">
-                <div style="background: rgba(255, 255, 255, 0.03); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem);">
-                    <h3 style="font-size: var(--h3-size); color: #86868b; font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">Without Shipfast</h3>
-                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Write Dockerfile manually</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Configure CI/CD from scratch</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Debug YAML indentation errors</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; Manually manage SSL certs</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10007; ~12 min average deploy time</li>
-                    </ul>
-                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vw, 0.8rem);">avg. 12m 14s per deploy</p>
+            <div class="product-ambient reveal-wipe" style="max-width: min(70vw, 600px);">
+                <img src="images/arc-noir-case.webp" alt="Sonance Arc charging case beauty shot" style="width: 100%; max-height: min(45vh, 380px); object-fit: contain;">
+            </div>
+            <div style="display: flex; gap: clamp(0.5rem, 1vw, 1rem); flex-wrap: wrap; justify-content: center; margin-top: var(--content-gap);">
+                <div class="spec-pill reveal"><span class="spec-pill-dot"></span>Spatial Audio</div>
+                <div class="spec-pill reveal"><span class="spec-pill-dot"></span>Adaptive EQ</div>
+                <div class="spec-pill reveal"><span class="spec-pill-dot"></span>3-Device Switching</div>
+                <div class="spec-pill reveal"><span class="spec-pill-dot"></span>USB-C Fast Charge</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: COMPARISON -->
+    <section class="slide" aria-label="Comparison">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">How Arc compares.</h2>
+            <div class="compare-table" style="margin-top: var(--content-gap);">
+                <div class="compare-row reveal"><span>Feature</span><span style="color: var(--accent);">Arc</span><span>AirPods Pro 2</span></div>
+                <div class="compare-row reveal"><span>Noise Cancellation</span><span class="compare-win">50dB</span><span>48dB</span></div>
+                <div class="compare-row reveal"><span>Battery (earbuds)</span><span class="compare-win">12 hrs</span><span>6 hrs</span></div>
+                <div class="compare-row reveal"><span>Total Battery</span><span class="compare-win">38 hrs</span><span>30 hrs</span></div>
+                <div class="compare-row reveal"><span>Drivers</span><span class="compare-win">Dual</span><span>Single</span></div>
+                <div class="compare-row reveal"><span>Multi-Device</span><span class="compare-win">3</span><span>1</span></div>
+                <div class="compare-row reveal"><span>Price</span><span class="compare-win">$179</span><span>$249</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: SOCIAL PROOF -->
+    <section class="slide" aria-label="Reviews">
+        <div class="slide-content">
+            <div class="quote-block">
+                <div class="quote-mark reveal">&ldquo;</div>
+                <blockquote class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 600; line-height: 1.3; margin-top: -0.3em;">
+                    Best earbuds of 2026. Nothing else comes close.
+                </blockquote>
+                <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; font-weight: 300;">
+                    TechRadar &mdash; Editor's Choice &nbsp;&nbsp;<span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> 4.8 avg
+                </cite>
+            </div>
+            <div style="display: flex; gap: var(--content-gap); margin-top: var(--content-gap); flex-wrap: wrap; justify-content: center; max-width: 700px;">
+                <div class="reveal" style="flex: 1; min-width: 250px; padding: clamp(1rem, 2vw, 1.5rem); background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px;">
+                    <p style="font-size: var(--body-size); font-style: italic; line-height: 1.6; color: var(--text-secondary);">"The 12-hour battery is real. Tested on a cross-country flight with room to spare."</p>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.75rem; font-weight: 500;">The Verge &mdash; 9.2/10</p>
+                </div>
+                <div class="reveal" style="flex: 1; min-width: 250px; padding: clamp(1rem, 2vw, 1.5rem); background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 12px;">
+                    <p style="font-size: var(--body-size); font-style: italic; line-height: 1.6; color: var(--text-secondary);">"Better ANC, better battery, better price. No compromises."</p>
+                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: 0.75rem; font-weight: 500;">Wired &mdash; Recommended</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: PRICING -->
+    <section class="slide" aria-label="Pricing">
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">Choose your Arc.</h2>
+            <div class="price-display reveal" style="margin-top: var(--content-gap);">
+                <div class="price-option">
+                    <div class="price-option-label">Standard</div>
+                    <div class="price-option-amount">$179</div>
+                    <p class="price-option-desc">Arc earbuds, USB-C charging case, 3 ear tip sizes.</p>
                 </div>
                 <div style="width: 1px; background: var(--border-subtle); align-self: stretch;"></div>
-                <div style="background: rgba(41, 151, 255, 0.04); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem);">
-                    <h3 style="font-size: var(--h3-size); color: var(--accent); font-family: var(--font-display); font-weight: 700; margin-bottom: clamp(0.5rem, 1vw, 0.8rem);">With Shipfast</h3>
-                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary); font-weight: 300;">
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Auto-detected build pipeline</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Git push triggers everything</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Zero config files to maintain</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; Auto-provisioned TLS</li>
-                        <li style="padding: clamp(0.2rem, 0.4vw, 0.3rem) 0;">&#10003; 45-second average deploy</li>
-                    </ul>
-                    <p style="font-size: var(--small-size); color: var(--accent); margin-top: clamp(0.5rem, 1vw, 0.8rem);">avg. 45s per deploy</p>
+                <div class="price-option" style="border: 1px solid var(--accent); border-radius: 12px; padding: clamp(1rem, 2vw, 1.5rem); background: rgba(41, 151, 255, 0.05);">
+                    <div class="price-option-label" style="color: var(--accent);">Pro</div>
+                    <div class="price-option-amount" style="color: var(--accent);">$249</div>
+                    <p class="price-option-desc">Wireless charging case, memory foam tips, 2-year warranty.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 6: Stats -->
-    <section class="slide" aria-label="Impact">
-        <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center; letter-spacing: -0.02em;">
-                The Numbers Speak
+    <!-- SLIDE 9: CTA -->
+    <section class="slide" aria-label="CTA">
+        <div class="slide-content">
+            <h2 class="reveal-blur" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em;">
+                Pre-order today.
             </h2>
-            <div style="display: flex; justify-content: center; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); flex-wrap: wrap;">
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="3.2" data-suffix="x" data-decimal="true" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">0</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); font-weight: 300;">Faster Deploys</div>
-                </div>
-                <div class="reveal" style="text-align: center;">
-                    <div class="counter" data-target="47" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">0</div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); font-weight: 300;">Less Config</div>
-                </div>
-                <div class="reveal" style="text-align: center;">
-                    <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; color: var(--accent);">
-                        <span style="font-size: clamp(1rem, 3vw, 2rem); color: var(--text-muted); text-decoration: line-through;">12m</span>
-                        <span> 45s</span>
-                    </div>
-                    <div style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vw, 0.3rem); font-weight: 300;">Setup Time</div>
-                </div>
-            </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap); text-align: center; font-weight: 300;">
-                Based on internal benchmarks across 1,847 deploys during closed beta (Jan&ndash;Mar 2026)
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-weight: 300;">
+                Shipping March 2026
+            </p>
+            <a href="https://sonance.audio/arc" class="cta-btn-noir reveal" style="margin-top: var(--content-gap);">Pre-Order Now</a>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                sonance.audio/arc
             </p>
         </div>
-    </section>
-
-    <!-- SLIDE 7: Pricing -->
-    <section class="slide" aria-label="Pricing">
-        <div class="slide-content" style="align-items: center;">
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center; letter-spacing: -0.02em;">
-                Pricing
-            </h2>
-            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap); font-weight: 300;">
-                Launch week special &mdash; lock in these rates forever.
-            </p>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--content-gap); margin-top: var(--content-gap); max-width: min(90vw, 900px);">
-                <div class="reveal" style="background: var(--surface); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem); text-align: center;">
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Starter</p>
-                    <p style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; margin: 0.2em 0;">$0</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted);">per month</p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left; font-weight: 300;">
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; 3 projects</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; 100 deploys/mo</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Community support</li>
-                    </ul>
-                </div>
-                <div class="reveal" style="background: var(--surface); border: 2px solid var(--accent); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem); text-align: center; position: relative;">
-                    <span style="position: absolute; top: clamp(-10px, -1vw, -12px); left: 50%; transform: translateX(-50%); background: var(--accent); color: #000; font-size: var(--small-size); padding: clamp(0.15rem, 0.3vw, 0.2rem) clamp(0.5rem, 1vw, 0.8rem); font-weight: 600; font-family: var(--font-display); border-radius: 20px;">Most Popular</span>
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent);">Pro</p>
-                    <p style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; margin: 0.2em 0;">$29</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted);"><s>$39</s> &nbsp;launch price</p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left; font-weight: 300;">
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Unlimited projects</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Unlimited deploys</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Preview environments</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Priority support</li>
-                    </ul>
-                </div>
-                <div class="reveal" style="background: var(--surface); border-radius: 16px; padding: clamp(1rem, 2vw, 1.5rem); text-align: center;">
-                    <p style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Enterprise</p>
-                    <p style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 800; margin: 0.2em 0;">Custom</p>
-                    <p style="font-size: var(--small-size); color: var(--text-muted);">contact us</p>
-                    <ul style="list-style: none; padding: 0; margin-top: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); color: var(--text-secondary); text-align: left; font-weight: 300;">
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Everything in Pro</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; SSO &amp; audit logs</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; Dedicated support</li>
-                        <li style="padding: clamp(0.15rem, 0.3vw, 0.3rem) 0;">&#10003; SLA guarantee</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SLIDE 8: CTA -->
-    <section class="slide" aria-label="Get Started">
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
-            <p class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 500;">
-                Available Now
-            </p>
-            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 800; margin-top: var(--element-gap); line-height: 1.1; letter-spacing: -0.03em;">
-                Start Shipping Faster
-            </h2>
-            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(70vw, 550px); line-height: 1.5; font-weight: 300;">
-                Free tier. No credit card. Deploy your first project in under a minute.
-            </p>
-            <div class="reveal" style="margin-top: var(--content-gap);">
-                <div style="background: var(--accent); color: #000; padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem); font-family: var(--font-display); font-weight: 600; font-size: var(--body-size); border-radius: 40px; cursor: pointer;">
-                    shipfast.dev/start
-                </div>
-            </div>
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
-                Launch date: April 15, 2026 &nbsp;&bull;&nbsp; Product Hunt featured
-            </p>
-            <div class="reveal" style="margin-top: var(--content-gap); width: clamp(60px, 8vw, 100px); height: clamp(60px, 8vw, 100px); border: 1px solid var(--border-subtle); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: var(--small-size); color: var(--text-muted);">
-                QR
-            </div>
-            <p class="reveal" style="font-size: clamp(0.55rem, 0.8vw, 0.7rem); color: var(--text-muted); margin-top: var(--content-gap); max-width: min(80vw, 600px); font-weight: 300;">
-                <sup>1</sup> Stack Overflow Developer Survey 2025, "Time Spent on DevOps vs Feature Work", n=48,231 respondents. Shipfast benchmarks from closed beta with 312 teams.
-            </p>
-        </div>
-        <!-- Watermark -->
-        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
-            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
-        </p>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
     </section>
 
     <script>
-        /* ===========================================
-           SLIDE PRESENTATION CONTROLLER
-           =========================================== */
-        class SlidePresentation {
-            constructor() {
-                this.slides = [...document.querySelectorAll('.slide')];
-                this.currentSlide = 0;
-                this.isAnimating = false;
-                this.touchStartY = 0;
-                this.touchStartX = 0;
-                this.init();
-            }
-
-            init() {
-                this.setupIntersectionObserver();
-                this.setupKeyboardNav();
-                this.setupTouchNav();
-                this.setupWheelNav();
-                this.setupProgressBar();
-                this.setupNavDots();
-                this.setupSlideCounter();
-                if (this.slides[0]) {
-                    this.slides[0].classList.add('visible');
-                }
-            }
-
-            setupIntersectionObserver() {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            const idx = this.slides.indexOf(entry.target);
-                            if (idx !== -1) {
-                                this.currentSlide = idx;
-                                this.updateUI();
-                            }
-                        }
-                    });
-                }, { threshold: 0.5 });
-                this.slides.forEach(slide => observer.observe(slide));
-            }
-
-            setupKeyboardNav() {
-                document.addEventListener('keydown', (e) => {
-                    if (e.target.getAttribute('contenteditable')) return;
-                    switch (e.key) {
-                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
-                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
-                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
-                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
-                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
-                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
-                    }
-                });
-            }
-
-            setupTouchNav() {
-                document.addEventListener('touchstart', (e) => {
-                    this.touchStartY = e.touches[0].clientY;
-                    this.touchStartX = e.touches[0].clientX;
-                }, { passive: true });
-                document.addEventListener('touchend', (e) => {
-                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
-                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
-                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
-                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
-                    else this.goToSlide(this.currentSlide - 1);
-                }, { passive: true });
-            }
-
-            setupWheelNav() {
-                let wheelTimeout;
-                document.addEventListener('wheel', (e) => {
-                    clearTimeout(wheelTimeout);
-                    wheelTimeout = setTimeout(() => {
-                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
-                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
-                    }, 50);
-                }, { passive: true });
-            }
-
-            setupProgressBar() {
-                this.progressBar = document.getElementById('progressBar');
-            }
-
-            setupNavDots() {
-                const container = document.getElementById('navDots');
-                if (!container) return;
-                this.slides.forEach((_, i) => {
-                    const dot = document.createElement('button');
-                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-                    dot.addEventListener('click', () => this.goToSlide(i));
-                    container.appendChild(dot);
-                });
-            }
-
-            setupSlideCounter() {
-                this.counter = document.getElementById('slideCounter');
-                this.updateUI();
-            }
-
-            goToSlide(index) {
-                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
-                this.isAnimating = true;
-                this.currentSlide = index;
-                this.slides[index].scrollIntoView({ behavior: 'smooth' });
-                this.updateUI();
-                setTimeout(() => { this.isAnimating = false; }, 600);
-            }
-
-            updateUI() {
-                const total = this.slides.length;
-                const current = this.currentSlide;
-                if (this.progressBar) {
-                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
-                }
-                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-                    dot.classList.toggle('active', i === current);
-                });
-                if (this.counter) {
-                    this.counter.textContent = `${current + 1} / ${total}`;
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            new SlidePresentation();
-        });
-
-        /* Counter animation */
-        const counters = document.querySelectorAll('.counter');
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const target = parseFloat(el.dataset.target);
-                    const suffix = el.dataset.suffix || '';
-                    const prefix = el.dataset.prefix || '';
-                    const isDecimal = el.dataset.decimal === 'true';
-                    const duration = 1500;
-                    const start = performance.now();
-                    function tick(now) {
-                        const elapsed = now - start;
-                        const progress = Math.min(elapsed / duration, 1);
-                        const eased = 1 - Math.pow(1 - progress, 3);
-                        const value = target * eased;
-                        el.textContent = prefix + (isDecimal ? value.toFixed(1) : Math.round(value).toLocaleString()) + suffix;
-                        if (progress < 1) requestAnimationFrame(tick);
-                    }
-                    requestAnimationFrame(tick);
-                    counterObserver.unobserve(el);
-                }
-            });
-        }, { threshold: 0.5 });
-        counters.forEach(c => counterObserver.observe(c));
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init()}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible')}setupIntersectionObserver(){const o=new IntersectionObserver(e=>{e.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const i=this.slides.indexOf(entry.target);if(i!==-1){this.currentSlide=i;this.updateUI()}}})},{threshold:0.5});this.slides.forEach(s=>o.observe(s))}setupKeyboardNav(){document.addEventListener('keydown',e=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break}})}setupTouchNav(){document.addEventListener('touchstart',e=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1)},{passive:true})}setupWheelNav(){let t;document.addEventListener('wheel',e=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1)},50)},{passive:true})}setupProgressBar(){this.progressBar=document.getElementById('progressBar')}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d)})}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI()}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false},600)}updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>new SlidePresentation());
     </script>
 </body>
 </html>

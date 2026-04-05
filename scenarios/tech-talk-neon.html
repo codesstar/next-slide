@@ -21,7 +21,7 @@
             --bg-secondary: #0d1528;
             --bg-tertiary: #111a30;
             --text-primary: #e0f0ff;
-            --text-secondary: #5a7a9a;
+            --text-secondary: #7a9abc;
             --text-muted: #3a5070;
             --accent-cyan: #00ffcc;
             --accent-magenta: #ff00aa;
@@ -809,6 +809,7 @@
                         case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

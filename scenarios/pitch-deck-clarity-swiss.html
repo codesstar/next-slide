@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity — AI Mental Health App | Swiss Modern</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           SWISS MODERN — Clean, precise, Bauhaus
+           =========================================== */
+        :root {
+            --bg-primary: #ffffff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #555555;
+            --text-muted: #767676;
+            --accent-red: #ff3300;
+            --accent-red-light: rgba(255,51,0,0.08);
+            --grid-line: rgba(0,0,0,0.06);
+            --border: #0a0a0a;
+            --border-light: #e0e0e0;
+            --font-display: 'Archivo', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.5s;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; background: var(--bg-primary); }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; }
+        p,li,blockquote { overflow-wrap: break-word; }
+
+        /* Grid background */
+        .grid-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: clamp(30px,4vw,50px) clamp(30px,4vw,50px); }
+
+        /* Red accent bar */
+        .red-bar { width: clamp(40px,6vw,80px); height: clamp(4px,0.5vw,6px); background: var(--accent-red); }
+
+        /* Swiss number */
+        .swiss-number { font-family: var(--font-display); font-weight: 900; font-size: clamp(4rem,12vw,10rem); color: rgba(0,0,0,0.04); position: absolute; top: var(--slide-padding); right: var(--slide-padding); line-height: 1; z-index: 0; }
+
+        /* Animations — Crisp, fast */
+        .reveal { opacity: 0; transform: translateY(15px); transition: opacity var(--duration-fast) ease-out, transform var(--duration-fast) ease-out; }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal-crisp { opacity: 0; transform: translateY(10px); transition: opacity var(--duration-fast) ease-out, transform var(--duration-fast) ease-out; }
+        .slide.visible .reveal-crisp { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1),.reveal-crisp:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2),.reveal-crisp:nth-child(2) { transition-delay: 0.1s; }
+        .reveal:nth-child(3),.reveal-crisp:nth-child(3) { transition-delay: 0.15s; }
+        .reveal:nth-child(4),.reveal-crisp:nth-child(4) { transition-delay: 0.2s; }
+        .reveal:nth-child(5),.reveal-crisp:nth-child(5) { transition-delay: 0.25s; }
+        .reveal:nth-child(6),.reveal-crisp:nth-child(6) { transition-delay: 0.3s; }
+
+        /* Line accent */
+        .line-accent { position: relative; display: inline-block; }
+        .line-accent::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--accent-red); transition: width 0.5s var(--ease-out-expo); }
+        .slide.visible .line-accent::after { width: 100%; }
+
+        /* Data card */
+        .data-card { border: 1px solid var(--border-light); padding: clamp(0.6rem,1.5vw,1.2rem); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .data-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+        /* Bar chart */
+        .swiss-bar-chart { display: flex; align-items: flex-end; gap: clamp(6px,1vw,12px); height: clamp(80px,18vh,180px); }
+        .swiss-bar-chart .bar { flex: 1; background: var(--text-primary); position: relative; min-width: 20px; transition: height 1s var(--ease-out-expo); }
+        .swiss-bar-chart .bar.accent { background: var(--accent-red); }
+        .swiss-bar-chart .bar-label { position: absolute; bottom: calc(-1 * clamp(18px,2.5vw,24px)); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-secondary); white-space: nowrap; font-family: var(--font-display); }
+
+        /* Competition table */
+        .swiss-table { width: 100%; border-collapse: collapse; font-size: var(--body-size); }
+        .swiss-table th, .swiss-table td { padding: clamp(0.3rem,0.8vh,0.6rem) clamp(0.4rem,1.2vw,0.8rem); text-align: left; border-bottom: 1px solid var(--border-light); }
+        .swiss-table th { font-size: var(--small-size); font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 2px solid var(--border); }
+
+        /* Progress & Nav */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-red); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px,2vw,24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 0; background: var(--border-light); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent-red); transform: scale(1.3); }
+        .slide-counter { position: fixed; bottom: clamp(12px,2vw,24px); right: clamp(12px,2vw,24px); font-family: var(--font-display); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; font-weight: 700; }
+
+        /* Responsive */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem,3vw,2rem); --content-gap: clamp(0.4rem,1.5vw,1rem); --title-size: clamp(1.25rem,4.5vw,2.5rem); --h2-size: clamp(1rem,3vw,1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem,2.5vw,1.5rem); --body-size: clamp(0.7rem,1.2vw,0.95rem); } .nav-dots,.swiss-number { display: none; } }
+        @media (max-height: 500px) { :root { --title-size: clamp(1rem,3.5vw,1.5rem); --body-size: clamp(0.65rem,1vw,0.85rem); } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem,7vw,2.5rem); } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1400px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal,.reveal-crisp { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .slide.visible .reveal,.slide.visible .reveal-crisp { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar,.nav-dots,.slide-counter { display: none !important; } .reveal,[class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div class="grid-bg"></div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal red-bar"></div>
+            <h1 class="reveal" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);text-transform:uppercase;letter-spacing:-0.02em;">Clarity</h1>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(55vw,500px);">AI-guided mental health care that meets people where they are</p>
+            <div class="reveal" style="margin-top:var(--content-gap);display:flex;gap:clamp(1rem,3vw,3rem);font-size:var(--small-size);color:var(--text-muted);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.1em;">
+                <span>Pre-A Round</span><span>April 2026</span><span>Confidential</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROBLEM -->
+    <section class="slide" aria-label="Problem">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">02</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent-red);">The Problem</div>
+            <h2 class="reveal line-accent" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">A silent crisis</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(55vw,550px);line-height:1.7;">1 in 5 adults struggle with mental health. Waitlists average 6 weeks. Therapy costs $150/session.</p>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;color:var(--accent-red);">20%</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">Adults affected</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;">6</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">Weeks average wait</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;">$150</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">Per session cost</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: SOLUTION -->
+    <section class="slide" aria-label="Solution">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">03</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Solution</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">CBT + AI Journaling</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(55vw,550px);line-height:1.7;">Clinically-validated exercises combined with personalized AI reflection. Available 24/7 at a fraction of the cost.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal-crisp data-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-red);margin-bottom:0.4em;">01</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:800;">AI Journaling</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Guided reflections that adapt to emotional state</p>
+                </div>
+                <div class="reveal-crisp data-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-red);margin-bottom:0.4em;">02</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:800;">CBT Exercises</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Evidence-based cognitive restructuring</p>
+                </div>
+                <div class="reveal-crisp data-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-red);margin-bottom:0.4em;">03</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:800;">Mood Tracking</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Visual patterns reveal triggers and growth</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: PRODUCT -->
+    <section class="slide" aria-label="Product">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">04</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Product</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">Daily Wellbeing System</h2>
+            <div style="display:flex;gap:clamp(0.75rem,2vw,1.5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal-crisp data-card" style="flex:1;min-width:min(100%,200px);">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.5em;">Mood Check-in</div>
+                    <div style="display:flex;gap:clamp(4px,0.6vw,8px);margin-bottom:0.5em;">
+                        <div style="flex:1;height:clamp(20px,3vh,35px);background:var(--accent-red);opacity:0.3;"></div>
+                        <div style="flex:1;height:clamp(20px,3vh,35px);background:var(--accent-red);opacity:0.5;"></div>
+                        <div style="flex:1;height:clamp(20px,3vh,35px);background:var(--accent-red);opacity:0.7;"></div>
+                        <div style="flex:2;height:clamp(20px,3vh,35px);background:var(--text-primary);"></div>
+                        <div style="flex:1;height:clamp(20px,3vh,35px);background:var(--text-primary);opacity:0.6;"></div>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">7-day streak | Trending positive</div>
+                </div>
+                <div class="reveal-crisp data-card" style="flex:1;min-width:min(100%,200px);">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.5em;">AI Journal</div>
+                    <p style="font-size:var(--body-size);line-height:1.6;border-left:3px solid var(--accent-red);padding-left:clamp(0.5rem,1vw,1rem);font-style:italic;">"What's one thing you're grateful for that you usually overlook?"</p>
+                    <div style="font-size:var(--small-size);color:var(--text-muted);margin-top:0.4em;">Personalized based on 12 prior entries</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: CLINICAL VALIDATION -->
+    <section class="slide" aria-label="Validation">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">05</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent-red);">Validation</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">Backed by Science</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);">12-week RCT with Stanford Psychology. 340 participants.</p>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;color:var(--accent-red);">67%</div>
+                    <div style="width:100%;height:3px;background:var(--accent-red);margin:0.3em 0;"></div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">PHQ-9 Score Reduction</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;">86%</div>
+                    <div style="width:100%;height:3px;background:var(--text-primary);margin:0.3em 0;"></div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">Daily Engagement</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;">92%</div>
+                    <div style="width:100%;height:3px;background:var(--text-primary);margin:0.3em 0;"></div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">Would Recommend</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: MARKET -->
+    <section class="slide" aria-label="Market">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">06</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Market</div>
+            <h2 class="reveal" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">$380B</h2>
+            <div class="reveal red-bar" style="margin-top:0.3em;"></div>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);">Global mental health market by 2030</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);max-width:min(70vw,500px);">
+                <div class="reveal-crisp data-card">
+                    <div style="font-size:clamp(1.5rem,3vw,2.5rem);font-family:var(--font-display);font-weight:900;">$18B</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2em;">Digital Therapeutics TAM</div>
+                </div>
+                <div class="reveal-crisp data-card">
+                    <div style="font-size:clamp(1.5rem,3vw,2.5rem);font-family:var(--font-display);font-weight:900;color:var(--accent-red);">32%</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2em;">CAGR 2024-2030</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: TRACTION -->
+    <section class="slide" aria-label="Traction">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">07</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Traction</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">Organic Growth</h2>
+            <div style="display:flex;gap:clamp(2rem,5vw,5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal"><div class="counter" data-target="50" data-suffix="K" style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;">0</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">MAU</div></div>
+                <div class="reveal"><div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;color:var(--accent-red);">4.8</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">App Store</div></div>
+                <div class="reveal"><div class="counter" data-target="72" data-suffix="%" style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:900;">0</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.08em;">D30 Retention</div></div>
+            </div>
+            <div class="reveal" style="margin-top:var(--content-gap);">
+                <div class="swiss-bar-chart" style="padding-bottom:clamp(20px,3vw,30px);">
+                    <div class="bar" style="height:8%;"><div class="bar-label">Jan</div></div>
+                    <div class="bar" style="height:15%;"><div class="bar-label">Mar</div></div>
+                    <div class="bar" style="height:28%;"><div class="bar-label">Jun</div></div>
+                    <div class="bar" style="height:48%;"><div class="bar-label">Sep</div></div>
+                    <div class="bar" style="height:78%;"><div class="bar-label">Dec</div></div>
+                    <div class="bar accent" style="height:100%;"><div class="bar-label">Now</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: REVENUE -->
+    <section class="slide" aria-label="Revenue">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">08</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Revenue</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">Freemium + B2B</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal-crisp data-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">Free</div>
+                    <div style="font-size:clamp(1.3rem,2.5vw,2rem);font-family:var(--font-display);font-weight:900;margin-top:0.2em;">$0</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Basic journaling, 3 CBT/week, mood check-ins</p>
+                </div>
+                <div class="reveal-crisp data-card" style="border:2px solid var(--accent-red);">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-red);">Premium</div>
+                    <div style="font-size:clamp(1.3rem,2.5vw,2rem);font-family:var(--font-display);font-weight:900;margin-top:0.2em;">$12<span style="font-size:var(--small-size);font-weight:400;color:var(--text-secondary);">/mo</span></div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Unlimited AI, analytics, therapist matching</p>
+                </div>
+                <div class="reveal-crisp data-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">Enterprise</div>
+                    <div style="font-size:clamp(1.3rem,2.5vw,2rem);font-family:var(--font-display);font-weight:900;margin-top:0.2em;">$8<span style="font-size:var(--small-size);font-weight:400;color:var(--text-secondary);">/user/mo</span></div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">HR dashboard, EAP integration, team analytics</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: TEAM -->
+    <section class="slide" aria-label="Team">
+        <div class="grid-bg"></div>
+        <div class="swiss-number">09</div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);">Team</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">Clinical + Product</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:clamp(0.75rem,2vw,1.5rem);margin-top:var(--content-gap);">
+                <div class="reveal-crisp data-card" style="text-align:left;">
+                    <div style="width:clamp(40px,5vw,56px);height:clamp(40px,5vw,56px);background:var(--text-primary);display:flex;align-items:center;justify-content:center;font-size:clamp(0.9rem,1.5vw,1.2rem);font-weight:900;font-family:var(--font-display);color:var(--bg-primary);margin-bottom:0.5em;">SM</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:800;">Dr. Sarah Melo</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-red);font-family:var(--font-display);font-weight:700;text-transform:uppercase;">CEO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">Harvard clinical psych. 10yr CBT.</p>
+                </div>
+                <div class="reveal-crisp data-card" style="text-align:left;">
+                    <div style="width:clamp(40px,5vw,56px);height:clamp(40px,5vw,56px);background:var(--accent-red);display:flex;align-items:center;justify-content:center;font-size:clamp(0.9rem,1.5vw,1.2rem);font-weight:900;font-family:var(--font-display);color:var(--bg-primary);margin-bottom:0.5em;">JL</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:800;">James Liu</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-red);font-family:var(--font-display);font-weight:700;text-transform:uppercase;">CTO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">Ex-Calm eng lead. NLP specialist.</p>
+                </div>
+                <div class="reveal-crisp data-card" style="text-align:left;">
+                    <div style="width:clamp(40px,5vw,56px);height:clamp(40px,5vw,56px);background:var(--text-primary);display:flex;align-items:center;justify-content:center;font-size:clamp(0.9rem,1.5vw,1.2rem);font-weight:900;font-family:var(--font-display);color:var(--bg-primary);margin-bottom:0.5em;">AP</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:800;">Aisha Patel</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-red);font-family:var(--font-display);font-weight:700;text-transform:uppercase;">CPO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">Ex-Headspace. 8yr health-tech.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: ASK -->
+    <section class="slide" aria-label="The Ask">
+        <div class="grid-bg"></div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal red-bar"></div>
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent-red);margin-top:var(--element-gap);">The Ask</div>
+            <h2 class="reveal" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:900;margin-top:var(--element-gap);">$3M Pre-A</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(55vw,480px);">Scale clinical content, reach 200K MAU, launch B2B partnerships.</p>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal"><div style="font-size:clamp(1.3rem,2.5vw,1.8rem);font-family:var(--font-display);font-weight:900;color:var(--accent-red);">45%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;">Product & AI</div></div>
+                <div class="reveal"><div style="font-size:clamp(1.3rem,2.5vw,1.8rem);font-family:var(--font-display);font-weight:900;">30%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;">Growth</div></div>
+                <div class="reveal"><div style="font-size:clamp(1.3rem,2.5vw,1.8rem);font-family:var(--font-display);font-weight:900;">25%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-display);text-transform:uppercase;">Clinical</div></div>
+            </div>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-muted);margin-top:var(--content-gap);font-family:var(--font-display);">sarah@getclarity.ai  |  getclarity.ai</p>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.4;">Made with <a href="https://nextslide.app" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init();}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible');}setupIntersectionObserver(){const o=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const idx=this.slides.indexOf(entry.target);if(idx!==-1){this.currentSlide=idx;this.updateUI();}}});},{threshold:0.5});this.slides.forEach(s=>o.observe(s));}setupKeyboardNav(){document.addEventListener('keydown',(e)=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}});}setupTouchNav(){document.addEventListener('touchstart',(e)=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true});document.addEventListener('touchend',(e)=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true});}setupWheelNav(){let t;document.addEventListener('wheel',(e)=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true});}setupProgressBar(){this.progressBar=document.getElementById('progressBar');}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label','Go to slide '+(i+1));d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);});}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI();}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600);}updateUI(){const t=this.slides.length;const c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=((c+1)/t*100)+'%';document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=(c+1)+' / '+t;}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters=document.querySelectorAll('.counter');const cObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){const el=entry.target;const target=parseInt(el.dataset.target);const suffix=el.dataset.suffix||'';const prefix=el.dataset.prefix||'';const duration=1500;const start=performance.now();function tick(now){const elapsed=now-start;const progress=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-progress,3);el.textContent=prefix+Math.round(target*eased).toLocaleString()+suffix;if(progress<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);cObs.unobserve(el);}});},{threshold:0.5});counters.forEach(c=>cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+    </script>
+</body>
+</html>

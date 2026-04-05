@@ -22,7 +22,7 @@
             --bg-tertiary: #efeee9;
             --text-primary: #2c2c2c;
             --text-secondary: #6a6a6a;
-            --text-muted: #999999;
+            --text-muted: #767676;
             --accent: #1b3a5c;
             --accent-secondary: #c8a951;
             --accent-glow: rgba(27, 58, 92, 0.15);
@@ -35,7 +35,7 @@
             --code-blue: #1565c0;
             --code-purple: #6a1b9a;
             --code-orange: #e65100;
-            --code-comment: #999999;
+            --code-comment: #767676;
             --error-bg: rgba(220, 53, 69, 0.06);
             --error-border: rgba(220, 53, 69, 0.2);
             --error-text: #c0392b;
@@ -1025,6 +1025,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             /* --- Touch: swipe up/down with 50px threshold --- */

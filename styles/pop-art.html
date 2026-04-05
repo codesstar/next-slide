@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pop Art — AI 驱动的设计革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --white: #fff;
+  --red: #d50032;
+  --blue: #1565c0;
+  --yellow: #ffea00;
+  --black: #0a0a0a;
+}
+
+body {
+  font-family: 'Noto Sans SC', 'Poppins', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  overflow: hidden;
+}
+
+.slide {
+  position: fixed; inset: 0;
+  height: 100vh; height: 100dvh;
+  overflow: hidden; opacity: 0; pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 5px;
+  background: var(--red); z-index: 100;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed; bottom: 1.5rem; right: 2rem;
+  font-family: 'Bangers', cursive;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: var(--black); z-index: 100; letter-spacing: 0.05em;
+}
+
+.halftone-bg {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.08) 2px, transparent 2px);
+  background-size: 8px 8px;
+}
+
+.pop-border { border: 4px solid var(--black); }
+
+@keyframes slamIn {
+  0% { opacity: 0; transform: scale(1.8) rotate(-5deg); }
+  60% { transform: scale(0.95) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(35px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anim { opacity: 0; }
+.slide.active .a-slam1 { animation: slamIn 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-slam2 { animation: slamIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up1 { animation: slideUp 0.6s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up2 { animation: slideUp 0.6s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up3 { animation: slideUp 0.6s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-up4 { animation: slideUp 0.6s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-pop1 { animation: popIn 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-pop2 { animation: popIn 0.5s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-pop3 { animation: popIn 0.5s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* ===== SLIDE 1 ===== */
+.s1-wrap {
+  height: 100%; display: grid; grid-template-columns: 1.3fr 1fr;
+  background: var(--yellow);
+}
+.s1-left {
+  padding: 4rem; display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+.s1-right {
+  background: var(--red); border-left: 4px solid var(--black);
+  display: flex; flex-direction: column; justify-content: center; padding: 3rem;
+  position: relative;
+}
+.s1-left .pow {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  color: var(--red); transform: rotate(-3deg);
+  margin-bottom: 1rem; display: inline-block;
+}
+.s1-left .title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(3.5rem, 7vw, 6rem); line-height: 1; color: var(--black);
+  text-shadow: 4px 4px 0 var(--red); margin-bottom: 1.5rem;
+}
+.s1-right .subtitle {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 700;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem); color: var(--white); line-height: 1.6;
+}
+.s1-right .deco-word {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(4rem, 9vw, 8rem); color: rgba(0,0,0,0.1);
+  position: absolute; bottom: 1rem; right: 1rem; line-height: 1;
+}
+
+/* ===== SLIDE 2 ===== */
+.s2-wrap {
+  height: 100%; display: grid; grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr; gap: 4px; padding: 4px; background: var(--black);
+}
+.feat-card {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 2.5rem; position: relative;
+}
+.feat-card:nth-child(1) { background: var(--yellow); }
+.feat-card:nth-child(2) { background: var(--blue); color: var(--white); }
+.feat-card:nth-child(3) { background: var(--white); }
+.feat-card:nth-child(4) { background: var(--red); color: var(--white); }
+
+.feat-card .num {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(3rem, 5vw, 4rem); line-height: 1; opacity: 0.2;
+  position: absolute; top: 1rem; right: 1.5rem;
+}
+.feat-card .name {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem); margin-bottom: 0.5rem;
+  transform: rotate(-2deg);
+}
+.feat-card .desc {
+  font-family: 'Poppins', sans-serif; font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  font-weight: 400; line-height: 1.5; opacity: 0.9;
+}
+
+/* ===== SLIDE 3 ===== */
+.s3-wrap {
+  height: 100%; display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--white);
+}
+.stat-col {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; padding: 2rem; border-right: 4px solid var(--black);
+}
+.stat-col:last-child { border-right: none; }
+.stat-col:nth-child(1) { background: var(--blue); }
+.stat-col:nth-child(2) { background: var(--yellow); }
+.stat-col:nth-child(3) { background: var(--red); }
+.stat-col .zap {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(1rem, 1.5vw, 1.3rem); margin-bottom: 1rem;
+  transform: rotate(-5deg);
+}
+.stat-col:nth-child(1) .zap { color: var(--yellow); }
+.stat-col:nth-child(2) .zap { color: var(--red); }
+.stat-col:nth-child(3) .zap { color: var(--yellow); }
+.stat-col .big {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(4rem, 8vw, 7rem); line-height: 1; margin-bottom: 0.5rem;
+}
+.stat-col:nth-child(1) .big { color: var(--white); text-shadow: 3px 3px 0 var(--black); }
+.stat-col:nth-child(2) .big { color: var(--black); text-shadow: 3px 3px 0 var(--red); }
+.stat-col:nth-child(3) .big { color: var(--white); text-shadow: 3px 3px 0 var(--black); }
+.stat-col .label {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 700;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+}
+.stat-col:nth-child(1) .label { color: rgba(255,255,255,0.95); }
+.stat-col:nth-child(2) .label { color: var(--black); }
+.stat-col:nth-child(3) .label { color: rgba(255,255,255,0.95); }
+
+/* ===== SLIDE 4 ===== */
+.s4-wrap {
+  height: 100%; background: var(--yellow); display: flex;
+  align-items: center; justify-content: center; padding: 4rem;
+}
+.speech-bubble {
+  background: var(--white); border: 4px solid var(--black);
+  padding: 3.5rem 4rem; max-width: 700px; position: relative;
+  transform: rotate(-1deg);
+}
+.speech-bubble::after {
+  content: ''; position: absolute; bottom: -30px; left: 60px;
+  width: 0; height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-top: 30px solid var(--black);
+}
+.speech-bubble::before {
+  content: ''; position: absolute; bottom: -22px; left: 63px;
+  width: 0; height: 0;
+  border-left: 22px solid transparent;
+  border-right: 22px solid transparent;
+  border-top: 26px solid var(--white);
+  z-index: 1;
+}
+.speech-bubble .quote-text {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem); color: var(--black); line-height: 1.3;
+  margin-bottom: 1rem;
+}
+.speech-bubble .quote-author {
+  font-family: 'Poppins', sans-serif; font-weight: 600;
+  font-size: clamp(0.85rem, 1.1vw, 1rem); color: var(--red);
+}
+.s4-deco {
+  position: absolute; font-family: 'Bangers', cursive;
+  font-size: clamp(3rem, 6vw, 5rem); color: var(--red); opacity: 0.15;
+}
+.s4-deco.top-right { top: 2rem; right: 3rem; transform: rotate(8deg); }
+.s4-deco.bottom-left { bottom: 3rem; left: 3rem; transform: rotate(-6deg); }
+
+/* ===== SLIDE 5 ===== */
+.s5-wrap {
+  height: 100%; display: grid; grid-template-columns: 1fr 1.2fr;
+  background: var(--white);
+}
+.s5-left {
+  background: var(--blue); border-right: 4px solid var(--black);
+  display: flex; flex-direction: column; justify-content: center; padding: 4rem;
+}
+.s5-right {
+  background: var(--white); display: flex; flex-direction: column;
+  justify-content: center; padding: 4rem;
+}
+.s5-left .closing-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(2.8rem, 5.5vw, 4.8rem); color: var(--white); line-height: 1.05;
+  text-shadow: 3px 3px 0 var(--black);
+}
+.s5-right .closing-text {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 400;
+  font-size: clamp(1rem, 1.5vw, 1.25rem); color: var(--black); line-height: 1.8;
+  margin-bottom: 2rem;
+}
+.s5-right .cta {
+  display: inline-block; background: var(--red); color: var(--white);
+  font-family: 'Bangers', cursive; font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  padding: 0.6em 1.5em; border: 4px solid var(--black);
+  transform: rotate(-2deg);
+}
+.s5-left .deco-bg {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(6rem, 14vw, 12rem); color: rgba(0,0,0,0.08);
+  position: absolute; bottom: -1rem; left: -0.5rem; line-height: 1;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter">01 / 05</div>
+
+<!-- SLIDE 1 -->
+<div class="slide active" data-slide="0">
+  <div class="s1-wrap halftone-bg">
+    <div class="s1-left">
+      <div class="pow anim a-slam1">POW!</div>
+      <div class="title anim a-slam2">AI 驱动的<br>设计革命</div>
+    </div>
+    <div class="s1-right">
+      <div class="subtitle anim a-up2">从像素到体验，<br>重新定义创造力的边界</div>
+      <div class="deco-word">ZAP!</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" data-slide="1">
+  <div class="s2-wrap">
+    <div class="feat-card anim a-pop1">
+      <div class="num">01</div>
+      <div class="name">智能布局</div>
+      <div class="desc">AI 驱动的自适应排版引擎</div>
+    </div>
+    <div class="feat-card anim a-pop2">
+      <div class="num">02</div>
+      <div class="name">风格迁移</div>
+      <div class="desc">一键转换视觉风格与品牌调性</div>
+    </div>
+    <div class="feat-card anim a-pop3">
+      <div class="num">03</div>
+      <div class="name">实时协作</div>
+      <div class="desc">多人同步编辑，智能冲突解决</div>
+    </div>
+    <div class="feat-card anim a-up4">
+      <div class="num">04</div>
+      <div class="name">自适应排版</div>
+      <div class="desc">跨设备完美呈现，零手动调整</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide" data-slide="2">
+  <div class="s3-wrap halftone-bg">
+    <div class="stat-col anim a-up1">
+      <div class="zap">POW!</div>
+      <div class="big">10x</div>
+      <div class="label">效率提升</div>
+    </div>
+    <div class="stat-col anim a-up2">
+      <div class="zap">BAM!</div>
+      <div class="big">93%</div>
+      <div class="label">用户满意度</div>
+    </div>
+    <div class="stat-col anim a-up3">
+      <div class="zap">ZAP!</div>
+      <div class="big">50M+</div>
+      <div class="label">设计生成</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide" data-slide="3">
+  <div class="s4-wrap" style="position:relative;">
+    <div class="s4-deco top-right">BOOM!</div>
+    <div class="s4-deco bottom-left">WOW!</div>
+    <div class="speech-bubble anim a-slam1">
+      <div class="quote-text">好的设计不是装饰，是沟通。</div>
+      <div class="quote-author">-- Dieter Rams</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide" data-slide="4">
+  <div class="s5-wrap halftone-bg">
+    <div class="s5-left" style="position:relative;">
+      <div class="closing-title anim a-slam1">重新定义<br>创造力</div>
+      <div class="deco-bg">GO!</div>
+    </div>
+    <div class="s5-right">
+      <div class="closing-text anim a-up2">AI 与人类设计师的协同，不是未来的愿景，而是今天的现实。加入我们，一起塑造设计的下一个十年。</div>
+      <div class="cta anim a-up3">START CREATING</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+let current = 0;
+const total = slides.length;
+
+function goTo(n) {
+  if (n < 0 || n >= total) return;
+  slides[current].classList.remove('active');
+  current = n;
+  slides[current].classList.add('active');
+  progress.style.width = ((current + 1) / total * 100) + '%';
+  counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+goTo(0);
+</script>
+</body>
+</html>

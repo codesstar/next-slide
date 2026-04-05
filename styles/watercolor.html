@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watercolor Wash</title>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Karla:wght@400;500&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fdf9f3;--text:#3a3a3a;
+  --blue:rgba(147,197,214,0.3);--peach:rgba(240,180,158,0.25);
+  --sage:rgba(163,195,161,0.25);--lavender:rgba(183,170,210,0.2);
+  --text-muted:#5a5a5a;
+}
+body{
+  font-family:'Karla','Noto Sans SC',sans-serif;
+  color:var(--text);background:var(--bg);overflow:hidden;
+}
+.slide{
+  position:fixed;inset:0;
+  height:100vh;height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.slide.active{opacity:1;pointer-events:auto}
+
+/* Watercolor blobs with drift animations */
+.blob{
+  position:absolute;border-radius:50%;
+  filter:blur(80px);pointer-events:none;
+  transition:opacity 0.7s ease;
+}
+.blob.drift-a{ animation: driftA 25s ease-in-out infinite alternate; }
+.blob.drift-b{ animation: driftB 30s ease-in-out infinite alternate; }
+.blob.drift-c{ animation: driftC 22s ease-in-out infinite alternate; }
+.blob.drift-d{ animation: driftD 28s ease-in-out infinite alternate; }
+
+@keyframes driftA {
+  0%{ transform: translate(0,0) scale(1); }
+  50%{ transform: translate(20px,-15px) scale(1.05); }
+  100%{ transform: translate(-10px,20px) scale(0.97); }
+}
+@keyframes driftB {
+  0%{ transform: translate(0,0) scale(1); }
+  50%{ transform: translate(-25px,10px) scale(0.95); }
+  100%{ transform: translate(15px,-20px) scale(1.04); }
+}
+@keyframes driftC {
+  0%{ transform: translate(0,0) scale(1); }
+  50%{ transform: translate(12px,18px) scale(1.06); }
+  100%{ transform: translate(-18px,-8px) scale(0.96); }
+}
+@keyframes driftD {
+  0%{ transform: translate(0,0) scale(1); }
+  50%{ transform: translate(-15px,-12px) scale(1.03); }
+  100%{ transform: translate(20px,10px) scale(0.98); }
+}
+
+.slide-inner{
+  position:relative;z-index:2;
+  width:min(86vw,920px);
+  padding:clamp(2rem,4vw,4rem);
+}
+
+.progress-bar{
+  position:fixed;top:0;left:0;height:2px;
+  background:linear-gradient(90deg,rgba(147,197,214,0.8),rgba(240,180,158,0.8),rgba(183,170,210,0.7));
+  z-index:100;
+  transition:width 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.page-counter{
+  position:fixed;bottom:clamp(1.2rem,2vw,2rem);right:clamp(1.5rem,3vw,3rem);
+  font-family:'Karla','Noto Sans SC',sans-serif;
+  font-size:clamp(0.75rem,1vw,0.85rem);
+  color:var(--text-muted);opacity:0.5;z-index:100;
+}
+
+h1{
+  font-family:'Gilda Display','Noto Sans SC',serif;
+  font-size:clamp(2.4rem,5.5vw,4.5rem);
+  font-weight:400;line-height:1.15;color:var(--text);
+}
+h2{
+  font-family:'Gilda Display','Noto Sans SC',serif;
+  font-size:clamp(1.6rem,3.5vw,2.8rem);
+  font-weight:400;line-height:1.25;color:var(--text);
+  margin-bottom:clamp(1rem,2vw,1.5rem);
+}
+p,.body-text{
+  font-size:clamp(0.9rem,1.3vw,1.1rem);
+  line-height:1.8;color:var(--text);
+}
+.caption{
+  font-size:clamp(0.8rem,1.1vw,0.95rem);
+  color:var(--text-muted);
+}
+.subtitle{
+  font-family:'Gilda Display','Noto Sans SC',serif;
+  font-size:clamp(1rem,1.8vw,1.4rem);
+  font-weight:400;color:var(--text-muted);
+  letter-spacing:0.03em;
+}
+
+.fade-up{
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.active .fade-up{opacity:1;transform:translateY(0)}
+.active .fade-up.d1{transition-delay:0.12s}
+.active .fade-up.d2{transition-delay:0.24s}
+.active .fade-up.d3{transition-delay:0.36s}
+.active .fade-up.d4{transition-delay:0.48s}
+.active .fade-up.d5{transition-delay:0.6s}
+
+/* Paper-textured card (no glassmorphism) */
+.paper-card{
+  background:rgba(255,255,255,0.85);
+  border:1px solid rgba(200,185,165,0.3);
+  border-radius:16px;
+  padding:clamp(1.2rem,2.5vw,2rem);
+  box-shadow:0 1px 6px rgba(160,140,110,0.06);
+}
+.card-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:clamp(0.8rem,1.5vw,1.2rem);
+  margin-top:clamp(1rem,2vw,1.5rem);
+}
+.card-label{
+  font-family:'Gilda Display','Noto Sans SC',serif;
+  font-size:clamp(1rem,1.5vw,1.2rem);
+  color:var(--text);margin-bottom:0.4rem;
+}
+.card-dot{
+  display:inline-block;width:10px;height:10px;border-radius:50%;
+  margin-right:0.5rem;vertical-align:middle;
+}
+
+.stat-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(1rem,2vw,2rem);
+  margin-top:clamp(1.5rem,3vw,2.5rem);
+}
+.stat-num{
+  font-family:'Gilda Display','Noto Sans SC',serif;
+  font-size:clamp(2.2rem,5.5vw,4rem);
+  font-weight:400;line-height:1.1;
+}
+.stat-desc{
+  font-size:clamp(0.8rem,1.1vw,0.95rem);
+  color:var(--text-muted);margin-top:0.3rem;
+}
+
+.quote-wrap{
+  max-width:600px;
+}
+.quote-mark{
+  font-family:'Gilda Display',serif;
+  font-size:clamp(3rem,6vw,5rem);
+  line-height:0.5;color:rgba(183,170,210,0.4);
+}
+.quote-body{
+  font-family:'Gilda Display','Noto Sans SC',serif;
+  font-size:clamp(1.3rem,2.8vw,2.2rem);
+  font-weight:400;line-height:1.5;
+  color:var(--text);margin-top:clamp(0.5rem,1vw,1rem);
+}
+.quote-attr{
+  font-size:clamp(0.8rem,1.1vw,0.95rem);
+  color:var(--text-muted);margin-top:clamp(0.8rem,1.5vw,1.2rem);
+}
+
+@media(max-width:640px){
+  .card-grid,.stat-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter"></div>
+
+<!-- Slide 1: Title -- sweeping blue wash top-left, warm peach bottom-right -->
+<div class="slide active" id="slide-0">
+  <div class="blob drift-a" style="width:55vw;height:55vw;top:-15%;left:-10%;background:var(--blue);"></div>
+  <div class="blob drift-b" style="width:40vw;height:40vw;bottom:-10%;right:-5%;background:var(--peach);"></div>
+  <div class="blob drift-c" style="width:30vw;height:30vw;top:30%;right:20%;background:var(--lavender);"></div>
+  <div class="slide-inner">
+    <div class="subtitle fade-up d1">AI-Driven Design Revolution</div>
+    <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+    <h1 class="fade-up d2">AI 驱动的<br>设计革命</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <p class="fade-up d3" style="max-width:480px;">从像素到体验，重新定义创造力的边界</p>
+  </div>
+</div>
+
+<!-- Slide 2: Features -- sage dominant top-right, peach bottom-left, lavender center -->
+<div class="slide" id="slide-1">
+  <div class="blob drift-d" style="width:60vw;height:55vw;top:-20%;right:-25%;background:var(--sage);opacity:0.8;"></div>
+  <div class="blob drift-a" style="width:45vw;height:45vw;bottom:-15%;left:-15%;background:var(--peach);opacity:0.7;"></div>
+  <div class="blob drift-c" style="width:20vw;height:20vw;top:60%;left:50%;background:var(--blue);"></div>
+  <div class="slide-inner">
+    <h2 class="fade-up d1">核心能力</h2>
+    <div class="card-grid">
+      <div class="paper-card fade-up d1">
+        <div class="card-label"><span class="card-dot" style="background:rgba(147,197,214,0.6)"></span>智能布局</div>
+        <p class="body-text">自动理解内容层级，生成视觉节奏明确的版面结构。</p>
+      </div>
+      <div class="paper-card fade-up d2">
+        <div class="card-label"><span class="card-dot" style="background:rgba(240,180,158,0.6)"></span>风格迁移</div>
+        <p class="body-text">一键转换视觉风格，保持信息架构不变。</p>
+      </div>
+      <div class="paper-card fade-up d3">
+        <div class="card-label"><span class="card-dot" style="background:rgba(163,195,161,0.6)"></span>实时协作</div>
+        <p class="body-text">多人同时编辑，AI 智能合并冲突与建议。</p>
+      </div>
+      <div class="paper-card fade-up d4">
+        <div class="card-label"><span class="card-dot" style="background:rgba(183,170,210,0.5)"></span>自适应排版</div>
+        <p class="body-text">响应式输出，一次设计适配所有终端。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -- blue wash right, large sage bottom-left, lavender top-right corner -->
+<div class="slide" id="slide-2">
+  <div class="blob drift-b" style="width:50vw;height:55vw;top:-5%;right:-10%;background:var(--lavender);opacity:0.7;"></div>
+  <div class="blob drift-d" style="width:45vw;height:45vw;bottom:-20%;left:-15%;background:var(--sage);opacity:0.8;"></div>
+  <div class="blob drift-a" style="width:30vw;height:30vw;top:50%;left:35%;background:var(--peach);"></div>
+  <div class="slide-inner">
+    <h2 class="fade-up d1">数据表现</h2>
+    <div class="paper-card fade-up d2" style="display:inline-block;padding:clamp(0.5rem,1vw,0.8rem) clamp(1rem,2vw,1.5rem);border-radius:24px;margin-bottom:clamp(0.5rem,1vw,1rem);">
+      <span class="caption">截至 2026 年数据</span>
+    </div>
+    <div class="stat-row">
+      <div class="fade-up d2">
+        <div class="stat-num" style="color:#4a7a8a">10x</div>
+        <div class="stat-desc">效率提升</div>
+      </div>
+      <div class="fade-up d3">
+        <div class="stat-num" style="color:#a06848">93%</div>
+        <div class="stat-desc">用户满意度</div>
+      </div>
+      <div class="fade-up d4">
+        <div class="stat-num" style="color:#6a5a8a">50M+</div>
+        <div class="stat-desc">设计生成</div>
+      </div>
+    </div>
+    <p class="fade-up d5 body-text" style="margin-top:clamp(1.5rem,3vw,2rem);max-width:440px;">
+      每一次生成都是一次创造力的对话。
+    </p>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -- dramatic lavender top-right, warm peach bottom wrapping up -->
+<div class="slide" id="slide-3">
+  <div class="blob drift-c" style="width:65vw;height:65vw;top:-30%;right:-25%;background:var(--lavender);opacity:0.6;"></div>
+  <div class="blob drift-a" style="width:50vw;height:45vw;bottom:-20%;left:-10%;background:var(--peach);opacity:0.7;"></div>
+  <div class="blob drift-d" style="width:25vw;height:25vw;top:20%;left:5%;background:var(--blue);opacity:0.4;"></div>
+  <div class="slide-inner">
+    <div class="quote-wrap fade-up d1">
+      <div class="quote-mark">"</div>
+      <div class="quote-body">好的设计不是装饰，是沟通。</div>
+      <div class="quote-attr">-- Dieter Rams</div>
+    </div>
+    <p class="fade-up d3 body-text" style="max-width:420px;margin-top:clamp(2rem,4vw,3rem);">
+      AI 放大设计师的直觉，让每一处细节都在传递意图。
+    </p>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -- all four colors meeting in center, radiant -->
+<div class="slide" id="slide-4">
+  <div class="blob drift-b" style="width:50vw;height:50vw;top:-15%;left:-10%;background:var(--blue);opacity:0.6;"></div>
+  <div class="blob drift-c" style="width:45vw;height:45vw;bottom:-20%;right:-15%;background:var(--sage);opacity:0.6;"></div>
+  <div class="blob drift-a" style="width:40vw;height:40vw;top:30%;right:10%;background:var(--peach);opacity:0.5;"></div>
+  <div class="blob drift-d" style="width:35vw;height:35vw;bottom:10%;left:20%;background:var(--lavender);opacity:0.5;"></div>
+  <div class="slide-inner" style="text-align:center;">
+    <div class="subtitle fade-up d1">The Future of Design</div>
+    <div style="height:clamp(0.8rem,1.5vw,1.2rem)"></div>
+    <h1 class="fade-up d2" style="font-size:clamp(1.8rem,4.5vw,3.5rem);">让每一次创造，<br>都值得被看见</h1>
+    <div style="height:clamp(1rem,2vw,1.5rem)"></div>
+    <p class="fade-up d3 body-text">设计的未来，从此刻开始。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides=document.querySelectorAll('.slide');
+  const total=slides.length;
+  let current=0;
+  const progress=document.getElementById('progress');
+  const counter=document.getElementById('counter');
+  function update(){
+    slides.forEach((s,i)=>{s.classList.toggle('active',i===current)});
+    progress.style.width=((current+1)/total*100)+'%';
+    counter.textContent=(current+1)+' / '+total;
+  }
+  function next(){if(current<total-1){current++;update()}}
+  function prev(){if(current>0){current--;update()}}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')next();
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const diff=e.changedTouches[0].clientX-tx;
+    if(Math.abs(diff)>50){diff<0?next():prev()}
+  },{passive:true});
+  update();
+})();
+</script>
+</body>
+</html>

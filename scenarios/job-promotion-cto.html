@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张明远 · 竞聘首席技术官</title>
+
+    <!-- Fonts: Inter Tight + Inter + Noto Sans SC / Noto Serif SC — Keynote Noir -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700;800&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1a6;
+            --accent: #2997ff;
+            --surface: #1d1d1f;
+            --border-subtle: rgba(255,255,255,0.08);
+            --text-muted: #48484a;
+            --accent-glow: rgba(41,151,255,0.3);
+            --accent-green: #30d158;
+            --accent-purple: #bf5af2;
+
+            --font-display: 'Inter Tight', 'Noto Sans SC', sans-serif;
+            --font-cn: 'Noto Sans SC', sans-serif;
+            --font-body: 'Inter', 'Noto Sans SC', sans-serif;
+
+            --title-size: clamp(2.5rem, 7vw, 6rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+            --slide-padding: clamp(2rem, 5vw, 6rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        :lang(zh) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+        h1,h2,h3 { overflow-wrap: break-word; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.5rem, 5vw, 3rem); --h2-size: clamp(1rem, 3vw, 2rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.5rem, 8vw, 3rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } .two-col { flex-direction: column !important; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-blur { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-blur { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; } }
+
+        .reveal { opacity: 0; transform: translateY(15px); transition: opacity var(--duration-normal) ease-out, transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1){transition-delay:.1s} .reveal:nth-child(2){transition-delay:.2s} .reveal:nth-child(3){transition-delay:.3s} .reveal:nth-child(4){transition-delay:.4s} .reveal:nth-child(5){transition-delay:.5s} .reveal:nth-child(6){transition-delay:.6s} .reveal:nth-child(7){transition-delay:.7s} .reveal:nth-child(8){transition-delay:.8s}
+
+        .reveal-blur { opacity: 0; filter: blur(15px); transition: opacity 1.2s ease, filter 1.2s var(--ease-out-expo); }
+        .visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.5); box-shadow: 0 0 10px var(--accent-glow); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        .noir-card { background: var(--surface); border-radius: clamp(8px, 1vw, 16px); padding: clamp(1rem, 2vw, 1.5rem); }
+        .two-col { display: flex; gap: var(--content-gap); align-items: center; }
+        .two-col > * { flex: 1; min-width: 0; }
+
+        /* Architecture diagram */
+        .arch-box { border: 1px solid var(--border-subtle); border-radius: clamp(6px, 0.8vw, 10px); padding: clamp(0.4rem, 1vw, 0.8rem); text-align: center; font-size: var(--small-size); }
+        .arch-arrow { display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: var(--h3-size); }
+
+        /* Savings bar */
+        .savings-bar { height: clamp(20px, 3vh, 32px); border-radius: clamp(4px, 0.5vw, 8px); transition: width 1.2s var(--ease-out-expo); }
+
+        /* Principle card */
+        .principle { display: flex; align-items: flex-start; gap: clamp(0.5rem, 1.5vw, 1rem); }
+        .principle-num { font-family: var(--font-display); font-size: var(--h2-size); font-weight: 800; color: var(--accent); line-height: 1; flex-shrink: 0; }
+
+        /* Timeline node */
+        .timeline-h { display: flex; align-items: flex-start; position: relative; }
+        .timeline-h::before { content: ''; position: absolute; top: clamp(8px, 1vw, 12px); left: 0; right: 0; height: 2px; background: var(--border-subtle); z-index: 0; }
+        .t-node { flex: 1; text-align: center; position: relative; z-index: 1; }
+        .t-dot { width: clamp(14px, 2vw, 20px); height: clamp(14px, 2vw, 20px); border-radius: 50%; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div style="position:absolute;width:clamp(200px,40vw,500px);height:clamp(200px,40vw,500px);border-radius:50%;filter:blur(80px);opacity:0.12;background:var(--accent);top:25%;left:50%;transform:translateX(-50%);pointer-events:none;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">CTO CANDIDACY</p>
+            <h1 class="reveal-blur" style="font-family:var(--font-cn);font-size:var(--title-size);font-weight:900;margin-top:var(--element-gap);">张明远</h1>
+            <p class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:300;color:var(--text-secondary);margin-top:var(--element-gap);">竞聘首席技术官</p>
+            <div class="reveal" style="width:30px;height:2px;background:var(--accent);margin-top:var(--content-gap);"></div>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-muted);margin-top:var(--element-gap);">15年技术管理经验 · 3家公司CTO/VP经历</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROFILE -->
+    <section class="slide" aria-label="Profile">
+        <div class="slide-content">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">PROFILE</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">个人履历</h2>
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div>
+                    <div class="reveal" style="display:flex;gap:clamp(0.5rem,1.5vw,1rem);flex-wrap:wrap;">
+                        <div class="noir-card" style="flex:1;min-width:120px;text-align:center;">
+                            <div style="font-family:var(--font-display);font-size:var(--stat-size);font-weight:800;color:var(--accent);">15</div>
+                            <div style="font-size:var(--small-size);color:var(--text-secondary);">年技术管理</div>
+                        </div>
+                        <div class="noir-card" style="flex:1;min-width:120px;text-align:center;">
+                            <div style="font-family:var(--font-display);font-size:var(--stat-size);font-weight:800;color:var(--accent);">3</div>
+                            <div style="font-size:var(--small-size);color:var(--text-secondary);">家公司CTO/VP</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <ul style="list-style:none;display:flex;flex-direction:column;gap:clamp(0.3rem,0.8vw,0.6rem);">
+                        <li class="reveal" style="font-size:var(--body-size);display:flex;align-items:baseline;gap:0.5em;"><span style="color:var(--accent);font-size:0.5em;">&#9679;</span>清华大学计算机科学硕士</li>
+                        <li class="reveal" style="font-size:var(--body-size);display:flex;align-items:baseline;gap:0.5em;"><span style="color:var(--accent);font-size:0.5em;">&#9679;</span>前字节跳动技术VP（2020-2023）</li>
+                        <li class="reveal" style="font-size:var(--body-size);display:flex;align-items:baseline;gap:0.5em;"><span style="color:var(--accent);font-size:0.5em;">&#9679;</span>前商汤科技CTO（2017-2020）</li>
+                        <li class="reveal" style="font-size:var(--body-size);display:flex;align-items:baseline;gap:0.5em;"><span style="color:var(--accent);font-size:0.5em;">&#9679;</span>阿里云高级架构师（2011-2017）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: TECHNICAL VISION -->
+    <section class="slide" aria-label="Vision">
+        <div class="slide-content" style="align-items:center;">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">VISION</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">三年技术战略</h2>
+            <div class="timeline-h" style="margin-top:var(--content-gap);max-width:min(85vw,800px);width:100%;">
+                <div class="reveal t-node">
+                    <div class="t-dot" style="background:var(--accent);box-shadow:0 0 12px var(--accent-glow);"></div>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:900;margin-top:0.6em;">云原生</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;">2026</p>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">全面容器化<br>微服务治理</p>
+                </div>
+                <div class="reveal t-node">
+                    <div class="t-dot" style="background:var(--accent-green);box-shadow:0 0 12px rgba(48,209,88,0.3);"></div>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:900;margin-top:0.6em;">AI驱动</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;">2027</p>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">智能化决策<br>ML Pipeline</p>
+                </div>
+                <div class="reveal t-node">
+                    <div class="t-dot" style="background:var(--accent-purple);box-shadow:0 0 12px rgba(191,90,242,0.3);"></div>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:900;margin-top:0.6em;">平台化</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;">2028</p>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">开放API生态<br>技术品牌输出</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: ARCHITECTURE -->
+    <section class="slide" aria-label="Architecture">
+        <div class="slide-content">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">ACHIEVEMENT</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">架构演进</h2>
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div class="reveal" style="text-align:center;">
+                    <p style="font-size:var(--small-size);color:#f87171;letter-spacing:0.15em;margin-bottom:0.5em;">BEFORE</p>
+                    <div class="arch-box" style="border-color:rgba(248,113,113,0.3);padding:clamp(1rem,2.5vw,2rem);">
+                        <div style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">单体架构</div>
+                        <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;">MySQL + PHP Monolith<br>部署周期: 2周<br>故障恢复: 4小时</p>
+                    </div>
+                </div>
+                <div class="reveal arch-arrow">&rarr;</div>
+                <div class="reveal" style="text-align:center;">
+                    <p style="font-size:var(--small-size);color:var(--accent-green);letter-spacing:0.15em;margin-bottom:0.5em;">AFTER</p>
+                    <div class="arch-box" style="border-color:rgba(48,209,88,0.3);padding:clamp(1rem,2.5vw,2rem);">
+                        <div style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">微服务架构</div>
+                        <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;">K8s + Go Microservices<br>部署周期: 15分钟<br>故障恢复: 30秒</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: TEAM BUILDING -->
+    <section class="slide" aria-label="Team">
+        <div class="slide-content" style="align-items:center;">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">TEAM</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">团队建设</h2>
+            <div style="display:flex;justify-content:center;gap:clamp(2rem,6vw,5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-size:var(--stat-size);font-weight:800;color:var(--accent);">
+                        30<span style="font-size:var(--h3-size);color:var(--text-muted);">&rarr;</span>120
+                    </div>
+                    <div style="font-size:var(--body-size);color:var(--text-secondary);">工程团队规模</div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-size:var(--stat-size);font-weight:800;color:var(--accent-green);">95%</div>
+                    <div style="font-size:var(--body-size);color:var(--text-secondary);">核心人才留存率</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);text-align:center;margin-top:var(--content-gap);max-width:min(70vw,500px);line-height:1.7;">
+                搭建技术委员会制度，建立内部技术分享、晋升评审和导师机制。3年内培养12名技术Leader。
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: INNOVATION -->
+    <section class="slide" aria-label="Innovation">
+        <div class="slide-content">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">INNOVATION</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">创新成果</h2>
+            <div class="grid" style="margin-top:var(--content-gap);grid-template-columns:repeat(3,1fr);max-width:min(85vw,750px);margin-left:auto;margin-right:auto;">
+                <div class="reveal noir-card" style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-size:clamp(1.5rem,4vw,3rem);font-weight:800;color:var(--accent);">3</div>
+                    <p style="font-size:var(--body-size);font-weight:600;">发明专利</p>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;">分布式计算 · AI推理优化</p>
+                </div>
+                <div class="reveal noir-card" style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-size:clamp(1.5rem,4vw,3rem);font-weight:800;color:var(--accent-green);">2</div>
+                    <p style="font-size:var(--body-size);font-weight:600;">开源项目</p>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;">GitHub 5.2K + 3.8K Stars</p>
+                </div>
+                <div class="reveal noir-card" style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-size:clamp(1.5rem,4vw,3rem);font-weight:800;color:var(--accent-purple);">1</div>
+                    <p style="font-size:var(--body-size);font-weight:600;">技术标准</p>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;">参与制定行业API规范</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: COST OPTIMIZATION -->
+    <section class="slide" aria-label="Cost">
+        <div class="slide-content">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">COST OPTIMIZATION</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">基础设施降本</h2>
+            <div style="margin-top:var(--content-gap);max-width:min(85vw,700px);margin-left:auto;margin-right:auto;">
+                <div class="reveal" style="margin-bottom:clamp(0.5rem,1.5vw,1rem);">
+                    <div style="display:flex;justify-content:space-between;font-size:var(--body-size);margin-bottom:0.3em;">
+                        <span>优化前</span><span style="color:var(--text-secondary);">¥2,400万/年</span>
+                    </div>
+                    <div style="background:var(--surface);border-radius:clamp(4px,0.5vw,8px);overflow:hidden;">
+                        <div class="savings-bar animated-bar" data-height="100" style="width:100%;background:#f87171;"></div>
+                    </div>
+                </div>
+                <div class="reveal" style="margin-bottom:clamp(0.5rem,1.5vw,1rem);">
+                    <div style="display:flex;justify-content:space-between;font-size:var(--body-size);margin-bottom:0.3em;">
+                        <span>优化后</span><span style="color:var(--accent-green);">¥1,440万/年</span>
+                    </div>
+                    <div style="background:var(--surface);border-radius:clamp(4px,0.5vw,8px);overflow:hidden;">
+                        <div class="savings-bar animated-sbar" data-width="60" style="width:0;height:clamp(20px,3vh,32px);background:var(--accent-green);border-radius:clamp(4px,0.5vw,8px);transition:width 1.2s var(--ease-out-expo);"></div>
+                    </div>
+                </div>
+                <div class="reveal" style="text-align:center;margin-top:var(--content-gap);">
+                    <span style="font-family:var(--font-display);font-size:var(--stat-size);font-weight:800;color:var(--accent-green);">-40%</span>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.3em;">年节省 ¥960万 &mdash; 通过容器化、Spot实例和缓存优化</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: INDUSTRY INFLUENCE -->
+    <section class="slide" aria-label="Influence">
+        <div class="slide-content" style="align-items:center;">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">INFLUENCE</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">行业影响力</h2>
+            <div style="display:flex;justify-content:center;gap:clamp(2rem,6vw,5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-size:var(--stat-size);font-weight:800;color:var(--accent);">50K</div>
+                    <div style="font-size:var(--body-size);color:var(--text-secondary);">技术博客订阅</div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-size:var(--stat-size);font-weight:800;color:var(--accent-purple);">12</div>
+                    <div style="font-size:var(--body-size);color:var(--text-secondary);">行业大会演讲</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);text-align:center;margin-top:var(--content-gap);max-width:min(70vw,500px);">
+                QCon · ArchSummit · GOTC · 云栖大会 特邀讲师
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: PHILOSOPHY -->
+    <section class="slide" aria-label="Philosophy">
+        <div class="slide-content">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">PHILOSOPHY</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">管理理念</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);">技术驱动业务</p>
+            <div style="display:flex;flex-direction:column;gap:clamp(0.6rem,1.5vw,1rem);margin-top:var(--content-gap);max-width:min(85vw,700px);">
+                <div class="reveal principle"><div class="principle-num">01</div><div><h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">技术服务于业务</h3><p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">不追求技术过度先进，而是寻找最适合业务阶段的技术方案</p></div></div>
+                <div class="reveal principle"><div class="principle-num">02</div><div><h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">人才是核心资产</h3><p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">招聘好过培养，培养好过管理，管理好过替换</p></div></div>
+                <div class="reveal principle"><div class="principle-num">03</div><div><h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">数据决策文化</h3><p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">可观测性优先，用数据而不是直觉做技术判断</p></div></div>
+                <div class="reveal principle"><div class="principle-num">04</div><div><h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">持续交付为王</h3><p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">小步快跑，快速验证，在迭代中收敛到最优解</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: 100-DAY PLAN -->
+    <section class="slide" aria-label="100-Day Plan">
+        <div style="position:absolute;width:clamp(200px,40vw,500px);height:clamp(200px,40vw,500px);border-radius:50%;filter:blur(80px);opacity:0.1;background:var(--accent);bottom:15%;left:50%;transform:translateX(-50%);pointer-events:none;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <p class="reveal" style="font-size:var(--small-size);color:var(--accent);letter-spacing:0.3em;">IF APPOINTED</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">上任百日计划</h2>
+            <div class="grid" style="margin-top:var(--content-gap);grid-template-columns:repeat(3,1fr);max-width:min(85vw,750px);">
+                <div class="reveal noir-card" style="text-align:center;">
+                    <p style="font-size:var(--small-size);color:var(--accent);font-weight:600;">第1-30天</p>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;margin-top:0.3em;">诊断</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.5;">深度访谈50+工程师<br>梳理技术债务图谱<br>识别关键风险点</p>
+                </div>
+                <div class="reveal noir-card" style="text-align:center;">
+                    <p style="font-size:var(--small-size);color:var(--accent-green);font-weight:600;">第31-60天</p>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;margin-top:0.3em;">规划</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.5;">发布技术路线图<br>组建技术委员会<br>启动首批Quick Win</p>
+                </div>
+                <div class="reveal noir-card" style="text-align:center;">
+                    <p style="font-size:var(--small-size);color:var(--accent-purple);font-weight:600;">第61-100天</p>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;margin-top:0.3em;">执行</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.5;">交付首个里程碑<br>建立度量体系<br>向董事会汇报</p>
+                </div>
+            </div>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.4;">Made with <a href="https://github.com/user/next-slide" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init();}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible');}setupIntersectionObserver(){const o=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const idx=this.slides.indexOf(entry.target);if(idx!==-1){this.currentSlide=idx;this.updateUI();}}});},{threshold:0.5});this.slides.forEach(s=>o.observe(s));}setupKeyboardNav(){document.addEventListener('keydown',(e)=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}});}setupTouchNav(){document.addEventListener('touchstart',(e)=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true});document.addEventListener('touchend',(e)=>{const dy=this.touchStartY-e.changedTouches[0].clientY;const dx=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dy)<50||Math.abs(dx)>Math.abs(dy))return;if(dy>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true});}setupWheelNav(){let t;document.addEventListener('wheel',(e)=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true});}setupProgressBar(){this.progressBar=document.getElementById('progressBar');}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);});}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI();}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600);}updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`;}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+
+        /* Animated savings bars */
+        const bObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.querySelectorAll('.animated-sbar').forEach((b,i)=>{setTimeout(()=>{b.style.width=b.dataset.width+'%';},300);});bObs.unobserve(entry.target);}});},{threshold:0.3});
+        document.querySelectorAll('.slide').forEach(s=>bObs.observe(s));
+    </script>
+</body>
+</html>

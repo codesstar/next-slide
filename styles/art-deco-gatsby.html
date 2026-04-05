@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art Deco Gatsby</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* =========================================== VIEWPORT BASE =========================================== */
+html, body { height: 100%; overflow: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+:root {
+  --gold: #d4af37;
+  --gold-dim: rgba(212, 175, 55, 0.6);
+  --gold-faint: rgba(212, 175, 55, 0.15);
+  --gold-ghost: rgba(212, 175, 55, 0.06);
+  --bg: #1a1a2e;
+  --bg-deep: #12122a;
+  --text: rgba(255, 255, 255, 0.9);
+  --text-dim: rgba(255, 255, 255, 0.65);
+
+  --title-size: clamp(2rem, 7vw, 5.5rem);
+  --h2-size: clamp(1.5rem, 4vw, 3rem);
+  --h3-size: clamp(1.1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.8rem, 1.4vw, 1.125rem);
+  --small-size: clamp(0.6rem, 1vw, 0.85rem);
+  --stat-size: clamp(2.5rem, 8vw, 5rem);
+  --slide-padding: clamp(1.5rem, 5vw, 5rem);
+}
+
+@media (max-height: 700px) {
+  :root {
+    --title-size: clamp(1.5rem, 5vw, 3rem);
+    --h2-size: clamp(1.2rem, 3vw, 2rem);
+    --slide-padding: clamp(1rem, 3vw, 2.5rem);
+  }
+}
+@media (max-height: 500px) {
+  :root {
+    --title-size: clamp(1.2rem, 4vw, 2rem);
+    --body-size: clamp(0.65rem, 1vw, 0.85rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.2s !important;
+  }
+}
+
+/* =========================================== GLOBAL =========================================== */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Playfair Display', 'Noto Serif SC', serif;
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: clamp(2px, 0.3vh, 4px);
+  background: linear-gradient(90deg, var(--gold), #f5d97a, var(--gold));
+  z-index: 1000;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Page Counter --- */
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 2.5vh, 36px);
+  right: clamp(20px, 3vw, 48px);
+  font-size: var(--small-size);
+  font-weight: 700;
+  color: var(--gold-dim);
+  z-index: 1000;
+  letter-spacing: 0.15em;
+}
+.page-counter .current { color: var(--gold); }
+
+/* --- Keyboard Hint --- */
+.keyboard-hint {
+  position: fixed;
+  bottom: clamp(16px, 2.5vh, 36px);
+  left: clamp(20px, 3vw, 48px);
+  font-size: var(--small-size);
+  color: rgba(212, 175, 55, 0.3);
+  z-index: 1000;
+  letter-spacing: 0.1em;
+  transition: opacity 2s ease 4s;
+}
+.keyboard-hint.fade { opacity: 0; }
+
+/* =========================================== SLIDE SYSTEM =========================================== */
+.slide {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--bg);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--slide-padding);
+}
+
+/* =========================================== SHARED DECORATIVES =========================================== */
+
+/* Triple frame border */
+.deco-frame {
+  position: absolute;
+  inset: clamp(12px, 2vw, 30px);
+  border: 2px solid var(--gold-dim);
+  pointer-events: none;
+  z-index: 1;
+}
+.deco-frame::before {
+  content: '';
+  position: absolute;
+  inset: clamp(4px, 0.5vw, 8px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.deco-frame::after {
+  content: '';
+  position: absolute;
+  inset: clamp(10px, 1vw, 16px);
+  border: 1px solid var(--gold-faint);
+}
+
+/* Corner ornaments */
+.corner {
+  position: absolute;
+  width: clamp(30px, 4vw, 60px);
+  height: clamp(30px, 4vw, 60px);
+  border: 3px solid var(--gold);
+  z-index: 2;
+  pointer-events: none;
+}
+.corner::before {
+  content: '';
+  position: absolute;
+  width: clamp(10px, 1.5vw, 20px);
+  height: clamp(10px, 1.5vw, 20px);
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.c-tl { top: clamp(8px, 1.2vw, 20px); left: clamp(8px, 1.2vw, 20px); border-right: none; border-bottom: none; }
+.c-tl::before { top: -5px; left: -5px; }
+.c-tr { top: clamp(8px, 1.2vw, 20px); right: clamp(8px, 1.2vw, 20px); border-left: none; border-bottom: none; }
+.c-tr::before { top: -5px; right: -5px; }
+.c-bl { bottom: clamp(8px, 1.2vw, 20px); left: clamp(8px, 1.2vw, 20px); border-right: none; border-top: none; }
+.c-bl::before { bottom: -5px; left: -5px; }
+.c-br { bottom: clamp(8px, 1.2vw, 20px); right: clamp(8px, 1.2vw, 20px); border-left: none; border-top: none; }
+.c-br::before { bottom: -5px; right: -5px; }
+
+/* Gold line ornament */
+.gold-line {
+  width: clamp(100px, 20vw, 300px);
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  position: relative;
+}
+.gold-line::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(8px, 1vw, 15px);
+  height: clamp(8px, 1vw, 15px);
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* Stepped side borders */
+.stepped-side {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(20px, 3vw, 40px);
+  height: clamp(150px, 25vh, 300px);
+  z-index: 2;
+  pointer-events: none;
+}
+.stepped-side::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent 0%, var(--gold) 0%, var(--gold) 2px, transparent 2px) no-repeat top center / 100% 2px,
+    linear-gradient(to bottom, transparent 0%, var(--gold) 0%, var(--gold) 100%) no-repeat center / 2px 100%,
+    linear-gradient(to bottom, transparent 0%, var(--gold) 0%, var(--gold) 2px, transparent 2px) no-repeat bottom center / 100% 2px;
+  opacity: 0.35;
+}
+.stepped-left { left: clamp(24px, 3.5vw, 50px); }
+.stepped-right { right: clamp(24px, 3.5vw, 50px); }
+
+/* =========================================== REVEAL ANIMATIONS =========================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(clamp(15px, 3vh, 40px));
+}
+.slide.active .reveal {
+  animation: revealUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal.d1 { animation-delay: 0.1s; }
+.slide.active .reveal.d2 { animation-delay: 0.25s; }
+.slide.active .reveal.d3 { animation-delay: 0.4s; }
+.slide.active .reveal.d4 { animation-delay: 0.55s; }
+.slide.active .reveal.d5 { animation-delay: 0.7s; }
+.slide.active .reveal.d6 { animation-delay: 0.85s; }
+
+@keyframes revealUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Fan reveal — radiates open */
+.fan-reveal {
+  opacity: 0;
+  clip-path: polygon(50% 100%, 50% 100%, 50% 100%);
+}
+.slide.active .fan-reveal {
+  animation: fanOpen 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.slide.active .fan-reveal.d1 { animation-delay: 0.1s; }
+.slide.active .fan-reveal.d2 { animation-delay: 0.25s; }
+@keyframes fanOpen {
+  to { opacity: 1; clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+}
+
+/* Gold line draw */
+.line-draw {
+  transform: scaleX(0);
+  transform-origin: center;
+}
+.slide.active .line-draw {
+  animation: lineGrow 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+}
+.slide.active .line-draw.d2 { animation-delay: 0.25s; }
+.slide.active .line-draw.d3 { animation-delay: 0.4s; }
+.slide.active .line-draw.d5 { animation-delay: 0.7s; }
+@keyframes lineGrow {
+  to { transform: scaleX(1); }
+}
+
+/* Shimmer effect */
+@keyframes goldShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--gold) 0%,
+    #f5e6a3 25%,
+    var(--gold) 50%,
+    #f5e6a3 75%,
+    var(--gold) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.slide.active .shimmer {
+  animation: goldShimmer 4s linear infinite 1s;
+}
+
+/* Rotate rays slowly */
+@keyframes slowSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Diamond pulse */
+@keyframes diamondPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Corner fan radiance */
+@keyframes cornerGlow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+
+/* =========================================== SLIDE 1: COVER =========================================== */
+.s1-rays {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(500px, 70vw, 900px);
+  height: clamp(500px, 70vw, 900px);
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 0deg,
+    transparent 0deg 4deg,
+    rgba(212, 175, 55, 0.08) 4deg 5deg,
+    transparent 5deg 10deg
+  );
+  border-radius: 50%;
+  animation: slowSpin 120s linear infinite;
+}
+.s1-rays-inner {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(350px, 45vw, 600px);
+  height: clamp(350px, 45vw, 600px);
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 5deg,
+    transparent 0deg 6deg,
+    rgba(212, 175, 55, 0.12) 6deg 7deg,
+    transparent 7deg 12deg
+  );
+  border-radius: 50%;
+  animation: slowSpin 90s linear infinite reverse;
+}
+
+.s1-fan {
+  width: clamp(150px, 20vw, 280px);
+  height: clamp(75px, 10vw, 140px);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: clamp(10px, 1.5vh, 20px);
+}
+.s1-fan::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: clamp(150px, 20vw, 280px);
+  height: clamp(150px, 20vw, 280px);
+  transform: translateX(-50%);
+  background: repeating-conic-gradient(
+    from -90deg at 50% 100%,
+    var(--gold) 0deg 1.5deg,
+    transparent 1.5deg 6deg
+  );
+  border-radius: 50%;
+  opacity: 0.6;
+}
+.s1-fan::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: clamp(100px, 15vw, 200px);
+  height: clamp(100px, 15vw, 200px);
+  transform: translateX(-50%);
+  background: repeating-conic-gradient(
+    from -90deg at 50% 100%,
+    rgba(212, 175, 55, 0.8) 0deg 1deg,
+    transparent 1deg 8deg
+  );
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.s1-pretitle {
+  font-size: var(--small-size);
+  color: var(--gold-dim);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  margin-bottom: clamp(8px, 1.5vh, 16px);
+}
+.s1-title {
+  font-size: var(--title-size);
+  font-weight: 900;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  line-height: 1.05;
+  text-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 2px 4px rgba(0,0,0,0.5);
+  text-align: center;
+}
+.s1-year {
+  font-size: clamp(0.75rem, 1.2vw, 1.125rem);
+  color: rgba(212, 175, 55, 0.5);
+  letter-spacing: 0.8em;
+  margin-top: clamp(6px, 1vh, 12px);
+}
+
+/* =========================================== SLIDE 2: THREE PILLARS =========================================== */
+.s2-top-line {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: clamp(40px, 6vh, 80px);
+  background:
+    linear-gradient(to right,
+      transparent 10%, var(--gold) 10%, var(--gold) 10.15%, transparent 10.15%,
+      transparent 30%, var(--gold) 30%, var(--gold) 30.15%, transparent 30.15%,
+      transparent 50%, var(--gold) 50%, var(--gold) 50.15%, transparent 50.15%,
+      transparent 70%, var(--gold) 70%, var(--gold) 70.15%, transparent 70.15%,
+      transparent 90%, var(--gold) 90%, var(--gold) 90.15%, transparent 90.15%
+    ) no-repeat top / 100% 1px,
+    linear-gradient(to bottom, var(--gold-ghost), transparent);
+}
+.s2-top-line::before {
+  content: '';
+  position: absolute;
+  top: clamp(10px, 1.5vh, 20px);
+  left: 50%; transform: translateX(-50%);
+  width: clamp(300px, 45vw, 600px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.s2-top-line::after {
+  content: '';
+  position: absolute;
+  top: clamp(18px, 2.5vh, 30px);
+  left: 50%; transform: translateX(-50%);
+  width: clamp(200px, 30vw, 400px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent);
+}
+
+.s2-section-label {
+  position: absolute;
+  top: clamp(28px, 4.5vh, 55px);
+  left: 50%; transform: translateX(-50%);
+  font-size: var(--small-size);
+  color: var(--gold-dim);
+  letter-spacing: 0.6em;
+  text-transform: uppercase;
+  z-index: 5;
+}
+
+.s2-cols {
+  display: flex;
+  gap: clamp(16px, 3vw, 60px);
+  align-items: stretch;
+  max-width: min(92vw, 1100px);
+  width: 100%;
+  z-index: 3;
+}
+.s2-col {
+  flex: 1;
+  padding: clamp(16px, 2.5vw, 40px) clamp(12px, 2vw, 30px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+}
+.s2-col::before {
+  content: '';
+  position: absolute;
+  inset: clamp(3px, 0.4vw, 6px);
+  border: 1px solid rgba(212, 175, 55, 0.08);
+}
+.s2-col-header {
+  text-align: center;
+  margin-bottom: clamp(12px, 2vh, 25px);
+  padding-bottom: clamp(10px, 1.5vh, 20px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+}
+.s2-col-header::after {
+  content: '';
+  position: absolute;
+  bottom: clamp(-4px, -0.5vh, -5px);
+  left: 50%; transform: translateX(-50%);
+  width: clamp(8px, 1vw, 12px);
+  height: clamp(8px, 1vw, 12px);
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.s2-col-num {
+  font-size: var(--stat-size);
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+.s2-col-label {
+  font-size: var(--small-size);
+  color: rgba(212, 175, 55, 0.5);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  margin-top: clamp(2px, 0.3vh, 5px);
+}
+.s2-col-text {
+  font-size: var(--body-size);
+  color: var(--text-dim);
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+}
+
+.s2-divider {
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.3), transparent);
+  position: relative;
+  flex-shrink: 0;
+}
+.s2-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: -6px;
+  width: 13px; height: 13px;
+  background: var(--bg);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.s2-bottom-line {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: clamp(30px, 5vh, 80px);
+  background: linear-gradient(to top, var(--gold-ghost), transparent);
+}
+.s2-bottom-line::before {
+  content: '';
+  position: absolute;
+  bottom: clamp(10px, 1.5vh, 20px);
+  left: 50%; transform: translateX(-50%);
+  width: clamp(300px, 45vw, 600px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+/* =========================================== SLIDE 3: DIAMONDS =========================================== */
+.s3-bg {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(45deg, transparent, transparent 40px, var(--gold-ghost) 40px, var(--gold-ghost) 41px),
+    repeating-linear-gradient(-45deg, transparent, transparent 40px, var(--gold-ghost) 40px, var(--gold-ghost) 41px);
+}
+.s3-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(300px, 50vw, 600px);
+  height: clamp(200px, 35vh, 400px);
+  background: radial-gradient(ellipse, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+}
+.s3-title {
+  position: absolute;
+  top: clamp(16px, 3vh, 35px);
+  left: 50%; transform: translateX(-50%);
+  font-size: var(--small-size);
+  color: var(--gold-dim);
+  letter-spacing: 0.6em;
+  text-transform: uppercase;
+  z-index: 5;
+}
+.s3-title::before, .s3-title::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: clamp(50px, 8vw, 100px);
+  height: 1px;
+}
+.s3-title::before {
+  right: calc(100% + clamp(8px, 1.5vw, 20px));
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4));
+}
+.s3-title::after {
+  left: calc(100% + clamp(8px, 1.5vw, 20px));
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.4), transparent);
+}
+
+.s3-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  max-width: min(95vw, 1000px);
+  z-index: 3;
+}
+.s3-diamond {
+  width: clamp(90px, 14vw, 190px);
+  height: clamp(90px, 14vw, 190px);
+  position: relative;
+  margin: clamp(-12px, -2vw, -25px) clamp(6px, 1vw, 15px);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: linear-gradient(135deg, var(--gold-faint), rgba(212, 175, 55, 0.05));
+}
+.s3-diamond::before {
+  content: '';
+  position: absolute; inset: 3px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: var(--bg);
+}
+.s3-diamond::after {
+  content: '';
+  position: absolute; inset: 10px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02));
+}
+.s3-diamond-content {
+  position: absolute; inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.s3-diamond-num {
+  font-size: clamp(1rem, 2.2vw, 1.75rem);
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+.s3-diamond-label {
+  font-size: clamp(0.4rem, 0.7vw, 0.55rem);
+  color: rgba(212, 175, 55, 0.5);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.s3-line-h {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  width: clamp(350px, 55vw, 700px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.25), transparent);
+  z-index: 1;
+}
+.s3-line-h::before {
+  content: '';
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  top: -5px;
+  width: 10px; height: 10px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  opacity: 0.5;
+}
+.s3-line-top { top: clamp(40px, 6vh, 70px); }
+.s3-line-bot { bottom: clamp(20px, 3vh, 35px); }
+
+.s3-side-deco {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: clamp(15px, 2vw, 30px);
+  height: clamp(100px, 16vh, 200px);
+  z-index: 2;
+}
+.s3-side-left {
+  left: clamp(22px, 3.5vw, 45px);
+  border-left: 1px solid rgba(212, 175, 55, 0.3);
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+.s3-side-right {
+  right: clamp(22px, 3.5vw, 45px);
+  border-right: 1px solid rgba(212, 175, 55, 0.3);
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* =========================================== SLIDE 4: QUOTE =========================================== */
+.s4-sunburst {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(600px, 85vw, 1200px);
+  height: clamp(600px, 85vw, 1200px);
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 0deg,
+    transparent 0deg 3deg,
+    rgba(212, 175, 55, 0.04) 3deg 4deg,
+    transparent 4deg 6deg
+  );
+  border-radius: 50%;
+  animation: slowSpin 150s linear infinite;
+}
+.s4-sunburst-inner {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(350px, 50vw, 700px);
+  height: clamp(350px, 50vw, 700px);
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 3deg,
+    transparent 0deg 5deg,
+    rgba(212, 175, 55, 0.06) 5deg 6deg,
+    transparent 6deg 10deg
+  );
+  border-radius: 50%;
+  animation: slowSpin 100s linear infinite reverse;
+}
+
+.s4-quote-mark {
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  color: var(--gold);
+  line-height: 0.6;
+  opacity: 0.3;
+  font-family: Georgia, serif;
+}
+.s4-quote-text {
+  font-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  margin: clamp(10px, 2vh, 24px) 0;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  max-width: 20ch;
+}
+.s4-author {
+  font-size: var(--small-size);
+  color: var(--gold-dim);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+}
+
+.s4-outer-frame {
+  position: absolute;
+  inset: clamp(14px, 2vw, 30px);
+  border: 1px solid var(--gold-faint);
+  pointer-events: none;
+}
+
+.s4-chevron {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: clamp(20px, 3vw, 40px);
+  height: clamp(60px, 10vh, 120px);
+  z-index: 2;
+}
+.s4-chevron::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(212, 175, 55, 0.2);
+}
+.s4-chev-l { left: clamp(30px, 4.5vw, 60px); }
+.s4-chev-l::before { clip-path: polygon(100% 0%, 30% 50%, 100% 100%, 85% 100%, 15% 50%, 85% 0%); }
+.s4-chev-r { right: clamp(30px, 4.5vw, 60px); }
+.s4-chev-r::before { clip-path: polygon(0% 0%, 70% 50%, 0% 100%, 15% 100%, 85% 50%, 15% 0%); }
+
+.s4-deco-line {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  width: clamp(250px, 40vw, 500px);
+  height: clamp(15px, 2.5vh, 30px);
+}
+.s4-deco-line::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+}
+.s4-deco-line::after {
+  content: '';
+  position: absolute;
+  left: clamp(25px, 4vw, 50px);
+  right: clamp(25px, 4vw, 50px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+}
+.s4-line-top { top: clamp(24px, 4vh, 50px); }
+.s4-line-top::before { top: 0; }
+.s4-line-top::after { bottom: 0; }
+.s4-line-bot { bottom: clamp(24px, 4vh, 50px); }
+.s4-line-bot::before { bottom: 0; }
+.s4-line-bot::after { top: 0; }
+
+/* =========================================== SLIDE 5: CLOSING =========================================== */
+.s5-radial {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
+}
+.s5-rays {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(450px, 65vw, 900px);
+  height: clamp(450px, 65vw, 900px);
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 0deg,
+    transparent 0deg 8deg,
+    rgba(212, 175, 55, 0.03) 8deg 9deg,
+    transparent 9deg 18deg
+  );
+  border-radius: 50%;
+  z-index: 1;
+  animation: slowSpin 180s linear infinite;
+}
+
+.s5-emblem {
+  position: relative;
+  width: clamp(160px, 25vw, 320px);
+  height: clamp(160px, 25vw, 320px);
+  z-index: 3;
+}
+.s5-emblem-outer {
+  position: absolute; inset: 0;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+}
+.s5-emblem-outer::before {
+  content: '';
+  position: absolute; inset: clamp(4px, 0.6vw, 8px);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 50%;
+}
+.s5-emblem-outer::after {
+  content: '';
+  position: absolute; inset: clamp(7px, 1vw, 14px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+}
+.s5-emblem-inner {
+  position: absolute;
+  inset: clamp(15px, 2.3vw, 30px);
+  border: 2px solid var(--gold);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(50% 0%, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%, 6.7% 25%);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent);
+}
+.s5-emblem-inner::before {
+  content: '';
+  position: absolute; inset: clamp(3px, 0.5vw, 6px);
+  clip-path: polygon(50% 0%, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%, 6.7% 25%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.s5-emblem-text {
+  font-size: clamp(1rem, 2.2vw, 1.75rem);
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.3;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+.s5-emblem-year {
+  font-size: clamp(0.5rem, 0.8vw, 0.75rem);
+  color: var(--gold-dim);
+  letter-spacing: 0.5em;
+  margin-top: clamp(2px, 0.3vh, 5px);
+}
+
+.s5-badge {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  z-index: 4;
+  font-size: var(--small-size);
+  color: rgba(212, 175, 55, 0.5);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+}
+.s5-badge::before {
+  content: '';
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  width: clamp(75px, 12vw, 150px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+}
+.s5-badge-top { top: clamp(30px, 5vh, 60px); }
+.s5-badge-top::before { bottom: clamp(-6px, -1vh, -10px); }
+.s5-badge-bot { bottom: clamp(30px, 5vh, 60px); }
+.s5-badge-bot::before { top: clamp(-6px, -1vh, -10px); }
+
+.s5-wing {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: clamp(100px, 15vw, 200px);
+  height: 2px;
+  z-index: 4;
+}
+.s5-wing::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  width: 10px; height: 10px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  opacity: 0.6;
+  animation: diamondPulse 3s ease-in-out infinite;
+}
+.s5-wing-l {
+  left: clamp(40px, 6vw, 80px);
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4));
+}
+.s5-wing-l::before { right: 0; }
+.s5-wing-r {
+  right: clamp(40px, 6vw, 80px);
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.4), transparent);
+}
+.s5-wing-r::before { left: 0; }
+
+.s5-corner-fan {
+  position: absolute;
+  width: clamp(60px, 9vw, 120px);
+  height: clamp(60px, 9vw, 120px);
+  overflow: hidden;
+  z-index: 2;
+}
+.s5-corner-fan::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: clamp(120px, 18vw, 240px);
+  height: clamp(120px, 18vw, 240px);
+  background: repeating-conic-gradient(
+    from 0deg at 0% 0%,
+    var(--gold) 0deg 1deg,
+    transparent 1deg 6deg
+  );
+  opacity: 0.25;
+  animation: cornerGlow 4s ease-in-out infinite;
+}
+.s5-cf-tl { top: 0; left: 0; }
+.s5-cf-tr { top: 0; right: 0; transform: scaleX(-1); }
+.s5-cf-bl { bottom: 0; left: 0; transform: scaleY(-1); }
+.s5-cf-br { bottom: 0; right: 0; transform: scale(-1, -1); }
+
+.s5-diamond-deco {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  width: clamp(10px, 1.5vw, 20px);
+  height: clamp(10px, 1.5vw, 20px);
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  opacity: 0.5;
+  z-index: 4;
+}
+.s5-dd-top { top: clamp(20px, 3vh, 40px); }
+.s5-dd-bot { bottom: clamp(20px, 3vh, 40px); }
+
+.s5-inner-circle {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(200px, 30vw, 400px);
+  height: clamp(200px, 30vw, 400px);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  border-radius: 50%;
+  z-index: 1;
+}
+.s5-inner-circle::before {
+  content: '';
+  position: absolute; inset: clamp(-20px, -3vw, -40px);
+  border: 1px solid rgba(212, 175, 55, 0.06);
+  border-radius: 50%;
+}
+
+/* =========================================== PRINT =========================================== */
+@media print {
+  .slide { position: relative; opacity: 1; pointer-events: auto; page-break-after: always; }
+  .progress-bar, .page-counter, .keyboard-hint { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+<div class="keyboard-hint" id="hint">Arrow Keys / Space</div>
+
+<!-- ============================================================ SLIDE 1: COVER ============================================================ -->
+<div class="slide active" data-i="0">
+  <div class="s1-rays"></div>
+  <div class="s1-rays-inner"></div>
+  <div class="deco-frame"></div>
+  <div class="corner c-tl"></div>
+  <div class="corner c-tr"></div>
+  <div class="corner c-bl"></div>
+  <div class="corner c-br"></div>
+  <div class="stepped-side stepped-left"></div>
+  <div class="stepped-side stepped-right"></div>
+  <div class="slide-inner">
+    <div class="s1-fan fan-reveal d1"></div>
+    <div class="gold-line line-draw d2"></div>
+    <div class="s1-pretitle reveal d3">The Art of Design</div>
+    <h1 class="s1-title shimmer reveal d4">设计革命</h1>
+    <div class="s1-year reveal d5">MMXXVI</div>
+    <div class="gold-line line-draw d5" style="margin-top: clamp(12px, 2vh, 24px);"></div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 2: THREE PILLARS ============================================================ -->
+<div class="slide" data-i="1">
+  <div class="s2-top-line"></div>
+  <div class="s2-bottom-line"></div>
+  <div class="deco-frame"></div>
+  <div class="s2-section-label reveal d1">The Three Pillars</div>
+  <div class="slide-inner">
+    <div class="s2-cols">
+      <div class="s2-col reveal d2">
+        <div class="s2-col-header">
+          <div class="s2-col-num">I</div>
+          <div class="s2-col-label">Vision</div>
+        </div>
+        <div class="s2-col-text">
+          设计不再是像素的堆砌。AI 理解语义与层次，将创意意图转化为视觉秩序，让每一帧都精准传达。
+        </div>
+      </div>
+      <div class="s2-divider reveal d3"></div>
+      <div class="s2-col reveal d3">
+        <div class="s2-col-header">
+          <div class="s2-col-num">II</div>
+          <div class="s2-col-label">Craft</div>
+        </div>
+        <div class="s2-col-text">
+          每一条线、每一个角度都有其使命。几何的精确与装饰的华美在完美对称中交融，铸就永恒经典。
+        </div>
+      </div>
+      <div class="s2-divider reveal d4"></div>
+      <div class="s2-col reveal d4">
+        <div class="s2-col-header">
+          <div class="s2-col-num">III</div>
+          <div class="s2-col-label">Legacy</div>
+        </div>
+        <div class="s2-col-text">
+          从克莱斯勒大厦到数字界面，装饰艺术的语言穿越百年，在新技术中焕发不朽的奢华与格调。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 3: DIAMONDS ============================================================ -->
+<div class="slide" data-i="2">
+  <div class="s3-bg"></div>
+  <div class="s3-glow"></div>
+  <div class="deco-frame"></div>
+  <div class="corner c-tl"></div>
+  <div class="corner c-tr"></div>
+  <div class="corner c-bl"></div>
+  <div class="corner c-br"></div>
+  <div class="s3-line-h s3-line-top"></div>
+  <div class="s3-line-h s3-line-bot"></div>
+  <div class="s3-side-deco s3-side-left"></div>
+  <div class="s3-side-deco s3-side-right"></div>
+  <div class="s3-title reveal d1">Collection</div>
+  <div class="slide-inner">
+    <div class="s3-grid">
+      <div class="s3-diamond reveal d2"><div class="s3-diamond-content"><div class="s3-diamond-num">01</div><div class="s3-diamond-label">Layout</div></div></div>
+      <div class="s3-diamond reveal d2"><div class="s3-diamond-content"><div class="s3-diamond-num">02</div><div class="s3-diamond-label">Motion</div></div></div>
+      <div class="s3-diamond reveal d3"><div class="s3-diamond-content"><div class="s3-diamond-num">03</div><div class="s3-diamond-label">Type</div></div></div>
+      <div class="s3-diamond reveal d3"><div class="s3-diamond-content"><div class="s3-diamond-num">04</div><div class="s3-diamond-label">Color</div></div></div>
+      <div class="s3-diamond reveal d4"><div class="s3-diamond-content"><div class="s3-diamond-num">05</div><div class="s3-diamond-label">Space</div></div></div>
+      <div class="s3-diamond reveal d4"><div class="s3-diamond-content"><div class="s3-diamond-num">06</div><div class="s3-diamond-label">Brand</div></div></div>
+      <div class="s3-diamond reveal d5"><div class="s3-diamond-content"><div class="s3-diamond-num">07</div><div class="s3-diamond-label">Print</div></div></div>
+      <div class="s3-diamond reveal d5"><div class="s3-diamond-content"><div class="s3-diamond-num">08</div><div class="s3-diamond-label">Craft</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 4: QUOTE ============================================================ -->
+<div class="slide" data-i="3">
+  <div class="s4-sunburst"></div>
+  <div class="s4-sunburst-inner"></div>
+  <div class="s4-outer-frame"></div>
+  <div class="s4-deco-line s4-line-top"></div>
+  <div class="s4-deco-line s4-line-bot"></div>
+  <div class="s4-chevron s4-chev-l"></div>
+  <div class="s4-chevron s4-chev-r"></div>
+  <div class="deco-frame"></div>
+  <div class="slide-inner">
+    <div class="s4-quote-mark reveal d1">&ldquo;</div>
+    <div class="s4-quote-text reveal d2">好的设计不是装饰，<br>是沟通。</div>
+    <div class="gold-line line-draw d3" style="margin: clamp(8px, 1.5vh, 16px) 0;"></div>
+    <div class="s4-author reveal d4">Dieter Rams</div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 5: CLOSING ============================================================ -->
+<div class="slide" data-i="4">
+  <div class="s5-radial"></div>
+  <div class="s5-rays"></div>
+  <div class="deco-frame"></div>
+  <div class="s5-corner-fan s5-cf-tl"></div>
+  <div class="s5-corner-fan s5-cf-tr"></div>
+  <div class="s5-corner-fan s5-cf-bl"></div>
+  <div class="s5-corner-fan s5-cf-br"></div>
+  <div class="s5-diamond-deco s5-dd-top"></div>
+  <div class="s5-diamond-deco s5-dd-bot"></div>
+  <div class="s5-inner-circle"></div>
+  <div class="s5-badge s5-badge-top reveal d1">The Design Revolution</div>
+  <div class="s5-badge s5-badge-bot reveal d5">Est. MMXXVI</div>
+  <div class="s5-wing s5-wing-l"></div>
+  <div class="s5-wing s5-wing-r"></div>
+  <div class="slide-inner">
+    <div class="s5-emblem fan-reveal d2">
+      <div class="s5-emblem-outer"></div>
+      <div class="s5-emblem-inner">
+        <div class="s5-emblem-text shimmer">Thank<br>You</div>
+        <div class="s5-emblem-year">MMXXVI</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var bar = document.getElementById('progress');
+  var cur = document.getElementById('cur');
+  var hint = document.getElementById('hint');
+  var c = 0;
+
+  function go(i) {
+    if (i < 0 || i >= total) return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal, .fan-reveal, .line-draw').forEach(function(el) {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c + 1) / total * 100) + '%';
+    cur.textContent = String(c + 1).padStart(2, '0');
+    if (hint && !hint.classList.contains('fade')) hint.classList.add('fade');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      go(c + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      go(c - 1);
+    }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  var touchStartY = 0, touchStartX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx < -50) go(c + 1);
+      if (dx > 50) go(c - 1);
+    } else {
+      if (dy < -50) go(c + 1);
+      if (dy > 50) go(c - 1);
+    }
+  }, { passive: true });
+
+  bar.style.width = (1 / total * 100) + '%';
+})();
+</script>
+</body>
+</html>

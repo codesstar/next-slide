@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Chatbot to Agent — Terminal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Terminal Green
+           Developer-focused, hacker aesthetic
+           =========================================== */
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #1c2129;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --text-muted: #484f58;
+            --text-green: #39d353;
+            --accent: #39d353;
+            --accent-secondary: #e3b341;
+            --accent-glow: rgba(57, 211, 83, 0.3);
+            --accent-red: #f85149;
+            --border: #30363d;
+            --border-subtle: rgba(48, 54, 61, 0.6);
+            --surface: rgba(22, 27, 34, 0.8);
+
+            --font-display: 'JetBrains Mono', monospace;
+            --font-body: 'JetBrains Mono', monospace;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(1.5rem, 4.5vw, 3.5rem);
+            --h2-size: clamp(1.15rem, 3vw, 2.2rem);
+            --h3-size: clamp(0.9rem, 2vw, 1.5rem);
+            --subtitle-size: clamp(0.8rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.7rem, 1.3vw, 1rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --stat-size: clamp(1.8rem, 7vw, 5rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+        }
+
+        /* === BASE RESET + VIEWPORT === */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary);
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+        }
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+            padding-top: clamp(2.5rem, 5vw, 4rem); /* space for terminal chrome */
+        }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4vw, 2.5rem); --h2-size: clamp(1rem, 2.5vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 3.5vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-scale { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-scale { opacity: 1; }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* ===========================================
+           TERMINAL GREEN THEME
+           =========================================== */
+
+        /* Terminal window chrome */
+        .terminal-chrome {
+            display: flex; align-items: center; gap: clamp(4px, 0.5vw, 8px);
+            padding: clamp(6px, 1vw, 12px) clamp(10px, 1.5vw, 16px);
+            background: var(--bg-tertiary); border-bottom: 1px solid var(--border);
+            position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+        }
+        .terminal-dot { width: clamp(8px, 1vw, 12px); height: clamp(8px, 1vw, 12px); border-radius: 50%; }
+        .terminal-dot.red { background: #f85149; }
+        .terminal-dot.yellow { background: #e3b341; }
+        .terminal-dot.green { background: #39d353; }
+        .terminal-title { flex: 1; text-align: center; font-size: var(--small-size); color: var(--text-muted); }
+
+        /* CRT scan lines */
+        .slide::after {
+            content: ''; position: absolute; inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* Blinking cursor */
+        .cursor::after { content: '_'; color: var(--text-green); animation: blink 1s step-end infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Prompt prefix */
+        .prompt::before { content: '$ '; color: var(--text-green); }
+        .prompt-arrow::before { content: '> '; color: var(--accent-secondary); }
+
+        /* Animations */
+        .reveal {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2) { transition-delay: 0.12s; }
+        .reveal:nth-child(3) { transition-delay: 0.19s; }
+        .reveal:nth-child(4) { transition-delay: 0.26s; }
+        .reveal:nth-child(5) { transition-delay: 0.33s; }
+        .reveal:nth-child(6) { transition-delay: 0.40s; }
+        .reveal:nth-child(7) { transition-delay: 0.47s; }
+        .reveal:nth-child(8) { transition-delay: 0.54s; }
+
+        .reveal-scale {
+            opacity: 0; transform: scale(0.92);
+            transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+
+        /* Progress bar */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+
+        /* Nav dots */
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 6px; height: 6px; border-radius: 0; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.5); box-shadow: 0 0 8px var(--accent-glow); }
+
+        /* Slide counter */
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Code block styling */
+        .term-block {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: clamp(6px, 0.8vw, 12px); overflow: hidden;
+        }
+        .term-block-header {
+            padding: clamp(4px, 0.6vw, 8px) clamp(8px, 1vw, 14px);
+            font-size: var(--small-size); color: var(--text-muted);
+            background: var(--bg-tertiary); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between;
+        }
+        .term-block pre {
+            padding: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size);
+            line-height: 1.6; overflow-x: auto;
+        }
+        .kw { color: #ff7b72; }
+        .str { color: #a5d6ff; }
+        .fn { color: #d2a8ff; }
+        .cm { color: var(--text-muted); }
+        .num { color: #79c0ff; }
+        .op { color: #ff7b72; }
+
+        /* Bar chart */
+        .bar-chart-h { display: flex; flex-direction: column; gap: clamp(0.4rem, 0.8vh, 0.8rem); margin-top: var(--content-gap); }
+        .bar-row { display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); }
+        .bar-row-label { min-width: clamp(80px, 12vw, 140px); font-size: var(--small-size); color: var(--text-secondary); text-align: right; }
+        .bar-h { height: clamp(18px, 2.5vh, 28px); border-radius: 2px; transition: width 1s var(--ease-out-expo); position: relative; }
+        .bar-row-value { font-size: var(--small-size); color: var(--text-green); font-weight: 700; min-width: clamp(30px, 4vw, 50px); }
+
+        /* Feature grid */
+        .term-card {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            padding: clamp(0.8rem, 1.5vw, 1.2rem); border-radius: clamp(4px, 0.5vw, 8px);
+        }
+        .term-card h3 { font-size: var(--h3-size); color: var(--text-green); margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem); }
+        .term-card p { font-size: var(--small-size); color: var(--text-secondary); line-height: 1.5; }
+
+        /* Diagram boxes */
+        .flow-box {
+            border: 1px solid var(--border); padding: clamp(0.6rem, 1.2vw, 1rem);
+            text-align: center; min-width: clamp(70px, 12vw, 130px);
+            background: var(--bg-secondary);
+        }
+        .flow-box.active { border-color: var(--text-green); box-shadow: 0 0 15px var(--accent-glow); }
+        .flow-arrow { color: var(--text-green); font-size: clamp(0.8rem, 1.5vw, 1.2rem); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">agent-talk -- zsh -- 120x40</span>
+        </div>
+        <div class="slide-content">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted);">Last login: Fri Apr 4 09:00:00 on ttys001</p>
+            <h1 class="reveal cursor" style="font-size: var(--title-size); color: var(--text-green); margin-top: var(--content-gap);">From Chatbot to Agent</h1>
+            <p class="reveal prompt" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">building reliable AI agent systems</p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                <span style="color: var(--text-green);">speaker</span>@<span style="color: var(--accent-secondary);">conf2026</span>:~$ <span style="color: var(--text-secondary);">cat talk.md</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: WHY AGENTS -->
+    <section class="slide" aria-label="Why agents">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">autonomy-spectrum.sh</span>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--text-green);"># The Autonomy Spectrum</h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap);">Chatbots respond. Agents <span style="color: var(--accent-secondary);">decide</span>, <span style="color: var(--accent-secondary);">act</span>, and <span style="color: var(--accent-secondary);">adapt</span>.</p>
+            <div class="bar-chart-h reveal-scale" style="margin-top: var(--content-gap);">
+                <div class="bar-row">
+                    <div class="bar-row-label">Autocomplete</div>
+                    <div class="bar-h" style="width: 15%; background: var(--text-muted);"></div>
+                    <div class="bar-row-value" style="color: var(--text-muted);">L1</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-row-label">Chatbot</div>
+                    <div class="bar-h" style="width: 35%; background: var(--text-secondary);"></div>
+                    <div class="bar-row-value" style="color: var(--text-secondary);">L2</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-row-label">Co-pilot</div>
+                    <div class="bar-h" style="width: 65%; background: var(--accent-secondary);"></div>
+                    <div class="bar-row-value" style="color: var(--accent-secondary);">L3</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-row-label">Agent</div>
+                    <div class="bar-h" style="width: 90%; background: var(--text-green);"></div>
+                    <div class="bar-row-value">L4</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                <span class="prompt-arrow" style="color: var(--text-green);"></span>L4 agents: multi-step reasoning, tool orchestration, self-correction
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: CORE ARCHITECTURE -->
+    <section class="slide" aria-label="Core architecture">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">agent-loop.py</span>
+        </div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--text-green);"># The Agent Loop</h2>
+            <div style="display: flex; align-items: center; justify-content: center; gap: clamp(0.3rem, 1vw, 1rem); flex-wrap: wrap; margin-top: var(--content-gap);">
+                <div class="flow-box active reveal"><span style="color: var(--text-green); font-size: var(--h3-size); font-weight: 700;">PLAN</span><br><span style="font-size: var(--small-size); color: var(--text-secondary);">decompose</span></div>
+                <div class="flow-arrow reveal">--&gt;</div>
+                <div class="flow-box reveal"><span style="font-size: var(--h3-size); font-weight: 700;">EXEC</span><br><span style="font-size: var(--small-size); color: var(--text-secondary);">call tools</span></div>
+                <div class="flow-arrow reveal">--&gt;</div>
+                <div class="flow-box reveal"><span style="font-size: var(--h3-size); font-weight: 700;">OBSERVE</span><br><span style="font-size: var(--small-size); color: var(--text-secondary);">eval results</span></div>
+                <div class="flow-arrow reveal">--&gt;</div>
+                <div class="flow-box reveal" style="border-style: dashed;"><span style="font-size: var(--h3-size); font-weight: 700; color: var(--accent-secondary);">REFLECT</span><br><span style="font-size: var(--small-size); color: var(--text-secondary);">adjust?</span></div>
+            </div>
+            <div class="term-block reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 700px); width: 100%;">
+                <div class="term-block-header"><span>agent.py</span><span style="opacity: 0.5;">Python</span></div>
+                <pre><code><span class="kw">while not</span> done <span class="kw">and</span> steps < max_steps:
+    plan   = <span class="fn">llm.plan</span>(goal, memory)
+    result = <span class="fn">execute</span>(plan.next_action)
+    memory.<span class="fn">update</span>(result)
+    done   = <span class="fn">evaluate</span>(result, goal)</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: TOOL USE -->
+    <section class="slide" aria-label="Tool use">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">tools.md</span>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--text-green);"># Tool Use Patterns</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: clamp(0.5rem, 1vw, 1rem); margin-top: var(--content-gap);">
+                <div class="term-card reveal">
+                    <h3>function_calling()</h3>
+                    <p>LLM outputs structured JSON. Runtime parses and executes the matched tool.</p>
+                </div>
+                <div class="term-card reveal">
+                    <h3>mcp_protocol()</h3>
+                    <p>Universal standard for connecting agents to external services and data.</p>
+                </div>
+                <div class="term-card reveal">
+                    <h3>tool_routing()</h3>
+                    <p>Intent-based selection from a tool registry. Right tool for the right job.</p>
+                </div>
+            </div>
+            <div class="term-block reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 700px);">
+                <div class="term-block-header"><span>tool_call.json</span><span style="opacity: 0.5;">JSON</span></div>
+                <pre><code>{
+  <span class="str">"tool"</span>: <span class="str">"search_database"</span>,
+  <span class="str">"params"</span>: {
+    <span class="str">"query"</span>: <span class="str">"order #4521"</span>,
+    <span class="str">"limit"</span>: <span class="num">5</span>
+  }
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: MEMORY -->
+    <section class="slide" aria-label="Memory systems">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">memory-arch.md</span>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--text-green);"># Memory Architecture</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div class="term-card reveal">
+                    <h3 style="color: var(--accent-secondary);">SHORT_TERM</h3>
+                    <pre style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; margin-top: var(--element-gap);">- conversation_context
+- scratchpad
+- tool_results[]
+- token_window: ~128K</pre>
+                </div>
+                <div class="term-card reveal">
+                    <h3>LONG_TERM</h3>
+                    <pre style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; margin-top: var(--element-gap);">- vector_db (RAG)
+- episodic_memory
+- user_preferences
+- persistent: true</pre>
+                </div>
+            </div>
+            <p class="reveal prompt" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--content-gap);">
+                Combine both: fast working memory + persistent knowledge store
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: RELIABILITY -->
+    <section class="slide" aria-label="Reliability">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">reliability.sh</span>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--text-green);"># Reliability Patterns</h2>
+            <ul style="list-style: none; margin-top: var(--content-gap);">
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">PASS</span> <span style="color: var(--accent-secondary);">retry_backoff</span> <span style="color: var(--text-secondary);">-- exponential backoff, max 3 retries</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">PASS</span> <span style="color: var(--accent-secondary);">fallback_chain</span> <span style="color: var(--text-secondary);">-- primary fails? route to backup model</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">PASS</span> <span style="color: var(--accent-secondary);">human_in_loop</span> <span style="color: var(--text-secondary);">-- confidence &lt; threshold? escalate</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">PASS</span> <span style="color: var(--accent-secondary);">circuit_breaker</span> <span style="color: var(--text-secondary);">-- too many failures? stop + alert</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">PASS</span> <span style="color: var(--accent-secondary);">guardrails</span> <span style="color: var(--text-secondary);">-- output validation before execution</span>
+                </li>
+            </ul>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-green); margin-top: var(--content-gap);">5 passed, 0 failed, 0 skipped</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: EVALUATION -->
+    <section class="slide" aria-label="Evaluation">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">eval-results.log</span>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--text-green);"># Evaluation Framework</h2>
+            <div class="bar-chart-h reveal-scale" style="margin-top: var(--content-gap);">
+                <div class="bar-row">
+                    <div class="bar-row-label">task_completion</div>
+                    <div class="bar-h" style="width: 92%; background: var(--text-green);"></div>
+                    <div class="bar-row-value">92%</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-row-label">tool_accuracy</div>
+                    <div class="bar-h" style="width: 87%; background: var(--text-green);"></div>
+                    <div class="bar-row-value">87%</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-row-label">avg_latency</div>
+                    <div class="bar-h" style="width: 46%; background: var(--accent-secondary);"></div>
+                    <div class="bar-row-value" style="color: var(--accent-secondary);">2.3s</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-row-label">cost_per_task</div>
+                    <div class="bar-h" style="width: 20%; background: var(--accent-secondary);"></div>
+                    <div class="bar-row-value" style="color: var(--accent-secondary);">$0.04</div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-row-label">avg_steps</div>
+                    <div class="bar-h" style="width: 31%; background: var(--text-muted);"></div>
+                    <div class="bar-row-value" style="color: var(--text-muted);">3.1</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                benchmarked against 200 curated test cases across 3 difficulty tiers
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: CASE STUDY -->
+    <section class="slide" aria-label="Case study">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">case-study.md</span>
+        </div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--accent-secondary);"># Case Study: Support Agent</h2>
+            <div style="display: flex; gap: clamp(1.5rem, 4vw, 4rem); margin-top: var(--content-gap); flex-wrap: wrap; justify-content: center;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="73" data-suffix="%" style="font-size: var(--stat-size); color: var(--text-green); font-weight: 700; line-height: 1;">0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">resolution_rate</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="45" data-suffix="s" style="font-size: var(--stat-size); color: var(--accent-secondary); font-weight: 700; line-height: 1;">0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">avg_response</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); color: var(--accent-red); font-weight: 700; line-height: 1;">-40%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">ticket_volume</div>
+                </div>
+            </div>
+            <div class="term-block reveal" style="margin-top: var(--content-gap); max-width: min(80vw, 600px); width: 100%;">
+                <pre style="padding: clamp(0.6rem, 1.2vw, 1rem); font-size: var(--small-size); line-height: 1.7; color: var(--text-secondary);">Handles: orders, refunds, FAQ
+Escalates: billing disputes, edge cases
+Result: 40% fewer tickets in 3 months</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: PRODUCTION -->
+    <section class="slide" aria-label="Production">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">deploy-checklist.sh</span>
+        </div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); color: var(--text-green);"># Production Deployment</h2>
+            <ul style="list-style: none; margin-top: var(--content-gap);">
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">[x]</span> <strong style="color: var(--text-primary);">observability</strong> <span style="color: var(--text-secondary);">-- log every tool call, decision, latency</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">[x]</span> <strong style="color: var(--text-primary);">cost_guardrails</strong> <span style="color: var(--text-secondary);">-- per-task + per-user budget limits</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">[x]</span> <strong style="color: var(--text-primary);">staged_rollout</strong> <span style="color: var(--text-secondary);">-- shadow &rarr; 5% &rarr; 100%</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">[x]</span> <strong style="color: var(--text-primary);">eval_pipeline</strong> <span style="color: var(--text-secondary);">-- automated regression on prompt changes</span>
+                </li>
+                <li class="reveal" style="padding: clamp(0.3rem, 0.6vh, 0.5rem) 0; font-size: var(--body-size);">
+                    <span style="color: var(--text-green);">[x]</span> <strong style="color: var(--text-primary);">prompt_versioning</strong> <span style="color: var(--text-secondary);">-- git, review, deploy</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: Q&A -->
+    <section class="slide" aria-label="Q&A">
+        <div class="terminal-chrome">
+            <div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div>
+            <span class="terminal-title">thanks.sh</span>
+        </div>
+        <div class="slide-content" style="justify-content: center;">
+            <div class="reveal" style="font-size: var(--small-size); color: var(--text-muted);">$ ./talk.sh --section=final</div>
+            <h2 class="reveal cursor" style="font-size: var(--title-size); color: var(--text-green); margin-top: var(--element-gap);">Thank You</h2>
+            <p class="reveal prompt" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">questions? thoughts? `ctrl+c` to disagree</p>
+            <div style="display: flex; gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="reveal" style="font-size: var(--small-size); color: var(--text-secondary);">
+                    <span style="color: var(--text-green);">paper:</span> ReAct (Reasoning + Acting)
+                </div>
+                <div class="reveal" style="font-size: var(--small-size); color: var(--text-secondary);">
+                    <span style="color: var(--text-green);">framework:</span> LangGraph / CrewAI
+                </div>
+                <div class="reveal" style="font-size: var(--small-size); color: var(--text-secondary);">
+                    <span style="color: var(--text-green);">standard:</span> MCP Specification
+                </div>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.3;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); }
+            init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); }
+            setupIntersectionObserver() { const o = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); const i = this.slides.indexOf(e.target); if (i !== -1) { this.currentSlide = i; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(s => o.observe(s)); }
+            setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch(e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide+1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide-1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length-1); break; } }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const dY = this.touchStartY - e.changedTouches[0].clientY, dX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return; if (dY > 0) this.goToSlide(this.currentSlide+1); else this.goToSlide(this.currentSlide-1); }, { passive: true }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide+1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide-1); }, 50); }, { passive: true }); }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+            setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `Slide ${i+1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(i) { if (i < 0 || i >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = i; this.slides[i].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600); }
+            updateUI() { const t = this.slides.length, c = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((c+1)/t)*100}%`; document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === c)); if (this.counter) this.counter.textContent = `${c+1} / ${t}`; }
+        }
+        const counters = document.querySelectorAll('.counter');
+        const cObs = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { const el = entry.target, target = parseInt(el.dataset.target), suffix = el.dataset.suffix || ''; const dur = 1500, start = performance.now(); function tick(now) { const p = Math.min((now-start)/dur, 1), e = 1-Math.pow(1-p,3); el.textContent = Math.round(target*e)+suffix; if (p<1) requestAnimationFrame(tick); } requestAnimationFrame(tick); cObs.unobserve(el); } }); }, { threshold: 0.5 });
+        counters.forEach(c => cObs.observe(c));
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

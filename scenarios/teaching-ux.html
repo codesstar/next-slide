@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Design 101 — Swiss Modern</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=Nunito:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #ffffff; --text-primary: #0a0a0a; --text-secondary: #666666; --text-muted: #767676;
+            --accent-red: #ff3300; --accent: #ff3300; --accent-secondary: #0a0a0a;
+            --grid-line: rgba(0, 0, 0, 0.06); --border: #0a0a0a; --border-subtle: rgba(0, 0, 0, 0.08); --surface: #f5f5f5;
+            --font-display: 'Archivo', 'Noto Sans SC', sans-serif; --font-body: 'Nunito', 'Noto Sans SC', sans-serif; --font-mono: monospace;
+            --title-size: clamp(2rem, 6vw, 5rem); --h2-size: clamp(1.25rem, 3.5vw, 2.5rem); --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem); --body-size: clamp(0.75rem, 1.5vw, 1.125rem); --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem); --content-gap: clamp(1rem, 2vw, 2rem); --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-fast: 0.3s; --duration-normal: 0.6s;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+        :lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-mask, .reveal-left { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-mask, .visible .reveal-left { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; clip-path: none !important; } }
+
+        /* Swiss Modern theme */
+        .grid-bg { background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: clamp(30px, 5vw, 60px) clamp(30px, 5vw, 60px); }
+        .red-bar { width: clamp(40px, 8vw, 100px); height: 4px; background: var(--accent-red); }
+        .section-num { font-family: var(--font-display); font-weight: 900; font-size: clamp(3rem, 10vw, 8rem); color: var(--surface); position: absolute; right: var(--slide-padding); top: var(--slide-padding); line-height: 0.9; z-index: 0; }
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.06s; } .reveal:nth-child(2) { transition-delay: 0.14s; } .reveal:nth-child(3) { transition-delay: 0.22s; } .reveal:nth-child(4) { transition-delay: 0.30s; } .reveal:nth-child(5) { transition-delay: 0.38s; } .reveal:nth-child(6) { transition-delay: 0.46s; }
+        .reveal-mask { clip-path: inset(0 0 100% 0); transition: clip-path 0.7s var(--ease-out-expo); }
+        .slide.visible .reveal-mask { clip-path: inset(0 0 0 0); }
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-red); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 0; background: #ddd; border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent-red); transform: scale(1.4); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-display); font-weight: 700; font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+        .swiss-card { background: var(--bg-primary); border: 2px solid var(--border); padding: clamp(0.8rem, 1.5vw, 1.2rem); }
+        .swiss-card h3 { font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); }
+        .swiss-timeline { display: flex; align-items: flex-start; gap: 0; position: relative; margin-top: var(--content-gap); }
+        .swiss-timeline::before { content: ''; position: absolute; top: clamp(16px, 2.5vw, 24px); left: clamp(16px, 2.5vw, 24px); right: clamp(16px, 2.5vw, 24px); height: 2px; background: var(--border); }
+        .swiss-step { flex: 1; text-align: center; position: relative; z-index: 1; }
+        .swiss-step-num { width: clamp(28px, 4vw, 40px); height: clamp(28px, 4vw, 40px); background: var(--accent-red); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: var(--body-size); }
+        .swiss-step h3 { font-size: var(--body-size); font-family: var(--font-display); font-weight: 800; margin-top: clamp(0.3rem, 0.5vw, 0.5rem); }
+        .swiss-step p { font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.1rem, 0.3vw, 0.2rem); }
+        .iceberg { position: relative; max-width: min(70vw, 400px); margin: var(--content-gap) auto; }
+        .iceberg-top { background: var(--accent-red); color: #fff; text-align: center; padding: clamp(0.8rem, 1.5vw, 1.2rem); font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); }
+        .iceberg-line { height: 2px; background: repeating-linear-gradient(90deg, #4a90d9, #4a90d9 8px, transparent 8px, transparent 16px); margin: clamp(2px, 0.3vw, 4px) 0; }
+        .iceberg-bottom { background: var(--text-primary); color: #fff; text-align: center; padding: clamp(1rem, 2vw, 2rem); font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size); clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 15% 100%); }
+        .iceberg-bottom p { font-size: var(--small-size); font-weight: 400; color: rgba(255,255,255,0.6); margin-top: var(--element-gap); font-family: var(--font-body); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide grid-bg" aria-label="Title">
+        <div class="slide-content"><div class="red-bar reveal"></div>
+            <h1 class="reveal-mask" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); text-transform: uppercase; letter-spacing: -0.02em;">UX Design 101</h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: min(70vw, 500px);">&#29992;&#25143;&#20307;&#39564;&#35774;&#35745;&#20837;&#38376; &mdash; &#20174;&#29702;&#35770;&#21040;&#23454;&#36341;</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: WHAT IS UX -->
+    <section class="slide grid-bg" aria-label="What is UX"><div class="section-num">01</div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">&#20160;&#20040;&#26159; UX?</h2>
+            <div class="iceberg reveal" style="margin-top: var(--content-gap);">
+                <div class="iceberg-top">UI &#30028;&#38754;</div>
+                <div class="iceberg-line"></div>
+                <div class="iceberg-bottom">UX &#20307;&#39564;<p>&#30740;&#31350; &middot; &#20449;&#24687;&#26550;&#26500; &middot; &#20132;&#20114;&#35774;&#35745; &middot; &#21487;&#29992;&#24615; &middot; &#26080;&#38556;&#30861;</p></div>
+            </div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap);">UI &#26159;&#20912;&#23665;&#19968;&#35282;&#65292;UX &#26159;&#27700;&#38754;&#19979;&#30340;&#19968;&#20999;&#12290;</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: DESIGN THINKING -->
+    <section class="slide grid-bg" aria-label="Design Thinking"><div class="section-num">02</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">Design Thinking</h2><div class="red-bar reveal"></div>
+            <div class="swiss-timeline">
+                <div class="swiss-step reveal"><div class="swiss-step-num">1</div><h3>Empathize</h3><p>&#21516;&#29702;&#29992;&#25143;</p></div>
+                <div class="swiss-step reveal"><div class="swiss-step-num">2</div><h3>Define</h3><p>&#23450;&#20041;&#38382;&#39064;</p></div>
+                <div class="swiss-step reveal"><div class="swiss-step-num">3</div><h3>Ideate</h3><p>&#22836;&#33041;&#39118;&#26292;</p></div>
+                <div class="swiss-step reveal"><div class="swiss-step-num">4</div><h3>Prototype</h3><p>&#21046;&#20316;&#21407;&#22411;</p></div>
+                <div class="swiss-step reveal"><div class="swiss-step-num">5</div><h3>Test</h3><p>&#29992;&#25143;&#27979;&#35797;</p></div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">&#36845;&#20195;&#36807;&#31243;&#65292;&#38543;&#26102;&#21487;&#20197;&#22238;&#21040;&#21069;&#19968;&#27493;&#12290;</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: USER RESEARCH -->
+    <section class="slide grid-bg" aria-label="User Research"><div class="section-num">03</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">&#29992;&#25143;&#30740;&#31350;</h2><div class="red-bar reveal"></div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(0.5rem, 1vw, 1rem); margin-top: var(--content-gap);">
+                <div class="swiss-card reveal"><h3>&#35775;&#35848;</h3><p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#28145;&#24230;&#20102;&#35299;&#21160;&#26426;&#19982;&#30171;&#28857;</p><div style="margin-top: var(--element-gap); font-size: var(--small-size);"><span style="color: var(--accent-red); font-weight: 800;">&#28145;&#24230;</span> &#9679;&#9679;&#9679;&#9679;&#9675;</div></div>
+                <div class="swiss-card reveal"><h3>&#38382;&#21367;</h3><p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#22823;&#35268;&#27169;&#25910;&#38598;&#37327;&#21270;&#25968;&#25454;</p><div style="margin-top: var(--element-gap); font-size: var(--small-size);"><span style="color: var(--accent-red); font-weight: 800;">&#35268;&#27169;</span> &#9679;&#9679;&#9679;&#9679;&#9679;</div></div>
+                <div class="swiss-card reveal"><h3>&#21487;&#29992;&#24615;&#27979;&#35797;</h3><p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#35266;&#23519;&#29992;&#25143;&#23454;&#38469;&#25805;&#20316;</p><div style="margin-top: var(--element-gap); font-size: var(--small-size);"><span style="color: var(--accent-red); font-weight: 800;">&#27934;&#23519;</span> &#9679;&#9679;&#9679;&#9679;&#9679;</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: IA -->
+    <section class="slide grid-bg" aria-label="IA"><div class="section-num">04</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">&#20449;&#24687;&#26550;&#26500;</h2><div class="red-bar reveal"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div class="reveal"><h3 style="font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size);">Card Sorting</h3><p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.6;">&#35753;&#29992;&#25143;&#25226;&#20869;&#23481;&#20998;&#32452;&#65292;&#21457;&#29616;&#24515;&#26234;&#27169;&#22411;&#12290;</p>
+                    <div style="margin-top: var(--element-gap); display: flex; gap: clamp(0.3rem, 0.5vw, 0.5rem); flex-wrap: wrap;">
+                        <span style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(3px, 0.4vw, 6px) clamp(6px, 0.8vw, 12px); font-size: var(--small-size);">&#20135;&#21697;</span>
+                        <span style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(3px, 0.4vw, 6px) clamp(6px, 0.8vw, 12px); font-size: var(--small-size);">&#20215;&#26684;</span>
+                        <span style="background: var(--accent-red); color: #fff; padding: clamp(3px, 0.4vw, 6px) clamp(6px, 0.8vw, 12px); font-size: var(--small-size);">&#24110;&#21161;</span>
+                    </div>
+                </div>
+                <div class="reveal"><h3 style="font-family: var(--font-display); font-weight: 800; font-size: var(--h3-size);">Site Map</h3><p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.6;">&#23618;&#32423;&#32467;&#26500;&#22270;&#65292;&#26126;&#30830;&#39029;&#38754;&#20851;&#31995;&#12290;</p>
+                    <div style="margin-top: var(--element-gap); border: 2px solid var(--border); padding: clamp(0.4rem, 0.8vw, 0.6rem); text-align: center; font-size: var(--small-size); font-weight: 700;">Home<br><span style="color: var(--text-muted);">&#9474;</span><br><span style="color: var(--text-secondary);">Products &mdash; About &mdash; Blog</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: WIREFRAME VS PROTOTYPE -->
+    <section class="slide grid-bg" aria-label="Wireframe vs Prototype"><div class="section-num">05</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">&#32447;&#26694;&#22270; vs &#21407;&#22411;</h2><div class="red-bar reveal"></div>
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch;">
+                <div class="swiss-card reveal" style="border: 2px dashed var(--text-muted);"><h3 style="color: var(--text-secondary);">Wireframe</h3><ul style="list-style: none; font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;"><li>&#9679; &#20302;&#20445;&#30495;</li><li>&#9679; &#32467;&#26500;&#21644;&#24067;&#23616;</li><li>&#9679; &#40657;&#30333;&#28784;</li><li>&#9679; &#24555;&#36895;&#36845;&#20195;</li></ul></div>
+                <div style="width: 2px; background: var(--border); align-self: stretch;" class="reveal"></div>
+                <div class="swiss-card reveal" style="border-color: var(--accent-red);"><h3 style="color: var(--accent-red);">Prototype</h3><ul style="list-style: none; font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.8;"><li>&#9679; &#39640;&#20445;&#30495;</li><li>&#9679; &#21487;&#20132;&#20114;</li><li>&#9679; &#30495;&#23454;&#35270;&#35273;</li><li>&#9679; &#29992;&#25143;&#27979;&#35797;</li></ul></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: VISUAL HIERARCHY -->
+    <section class="slide grid-bg" aria-label="Visual Hierarchy"><div class="section-num">06</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">&#35270;&#35273;&#23618;&#32423;</h2><div class="red-bar reveal"></div>
+            <div style="margin-top: var(--content-gap); max-width: min(85vw, 700px);">
+                <div class="reveal" style="font-size: clamp(2rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 900;">&#26368;&#37325;&#35201;&#30340;&#20449;&#24687;</div>
+                <div class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; color: var(--text-secondary); margin-top: var(--element-gap);">&#20108;&#32423;&#20449;&#24687;&#34917;&#20805;&#35828;&#26126;</div>
+                <div class="reveal" style="font-size: var(--body-size); color: var(--text-muted); margin-top: var(--element-gap);">&#19977;&#32423;&#20449;&#24687;&#65306;&#32454;&#33410;&#12289;&#27880;&#37322;&#12289;&#36741;&#21161;&#12290;&#23383;&#21495;&#36234;&#23567;&#65292;&#37325;&#35201;&#24615;&#36234;&#20302;&#12290;</div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(0.5rem, 1vw, 1rem); flex-wrap: wrap; font-size: var(--small-size);">
+                    <span style="background: var(--accent-red); color: #fff; padding: clamp(4px, 0.5vw, 8px) clamp(10px, 1.2vw, 18px); font-weight: 700;">&#22823;&#23567;</span>
+                    <span style="background: var(--text-primary); color: #fff; padding: clamp(4px, 0.5vw, 8px) clamp(10px, 1.2vw, 18px); font-weight: 700;">&#23545;&#27604;</span>
+                    <span style="border: 2px solid var(--border); padding: clamp(4px, 0.5vw, 8px) clamp(10px, 1.2vw, 18px); font-weight: 700;">&#30041;&#30333;</span>
+                    <span style="border: 2px solid var(--border); padding: clamp(4px, 0.5vw, 8px) clamp(10px, 1.2vw, 18px); font-weight: 700; color: var(--accent-red);">&#39068;&#33394;</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: ACCESSIBILITY -->
+    <section class="slide grid-bg" aria-label="Accessibility"><div class="section-num">07</div>
+        <div class="slide-content">
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">&#26080;&#38556;&#30861;&#35774;&#35745;</h2><div class="red-bar reveal"></div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(0.5rem, 1vw, 1rem); margin-top: var(--content-gap);">
+                <div class="swiss-card reveal"><h3>WCAG AA</h3><p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#23545;&#27604;&#24230; 4.5:1+</p></div>
+                <div class="swiss-card reveal"><h3>&#39068;&#33394;&#23545;&#27604;</h3><p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#19981;&#20165;&#38752;&#39068;&#33394;&#20256;&#36798;</p></div>
+                <div class="swiss-card reveal"><h3>Screen Reader</h3><p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#35821;&#20041;&#21270; HTML + alt</p></div>
+                <div class="swiss-card reveal"><h3>&#38190;&#30424;&#23548;&#33322;</h3><p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#25152;&#26377;&#21151;&#33021;&#21487;&#38190;&#30424;&#25805;&#20316;</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: CASE STUDY -->
+    <section class="slide grid-bg" aria-label="Case study"><div class="section-num">08</div>
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-red); font-weight: 700;">CASE STUDY</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap);">&#37325;&#26032;&#35774;&#35745;&#32467;&#36134;&#27969;&#31243;</h2>
+            <div style="display: flex; gap: clamp(2rem, 5vw, 4rem); margin-top: var(--content-gap); flex-wrap: wrap; justify-content: center;">
+                <div class="reveal" style="text-align: center;"><div class="counter" data-target="40" data-suffix="%" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent-red); line-height: 1;">0</div><div style="font-size: var(--body-size); color: var(--text-secondary);">Conversion Lift</div></div>
+                <div class="reveal" style="text-align: center;"><div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; line-height: 1;">-60%</div><div style="font-size: var(--body-size); color: var(--text-secondary);">Cart Abandonment</div></div>
+            </div>
+            <div class="swiss-card reveal" style="margin-top: var(--content-gap); max-width: min(80vw, 550px); text-align: left;">
+                <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.6;">&#32467;&#36134;&#27493;&#39588; 5&#8594;3&#65292;&#28155;&#21152;&#36827;&#24230;&#26465;&#65292;&#20248;&#21270;&#34920;&#21333;&#39564;&#35777;&#12290;</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: TAKEAWAYS -->
+    <section class="slide grid-bg" aria-label="Takeaways">
+        <div class="slide-content">
+            <h2 class="reveal-mask" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; text-transform: uppercase;">Key<br>Takeaways</h2>
+            <div class="red-bar reveal" style="margin-top: var(--element-gap);"></div>
+            <ul style="list-style: none; margin-top: var(--content-gap);">
+                <li class="reveal" style="font-size: var(--body-size); padding: clamp(0.2rem, 0.4vh, 0.4rem) 0; display: flex; gap: 0.5em;"><span style="color: var(--accent-red); font-weight: 800;">01</span> <span>&#29992;&#25143;&#31532;&#19968;&#65292;&#32654;&#23398;&#31532;&#20108;</span></li>
+                <li class="reveal" style="font-size: var(--body-size); padding: clamp(0.2rem, 0.4vh, 0.4rem) 0; display: flex; gap: 0.5em;"><span style="color: var(--accent-red); font-weight: 800;">02</span> <span>&#27979;&#35797;&#12289;&#36845;&#20195;&#12289;&#20877;&#27979;&#35797;</span></li>
+                <li class="reveal" style="font-size: var(--body-size); padding: clamp(0.2rem, 0.4vh, 0.4rem) 0; display: flex; gap: 0.5em;"><span style="color: var(--accent-red); font-weight: 800;">03</span> <span>&#26080;&#38556;&#30861;&#19981;&#26159;&#36873;&#20570;&#39064;</span></li>
+            </ul>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted);">Tools: Figma &middot; Maze &middot; Hotjar &middot; Miro &middot; Optimal Workshop</div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init()}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible')}setupIntersectionObserver(){const o=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');const i=this.slides.indexOf(e.target);if(i!==-1){this.currentSlide=i;this.updateUI()}}})},{threshold:0.5});this.slides.forEach(s=>o.observe(s))}setupKeyboardNav(){document.addEventListener('keydown',e=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break}})}setupTouchNav(){document.addEventListener('touchstart',e=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const dY=this.touchStartY-e.changedTouches[0].clientY,dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1)},{passive:true})}setupWheelNav(){let t;document.addEventListener('wheel',e=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1)},50)},{passive:true})}setupProgressBar(){this.progressBar=document.getElementById('progressBar')}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d)})}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI()}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false},600)}updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters=document.querySelectorAll('.counter');const cObs=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){const el=entry.target,target=parseInt(el.dataset.target),suffix=el.dataset.suffix||'';const dur=1500,start=performance.now();function tick(now){const p=Math.min((now-start)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(target*e)+suffix;if(p<1)requestAnimationFrame(tick)}requestAnimationFrame(tick);cObs.unobserve(el)}})},{threshold:0.5});counters.forEach(c=>cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation()});
+    </script>
+</body>
+</html>

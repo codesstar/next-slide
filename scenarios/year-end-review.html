@@ -23,7 +23,7 @@
             --bg-secondary: #141923;
             --bg-tertiary: #1e2433;
             --text-primary: #f0f0f0;
-            --text-secondary: #8891a4;
+            --text-secondary: #a0a8b8;
             --text-muted: #5a6478;
             --accent: #3d7cf5;
             --accent-secondary: #2dd4bf;
@@ -154,7 +154,7 @@
         /* 9. CJK-specific typography adjustments */
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
             line-height: 1.8;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: break-word;
         }
 
@@ -924,6 +924,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             /* --- Touch: swipe up/down with 50px threshold --- */

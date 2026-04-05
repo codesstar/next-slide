@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云隐酒庄 · 宁夏贺兰山</title>
+
+    <!-- Fonts: Ma Shan Zheng (calligraphic) + Noto Serif SC (display) + Noto Sans SC (body) + Cormorant (latin) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Cormorant:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — 东方墨韵 · 酒庄红韵
+           Deep burgundy + ink wash aesthetic
+           =========================================== */
+        :root {
+            --bg-primary: #f7f4ef;
+            --bg-scroll: #efe8dc;
+            --ink-black: #1a1a1a;
+            --ink-gray: #4a4a4a;
+            --ink-wash: rgba(26, 26, 26, 0.06);
+            --wine-deep: #722F37;
+            --wine-dark: #4a1c22;
+            --wine-light: #9b4a54;
+            --wine-blush: rgba(114, 47, 55, 0.06);
+            --accent-red: #c53d43;
+            --accent-gold: #c9a84c;
+            --accent-gold-dark: #b8860b;
+            --accent-gold-light: rgba(201, 168, 76, 0.15);
+            --text-primary: #1a1a1a;
+            --text-secondary: #6a6058;
+            --text-muted: #b0a898;
+            --border-subtle: rgba(26, 26, 26, 0.1);
+            --surface: rgba(26, 26, 26, 0.03);
+
+            --font-display: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-body: 'Noto Sans SC', sans-serif;
+            --font-latin: 'Cormorant', serif;
+            --font-mono: 'Noto Sans SC', monospace;
+
+            --title-size: clamp(2.5rem, 7vw, 6rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-ink: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.8s;
+            --duration-slow: 1.2s;
+            --duration-dramatic: 2s;
+
+            --accent: var(--wine-deep);
+            --accent-secondary: var(--accent-gold);
+            --accent-glow: rgba(114, 47, 55, 0.2);
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; max-height: 100%;
+            overflow: hidden; padding: var(--slide-padding);
+        }
+        :lang(zh), :lang(zh-CN) { line-height: 1.8; word-break: normal; overflow-wrap: break-word; }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
+        img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.8rem, 5vw, 3.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.5rem, 4vw, 2.5rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .decorative { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid, .wine-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.8rem, 9vw, 3rem); }
+            .grid, .wine-grid { grid-template-columns: 1fr !important; }
+            .slide-counter { display: none; }
+            .two-col { flex-direction: column !important; }
+        }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card { border-width: 0.5px; } }
+
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important; scroll-behavior: auto !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-gentle, .reveal-left, .reveal-scale {
+                opacity: 0; transform: none !important; filter: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-gentle, .visible .reveal-left, .visible .reveal-scale { opacity: 1; }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* ===========================================
+           THEME — INK WASH + WINE AESTHETIC
+           =========================================== */
+        /* Ink wash background blobs */
+        .ink-bg::before {
+            content: ''; position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 15% 80%, rgba(114, 47, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 20%, rgba(26, 26, 26, 0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(201, 168, 76, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Mountain silhouette */
+        .mountain-bg::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 35%; pointer-events: none; opacity: 0.06;
+            background:
+                linear-gradient(135deg, transparent 33%, var(--wine-deep) 33%, var(--wine-deep) 66%, transparent 66%),
+                linear-gradient(225deg, transparent 33%, var(--ink-black) 33%, var(--ink-black) 66%, transparent 66%);
+        }
+
+        /* Seal stamp — square */
+        .seal-stamp {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: clamp(2.5rem, 5vw, 4rem); height: clamp(2.5rem, 5vw, 4rem);
+            border: 2px solid var(--wine-deep); border-radius: 4px;
+            color: var(--wine-deep); font-family: var(--font-display);
+            font-size: clamp(0.9rem, 2vw, 1.5rem); transform: rotate(-5deg);
+            opacity: 0.85; line-height: 1; letter-spacing: 0.1em;
+        }
+        /* Seal stamp — round */
+        .seal-round {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: clamp(3rem, 6vw, 5rem); height: clamp(3rem, 6vw, 5rem);
+            border: 2px solid var(--wine-deep); border-radius: 50%;
+            color: var(--wine-deep); font-family: var(--font-serif);
+            font-size: clamp(0.6rem, 1.2vw, 0.9rem); transform: rotate(8deg);
+            opacity: 0.8; text-align: center; line-height: 1.3;
+            padding: clamp(0.3rem, 0.5vw, 0.5rem);
+        }
+
+        /* Wine bottle CSS silhouette */
+        .wine-bottle {
+            width: clamp(28px, 3.5vw, 44px); height: clamp(90px, 14vh, 160px);
+            position: relative; margin: 0 auto;
+        }
+        .wine-bottle::before {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; height: 68%; background: var(--wine-deep); border-radius: 0 0 6px 6px;
+        }
+        .wine-bottle::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 34%; height: 36%; background: var(--wine-dark); border-radius: 3px 3px 0 0;
+        }
+
+        /* Decorative horizontal rule */
+        .ink-rule {
+            width: clamp(60px, 12vw, 120px); height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ink-black), transparent);
+            opacity: 0.3; margin: var(--element-gap) 0;
+        }
+
+        /* ===========================================
+           ANIMATIONS — Calm / Ink Flow
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(25px);
+            transition: opacity var(--duration-normal) var(--ease-ink), transform var(--duration-normal) var(--ease-ink);
+        }
+        .reveal-gentle { opacity: 0; transition: opacity 1.5s ease; }
+        .reveal-left {
+            opacity: 0; transform: translateX(-40px);
+            transition: opacity var(--duration-normal) ease, transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .reveal-scale {
+            opacity: 0; transform: scale(0.92);
+            transition: opacity var(--duration-normal) ease, transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal,
+        .slide.visible .reveal-gentle,
+        .slide.visible .reveal-left,
+        .slide.visible .reveal-scale { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.35s; }
+        .reveal:nth-child(4) { transition-delay: 0.5s; }
+        .reveal:nth-child(5) { transition-delay: 0.65s; }
+        .reveal:nth-child(6) { transition-delay: 0.8s; }
+
+        @keyframes breathe { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.7; } }
+        @keyframes float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        /* ===========================================
+           PROGRESS BAR & NAV
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: linear-gradient(90deg, var(--wine-deep), var(--accent-gold));
+            width: 0%; z-index: 9999; transition: width 0.3s ease;
+        }
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted);
+            border: none; cursor: pointer; transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active { background: var(--wine-deep); transform: scale(1.4); box-shadow: 0 0 8px var(--accent-glow); }
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-latin); font-size: var(--small-size); color: var(--text-muted); z-index: 9998;
+        }
+
+        /* ===========================================
+           COMPONENT STYLES
+           =========================================== */
+        .wine-card {
+            background: linear-gradient(135deg, var(--wine-blush), var(--accent-gold-light));
+            border: 1px solid var(--border-subtle); border-radius: 8px;
+            padding: clamp(1rem, 2vw, 1.5rem); text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .wine-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(114, 47, 55, 0.08); }
+
+        .info-bar {
+            height: 100%; background: linear-gradient(90deg, var(--wine-deep), var(--wine-light));
+            border-radius: 4px; transition: width 1.2s var(--ease-out-expo); width: 0;
+        }
+        .slide.visible .info-bar { width: var(--bar-width, 50%); }
+
+        .tasting-step {
+            display: flex; align-items: flex-start; gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+        .step-num {
+            width: clamp(28px, 4vw, 40px); height: clamp(28px, 4vw, 40px);
+            border-radius: 50%; background: var(--wine-deep); color: var(--bg-primary);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-latin); font-size: var(--body-size); font-weight: 600; flex-shrink: 0;
+        }
+        .award-badge {
+            display: inline-flex; align-items: center; gap: clamp(0.3rem, 0.8vw, 0.6rem);
+            padding: clamp(0.4rem, 1vw, 0.8rem) clamp(0.8rem, 1.5vw, 1.2rem);
+            background: var(--accent-gold-light); border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 100px; font-size: var(--small-size); color: var(--accent-gold-dark);
+        }
+        .wine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem); }
+        .two-col { display: flex; gap: var(--content-gap); align-items: center; }
+        .two-col > * { flex: 1; min-width: 0; }
+        .eco-card {
+            text-align: center; padding: clamp(0.8rem, 1.5vw, 1.5rem);
+            background: var(--surface); border-radius: 8px; border: 1px solid var(--border-subtle);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide ink-bg" aria-label="Title" style="background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-scroll) 100%);">
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative;">
+            <div class="reveal-gentle" style="position: absolute; top: clamp(1.5rem, 4vw, 3rem); right: clamp(2rem, 5vw, 4rem);">
+                <div class="seal-stamp">云隐</div>
+            </div>
+            <div class="reveal" style="display: flex; align-items: center; gap: clamp(1.5rem, 4vw, 3rem); justify-content: center;">
+                <div style="writing-mode: vertical-rl; font-family: var(--font-display); font-size: clamp(3rem, 9vw, 8rem); color: var(--wine-deep); letter-spacing: 0.15em; line-height: 1.4;">云隐酒庄</div>
+                <div style="text-align: left;">
+                    <div class="ink-rule"></div>
+                    <p style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--text-secondary); margin-top: var(--element-gap);">宁夏 · 贺兰山东麓</p>
+                    <p style="font-family: var(--font-latin); font-size: var(--subtitle-size); color: var(--text-muted); margin-top: var(--element-gap); font-style: italic;">Where East Meets Terroir</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-family: var(--font-serif); font-size: var(--subtitle-size); color: var(--text-secondary); letter-spacing: 0.3em; margin-top: var(--content-gap);">北纬38° · 贺兰山下 · 中国精品葡萄酒</p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: BRAND STORY =================== -->
+    <section class="slide ink-bg" aria-label="Brand Story">
+        <div class="slide-content" style="max-width: min(90vw, 900px); margin: 0 auto;">
+            <div class="reveal" style="text-align: center;">
+                <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">壹 · 缘起</span>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); text-align: center; margin-top: var(--element-gap); color: var(--wine-deep);">
+                贺兰山东麓，北纬38°黄金产区
+            </h2>
+            <div class="ink-rule reveal" style="margin: var(--content-gap) auto;"></div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; line-height: 2; max-width: 60ch; margin: 0 auto;">
+                贺兰山东麓，与法国波尔多、美国纳帕谷同处北纬38度黄金种植带。日照充足、昼夜温差大、砂砾土壤透水性好，赋予葡萄极高的糖酸比和丰富的酚类物质。
+            </p>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; line-height: 2; max-width: 60ch; margin: var(--element-gap) auto 0;">
+                云隐酒庄始建于2012年，以「法式工艺，中国风土」为理念，酿造属于东方的精品葡萄酒。
+            </p>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 3rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-family: var(--font-latin); font-size: var(--stat-size); color: var(--wine-deep); font-weight: 600;">38°</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">北纬黄金纬度</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--font-latin); font-size: var(--stat-size); color: var(--wine-deep); font-weight: 600;">13</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">年酿造历史</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--font-latin); font-size: var(--stat-size); color: var(--wine-deep); font-weight: 600;">200</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted);">亩有机葡萄园</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: TERROIR =================== -->
+    <section class="slide ink-bg mountain-bg" aria-label="Terroir">
+        <div class="slide-content">
+            <div class="reveal" style="text-align: center;">
+                <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">贰 · 风土</span>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); text-align: center; margin-top: var(--element-gap);">天赐风土，自然馈赠</h2>
+            <div class="reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 800px); margin-left: auto; margin-right: auto;">
+                <div style="position: relative; padding: clamp(1rem, 2vw, 2rem); background: var(--surface); border-radius: 12px; border: 1px solid var(--border-subtle);">
+                    <!-- Mountain silhouette CSS art -->
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 30%; overflow: hidden; border-radius: 0 0 12px 12px; opacity: 0.07;">
+                        <div style="position: absolute; bottom: -10%; left: 10%; width: 45%; height: 100%; background: var(--ink-black); clip-path: polygon(0% 100%, 50% 0%, 100% 100%);"></div>
+                        <div style="position: absolute; bottom: -10%; left: 40%; width: 55%; height: 85%; background: var(--wine-deep); clip-path: polygon(0% 100%, 45% 5%, 100% 100%);"></div>
+                        <div style="position: absolute; bottom: -10%; right: 0; width: 35%; height: 65%; background: var(--ink-gray); clip-path: polygon(0% 100%, 55% 10%, 100% 100%);"></div>
+                    </div>
+                    <div style="position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.8rem, 2vw, 1.5rem);">
+                        <div class="reveal">
+                            <div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.4em;">
+                                <span style="color: var(--accent-gold); font-size: 1.2em;">&#9728;</span>
+                                <span style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">日照</span>
+                            </div>
+                            <div style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.5em;">年均 3000+ 小时</div>
+                            <div style="background: rgba(114, 47, 55, 0.08); border-radius: 4px; height: clamp(6px, 1vh, 10px); overflow: hidden;">
+                                <div class="info-bar" style="--bar-width: 92%;"></div>
+                            </div>
+                        </div>
+                        <div class="reveal">
+                            <div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.4em;">
+                                <span style="color: var(--accent-gold); font-size: 1.2em;">&#9730;</span>
+                                <span style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">降水</span>
+                            </div>
+                            <div style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.5em;">年均 200mm 干旱产区</div>
+                            <div style="background: rgba(114, 47, 55, 0.08); border-radius: 4px; height: clamp(6px, 1vh, 10px); overflow: hidden;">
+                                <div class="info-bar" style="--bar-width: 25%;"></div>
+                            </div>
+                        </div>
+                        <div class="reveal">
+                            <div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.4em;">
+                                <span style="color: var(--accent-gold); font-size: 1.2em;">&#9651;</span>
+                                <span style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">海拔</span>
+                            </div>
+                            <div style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.5em;">1100m 高原产区</div>
+                            <div style="background: rgba(114, 47, 55, 0.08); border-radius: 4px; height: clamp(6px, 1vh, 10px); overflow: hidden;">
+                                <div class="info-bar" style="--bar-width: 68%;"></div>
+                            </div>
+                        </div>
+                        <div class="reveal">
+                            <div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.4em;">
+                                <span style="color: var(--accent-gold); font-size: 1.2em;">&#9681;</span>
+                                <span style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">温差</span>
+                            </div>
+                            <div style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.5em;">昼夜温差 15°C+</div>
+                            <div style="background: rgba(114, 47, 55, 0.08); border-radius: 4px; height: clamp(6px, 1vh, 10px); overflow: hidden;">
+                                <div class="info-bar" style="--bar-width: 82%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reveal" style="text-align: center; margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted);">
+                        砂砾土壤 · 黄河灌溉 · 贺兰山屏障
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: WINEMAKING PHILOSOPHY =================== -->
+    <section class="slide ink-bg" aria-label="Winemaking Philosophy">
+        <div class="slide-content two-col">
+            <div>
+                <div class="reveal">
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">叁 · 酿造</span>
+                </div>
+                <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); margin-top: var(--element-gap); color: var(--ink-black);">法式工艺<br>中国风土</h2>
+                <div class="ink-rule reveal"></div>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); line-height: 2; margin-top: var(--element-gap);">
+                    聘请法国波尔多酿酒顾问，引入传统酿造工艺。全程手工采摘，低温浸渍，法国橡木桶陈酿12至18个月。
+                </p>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); line-height: 2; margin-top: var(--element-gap);">
+                    同时尊重贺兰山独特风土，让中国的土地发出自己的声音。
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap);">
+                    <div class="seal-round">法式<br>工艺</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: clamp(0.8rem, 2vw, 1.5rem);">
+                <div class="reveal-scale" style="display: flex; gap: clamp(1rem, 3vw, 2rem); align-items: flex-end;">
+                    <div style="text-align: center;">
+                        <div class="wine-bottle" style="height: clamp(70px, 11vh, 130px);"></div>
+                        <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.5em;">手工采摘</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="width: clamp(40px, 6vw, 65px); height: clamp(40px, 6vw, 65px); border-radius: 50%; border: 2px solid var(--wine-deep); display: flex; align-items: center; justify-content: center; animation: float-slow 5s ease-in-out infinite;">
+                            <span style="font-family: var(--font-latin); font-size: var(--body-size); color: var(--wine-deep);">18m</span>
+                        </div>
+                        <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.5em;">橡木桶陈酿</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="width: clamp(45px, 6vw, 70px); height: clamp(32px, 4.5vw, 50px); border: 2px solid var(--wine-deep); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-family: var(--font-serif); font-size: var(--small-size); color: var(--wine-deep);">FR</span>
+                        </div>
+                        <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.5em;">法国橡木</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: PRODUCT LINE =================== -->
+    <section class="slide ink-bg" aria-label="Product Line">
+        <div class="slide-content">
+            <div class="reveal" style="text-align: center;">
+                <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">肆 · 佳酿</span>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); text-align: center; margin-top: var(--element-gap);">三款匠心之作</h2>
+            <div class="wine-grid" style="margin-top: var(--content-gap);">
+                <div class="reveal wine-card">
+                    <div class="wine-bottle" style="height: clamp(55px, 9vh, 110px); margin-bottom: clamp(0.5rem, 1vw, 1rem);"></div>
+                    <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--wine-deep);">赤霞珠</h3>
+                    <p style="font-family: var(--font-latin); font-size: var(--small-size); color: var(--text-muted); font-style: italic;">Cabernet Sauvignon</p>
+                    <div class="ink-rule" style="margin: var(--element-gap) auto;"></div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8;">深宝石红 · 黑醋栗与雪松<br>单宁坚实优雅 · 余韵悠长</p>
+                    <div style="margin-top: var(--element-gap); font-family: var(--font-latin); font-size: var(--small-size); color: var(--accent-gold-dark);">&#9733; 92pts Wine Advocate</div>
+                </div>
+                <div class="reveal wine-card">
+                    <div class="wine-bottle" style="height: clamp(55px, 9vh, 110px); margin-bottom: clamp(0.5rem, 1vw, 1rem);"></div>
+                    <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--wine-deep);">黑比诺</h3>
+                    <p style="font-family: var(--font-latin); font-size: var(--small-size); color: var(--text-muted); font-style: italic;">Pinot Noir</p>
+                    <div class="ink-rule" style="margin: var(--element-gap) auto;"></div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8;">宝石红 · 覆盆子与紫罗兰<br>口感丝滑 · 矿物质感</p>
+                    <div style="margin-top: var(--element-gap); font-family: var(--font-latin); font-size: var(--small-size); color: var(--accent-gold-dark);">&#9733; 90pts Decanter</div>
+                </div>
+                <div class="reveal wine-card">
+                    <div class="wine-bottle" style="height: clamp(55px, 9vh, 110px); margin-bottom: clamp(0.5rem, 1vw, 1rem);"></div>
+                    <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--wine-deep);">马瑟兰</h3>
+                    <p style="font-family: var(--font-latin); font-size: var(--small-size); color: var(--text-muted); font-style: italic;">Marselan</p>
+                    <div class="ink-rule" style="margin: var(--element-gap) auto;"></div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8;">深紫红 · 黑莓与香料<br>浓郁饱满 · 中国风土特色</p>
+                    <div style="margin-top: var(--element-gap); font-family: var(--font-latin); font-size: var(--small-size); color: var(--accent-gold-dark);">&#9733; 金奖 布鲁塞尔大赛</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: AWARDS =================== -->
+    <section class="slide ink-bg" aria-label="Awards">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal">
+                <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">伍 · 荣誉</span>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); margin-top: var(--element-gap);">世界舞台上的中国风土</h2>
+            <div class="ink-rule reveal" style="margin: var(--content-gap) auto;"></div>
+            <div class="reveal" style="display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(0.5rem, 1.5vw, 1rem);">
+                <div class="award-badge">&#127942; Decanter 世界葡萄酒大赛 · 金奖</div>
+                <div class="award-badge">&#127942; 布鲁塞尔国际大赛 · 大金奖</div>
+                <div class="award-badge">&#127942; Wine Advocate 92分</div>
+            </div>
+            <div class="reveal" style="display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(0.5rem, 1.5vw, 1rem); margin-top: var(--element-gap);">
+                <div class="award-badge">&#127942; 中国优质葡萄酒挑战赛 · 金奖</div>
+                <div class="award-badge">&#127942; 柏林葡萄酒大赛 · 银奖</div>
+            </div>
+            <div class="reveal" style="margin-top: var(--content-gap); max-width: 50ch;">
+                <blockquote style="font-family: var(--font-serif); font-size: var(--body-size); color: var(--text-secondary); font-style: italic; line-height: 2; border-left: 2px solid var(--wine-deep); padding-left: 1em; text-align: left;">
+                    "中国宁夏产区的崛起令人瞩目，云隐酒庄是其中最具潜力的新星之一。"
+                </blockquote>
+                <cite style="display: block; font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap); font-style: normal;">&mdash; Jancis Robinson MW</cite>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: WINE TASTING =================== -->
+    <section class="slide ink-bg" aria-label="Wine Tasting">
+        <div class="slide-content">
+            <div class="reveal" style="text-align: center;">
+                <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">陆 · 品鉴</span>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); text-align: center; margin-top: var(--element-gap);">品鉴之道，四步入境</h2>
+            <div style="max-width: min(90vw, 700px); margin: var(--content-gap) auto 0; display: flex; flex-direction: column; gap: clamp(0.6rem, 1.8vw, 1.3rem);">
+                <div class="tasting-step reveal">
+                    <div class="step-num">1</div>
+                    <div>
+                        <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">观 · 色</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">举杯倾斜45度，观察酒液颜色、透明度与挂杯。深宝石红预示浓郁果味。</p>
+                    </div>
+                </div>
+                <div class="tasting-step reveal">
+                    <div class="step-num">2</div>
+                    <div>
+                        <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">闻 · 香</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">轻晃酒杯，感受果香、花香与橡木桶带来的复合香气层次。</p>
+                    </div>
+                </div>
+                <div class="tasting-step reveal">
+                    <div class="step-num">3</div>
+                    <div>
+                        <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">品 · 味</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">小口入喉，感受单宁、酸度、酒体与余味之间的平衡与和谐。</p>
+                    </div>
+                </div>
+                <div class="tasting-step reveal">
+                    <div class="step-num">4</div>
+                    <div>
+                        <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">悟 · 境</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">闭目回味，感受贺兰山的风土在口中缓缓展开的故事。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: SUSTAINABILITY =================== -->
+    <section class="slide ink-bg" aria-label="Sustainability">
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal" style="text-align: center;">
+                <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">柒 · 可持续</span>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--h2-size); text-align: center; margin-top: var(--element-gap);">有机种植，生态酿造</h2>
+            <div class="ink-rule reveal" style="margin: var(--content-gap) auto;"></div>
+            <div class="reveal" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 2rem); max-width: min(90vw, 800px);">
+                <div class="eco-card">
+                    <div style="font-size: clamp(1.5rem, 3vw, 2.5rem); margin-bottom: 0.3em;">&#127807;</div>
+                    <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">有机认证</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; margin-top: 0.3em;">全园有机管理<br>零化学农药</p>
+                </div>
+                <div class="eco-card">
+                    <div style="font-size: clamp(1.5rem, 3vw, 2.5rem); margin-bottom: 0.3em;">&#128167;</div>
+                    <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">节水灌溉</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; margin-top: 0.3em;">滴灌系统<br>节水60%</p>
+                </div>
+                <div class="eco-card">
+                    <div style="font-size: clamp(1.5rem, 3vw, 2.5rem); margin-bottom: 0.3em;">&#9752;</div>
+                    <h3 style="font-family: var(--font-serif); font-size: var(--h3-size); color: var(--ink-black);">生态平衡</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8; margin-top: 0.3em;">生物防治<br>自然生态链</p>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; margin-top: var(--content-gap); max-width: 50ch; line-height: 2;">
+                好酒始于好土地。每一瓶云隐，都是对这片土地最深沉的敬意。
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: CTA =================== -->
+    <section class="slide ink-bg" aria-label="Visit Us" style="background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-scroll) 100%);">
+        <div class="slide-content" style="align-items: center; text-align: center; position: relative;">
+            <div class="reveal-gentle" style="position: absolute; top: clamp(1.5rem, 4vw, 3rem); left: clamp(2rem, 5vw, 4rem);">
+                <div class="seal-round" style="border-color: var(--accent-gold); color: var(--accent-gold);">酒庄<br>体验</div>
+            </div>
+            <div class="reveal">
+                <span style="font-family: var(--font-display); font-size: var(--small-size); color: var(--wine-deep); letter-spacing: 0.3em;">捌 · 邀约</span>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-display); font-size: var(--title-size); color: var(--wine-deep); margin-top: var(--element-gap);">酒庄体验之旅</h2>
+            <div class="ink-rule reveal" style="margin: var(--content-gap) auto;"></div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); line-height: 2; max-width: 45ch;">
+                走进贺兰山东麓，亲身感受风土的力量。葡萄园漫步、酿酒体验、私人品鉴晚宴。
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(0.8rem, 2vw, 1.5rem); flex-wrap: wrap; justify-content: center;">
+                <div style="padding: clamp(0.6rem, 1.2vw, 1rem) clamp(1.2rem, 2.5vw, 2rem); background: var(--wine-deep); color: var(--bg-primary); font-family: var(--font-serif); font-size: var(--body-size); border-radius: 4px; cursor: pointer;">预约参观</div>
+                <div style="padding: clamp(0.6rem, 1.2vw, 1rem) clamp(1.2rem, 2.5vw, 2rem); border: 1px solid var(--wine-deep); color: var(--wine-deep); font-family: var(--font-serif); font-size: var(--body-size); border-radius: 4px; cursor: pointer;">品鉴套装</div>
+            </div>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted);">
+                宁夏银川市 · 贺兰山东麓产区 · yunyin-winery.cn
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true; this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+            updateUI() {
+                const total = this.slides.length, current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

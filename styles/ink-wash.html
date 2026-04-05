@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>东方墨韵 — AI 驱动的设计革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f7f4ef;
+  --ink: #1a1a1a;
+  --seal: #c53d43;
+  --gold: #b8860b;
+  --muted: #6a6058;
+  --bg-warm: #f0ebe3;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.slide {
+  position: fixed; inset: 0;
+  height: 100vh; height: 100dvh;
+  overflow: hidden; opacity: 0; pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(170deg, var(--bg) 0%, var(--bg-warm) 100%);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--seal); z-index: 100;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-counter {
+  position: fixed; bottom: 2rem; right: 2.5rem;
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(0.7rem, 0.9vw, 0.8rem);
+  color: var(--muted); z-index: 100;
+}
+
+/* Ink wash blobs */
+.ink-blob {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  filter: blur(60px);
+}
+.ink-blob.a { background: rgba(26,26,26,0.04); }
+.ink-blob.b { background: rgba(138,128,112,0.06); }
+.ink-blob.c { background: rgba(184,134,11,0.04); }
+
+/* Seal stamp */
+.seal-stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border: 2px solid var(--seal); color: var(--seal);
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+  transform: rotate(5deg); line-height: 1;
+}
+
+/* Brush border */
+.brush-border-left {
+  border-left: 1px solid rgba(26,26,26,0.15);
+}
+.brush-border-bottom {
+  border-bottom: 1px solid rgba(26,26,26,0.1);
+}
+
+/* Vertical text */
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+@keyframes brushIn {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes brushRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.anim { opacity: 0; }
+.slide.active .a-b1 { animation: brushIn 0.8s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-b2 { animation: brushIn 0.8s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-b3 { animation: brushIn 0.8s 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-b4 { animation: brushIn 0.8s 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-f1 { animation: fadeIn 1s 0.3s forwards; }
+.slide.active .a-f2 { animation: fadeIn 1s 0.5s forwards; }
+.slide.active .a-f3 { animation: fadeIn 1s 0.7s forwards; }
+.slide.active .a-r1 { animation: brushRight 0.7s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-r2 { animation: brushRight 0.7s 0.35s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-r3 { animation: brushRight 0.7s 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide.active .a-r4 { animation: brushRight 0.7s 0.65s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* ===== SLIDE 1 ===== */
+.s1-layout {
+  height: 100%; display: grid; grid-template-columns: 1fr 1.5fr;
+  position: relative;
+}
+.s1-left {
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 5rem 3rem 5rem 5rem; position: relative;
+}
+.s1-right {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 5rem; position: relative;
+}
+.s1-left .vert-label {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(0.7rem, 0.9vw, 0.8rem); color: var(--muted);
+  letter-spacing: 0.5em; position: absolute; top: 5rem; left: 5rem;
+}
+.s1-right .title {
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(3rem, 6vw, 5.5rem); line-height: 1.2; color: var(--ink);
+  margin-bottom: 2rem;
+}
+.s1-right .subtitle {
+  font-weight: 300; font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+  color: var(--muted); line-height: 1.8; max-width: 400px;
+}
+.s1-right .seal-stamp {
+  margin-top: 2.5rem;
+}
+
+/* ===== SLIDE 2 ===== */
+.s2-layout {
+  height: 100%; display: grid; grid-template-columns: 1fr;
+  padding: 5rem 6rem; position: relative;
+}
+.s2-content { display: flex; flex-direction: column; justify-content: center; }
+.s2-header {
+  margin-bottom: 3.5rem;
+}
+.s2-header h2 {
+  font-family: 'Noto Serif SC', serif; font-weight: 700;
+  font-size: clamp(1.8rem, 3vw, 2.6rem); color: var(--ink); margin-bottom: 0.5rem;
+}
+.s2-header .line {
+  width: 40px; height: 1px; background: var(--seal); margin-top: 1rem;
+}
+.s2-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem 4rem;
+}
+.s2-item {
+  padding-left: 1.5rem;
+}
+.s2-item .name {
+  font-family: 'Noto Serif SC', serif; font-weight: 700;
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem); color: var(--ink); margin-bottom: 0.4rem;
+}
+.s2-item .desc {
+  font-weight: 300; font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  color: var(--muted); line-height: 1.7;
+}
+.s2-vert {
+  position: absolute; right: 4rem; top: 50%; transform: translateY(-50%);
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(1rem, 1.5vw, 1.3rem); color: rgba(26,26,26,0.08);
+  letter-spacing: 0.5em;
+}
+
+/* ===== SLIDE 3 ===== */
+.s3-layout {
+  height: 100%; display: grid; grid-template-columns: repeat(3, 1fr);
+  position: relative;
+}
+.s3-stat {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 3rem; position: relative;
+}
+.s3-stat:not(:last-child) { border-right: 1px solid rgba(26,26,26,0.08); }
+.s3-stat .value {
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(3.5rem, 7vw, 6rem); color: var(--ink); line-height: 1;
+  margin-bottom: 0.8rem;
+}
+.s3-stat .value .accent { color: var(--seal); }
+.s3-stat .label {
+  font-weight: 300; font-size: clamp(0.85rem, 1.2vw, 1.05rem); color: var(--muted);
+}
+.s3-stat .brush-line {
+  width: 30px; height: 1px; background: var(--gold); margin-top: 1.5rem; opacity: 0.6;
+}
+.s3-top-text {
+  position: absolute; top: 4rem; left: 5rem;
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(0.7rem, 0.9vw, 0.8rem); color: var(--muted);
+  letter-spacing: 0.3em;
+}
+
+/* ===== SLIDE 4 ===== */
+.s4-layout {
+  height: 100%; display: flex; align-items: center; justify-content: center;
+  position: relative; padding: 5rem;
+}
+.s4-content {
+  max-width: 600px; text-align: left;
+}
+.s4-content .quote-mark {
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(4rem, 8vw, 7rem); color: rgba(26,26,26,0.08); line-height: 0.6;
+  margin-bottom: 1rem;
+}
+.s4-content .quote-text {
+  font-family: 'Noto Serif SC', serif; font-weight: 700;
+  font-size: clamp(1.5rem, 2.6vw, 2.3rem); color: var(--ink); line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+.s4-content .quote-author {
+  font-weight: 300; font-size: clamp(0.8rem, 1vw, 0.9rem); color: var(--muted);
+}
+.s4-seal {
+  position: absolute; bottom: 5rem; right: 6rem;
+}
+.s4-vert {
+  position: absolute; left: 4rem; top: 50%; transform: translateY(-50%);
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem); color: rgba(197,61,67,0.15);
+  letter-spacing: 0.8em;
+}
+
+/* ===== SLIDE 5 ===== */
+.s5-layout {
+  height: 100%; display: grid; grid-template-columns: 1.5fr 1fr;
+  position: relative;
+}
+.s5-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 5rem 4rem 5rem 6rem;
+}
+.s5-right {
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 5rem 4rem; position: relative;
+}
+.s5-left .closing-title {
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem); color: var(--ink); line-height: 1.3;
+  margin-bottom: 1.5rem;
+}
+.s5-left .closing-sub {
+  font-weight: 300; font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  color: var(--muted); line-height: 1.8; max-width: 440px;
+}
+.s5-left .gold-line {
+  width: 50px; height: 1px; background: var(--gold); margin-top: 2rem;
+}
+.s5-right .vert-closing {
+  font-family: 'Ma Shan Zheng', serif;
+  font-size: clamp(1.2rem, 2vw, 1.7rem); color: rgba(26,26,26,0.06);
+  letter-spacing: 1em; line-height: 2;
+}
+.s5-right .seal-stamp {
+  margin-top: 3rem;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter" id="counter">01 / 05</div>
+
+<!-- SLIDE 1 -->
+<div class="slide active" data-slide="0">
+  <div class="s1-layout">
+    <div class="ink-blob a" style="width:300px;height:300px;top:-50px;left:-80px;"></div>
+    <div class="ink-blob b" style="width:400px;height:400px;bottom:-100px;right:10%;"></div>
+    <div class="s1-left">
+      <div class="vert-label vertical-text anim a-f1">二零二六</div>
+    </div>
+    <div class="s1-right">
+      <div class="title anim a-b1">AI 驱动的<br>设计革命</div>
+      <div class="subtitle anim a-b2">从像素到体验，重新定义创造力的边界</div>
+      <div class="seal-stamp anim a-b3">革</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" data-slide="1">
+  <div class="s2-layout">
+    <div class="ink-blob c" style="width:350px;height:350px;top:10%;right:15%;"></div>
+    <div class="ink-blob a" style="width:250px;height:250px;bottom:10%;left:5%;"></div>
+    <div class="s2-content">
+      <div class="s2-header anim a-b1">
+        <h2>核心能力</h2>
+        <div class="line"></div>
+      </div>
+      <div class="s2-grid">
+        <div class="s2-item brush-border-left anim a-r1">
+          <div class="name">智能布局</div>
+          <div class="desc">AI 驱动的自适应排版引擎，理解内容语义与视觉层次</div>
+        </div>
+        <div class="s2-item brush-border-left anim a-r2">
+          <div class="name">风格迁移</div>
+          <div class="desc">一键转换视觉风格与品牌调性，保持设计一致性</div>
+        </div>
+        <div class="s2-item brush-border-left anim a-r3">
+          <div class="name">实时协作</div>
+          <div class="desc">多人同步编辑，智能冲突解决，如同共绘一幅长卷</div>
+        </div>
+        <div class="s2-item brush-border-left anim a-r4">
+          <div class="name">自适应排版</div>
+          <div class="desc">跨设备完美呈现，零手动调整，方寸之间尽显从容</div>
+        </div>
+      </div>
+    </div>
+    <div class="s2-vert vertical-text">设计之道在于留白</div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide" data-slide="2">
+  <div class="s3-layout">
+    <div class="ink-blob b" style="width:500px;height:500px;top:-150px;left:30%;"></div>
+    <div class="s3-top-text anim a-f1">DATA</div>
+    <div class="s3-stat anim a-b1">
+      <div class="value">10<span class="accent">x</span></div>
+      <div class="label">效率提升</div>
+      <div class="brush-line"></div>
+    </div>
+    <div class="s3-stat anim a-b2">
+      <div class="value">93<span class="accent">%</span></div>
+      <div class="label">用户满意度</div>
+      <div class="brush-line"></div>
+    </div>
+    <div class="s3-stat anim a-b3">
+      <div class="value">50<span class="accent">M+</span></div>
+      <div class="label">设计生成</div>
+      <div class="brush-line"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide" data-slide="3">
+  <div class="s4-layout">
+    <div class="ink-blob a" style="width:400px;height:400px;top:20%;right:20%;"></div>
+    <div class="ink-blob c" style="width:200px;height:200px;bottom:15%;left:15%;"></div>
+    <div class="s4-vert vertical-text anim a-f1">设计哲学</div>
+    <div class="s4-content">
+      <div class="quote-mark anim a-b1">"</div>
+      <div class="quote-text anim a-b2">好的设计不是装饰，<br>是沟通。</div>
+      <div class="quote-author anim a-b3">-- Dieter Rams</div>
+    </div>
+    <div class="s4-seal anim a-f3">
+      <div class="seal-stamp">道</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide" data-slide="4">
+  <div class="s5-layout">
+    <div class="ink-blob b" style="width:350px;height:350px;bottom:-50px;left:20%;"></div>
+    <div class="s5-left">
+      <div class="closing-title anim a-b1">重新定义<br>创造力</div>
+      <div class="closing-sub anim a-b2">AI 与人类设计师的协同，如同墨与纸的交融。不是替代，而是共鸣。加入我们，在留白中发现无限可能。</div>
+      <div class="gold-line anim a-b3"></div>
+    </div>
+    <div class="s5-right">
+      <div class="vert-closing vertical-text anim a-f2">无限可能</div>
+      <div class="seal-stamp anim a-f3">创</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+let current = 0;
+const total = slides.length;
+
+function goTo(n) {
+  if (n < 0 || n >= total) return;
+  slides[current].classList.remove('active');
+  current = n;
+  slides[current].classList.add('active');
+  progress.style.width = ((current + 1) / total * 100) + '%';
+  counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+});
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+goTo(0);
+</script>
+</body>
+</html>

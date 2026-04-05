@@ -3,37 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>山隐 — 一盏茶，半山闲</title>
+    <title>山隐 — Cinema Scope</title>
 
-    <!-- Fonts: LXGW WenKai + Noto Serif SC + Noto Sans SC + Bebas Neue + Lato -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Bebas+Neue&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=LXGW+WenKai:wght@300;400;700&family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <style>
         /* ===========================================
            CSS CUSTOM PROPERTIES — Cinema Scope
-           Cinematic letterbox, dramatic, warm gold
+           Cinematic widescreen, dramatic lighting
            =========================================== */
         :root {
-            /* --- Color Palette: Cinematic --- */
             --bg-primary: #0a0a0a;
             --letterbox: #000000;
             --text-primary: #ffffff;
             --text-secondary: #999999;
             --text-muted: #555555;
             --accent-gold: #d4a843;
-            --accent-gold-dim: rgba(212, 168, 67, 0.15);
             --accent-red: #b22234;
+            --accent-warm: #c89b5e;
             --overlay: rgba(0, 0, 0, 0.6);
-            --border-subtle: rgba(212, 168, 67, 0.12);
-            --surface: rgba(255, 255, 255, 0.03);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --surface: rgba(255, 255, 255, 0.04);
 
-            /* --- Typography --- */
             --font-display: 'LXGW WenKai', 'Noto Serif SC', serif;
+            --font-heading: 'Noto Serif SC', 'LXGW WenKai', serif;
             --font-body: 'Noto Sans SC', 'Lato', sans-serif;
-            --font-chapter: 'Bebas Neue', 'Noto Sans SC', sans-serif;
-            --font-mono: 'Noto Sans SC', monospace;
+            --font-accent: 'Lato', sans-serif;
 
             --title-size: clamp(2.5rem, 7vw, 6rem);
             --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
@@ -43,274 +40,167 @@
             --small-size: clamp(0.65rem, 1vw, 0.875rem);
             --stat-size: clamp(2rem, 8vw, 6rem);
 
-            /* --- Spacing --- */
             --slide-padding: clamp(2rem, 5vw, 5rem);
             --content-gap: clamp(1rem, 2.5vw, 2.5rem);
             --element-gap: clamp(0.25rem, 1vw, 1rem);
-            --letterbox-height: clamp(30px, 6vh, 60px);
+            --letterbox-height: clamp(30px, 7vh, 70px);
 
-            /* --- Animation --- */
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-cinema: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --duration-fast: 0.3s;
             --duration-normal: 0.8s;
             --duration-slow: 1.2s;
             --duration-dramatic: 2s;
-
             --accent: var(--accent-gold);
-            --accent-secondary: var(--accent-red);
             --accent-glow: rgba(212, 168, 67, 0.2);
         }
 
-        /* ===========================================
-           BASE RESET
-           =========================================== */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ===========================================
-           VIEWPORT FITTING: MANDATORY BASE STYLES
-           =========================================== */
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-        }
-
-        html {
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
-        }
-
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
         body {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
+            font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary);
         }
 
         .slide {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            scroll-snap-align: start;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
         }
-
         .slide-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-height: 100%;
-            overflow: hidden;
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; max-height: 100%; overflow: hidden;
             padding: var(--slide-padding);
-            /* Letterbox inset: content lives between the bars */
             padding-top: calc(var(--letterbox-height) + var(--slide-padding));
             padding-bottom: calc(var(--letterbox-height) + var(--slide-padding));
         }
 
-        .card, .container, .content-box {
-            max-width: min(90vw, 1000px);
-            max-height: min(80vh, 700px);
-        }
-
-        .feature-list, .bullet-list {
-            gap: clamp(0.4rem, 1vh, 1rem);
-        }
-
-        .feature-list li, .bullet-list li {
-            font-size: var(--body-size);
-            line-height: 1.8;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-            gap: clamp(0.5rem, 1.5vw, 1rem);
-        }
-
-        img, .image-container {
-            max-width: 100%;
-            max-height: min(50vh, 400px);
-            object-fit: contain;
-        }
-
-        :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
-            line-height: 1.8;
-            word-break: break-all;
-            overflow-wrap: break-word;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            overflow-wrap: break-word;
-            hyphens: auto;
-        }
-
-        p, li, blockquote {
-            overflow-wrap: break-word;
-        }
-
-        @media (max-height: 700px) {
-            :root {
-                --slide-padding: clamp(0.75rem, 3vw, 2rem);
-                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
-                --title-size: clamp(1.8rem, 5vw, 3.5rem);
-                --h2-size: clamp(1rem, 3vw, 1.75rem);
-                --letterbox-height: clamp(20px, 4vh, 40px);
-            }
-        }
-
-        @media (max-height: 600px) {
-            :root {
-                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
-                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
-                --title-size: clamp(1.5rem, 4vw, 2.5rem);
-                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
-                --letterbox-height: clamp(15px, 3vh, 30px);
-            }
-            .nav-dots, .keyboard-hint, .decorative {
-                display: none;
-            }
-        }
-
-        @media (max-height: 500px) {
-            :root {
-                --slide-padding: clamp(0.4rem, 2vw, 1rem);
-                --title-size: clamp(1rem, 3.5vw, 1.5rem);
-                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
-                --body-size: clamp(0.65rem, 1vw, 0.85rem);
-                --letterbox-height: clamp(10px, 2vh, 20px);
-            }
-            .grid {
-                grid-template-columns: 1fr !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            :root {
-                --title-size: clamp(1.8rem, 9vw, 3rem);
-            }
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .slide-content[style*="flex-direction: row"] {
-                flex-direction: column !important;
-            }
-            .slide-counter {
-                display: none;
-            }
-        }
-
-        @media (max-width: 600px) and (min-height: 700px) {
-            :root {
-                --slide-padding: clamp(1.5rem, 6vw, 3rem);
-                --content-gap: clamp(1rem, 3vw, 2rem);
-            }
-        }
-
-        @media (min-width: 2000px) {
-            .slide-content {
-                max-width: 1600px;
-                margin: 0 auto;
-            }
-        }
-
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .card, .content-box {
-                border-width: 0.5px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.2s !important;
-                scroll-behavior: auto !important;
-            }
-            html { scroll-behavior: auto; scroll-snap-type: none; }
-            .reveal, .reveal-scale, .reveal-left, .reveal-right,
-            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
-            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
-            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
-                opacity: 0; transform: none !important; filter: none !important;
-                clip-path: none !important; transition: opacity 0.2s ease !important;
-            }
-            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
-            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
-            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
-            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
-            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
-            .visible .reveal-quote { opacity: 1; }
-        }
-
-        @media print {
-            html { scroll-snap-type: none; }
-            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; }
-            .progress-bar, .nav-dots, .slide-counter, .letterbox-bar { display: none !important; }
-            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
-        }
+        :lang(zh), :lang(zh-CN) { line-height: 1.8; word-break: normal; overflow-wrap: break-word; }
+        h1, h2, h3 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
+        img { max-width: 100%; object-fit: contain; }
 
         /* ===========================================
-           BODY & GLOBAL STYLES — Cinema Scope
+           LETTERBOX BARS — cinematic signature
            =========================================== */
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.8;
-        }
-
-        /* ===========================================
-           CINEMATIC LETTERBOX BARS
-           Persistent top and bottom black bands
-           =========================================== */
-        .letterbox-bar {
-            position: fixed;
-            left: 0;
-            width: 100%;
+        .letterbox-top, .letterbox-bottom {
+            position: fixed; left: 0; width: 100%;
             height: var(--letterbox-height);
-            background: var(--letterbox);
-            z-index: 9997;
+            background: var(--letterbox); z-index: 9990;
             pointer-events: none;
         }
-        .letterbox-bar--top { top: 0; }
-        .letterbox-bar--bottom { bottom: 0; }
+        .letterbox-top { top: 0; }
+        .letterbox-bottom { bottom: 0; }
 
         /* ===========================================
-           CHAPTER LABEL — condensed caps
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --title-size: clamp(1.8rem, 5vw, 3.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); --letterbox-height: clamp(20px, 4vh, 40px); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --title-size: clamp(1.5rem, 4vw, 2.5rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); --letterbox-height: 15px; } .nav-dots { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --letterbox-height: 10px; } .cinema-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .cinema-grid { grid-template-columns: 1fr !important; } .two-col { flex-direction: column !important; } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-wipe, .reveal-fade { opacity: 0; transform: none !important; filter: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; }
+            .slide.visible .reveal, .slide.visible .reveal-wipe, .slide.visible .reveal-fade { opacity: 1; }
+        }
+
+        /* ===========================================
+           ANIMATIONS — cinematic pace
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity var(--duration-slow) var(--ease-out-expo), transform var(--duration-slow) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+        .reveal-wipe {
+            clip-path: inset(0 50% 0 50%); opacity: 0;
+            transition: clip-path 1s var(--ease-out-expo), opacity 0.6s ease;
+        }
+        .slide.visible .reveal-wipe { clip-path: inset(0 0 0 0); opacity: 1; }
+
+        .reveal-fade { opacity: 0; transition: opacity var(--duration-dramatic) ease; }
+        .slide.visible .reveal-fade { opacity: 1; }
+
+        .reveal:nth-child(1) { transition-delay: 0.15s; }
+        .reveal:nth-child(2) { transition-delay: 0.3s; }
+        .reveal:nth-child(3) { transition-delay: 0.45s; }
+        .reveal:nth-child(4) { transition-delay: 0.6s; }
+        .reveal:nth-child(5) { transition-delay: 0.75s; }
+        .reveal:nth-child(6) { transition-delay: 0.9s; }
+
+        /* ===========================================
+           PROGRESS BAR — thin gold, above letterbox
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-warm));
+            width: 0%; z-index: 9999; transition: width 0.3s ease;
+        }
+
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%;
+            transform: translateY(-50%); display: flex; flex-direction: column;
+            gap: 10px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 3px; height: 16px; border-radius: 1px;
+            background: var(--text-muted); border: none; cursor: pointer;
+            transition: all 0.4s ease; padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent-gold); height: 28px;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .slide-counter {
+            position: fixed; bottom: calc(var(--letterbox-height) + clamp(8px, 1.5vw, 16px));
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-display); font-size: var(--body-size);
+            color: var(--text-muted); z-index: 9998; letter-spacing: 0.2em;
+        }
+
+        /* ===========================================
+           CINEMA DECORATIVE
            =========================================== */
         .chapter-label {
-            font-family: var(--font-chapter);
-            font-size: var(--small-size);
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--accent-gold);
-            opacity: 0.7;
+            font-family: var(--font-display); font-size: var(--small-size);
+            letter-spacing: 0.35em; color: var(--accent-gold); text-transform: uppercase;
         }
-
-        /* Gold divider — cinematic thin line */
         .cinema-divider {
-            width: clamp(40px, 8vw, 80px);
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
-            opacity: 0.5;
+            width: clamp(50px, 8vw, 80px); height: 1px;
+            background: var(--accent-gold); opacity: 0.4;
         }
 
-        /* Seal — gold variant for dark bg */
+        /* Vignette overlay for full-bleed images */
+        .vignette::after {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%);
+            pointer-events: none;
+        }
+
+        /* Lower-third text placement */
+        .lower-third {
+            position: absolute; bottom: calc(var(--letterbox-height) + clamp(2rem, 5vh, 4rem));
+            left: var(--slide-padding); z-index: 2;
+        }
+        @media (max-height: 500px) {
+            .lower-third { position: relative; bottom: auto; left: auto; padding: var(--slide-padding); }
+        }
+
+        /* Red seal / stamp mark */
         .seal {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: clamp(40px, 5vw, 60px);
             height: clamp(40px, 5vw, 60px);
-            border: 1.5px solid var(--accent-gold);
-            color: var(--accent-gold);
+            border: 2px solid #c53d43;
+            color: #c53d43;
             font-family: var(--font-display);
             font-size: clamp(0.6rem, 1.2vw, 1rem);
             font-weight: 700;
@@ -319,584 +209,290 @@
             line-height: 1.2;
             text-align: center;
         }
-
-        /* ===========================================
-           ANIMATIONS — Cinematic fade
-           =========================================== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(clamp(10px, 1.5vh, 20px));
-            transition: opacity var(--duration-slow) var(--ease-cinema),
-                        transform var(--duration-slow) var(--ease-cinema);
-        }
-        .slide.visible .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .reveal:nth-child(1) { transition-delay: 0.2s; }
-        .reveal:nth-child(2) { transition-delay: 0.45s; }
-        .reveal:nth-child(3) { transition-delay: 0.7s; }
-        .reveal:nth-child(4) { transition-delay: 0.95s; }
-        .reveal:nth-child(5) { transition-delay: 1.2s; }
-        .reveal:nth-child(6) { transition-delay: 1.45s; }
-        .reveal:nth-child(7) { transition-delay: 1.7s; }
-        .reveal:nth-child(8) { transition-delay: 1.95s; }
-
-        /* Dramatic blur fade for hero text */
-        .reveal-drama {
-            opacity: 0;
-            filter: blur(10px);
-            transform: scale(0.97);
-            transition: opacity var(--duration-dramatic) var(--ease-cinema),
-                        filter var(--duration-dramatic) var(--ease-cinema),
-                        transform var(--duration-dramatic) var(--ease-cinema);
-        }
-        .slide.visible .reveal-drama {
-            opacity: 1;
-            filter: blur(0);
-            transform: scale(1);
-        }
-
-        /* ===========================================
-           PROGRESS BAR — gold line above top letterbox
-           =========================================== */
-        .progress-bar {
-            position: fixed;
-            top: var(--letterbox-height);
-            left: 0;
-            height: 1px;
-            background: var(--accent-gold);
-            width: 0%;
-            z-index: 9999;
-            transition: width 0.5s var(--ease-cinema);
-        }
-
-        /* ===========================================
-           NAVIGATION DOTS
-           =========================================== */
-        .nav-dots {
-            position: fixed;
-            right: clamp(12px, 2vw, 24px);
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: clamp(6px, 0.8vh, 10px);
-            z-index: 9998;
-        }
-        .nav-dot {
-            width: clamp(5px, 0.6vw, 8px);
-            height: clamp(5px, 0.6vw, 8px);
-            border-radius: 50%;
-            background: var(--text-muted);
-            border: none;
-            cursor: pointer;
-            transition: all 0.5s var(--ease-cinema);
-            padding: 0;
-        }
-        .nav-dot.active {
-            background: var(--accent-gold);
-            transform: scale(1.5);
-            box-shadow: 0 0 8px rgba(212, 168, 67, 0.3);
-        }
-
-        /* ===========================================
-           SLIDE COUNTER
-           =========================================== */
-        .slide-counter {
-            position: fixed;
-            bottom: calc(var(--letterbox-height) + clamp(8px, 1vw, 16px));
-            right: clamp(12px, 2vw, 24px);
-            font-family: var(--font-chapter);
-            font-size: var(--small-size);
-            color: var(--text-muted);
-            z-index: 9998;
-            letter-spacing: 0.15em;
-        }
-
-        /* ===========================================
-           VIGNETTE OVERLAY for cinematic depth
-           =========================================== */
-        .slide::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.4) 100%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        .slide > * {
-            position: relative;
-            z-index: 1;
-        }
     </style>
 </head>
 <body>
     <!-- Letterbox bars -->
-    <div class="letterbox-bar letterbox-bar--top"></div>
-    <div class="letterbox-bar letterbox-bar--bottom"></div>
+    <div class="letterbox-top"></div>
+    <div class="letterbox-bottom"></div>
 
-    <!-- Progress bar -->
     <div class="progress-bar" id="progressBar"></div>
-
-    <!-- Navigation dots -->
     <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
-
-    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
 
-    <!-- =================== SLIDE 1: 标题页 =================== -->
-    <section class="slide title-slide" aria-label="标题">
-        <!-- Warm ambient glow -->
-        <div style="position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 40vh; background: radial-gradient(ellipse, rgba(212,168,67,0.05) 0%, transparent 70%); pointer-events: none;"></div>
+    <!-- =================== SLIDE 1: TITLE — full bleed mountain =================== -->
+    <section class="slide" aria-label="标题" style="padding: 0;">
+        <div style="position: absolute; inset: 0;">
+            <img src="images/shanyin-mountain.webp" alt="Mountain" style="width: 100%; height: 100%; object-fit: cover; max-height: none; opacity: 0.45; filter: brightness(0.5) contrast(1.1);">
+        </div>
+        <div class="vignette" style="position: absolute; inset: 0;"></div>
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.6) 100%);"></div>
 
-        <div class="slide-content" style="align-items: center; text-align: center;">
-            <!-- Chapter marker -->
-            <p class="reveal chapter-label" style="transition-delay: 0.3s;">CHAPTER 01</p>
-
-            <h1 class="reveal-drama" style="font-size: clamp(4rem, 12vw, 10rem); font-family: var(--font-display); font-weight: 700; letter-spacing: clamp(0.3em, 2vw, 0.5em); color: var(--text-primary); line-height: 1; margin-top: clamp(0.5rem, 1vh, 1rem);">
+        <div class="lower-third">
+            <div class="chapter-label reveal" style="transition-delay: 0.2s;">序章 CHAPTER 01</div>
+            <h1 class="reveal-wipe" style="font-size: clamp(3.5rem, 10vw, 9rem); font-family: var(--font-display); font-weight: 700; letter-spacing: clamp(0.2em, 1.5vw, 0.4em); line-height: 1; margin-top: clamp(0.3rem, 0.5vh, 0.5rem); text-shadow: 0 4px 30px rgba(0,0,0,0.5);">
                 山隐
             </h1>
-
-            <div class="reveal cinema-divider" style="margin-top: clamp(1rem, 2vh, 2rem); transition-delay: 0.8s;"></div>
-
-            <p class="reveal" style="font-size: clamp(1rem, 2.5vw, 1.6rem); font-family: var(--font-display); color: var(--text-secondary); margin-top: clamp(0.8rem, 1.5vh, 1.5rem); letter-spacing: 0.15em; transition-delay: 1.1s;">
+            <p class="reveal" style="font-size: clamp(1rem, 2vw, 1.5rem); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 1rem); letter-spacing: 0.2em; transition-delay: 0.8s; text-shadow: 0 2px 15px rgba(0,0,0,0.5);">
                 一盏茶，半山闲
             </p>
-
-            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 3rem); transition-delay: 1.5s;">
-                <div class="seal">山隐<br>茶号</div>
+            <div class="reveal" style="margin-top: clamp(1rem, 2vh, 1.5rem); transition-delay: 1s;">
+                <div class="seal" style="border-color: rgba(197,61,67,0.8); color: rgba(197,61,67,0.9);">山隐<br>茶号</div>
             </div>
         </div>
     </section>
 
-    <!-- =================== SLIDE 2: 引言/金句 =================== -->
+    <!-- =================== SLIDE 2: QUOTE — dramatic =================== -->
     <section class="slide" aria-label="引言">
-        <div style="position: absolute; top: 40%; left: 30%; width: 40vw; height: 30vh; background: radial-gradient(ellipse, rgba(212,168,67,0.04) 0%, transparent 70%); pointer-events: none;"></div>
-
-        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(85vw, 900px); margin: 0 auto;">
-            <div class="reveal" style="font-size: clamp(3rem, 8vw, 7rem); color: var(--accent-gold); line-height: 1; opacity: 0.2; font-family: var(--font-display);">
-                &ldquo;
-            </div>
-
-            <blockquote class="reveal" style="font-size: clamp(1.3rem, 3.5vw, 3rem); font-family: var(--font-display); font-weight: 400; line-height: 1.6; margin-top: clamp(-0.5rem, -0.5vh, -0.3rem); color: var(--text-primary); letter-spacing: 0.08em;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(30,20,10,0.3) 0%, var(--bg-primary) 70%);"></div>
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(80vw, 800px); margin: 0 auto;">
+            <div class="cinema-divider reveal" style="margin-bottom: clamp(1rem, 2vh, 2rem);"></div>
+            <blockquote class="reveal-wipe" style="font-size: clamp(1.5rem, 4vw, 3.5rem); font-family: var(--font-display); font-weight: 400; line-height: 1.5; letter-spacing: 0.1em;">
                 茶者，南方之嘉木也
             </blockquote>
-
-            <cite class="reveal" style="display: block; margin-top: clamp(1rem, 2vh, 2rem); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; font-family: var(--font-display); letter-spacing: 0.1em;">
-                &mdash;&ensp;陆羽&ensp;《茶经》
+            <cite class="reveal" style="display: block; margin-top: clamp(1.2rem, 2.5vh, 2rem); font-size: var(--body-size); color: var(--text-secondary); font-style: normal; font-family: var(--font-accent); letter-spacing: 0.15em;">
+                &mdash;&ensp;陆羽&ensp;·&ensp;《茶经》&ensp;·&ensp;公元760年
             </cite>
-
-            <div class="reveal cinema-divider" style="margin-top: clamp(1.5rem, 3vh, 3rem);"></div>
-
-            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(1rem, 2vh, 1.5rem); max-width: min(70vw, 500px); line-height: 2;">
-                一千二百年前，陆羽写下这句话的时候，武夷山的茶树已经在云雾间生长了数百年。今天，山隐从同一片土地出发，延续这份与山林的约定。
+            <div class="cinema-divider reveal" style="margin-top: clamp(1.5rem, 3vh, 2.5rem);"></div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(1rem, 2vh, 1.5rem); max-width: min(65vw, 500px); line-height: 1.9; font-family: var(--font-accent); font-weight: 300;">
+                一千二百年前的笔墨，穿越到今天的杯盏之间。
             </p>
         </div>
     </section>
 
-    <!-- =================== SLIDE 3: 双栏 — 品牌故事 =================== -->
-    <section class="slide" aria-label="品牌故事">
-        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
-            <div style="flex: 1; min-width: 0;">
-                <p class="reveal chapter-label">CHAPTER 02</p>
-                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1.4;">
-                    三代茶人，一座山
-                </h2>
-                <div class="reveal cinema-divider" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem);"></div>
-                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.8rem, 1.5vh, 1.5rem); line-height: 2;">
-                    山隐始于武夷山桐木关，海拔一千一百米的茶园里，林家三代人守着同一片山场。祖父林守山在1960年代开始种茶，父亲林志远在80年代将手艺传承精炼，到了第三代林见山，决定让好茶走出深山。
-                </p>
-                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1vh, 0.8rem); line-height: 2;">
-                    "山隐"二字，取自祖父的一句话：<span style="color: var(--text-primary); font-family: var(--font-display);">"好茶隐于山，不必争于市。"</span>
-                </p>
-            </div>
+    <!-- =================== SLIDE 3: BRAND STORY — cinema pour =================== -->
+    <section class="slide" aria-label="品牌故事" style="padding: 0;">
+        <div style="position: absolute; inset: 0;">
+            <img src="images/shanyin-cinema-pour.webp" alt="Tea pouring" style="width: 100%; height: 100%; object-fit: cover; max-height: none; opacity: 0.4; filter: brightness(0.5) contrast(1.15) saturate(0.85);">
+        </div>
+        <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, transparent 70%);"></div>
 
-            <!-- Right: Cinematic mountain art -->
-            <div style="flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center;">
-                <div class="reveal" style="position: relative; width: min(100%, 400px); height: clamp(200px, 35vh, 350px); overflow: hidden; border-radius: 2px;">
-                    <!-- Cinematic dark gradient -->
-                    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #0d0d0d 0%, #1a1510 40%, #0a0a0a 100%);"></div>
-
-                    <!-- Far mountain -->
-                    <div style="position: absolute; bottom: 20%; left: -5%; width: 60%; height: 55%; background: linear-gradient(160deg, rgba(212,168,67,0.08) 0%, rgba(212,168,67,0.03) 100%); clip-path: polygon(0% 100%, 30% 15%, 55% 35%, 75% 10%, 100% 100%); filter: blur(3px);"></div>
-
-                    <!-- Mid mountain -->
-                    <div style="position: absolute; bottom: 15%; right: -5%; width: 70%; height: 50%; background: linear-gradient(170deg, rgba(212,168,67,0.12) 0%, rgba(212,168,67,0.04) 100%); clip-path: polygon(0% 100%, 20% 40%, 45% 15%, 70% 30%, 90% 5%, 100% 100%); filter: blur(2px);"></div>
-
-                    <!-- Near mountain -->
-                    <div style="position: absolute; bottom: 0; left: 10%; width: 80%; height: 40%; background: linear-gradient(175deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%); clip-path: polygon(0% 100%, 15% 50%, 40% 20%, 60% 40%, 85% 10%, 100% 100%);"></div>
-
-                    <!-- Mist -->
-                    <div style="position: absolute; bottom: 30%; left: 0; width: 100%; height: 20%; background: linear-gradient(180deg, transparent, rgba(10,10,10,0.7), transparent); filter: blur(10px);"></div>
-
-                    <!-- Warm light from top -->
-                    <div style="position: absolute; top: 0; left: 30%; width: 40%; height: 40%; background: radial-gradient(ellipse, rgba(212,168,67,0.06) 0%, transparent 70%);"></div>
-
-                    <!-- Seal -->
-                    <div style="position: absolute; bottom: clamp(8px, 1.5vh, 16px); right: clamp(8px, 1.5vw, 16px);">
-                        <div class="seal" style="width: clamp(28px, 3.5vw, 40px); height: clamp(28px, 3.5vw, 40px); font-size: clamp(0.45rem, 0.8vw, 0.65rem); border-width: 1px;">山隐</div>
-                    </div>
-                </div>
-            </div>
+        <div class="slide-content" style="position: relative; z-index: 1; max-width: min(50vw, 550px); justify-content: center;">
+            <div class="chapter-label reveal">溯源 CHAPTER 02</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1.4;">
+                三代茶人，一座山
+            </h2>
+            <div class="cinema-divider reveal" style="margin-top: clamp(0.6rem, 1vh, 1rem);"></div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: clamp(0.8rem, 1.5vh, 1.5rem); line-height: 2; font-family: var(--font-accent); font-weight: 300;">
+                山隐始于武夷山桐木关，海拔1100米。林家三代守着同一片山场 &mdash; 祖父开始种茶，父亲精炼手艺，第三代让好茶走出深山。
+            </p>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem); font-family: var(--font-display); font-style: italic;">
+                "好茶隐于山，不必争于市。"
+            </p>
         </div>
     </section>
 
-    <!-- =================== SLIDE 4: 卡片网格 — 核心产品 =================== -->
-    <section class="slide" aria-label="核心产品">
-        <div class="slide-content" style="align-items: center;">
-            <p class="reveal chapter-label" style="text-align: center;">CHAPTER 03</p>
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap);">
-                三款经典，各有山意
-            </h2>
+    <!-- =================== SLIDE 4: PRODUCTS =================== -->
+    <section class="slide" aria-label="茶品">
+        <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(20,15,10,0.4) 0%, var(--bg-primary) 70%);"></div>
+        <div class="slide-content" style="align-items: center; position: relative; z-index: 1;">
+            <div class="chapter-label reveal" style="text-align: center;">茶品 CHAPTER 03</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap);">三款经典，各有山意</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 2rem); margin-top: clamp(1.5rem, 3vh, 2.5rem); max-width: min(90vw, 900px); width: 100%;">
-
-                <!-- Card 1 -->
-                <div class="reveal" style="background: linear-gradient(175deg, rgba(212,168,67,0.05) 0%, rgba(212,168,67,0.01) 100%); border: 1px solid rgba(212,168,67,0.1); border-radius: 2px; padding: clamp(1rem, 2vw, 1.8rem); text-align: center;">
-                    <div style="width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); border-radius: 50%; border: 1px solid var(--accent-gold); margin: 0 auto; display: flex; align-items: center; justify-content: center; opacity: 0.5;">
-                        <div style="width: 50%; height: 50%; border-radius: 50%; background: radial-gradient(circle, rgba(212,168,67,0.2), transparent);"></div>
+            <div class="cinema-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 2rem); margin-top: clamp(1.5rem, 3vh, 2.5rem); max-width: min(92vw, 950px); width: 100%;">
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1.2rem, 2.5vw, 2rem); text-align: center; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); opacity: 0.3;"></div>
+                    <div style="width: clamp(50px, 5vw, 70px); height: clamp(50px, 5vw, 70px); border-radius: 50%; margin: 0 auto; overflow: hidden; border: 1px solid rgba(212,168,67,0.2);">
+                        <img src="images/shanyin-tea-product.webp" alt="正山小种" style="width: 100%; height: 100%; object-fit: cover; max-height: none; filter: brightness(0.85);">
                     </div>
                     <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.6rem, 1vh, 1rem);">正山小种</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-display);">传统红茶&ensp;|&ensp;松烟香</p>
+                    <p style="font-size: var(--small-size); color: var(--accent-gold); font-family: var(--font-display); letter-spacing: 0.15em;">LAPSANG SOUCHONG</p>
                     <div class="cinema-divider" style="margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">桐木关原产地，百年老枞，松针烟熏工艺。汤色琥珀，入口桂圆甜香。</p>
-                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem);">&#165;298<span style="font-size: var(--small-size); color: var(--text-muted);">&ensp;/ 50g</span></p>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">百年老枞，松针烟熏。汤色琥珀，桂圆甜香。</p>
+                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem); letter-spacing: 0.1em;">&#165;298<span style="font-size: var(--small-size); color: var(--text-muted);"> / 50G</span></p>
                 </div>
 
-                <!-- Card 2 -->
-                <div class="reveal" style="background: linear-gradient(175deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 2px; padding: clamp(1rem, 2vw, 1.8rem); text-align: center;">
-                    <div style="width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); border-radius: 50%; border: 1px solid var(--text-secondary); margin: 0 auto; display: flex; align-items: center; justify-content: center; opacity: 0.4;">
-                        <div style="width: 50%; height: 50%; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);"></div>
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1.2rem, 2.5vw, 2rem); text-align: center; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); opacity: 0.3;"></div>
+                    <div style="width: clamp(50px, 5vw, 70px); height: clamp(50px, 5vw, 70px); border-radius: 50%; margin: 0 auto; border: 1px solid rgba(212,168,67,0.15); display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 50%; height: 50%; border-radius: 50%; background: radial-gradient(circle, rgba(212,168,67,0.15), transparent);"></div>
                     </div>
                     <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.6rem, 1vh, 1rem);">白毫银针</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-display);">头采白茶&ensp;|&ensp;毫香蜜韵</p>
+                    <p style="font-size: var(--small-size); color: var(--accent-gold); font-family: var(--font-display); letter-spacing: 0.15em;">SILVER NEEDLE</p>
                     <div class="cinema-divider" style="margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">清明前三天采摘，全芽头制作。银毫密覆，汤色杏黄透亮，清甜回甘。</p>
-                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem);">&#165;528<span style="font-size: var(--small-size); color: var(--text-muted);">&ensp;/ 50g</span></p>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">全芽头制作。银毫密覆，汤色杏黄，清甜回甘。</p>
+                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem); letter-spacing: 0.1em;">&#165;528<span style="font-size: var(--small-size); color: var(--text-muted);"> / 50G</span></p>
                 </div>
 
-                <!-- Card 3 -->
-                <div class="reveal" style="background: linear-gradient(175deg, rgba(178,34,52,0.04) 0%, rgba(178,34,52,0.01) 100%); border: 1px solid rgba(178,34,52,0.1); border-radius: 2px; padding: clamp(1rem, 2vw, 1.8rem); text-align: center;">
-                    <div style="width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); border-radius: 50%; border: 1px solid var(--accent-red); margin: 0 auto; display: flex; align-items: center; justify-content: center; opacity: 0.4;">
-                        <div style="width: 50%; height: 50%; border-radius: 50%; background: radial-gradient(circle, rgba(178,34,52,0.15), transparent);"></div>
+                <div class="reveal" style="background: var(--surface); border: 1px solid var(--border-subtle); padding: clamp(1.2rem, 2.5vw, 2rem); text-align: center; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); opacity: 0.3;"></div>
+                    <div style="width: clamp(50px, 5vw, 70px); height: clamp(50px, 5vw, 70px); border-radius: 50%; margin: 0 auto; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 50%; height: 50%; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.06), transparent);"></div>
                     </div>
                     <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.6rem, 1vh, 1rem);">大红袍</h3>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-display);">岩茶之王&ensp;|&ensp;岩骨花香</p>
+                    <p style="font-size: var(--small-size); color: var(--accent-gold); font-family: var(--font-display); letter-spacing: 0.15em;">DA HONG PAO</p>
                     <div class="cinema-divider" style="margin: clamp(0.5rem, 1vh, 0.8rem) auto;"></div>
-                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">三坑两涧核心产区，传统炭焙。七泡有余香，岩韵深沉，饮后齿颊留芳。</p>
-                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem);">&#165;888<span style="font-size: var(--small-size); color: var(--text-muted);">&ensp;/ 50g</span></p>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">三坑两涧核心产区。七泡有余香，岩韵深沉。</p>
+                    <p style="font-size: var(--h3-size); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem); letter-spacing: 0.1em;">&#165;888<span style="font-size: var(--small-size); color: var(--text-muted);"> / 50G</span></p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- =================== SLIDE 5: 时间线 — 制茶工艺 =================== -->
-    <section class="slide" aria-label="制茶工艺">
-        <div class="slide-content">
-            <p class="reveal chapter-label" style="text-align: center;">CHAPTER 04</p>
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap);">
+    <!-- =================== SLIDE 5: TEAHOUSE — full bleed =================== -->
+    <section class="slide" aria-label="茶室" style="padding: 0;">
+        <div style="position: absolute; inset: 0;">
+            <img src="images/shanyin-cinema-teahouse.webp" alt="Teahouse interior" style="width: 100%; height: 100%; object-fit: cover; max-height: none; opacity: 0.5; filter: brightness(0.5) contrast(1.1) saturate(0.9);">
+        </div>
+        <div class="vignette" style="position: absolute; inset: 0;"></div>
+
+        <div class="lower-third">
+            <div class="chapter-label reveal">工艺 CHAPTER 04</div>
+            <h2 class="reveal-wipe" style="font-size: clamp(1.8rem, 4.5vw, 4rem); font-family: var(--font-display); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); text-shadow: 0 3px 20px rgba(0,0,0,0.5);">
                 从叶到茶，四步成韵
             </h2>
-
-            <div style="display: flex; align-items: flex-start; gap: 0; margin-top: clamp(2rem, 4vh, 3.5rem); position: relative; max-width: min(90vw, 900px); margin-left: auto; margin-right: auto;">
-                <div style="position: absolute; top: clamp(18px, 2.5vw, 28px); left: clamp(18px, 2.5vw, 28px); right: clamp(18px, 2.5vw, 28px); height: 1px; background: linear-gradient(90deg, transparent 0%, var(--accent-gold) 10%, var(--accent-gold) 90%, transparent 100%); opacity: 0.12;"></div>
-
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1px solid var(--accent-gold); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--accent-gold);">一</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">采摘</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent-gold); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display); opacity: 0.7;">清明前后</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">晨露未干时，手工采一芽一叶。每斤干茶需鲜叶四万余颗。</p>
-                </div>
-
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1px solid var(--accent-gold); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--accent-gold);">二</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">萎凋</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent-gold); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display); opacity: 0.7;">日光自然萎凋</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">竹匾摊晾，借阳光与微风，让叶片缓慢失水，香气初现。</p>
-                </div>
-
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1px solid var(--accent-gold); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--accent-gold);">三</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">揉捻</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent-gold); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display); opacity: 0.7;">手工慢揉</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">掌心与茶叶对话。轻揉使细胞破壁，茶汁渗出，成型塑韵。</p>
-                </div>
-
-                <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
-                    <div style="width: clamp(36px, 5vw, 56px); height: clamp(36px, 5vw, 56px); border-radius: 50%; border: 1px solid var(--accent-gold); background: var(--bg-primary); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--body-size); color: var(--accent-gold);">四</div>
-                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.5rem, 1vh, 0.8rem);">烘焙</h3>
-                    <p style="font-size: var(--small-size); color: var(--accent-gold); margin-top: clamp(0.2rem, 0.4vh, 0.4rem); font-family: var(--font-display); opacity: 0.7;">炭火低温</p>
-                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); padding: 0 clamp(0.3rem, 0.8vw, 0.8rem); line-height: 1.8;">荔枝炭慢焙八小时，火候全凭经验。去青气，定香型，锁住山场之味。</p>
-                </div>
-            </div>
-
-            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: clamp(1.5rem, 2.5vh, 2rem); font-style: italic;">
-                注：工艺以正山小种为例，不同茶类略有差异
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.3rem, 0.5vh, 0.5rem); font-family: var(--font-accent); font-weight: 300; text-shadow: 0 1px 10px rgba(0,0,0,0.5);">
+                每一步都是时间与手艺的对话
             </p>
         </div>
     </section>
 
-    <!-- =================== SLIDE 6: 数据统计 =================== -->
-    <section class="slide" aria-label="品牌数据">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; height: 40vh; background: radial-gradient(ellipse, rgba(212,168,67,0.04) 0%, transparent 60%); pointer-events: none;"></div>
-
-        <div class="slide-content" style="align-items: center;">
-            <p class="reveal chapter-label" style="text-align: center;">CHAPTER 05</p>
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; margin-top: var(--element-gap);">
-                数字背后，是土地与人
-            </h2>
-
-            <div style="display: flex; justify-content: center; gap: clamp(3rem, 8vw, 8rem); margin-top: clamp(2rem, 5vh, 4rem); flex-wrap: wrap;">
-                <div class="reveal" style="text-align: center;">
-                    <div style="position: relative; display: inline-block;">
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(80px, 12vw, 140px); height: clamp(80px, 12vw, 140px); border-radius: 50%; background: radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 70%); filter: blur(10px);"></div>
-                        <div class="counter" data-target="2400" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--text-primary); position: relative; letter-spacing: -0.02em;">0</div>
-                    </div>
-                    <div style="font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.5rem); font-family: var(--font-display); letter-spacing: 0.1em;">亩茶园</div>
-                    <div class="cinema-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
-                    <div style="font-size: var(--small-size); color: var(--text-muted);">武夷山核心产区</div>
+    <!-- =================== SLIDE 6: PROCESS =================== -->
+    <section class="slide" aria-label="制茶工序">
+        <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 60%, rgba(20,15,10,0.3) 0%, var(--bg-primary) 60%);"></div>
+        <div class="slide-content" style="position: relative; z-index: 1;">
+            <div style="display: flex; gap: clamp(1rem, 3vw, 3rem); max-width: min(92vw, 950px); margin: 0 auto; flex-wrap: wrap; justify-content: center;">
+                <div class="reveal" style="flex: 1; min-width: min(100%, 200px); max-width: 220px; text-align: left;">
+                    <div style="font-size: clamp(2rem, 4vw, 3.5rem); font-family: var(--font-display); color: var(--accent-gold); opacity: 0.3; letter-spacing: 0.1em;">一</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.2rem, 0.3vh, 0.3rem);">采摘</h3>
+                    <div class="cinema-divider" style="margin-top: clamp(0.4rem, 0.6vh, 0.5rem);"></div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 0.6vh, 0.6rem); line-height: 1.8; font-family: var(--font-accent); font-weight: 300;">晨露未干时手工采摘。每斤干茶需鲜叶四万余颗。</p>
                 </div>
-
-                <div class="reveal" style="text-align: center;">
-                    <div style="position: relative; display: inline-block;">
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(80px, 12vw, 140px); height: clamp(80px, 12vw, 140px); border-radius: 50%; background: radial-gradient(circle, rgba(178,34,52,0.05) 0%, transparent 70%); filter: blur(10px);"></div>
-                        <div class="counter" data-target="187" style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--text-primary); position: relative; letter-spacing: -0.02em;">0</div>
-                    </div>
-                    <div style="font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.5rem); font-family: var(--font-display); letter-spacing: 0.1em;">户茶农</div>
-                    <div class="cinema-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
-                    <div style="font-size: var(--small-size); color: var(--text-muted);">长期合作&ensp;共同成长</div>
+                <div class="reveal" style="flex: 1; min-width: min(100%, 200px); max-width: 220px; text-align: left;">
+                    <div style="font-size: clamp(2rem, 4vw, 3.5rem); font-family: var(--font-display); color: var(--accent-gold); opacity: 0.3; letter-spacing: 0.1em;">二</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.2rem, 0.3vh, 0.3rem);">萎凋</h3>
+                    <div class="cinema-divider" style="margin-top: clamp(0.4rem, 0.6vh, 0.5rem);"></div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 0.6vh, 0.6rem); line-height: 1.8; font-family: var(--font-accent); font-weight: 300;">竹匾摊晾，借阳光与微风，叶片缓慢失水。</p>
                 </div>
-
-                <div class="reveal" style="text-align: center;">
-                    <div style="position: relative; display: inline-block;">
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(80px, 12vw, 140px); height: clamp(80px, 12vw, 140px); border-radius: 50%; background: radial-gradient(circle, rgba(212,168,67,0.05) 0%, transparent 70%); filter: blur(10px);"></div>
-                        <div style="font-size: var(--stat-size); font-family: var(--font-display); font-weight: 700; color: var(--text-primary); position: relative; letter-spacing: -0.02em;">12.6<span style="font-size: clamp(1rem, 3vw, 2rem);">吨</span></div>
-                    </div>
-                    <div style="font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.5rem); font-family: var(--font-display); letter-spacing: 0.1em;">年产量</div>
-                    <div class="cinema-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
-                    <div style="font-size: var(--small-size); color: var(--text-muted);">不求量大&ensp;只求精良</div>
+                <div class="reveal" style="flex: 1; min-width: min(100%, 200px); max-width: 220px; text-align: left;">
+                    <div style="font-size: clamp(2rem, 4vw, 3.5rem); font-family: var(--font-display); color: var(--accent-gold); opacity: 0.3; letter-spacing: 0.1em;">三</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.2rem, 0.3vh, 0.3rem);">揉捻</h3>
+                    <div class="cinema-divider" style="margin-top: clamp(0.4rem, 0.6vh, 0.5rem);"></div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 0.6vh, 0.6rem); line-height: 1.8; font-family: var(--font-accent); font-weight: 300;">掌心与茶叶对话。轻揉使细胞破壁，茶汁渗出。</p>
+                </div>
+                <div class="reveal" style="flex: 1; min-width: min(100%, 200px); max-width: 220px; text-align: left;">
+                    <div style="font-size: clamp(2rem, 4vw, 3.5rem); font-family: var(--font-display); color: var(--accent-gold); opacity: 0.3; letter-spacing: 0.1em;">四</div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: clamp(0.2rem, 0.3vh, 0.3rem);">烘焙</h3>
+                    <div class="cinema-divider" style="margin-top: clamp(0.4rem, 0.6vh, 0.5rem);"></div>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: clamp(0.4rem, 0.6vh, 0.6rem); line-height: 1.8; font-family: var(--font-accent); font-weight: 300;">荔枝炭慢焙八小时。去青气，锁住山场之味。</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- =================== SLIDE 7: 品牌理念 =================== -->
-    <section class="slide" aria-label="品牌理念">
-        <div class="slide-content" style="max-width: min(85vw, 800px); margin-left: auto; margin-right: auto;">
-            <p class="reveal chapter-label">CHAPTER 06</p>
-            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1.4;">
-                好茶不需要讲故事，<br>但值得被好好对待
-            </h2>
+    <!-- =================== SLIDE 7: STATS =================== -->
+    <section class="slide" aria-label="数据">
+        <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(30,20,10,0.3) 0%, var(--bg-primary) 70%);"></div>
+        <div class="slide-content" style="align-items: center; position: relative; z-index: 1;">
+            <div class="chapter-label reveal" style="text-align: center;">数据 CHAPTER 05</div>
+            <div style="display: flex; justify-content: center; gap: clamp(3rem, 8vw, 8rem); margin-top: clamp(2rem, 5vh, 4rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="2400" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent-gold); letter-spacing: 0.05em;">0</div>
+                    <div class="cinema-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); font-family: var(--font-display); letter-spacing: 0.1em;">亩茶园</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2rem; font-family: var(--font-accent); font-weight: 300;">武夷山核心产区</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="counter" data-target="187" style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent-gold); letter-spacing: 0.05em;">0</div>
+                    <div class="cinema-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); font-family: var(--font-display); letter-spacing: 0.1em;">户茶农</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2rem; font-family: var(--font-accent); font-weight: 300;">长期合作</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div style="font-size: var(--stat-size); font-family: var(--font-display); color: var(--accent-gold); letter-spacing: 0.05em;">12.6<span style="font-size: clamp(1rem, 3vw, 2rem);">T</span></div>
+                    <div class="cinema-divider" style="margin: clamp(0.3rem, 0.5vh, 0.5rem) auto;"></div>
+                    <div style="font-size: var(--body-size); color: var(--text-secondary); font-family: var(--font-display); letter-spacing: 0.1em;">年产量</div>
+                    <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2rem; font-family: var(--font-accent); font-weight: 300;">不求量大 只求精良</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <div class="reveal cinema-divider" style="margin-top: clamp(1rem, 2vh, 1.5rem);"></div>
-
-            <ul style="margin-top: clamp(1.5rem, 3vh, 2.5rem); list-style: none; padding: 0;">
-                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(212,168,67,0.06);">
-                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); min-width: 1.5em; opacity: 0.6;">一</span>
-                    <div>
-                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">生态种植</span>
-                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;不施化肥、不打农药。茶树与山林共生，虫鸟是天然的守护者。</span>
-                    </div>
+    <!-- =================== SLIDE 8: PHILOSOPHY =================== -->
+    <section class="slide" aria-label="理念">
+        <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(20,15,10,0.3) 0%, var(--bg-primary) 50%);"></div>
+        <div class="slide-content" style="max-width: min(80vw, 750px); margin-left: auto; margin-right: auto; position: relative; z-index: 1;">
+            <div class="chapter-label reveal">理念 CHAPTER 06</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); line-height: 1.4;">好茶不需要讲故事，<br>但值得被好好对待</h2>
+            <div class="cinema-divider reveal" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem);"></div>
+            <ul style="margin-top: clamp(1.2rem, 2.5vh, 2rem); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 1rem; padding: clamp(0.5rem, 1vh, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); opacity: 0.4; min-width: 2.5em; letter-spacing: 0.1em;">01</span>
+                    <div><span style="font-family: var(--font-display); color: var(--text-primary);">生态种植</span> <span style="color: var(--text-secondary); font-family: var(--font-accent); font-weight: 300;">&mdash; 不施化肥，茶树与山林共生。</span></div>
                 </li>
-                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(212,168,67,0.06);">
-                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); min-width: 1.5em; opacity: 0.6;">二</span>
-                    <div>
-                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">手工制茶</span>
-                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;从采摘到成品，关键工序全部手工完成。机器代替不了师傅的手感与判断。</span>
-                    </div>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 1rem; padding: clamp(0.5rem, 1vh, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); opacity: 0.4; min-width: 2.5em; letter-spacing: 0.1em;">02</span>
+                    <div><span style="font-family: var(--font-display); color: var(--text-primary);">手工制茶</span> <span style="color: var(--text-secondary); font-family: var(--font-accent); font-weight: 300;">&mdash; 关键工序全部手工完成。</span></div>
                 </li>
-                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(212,168,67,0.06);">
-                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); min-width: 1.5em; opacity: 0.6;">三</span>
-                    <div>
-                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">极简包装</span>
-                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;拒绝过度包装。竹盒、棉纸、手写批次号。把成本留给茶叶本身。</span>
-                    </div>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 1rem; padding: clamp(0.5rem, 1vh, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); opacity: 0.4; min-width: 2.5em; letter-spacing: 0.1em;">03</span>
+                    <div><span style="font-family: var(--font-display); color: var(--text-primary);">极简包装</span> <span style="color: var(--text-secondary); font-family: var(--font-accent); font-weight: 300;">&mdash; 竹盒、棉纸、手写批次号。</span></div>
                 </li>
-                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0;">
-                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); min-width: 1.5em; opacity: 0.6;">四</span>
-                    <div>
-                        <span style="font-family: var(--font-display); font-size: var(--body-size); color: var(--text-primary); font-weight: 500;">直达茶客</span>
-                        <span style="font-size: var(--body-size); color: var(--text-secondary); margin-left: clamp(0.3rem, 0.5vw, 0.5rem);">&mdash;&ensp;没有中间商、没有经销层级。茶农到茶客，一条路走到底。</span>
-                    </div>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: 1rem; padding: clamp(0.5rem, 1vh, 0.8rem) 0;">
+                    <span style="font-family: var(--font-display); font-size: var(--h3-size); color: var(--accent-gold); opacity: 0.4; min-width: 2.5em; letter-spacing: 0.1em;">04</span>
+                    <div><span style="font-family: var(--font-display); color: var(--text-primary);">直达茶客</span> <span style="color: var(--text-secondary); font-family: var(--font-accent); font-weight: 300;">&mdash; 没有中间商，一条路走到底。</span></div>
                 </li>
             </ul>
         </div>
     </section>
 
-    <!-- =================== SLIDE 8: 结尾页 =================== -->
-    <section class="slide closing-slide" aria-label="结尾">
-        <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 50vw; height: 40vh; background: radial-gradient(ellipse, rgba(212,168,67,0.06) 0%, transparent 60%); pointer-events: none;"></div>
+    <!-- =================== SLIDE 9: CEREMONY IMAGE =================== -->
+    <section class="slide" aria-label="茶道" style="padding: 0;">
+        <div style="position: absolute; inset: 0;">
+            <img src="images/shanyin-ceremony.webp" alt="Tea ceremony" style="width: 100%; height: 100%; object-fit: cover; max-height: none; opacity: 0.4; filter: brightness(0.45) contrast(1.1) saturate(0.8);">
+        </div>
+        <div class="vignette" style="position: absolute; inset: 0;"></div>
+        <div class="slide-content" style="position: relative; z-index: 1; align-items: center; justify-content: center; text-align: center;">
+            <blockquote class="reveal-wipe" style="font-size: clamp(1.3rem, 3.5vw, 3rem); font-family: var(--font-display); line-height: 1.6; letter-spacing: 0.08em; text-shadow: 0 3px 25px rgba(0,0,0,0.6);">
+                茶是一场仪式，<br>关于慢下来，关于此刻
+            </blockquote>
+        </div>
+    </section>
 
-        <div class="slide-content" style="align-items: center; text-align: center;">
-            <h2 class="reveal-drama" style="font-size: clamp(3rem, 8vw, 6rem); font-family: var(--font-display); font-weight: 700; letter-spacing: 0.3em; color: var(--text-primary); line-height: 1;">
-                山隐
-            </h2>
-
-            <div class="reveal cinema-divider" style="margin-top: clamp(1rem, 2vh, 1.5rem); transition-delay: 0.5s;"></div>
-
-            <p class="reveal" style="font-size: clamp(1rem, 2vw, 1.4rem); font-family: var(--font-display); color: var(--text-secondary); margin-top: clamp(0.8rem, 1.5vh, 1.2rem); letter-spacing: 0.12em; transition-delay: 0.8s;">
-                让好茶回归本真
-            </p>
-
-            <div class="reveal" style="margin-top: clamp(2rem, 4vh, 3.5rem); transition-delay: 1.1s;">
-                <div style="display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vh, 0.5rem); font-size: var(--body-size); color: var(--text-secondary);">
-                    <span>shanyin.tea.com</span>
-                    <span>service@shanyin.tea.com</span>
+    <!-- =================== SLIDE 10: CLOSING =================== -->
+    <section class="slide" aria-label="结语" style="padding: 0;">
+        <div style="position: absolute; inset: 0;">
+            <img src="images/shanyin-mountain.webp" alt="Mountain" style="width: 100%; height: 100%; object-fit: cover; max-height: none; opacity: 0.2; filter: brightness(0.4) contrast(1.1);">
+        </div>
+        <div class="vignette" style="position: absolute; inset: 0;"></div>
+        <div class="slide-content" style="position: relative; z-index: 1; align-items: center; justify-content: center; text-align: center;">
+            <h2 class="reveal-wipe" style="font-size: clamp(3rem, 8vw, 7rem); font-family: var(--font-display); font-weight: 700; letter-spacing: 0.3em; line-height: 1; text-shadow: 0 4px 30px rgba(0,0,0,0.5);">山隐</h2>
+            <div class="cinema-divider reveal" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem); transition-delay: 0.5s;"></div>
+            <p class="reveal" style="font-size: clamp(1rem, 2vw, 1.4rem); font-family: var(--font-display); color: var(--accent-gold); margin-top: clamp(0.5rem, 1vh, 0.8rem); letter-spacing: 0.15em; transition-delay: 0.7s; text-shadow: 0 2px 15px rgba(0,0,0,0.5);">让好茶回归本真</p>
+            <div class="reveal" style="margin-top: clamp(2rem, 4vh, 3rem); transition-delay: 1s;">
+                <div style="display: flex; flex-direction: column; gap: 0.3rem; font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-accent); font-weight: 300; letter-spacing: 0.1em;">
+                    <span>SHANYIN.TEA.COM</span>
                     <span style="font-family: var(--font-display); letter-spacing: 0.05em;">福建省南平市武夷山桐木关</span>
                 </div>
             </div>
-
-            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 2.5rem); transition-delay: 1.4s;">
-                <div class="seal">山隐<br>茶号</div>
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3vh, 2rem); transition-delay: 1.2s;">
+                <div class="seal" style="border-color: rgba(197,61,67,0.8); color: rgba(197,61,67,0.9);">山隐<br>茶号</div>
             </div>
         </div>
-
-        <!-- Watermark — simpler than primary -->
-        <p style="position: absolute; bottom: calc(var(--letterbox-height) + clamp(4px, 0.8vw, 10px)); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.3; font-family: var(--font-body); z-index: 2;">
+        <p style="position: absolute; bottom: calc(var(--letterbox-height) + clamp(4px, 0.8vw, 10px)); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.3; z-index: 1;">
             Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
         </p>
     </section>
 
     <script>
-        /* ===========================================
-           SLIDE PRESENTATION CONTROLLER
-           =========================================== */
         class SlidePresentation {
-            constructor() {
-                this.slides = [...document.querySelectorAll('.slide')];
-                this.currentSlide = 0;
-                this.isAnimating = false;
-                this.touchStartY = 0;
-                this.touchStartX = 0;
-                this.init();
-            }
-
-            init() {
-                this.setupIntersectionObserver();
-                this.setupKeyboardNav();
-                this.setupTouchNav();
-                this.setupWheelNav();
-                this.setupProgressBar();
-                this.setupNavDots();
-                this.setupSlideCounter();
-                if (this.slides[0]) this.slides[0].classList.add('visible');
-            }
-
-            setupIntersectionObserver() {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            const idx = this.slides.indexOf(entry.target);
-                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
-                        }
-                    });
-                }, { threshold: 0.5 });
-                this.slides.forEach(slide => observer.observe(slide));
-            }
-
-            setupKeyboardNav() {
-                document.addEventListener('keydown', (e) => {
-                    if (e.target.getAttribute('contenteditable')) return;
-                    switch (e.key) {
-                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
-                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
-                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
-                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
-                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
-                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
-                    }
-                });
-            }
-
-            setupTouchNav() {
-                document.addEventListener('touchstart', (e) => {
-                    this.touchStartY = e.touches[0].clientY;
-                    this.touchStartX = e.touches[0].clientX;
-                }, { passive: true });
-                document.addEventListener('touchend', (e) => {
-                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
-                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
-                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
-                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
-                    else this.goToSlide(this.currentSlide - 1);
-                }, { passive: true });
-            }
-
-            setupWheelNav() {
-                let wheelTimeout;
-                document.addEventListener('wheel', (e) => {
-                    clearTimeout(wheelTimeout);
-                    wheelTimeout = setTimeout(() => {
-                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
-                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
-                    }, 50);
-                }, { passive: true });
-            }
-
+            constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); }
+            init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); }
+            setupIntersectionObserver() { const o = new IntersectionObserver((es) => { es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); const i = this.slides.indexOf(e.target); if (i !== -1) { this.currentSlide = i; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(s => o.observe(s)); }
+            setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch(e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide+1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide-1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length-1); break; } }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const dY = this.touchStartY - e.changedTouches[0].clientY, dX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return; if (dY > 0) this.goToSlide(this.currentSlide+1); else this.goToSlide(this.currentSlide-1); }, { passive: true }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide+1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide-1); }, 50); }, { passive: true }); }
             setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
-
-            setupNavDots() {
-                const container = document.getElementById('navDots');
-                if (!container) return;
-                this.slides.forEach((_, i) => {
-                    const dot = document.createElement('button');
-                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-                    dot.setAttribute('aria-label', `跳转到第 ${i + 1} 页`);
-                    dot.addEventListener('click', () => this.goToSlide(i));
-                    container.appendChild(dot);
-                });
-            }
-
+            setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot'+(i===0?' active':''); d.setAttribute('aria-label', `Slide ${i+1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); }
             setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
-
-            goToSlide(index) {
-                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
-                this.isAnimating = true;
-                this.currentSlide = index;
-                this.slides[index].scrollIntoView({ behavior: 'smooth' });
-                this.updateUI();
-                setTimeout(() => { this.isAnimating = false; }, 800);
-            }
-
-            updateUI() {
-                const total = this.slides.length;
-                const current = this.currentSlide;
-                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
-                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
-                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
-            }
+            goToSlide(i) { if (i < 0 || i >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = i; this.slides[i].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 800); }
+            updateUI() { const t = this.slides.length, c = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((c+1)/t)*100}%`; document.querySelectorAll('.nav-dot').forEach((d,i) => d.classList.toggle('active', i===c)); if (this.counter) this.counter.textContent = `${c+1} / ${t}`; }
         }
-
-        /* ===========================================
-           COUNTER ANIMATION
-           =========================================== */
         const counters = document.querySelectorAll('.counter');
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const target = parseInt(el.dataset.target);
-                    const suffix = el.dataset.suffix || '';
-                    const prefix = el.dataset.prefix || '';
-                    const duration = 2000;
-                    const start = performance.now();
-                    function tick(now) {
-                        const elapsed = now - start;
-                        const progress = Math.min(elapsed / duration, 1);
-                        const eased = 1 - Math.pow(1 - progress, 3);
-                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
-                        if (progress < 1) requestAnimationFrame(tick);
-                    }
-                    requestAnimationFrame(tick);
-                    counterObserver.unobserve(el);
-                }
-            });
-        }, { threshold: 0.5 });
-        counters.forEach(c => counterObserver.observe(c));
-
+        const cObs = new IntersectionObserver((es) => { es.forEach(e => { if (e.isIntersecting) { const el = e.target, tgt = parseInt(el.dataset.target), sfx = el.dataset.suffix||'', pfx = el.dataset.prefix||'', dur = 2000, st = performance.now(); function tick(n) { const p = Math.min((n-st)/dur,1), ea = 1-Math.pow(1-p,3); el.textContent = pfx + Math.round(tgt*ea).toLocaleString() + sfx; if (p<1) requestAnimationFrame(tick); } requestAnimationFrame(tick); cObs.unobserve(el); } }); }, { threshold: 0.5 });
+        counters.forEach(c => cObs.observe(c));
         document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
     </script>
 </body>

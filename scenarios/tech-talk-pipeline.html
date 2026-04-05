@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Real-Time Data Pipeline — DataStream Inc.</title>
+
+    <!-- Fonts: JetBrains Mono for Terminal Green -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Terminal Green
+           =========================================== */
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #1c2129;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --text-muted: #484f58;
+            --text-green: #39d353;
+            --accent: #39d353;
+            --accent-secondary: #e3b341;
+            --accent-glow: rgba(57, 211, 83, 0.3);
+            --accent-yellow: #e3b341;
+            --accent-red: #f85149;
+            --accent-blue: #58a6ff;
+            --border: #30363d;
+            --border-subtle: rgba(48, 54, 61, 0.6);
+            --surface: rgba(22, 27, 34, 0.8);
+
+            --font-display: 'JetBrains Mono', monospace;
+            --font-body: 'JetBrains Mono', monospace;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(1.5rem, 4.5vw, 3.5rem);
+            --h2-size: clamp(1.15rem, 3vw, 2.2rem);
+            --h3-size: clamp(0.85rem, 1.8vw, 1.35rem);
+            --subtitle-size: clamp(0.8rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.65rem, 1.2vw, 0.95rem);
+            --small-size: clamp(0.58rem, 0.85vw, 0.75rem);
+            --stat-size: clamp(1.8rem, 7vw, 5rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===========================================
+           VIEWPORT FITTING — MANDATORY
+           =========================================== */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; max-height: 100%;
+            overflow: hidden; padding: var(--slide-padding);
+        }
+
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+        img, .image-container {
+            max-width: 100%; max-height: min(50vh, 400px); object-fit: contain;
+        }
+
+        /* ===========================================
+           TERMINAL CHROME — title bar with dots
+           =========================================== */
+        .terminal-chrome {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: clamp(6px, 1vw, 12px);
+            overflow: hidden;
+        }
+        .terminal-titlebar {
+            display: flex; align-items: center; gap: 6px;
+            padding: clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        .terminal-dot {
+            width: clamp(8px, 1vw, 12px); height: clamp(8px, 1vw, 12px);
+            border-radius: 50%;
+        }
+        .terminal-dot.red { background: #f85149; }
+        .terminal-dot.yellow { background: #e3b341; }
+        .terminal-dot.green { background: #39d353; }
+        .terminal-title {
+            margin-left: auto; margin-right: auto;
+            font-size: var(--small-size); color: var(--text-muted);
+        }
+        .terminal-body {
+            padding: clamp(12px, 2vw, 24px);
+            font-size: var(--body-size);
+            line-height: 1.7;
+        }
+
+        /* ===========================================
+           PROMPT PREFIX for bullet points
+           =========================================== */
+        .prompt-item {
+            display: flex; align-items: baseline;
+            gap: clamp(0.4rem, 0.8vw, 0.75rem);
+            padding: clamp(0.2rem, 0.5vh, 0.4rem) 0;
+            font-size: var(--body-size);
+        }
+        .prompt-prefix {
+            color: var(--accent);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ===========================================
+           BLINKING CURSOR
+           =========================================== */
+        .cursor::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+            color: var(--accent);
+            margin-left: 4px;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* ===========================================
+           CRT SCANLINE OVERLAY
+           =========================================== */
+        .slide::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* Scan border animation */
+        .scan-border { position: relative; overflow: hidden; }
+        .scan-border::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan { 0% { left: -100%; } 100% { left: 100%; } }
+
+        /* Glow pulse */
+        @keyframes glow-pulse {
+            0% { box-shadow: 0 0 8px var(--accent-glow); }
+            100% { box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow); }
+        }
+
+        /* ===========================================
+           ARCHITECTURE DIAGRAM — CSS-only
+           =========================================== */
+        .arch-diagram {
+            display: flex; align-items: center; justify-content: center;
+            gap: clamp(0.3rem, 1vw, 1rem);
+            flex-wrap: wrap;
+            margin-top: var(--content-gap);
+        }
+        .arch-node {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: clamp(8px, 1.2vw, 16px) clamp(12px, 1.5vw, 20px);
+            text-align: center;
+            font-size: var(--small-size);
+            min-width: clamp(70px, 10vw, 120px);
+            position: relative;
+        }
+        .arch-node.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .arch-node .node-label {
+            color: var(--text-secondary);
+            font-size: clamp(0.5rem, 0.7vw, 0.65rem);
+            margin-top: 4px;
+        }
+        .arch-arrow {
+            color: var(--accent);
+            font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+            flex-shrink: 0;
+        }
+
+        /* ===========================================
+           BENCHMARK BARS — CSS-only data viz
+           =========================================== */
+        .benchmark-bar-container {
+            margin-top: var(--element-gap);
+        }
+        .benchmark-row {
+            display: flex; align-items: center;
+            gap: clamp(0.5rem, 1vw, 1rem);
+            margin-bottom: clamp(6px, 1vh, 12px);
+            font-size: var(--small-size);
+        }
+        .benchmark-label {
+            min-width: clamp(80px, 12vw, 140px);
+            color: var(--text-secondary);
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .benchmark-track {
+            flex: 1; height: clamp(16px, 2.5vh, 28px);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .benchmark-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1.5s var(--ease-out-expo);
+            position: relative;
+        }
+        .benchmark-fill.green { background: linear-gradient(90deg, #1a6b2a, var(--accent)); }
+        .benchmark-fill.yellow { background: linear-gradient(90deg, #8a6d1b, var(--accent-yellow)); }
+        .benchmark-fill.red { background: linear-gradient(90deg, #8b2525, var(--accent-red)); }
+        .benchmark-fill.blue { background: linear-gradient(90deg, #1a4a7a, var(--accent-blue)); }
+        .benchmark-value {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            font-size: var(--small-size); color: var(--text-primary);
+            font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* Zero-width initially for animation */
+        .slide:not(.visible) .benchmark-fill { width: 0 !important; }
+
+        /* ===========================================
+           CODE BLOCK STYLING
+           =========================================== */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: clamp(6px, 1vw, 12px);
+            overflow: hidden;
+        }
+        .code-header {
+            padding: clamp(6px, 0.8vw, 10px) clamp(10px, 1.5vw, 16px);
+            background: var(--bg-tertiary);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            display: flex; justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .code-body {
+            padding: clamp(10px, 1.5vw, 20px);
+            font-size: var(--body-size);
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        /* Syntax colors */
+        .kw { color: #ff7b72; }  /* keywords */
+        .fn { color: #d2a8ff; }  /* functions */
+        .str { color: #a5d6ff; } /* strings */
+        .cm { color: #484f58; }  /* comments */
+        .num { color: #79c0ff; } /* numbers */
+        .op { color: #ff7b72; }  /* operators */
+        .type { color: #ffa657; } /* types */
+        .var { color: #e6edf3; } /* variables */
+
+        /* ===========================================
+           DATA FLOW DIAGRAM
+           =========================================== */
+        .flow-container {
+            display: flex; flex-direction: column;
+            gap: clamp(4px, 0.8vh, 10px);
+            margin-top: var(--content-gap);
+        }
+        .flow-stage {
+            display: flex; align-items: center;
+            gap: clamp(6px, 1vw, 12px);
+        }
+        .flow-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: clamp(6px, 1vw, 12px) clamp(10px, 1.5vw, 18px);
+            font-size: var(--small-size);
+            flex: 1;
+            text-align: center;
+        }
+        .flow-box.highlight {
+            border-color: var(--accent);
+            background: rgba(57, 211, 83, 0.06);
+        }
+        .flow-connector {
+            color: var(--accent);
+            font-size: clamp(0.6rem, 1vw, 0.9rem);
+            flex-shrink: 0;
+        }
+
+        /* ===========================================
+           METRICS GRID
+           =========================================== */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+            gap: clamp(8px, 1.5vw, 16px);
+            margin-top: var(--content-gap);
+        }
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: clamp(12px, 2vw, 20px);
+            text-align: center;
+        }
+        .metric-value {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .metric-label {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .metric-delta {
+            font-size: var(--small-size);
+            margin-top: 4px;
+        }
+        .metric-delta.up { color: var(--accent); }
+        .metric-delta.down { color: var(--accent-red); }
+
+        /* ===========================================
+           PROGRESS BAR / NAV / COUNTER
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            width: 0%; z-index: 9999; transition: width 0.3s ease;
+        }
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%;
+            transform: translateY(-50%); display: flex;
+            flex-direction: column; gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--text-muted); border: none;
+            cursor: pointer; transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent); transform: scale(1.4);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px); font-family: var(--font-mono);
+            font-size: var(--small-size); color: var(--text-muted); z-index: 9998;
+        }
+
+        /* ===========================================
+           IMAGE SLIDE
+           =========================================== */
+        .slide-bg-image {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            opacity: 0.25;
+        }
+        .slide-bg-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(13,17,23,0.3) 0%, rgba(13,17,23,0.95) 100%);
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .decorative { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .grid { grid-template-columns: 1fr; }
+            .slide-content[style*="flex-direction: row"] { flex-direction: column !important; }
+            .slide-counter { display: none; }
+            .arch-diagram { flex-direction: column; }
+        }
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+        @media (min-width: 2000px) {
+            .slide-content { max-width: 1600px; margin: 0 auto; }
+        }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box { border-width: 0.5px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal { opacity: 1; }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal { opacity: 1 !important; transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide" aria-label="Title">
+        <div class="slide-bg-image" style="background-image: url('images/pipeline-hero.webp');"></div>
+        <div class="slide-bg-overlay"></div>
+        <div class="slide-content" style="position: relative; z-index: 2; align-items: flex-start; justify-content: flex-end; padding-bottom: clamp(3rem, 8vh, 6rem);">
+            <div class="terminal-chrome reveal" style="display: inline-block; padding: 0; margin-bottom: var(--content-gap);">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                    <span class="terminal-title">~/datastream/pipeline</span>
+                </div>
+                <div class="terminal-body" style="padding: clamp(8px, 1vw, 14px) clamp(12px, 1.5vw, 20px);">
+                    <span class="prompt-prefix">$</span> <span style="color: var(--accent);">cat</span> talk.md
+                </div>
+            </div>
+            <h1 class="reveal cursor" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; line-height: 1.3;">
+                Building a Real-Time<br>Data Pipeline
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                From 10-minute batch delays to sub-second streaming
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                DataStream Inc.  |  Tech Talk 2026
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: THE PROBLEM =================== -->
+    <section class="slide" aria-label="The Problem">
+        <div class="slide-content">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">01 — The Problem</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">
+                Batch Processing Was Killing Us
+            </h2>
+            <div class="terminal-chrome reveal" style="margin-top: var(--content-gap);">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                    <span class="terminal-title">system-status</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="prompt-item"><span class="prompt-prefix">$</span> <span>ETL jobs running every <span style="color: var(--accent-red);">10 minutes</span></span></div>
+                    <div class="prompt-item"><span class="prompt-prefix">$</span> <span>Dashboard data stale by <span style="color: var(--accent-red);">15-20 minutes</span> during peak</span></div>
+                    <div class="prompt-item"><span class="prompt-prefix">$</span> <span>Fraud detection lagging — <span style="color: var(--accent-red);">$2.3M in preventable losses</span></span></div>
+                    <div class="prompt-item"><span class="prompt-prefix">$</span> <span>Ops team manually restarting failed jobs <span style="color: var(--accent-red);">12x/week</span></span></div>
+                    <div class="prompt-item"><span class="prompt-prefix">$</span> <span>Data reconciliation? <span style="color: var(--accent-red);">prayer-driven development</span></span></div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap);">
+                <span style="color: var(--accent-yellow);">⚠</span> Our batch pipeline was a liability, not an asset.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: ARCHITECTURE =================== -->
+    <section class="slide" aria-label="Architecture">
+        <div class="slide-content">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">02 — Architecture</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">
+                The Streaming Stack
+            </h2>
+            <div class="arch-diagram reveal">
+                <div class="arch-node">
+                    <div style="color: var(--accent-blue);">Sources</div>
+                    <div class="node-label">API / CDC / IoT</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node active">
+                    <div style="color: var(--accent);">Kafka</div>
+                    <div class="node-label">Event Bus</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">
+                    <div style="color: var(--accent-yellow);">Flink</div>
+                    <div class="node-label">Stream Processor</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">
+                    <div style="color: var(--accent-blue);">Sinks</div>
+                    <div class="node-label">DB / S3 / API</div>
+                </div>
+            </div>
+            <div class="flow-container reveal" style="margin-top: var(--content-gap);">
+                <div class="flow-stage">
+                    <div class="flow-box highlight">Debezium CDC</div>
+                    <div class="flow-connector">→</div>
+                    <div class="flow-box highlight">Kafka Topics</div>
+                    <div class="flow-connector">→</div>
+                    <div class="flow-box highlight">Flink SQL</div>
+                    <div class="flow-connector">→</div>
+                    <div class="flow-box highlight">ClickHouse</div>
+                </div>
+                <div class="flow-stage" style="opacity: 0.5;">
+                    <div class="flow-box">REST APIs</div>
+                    <div class="flow-connector">→</div>
+                    <div class="flow-box">Kafka Topics</div>
+                    <div class="flow-connector">→</div>
+                    <div class="flow-box">Flink Java</div>
+                    <div class="flow-connector">→</div>
+                    <div class="flow-box">Redis Cache</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap);">
+                Two parallel pipelines: CDC for database changes, REST for real-time events.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: DATA FLOW DEEP DIVE =================== -->
+    <section class="slide" aria-label="Data Flow">
+        <div class="slide-bg-image" style="background-image: url('images/pipeline-flow.webp');"></div>
+        <div class="slide-bg-overlay"></div>
+        <div class="slide-content" style="position: relative; z-index: 2;">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">03 — Data Flow</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">
+                Event-Driven, End to End
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(8px, 1.5vw, 16px); margin-top: var(--content-gap);">
+                <div class="reveal terminal-chrome scan-border">
+                    <div class="terminal-body" style="padding: clamp(10px, 1.5vw, 18px);">
+                        <div style="color: var(--accent); font-weight: 700; margin-bottom: 6px;">① Ingest</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary);">
+                            Debezium captures row-level changes from PostgreSQL WAL. Zero app-code changes.
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal terminal-chrome scan-border">
+                    <div class="terminal-body" style="padding: clamp(10px, 1.5vw, 18px);">
+                        <div style="color: var(--accent-yellow); font-weight: 700; margin-bottom: 6px;">② Process</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary);">
+                            Flink SQL windows, aggregates, and joins across event streams with exactly-once guarantees.
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal terminal-chrome scan-border">
+                    <div class="terminal-body" style="padding: clamp(10px, 1.5vw, 18px);">
+                        <div style="color: var(--accent-blue); font-weight: 700; margin-bottom: 6px;">③ Serve</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary);">
+                            ClickHouse materializes views for sub-100ms analytical queries. Redis for hot path.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted); text-align: center;">
+                Average end-to-end latency: <span style="color: var(--accent); font-weight: 700;">340ms</span> (was 10+ minutes)
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: CODE — Flink SQL =================== -->
+    <section class="slide" aria-label="Code Example">
+        <div class="slide-content">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">04 — Implementation</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">
+                Flink SQL: Real-Time Aggregation
+            </h2>
+            <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                <div class="code-header">
+                    <span>fraud_detection.sql</span>
+                    <span style="opacity: 0.5;">Flink SQL</span>
+                </div>
+                <div class="code-body"><code><span class="kw">SELECT</span>
+  user_id,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> tx_count,
+  <span class="fn">SUM</span>(amount) <span class="kw">AS</span> total_amount,
+  <span class="fn">TUMBLE_START</span>(event_time, <span class="fn">INTERVAL</span> <span class="str">'5'</span> <span class="type">MINUTE</span>) <span class="kw">AS</span> window_start
+<span class="kw">FROM</span> transactions
+<span class="kw">WHERE</span> event_time <span class="op">></span> <span class="fn">CURRENT_TIMESTAMP</span> <span class="op">-</span> <span class="fn">INTERVAL</span> <span class="str">'1'</span> <span class="type">HOUR</span>
+<span class="kw">GROUP BY</span>
+  user_id,
+  <span class="fn">TUMBLE</span>(event_time, <span class="fn">INTERVAL</span> <span class="str">'5'</span> <span class="type">MINUTE</span>)
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) <span class="op">></span> <span class="num">20</span>
+   <span class="kw">OR</span> <span class="fn">SUM</span>(amount) <span class="op">></span> <span class="num">10000</span></code></pre>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap);">
+                <span class="prompt-prefix">$</span> Tumbling windows flag suspicious activity within 5-minute intervals. Alerts fire in &lt;1s.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: BENCHMARKS =================== -->
+    <section class="slide" aria-label="Benchmarks">
+        <div class="slide-content">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">05 — Benchmarks</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">
+                Before vs After
+            </h2>
+            <div class="reveal benchmark-bar-container" style="margin-top: var(--content-gap);">
+                <div class="benchmark-row">
+                    <span class="benchmark-label">Latency (Before)</span>
+                    <div class="benchmark-track">
+                        <div class="benchmark-fill red" style="width: 95%;">
+                            <span class="benchmark-value">10 min</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="benchmark-row">
+                    <span class="benchmark-label">Latency (After)</span>
+                    <div class="benchmark-track">
+                        <div class="benchmark-fill green" style="width: 5%;">
+                            <span class="benchmark-value">340ms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="benchmark-row" style="margin-top: clamp(6px, 1.5vh, 16px);">
+                    <span class="benchmark-label">Throughput</span>
+                    <div class="benchmark-track">
+                        <div class="benchmark-fill green" style="width: 85%;">
+                            <span class="benchmark-value">1.2M events/s</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="benchmark-row">
+                    <span class="benchmark-label">Availability</span>
+                    <div class="benchmark-track">
+                        <div class="benchmark-fill green" style="width: 99.9%;">
+                            <span class="benchmark-value">99.97%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="benchmark-row" style="margin-top: clamp(6px, 1.5vh, 16px);">
+                    <span class="benchmark-label">Failed Jobs/wk</span>
+                    <div class="benchmark-track">
+                        <div class="benchmark-fill yellow" style="width: 10%;">
+                            <span class="benchmark-value">0.3</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="benchmark-row">
+                    <span class="benchmark-label" style="color: var(--text-muted);">(was)</span>
+                    <div class="benchmark-track">
+                        <div class="benchmark-fill red" style="width: 60%;">
+                            <span class="benchmark-value">12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: KEY METRICS =================== -->
+    <section class="slide" aria-label="Key Metrics">
+        <div class="slide-content" style="align-items: center;">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">06 — Impact</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap); text-align: center;">
+                Production Numbers
+            </h2>
+            <div class="metrics-grid reveal">
+                <div class="metric-card">
+                    <div class="metric-value counter" data-target="1760" data-suffix="x">0</div>
+                    <div class="metric-label">Latency Reduction</div>
+                    <div class="metric-delta up">↑ 10min → 340ms</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value counter" data-target="2" data-prefix="$" data-suffix="M">0</div>
+                    <div class="metric-label">Fraud Prevented (Q1)</div>
+                    <div class="metric-delta up">↑ real-time detection</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value counter" data-target="97" data-suffix="%">0</div>
+                    <div class="metric-label">Fewer Manual Interventions</div>
+                    <div class="metric-delta up">↑ self-healing pipeline</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value counter" data-target="40" data-suffix="%">0</div>
+                    <div class="metric-label">Infra Cost Reduction</div>
+                    <div class="metric-delta up">↑ no idle batch clusters</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: LESSONS LEARNED =================== -->
+    <section class="slide" aria-label="Lessons Learned">
+        <div class="slide-content">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">07 — Lessons</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">
+                What We Learned the Hard Way
+            </h2>
+            <div class="terminal-chrome reveal" style="margin-top: var(--content-gap);">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                    <span class="terminal-title">lessons.log</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="prompt-item"><span class="prompt-prefix" style="color: var(--accent-yellow);">1.</span> <span><span style="color: var(--text-primary);">Schema evolution breaks everything.</span> <span style="color: var(--text-secondary);">Use Avro + Schema Registry from day one.</span></span></div>
+                    <div class="prompt-item"><span class="prompt-prefix" style="color: var(--accent-yellow);">2.</span> <span><span style="color: var(--text-primary);">Exactly-once is a spectrum.</span> <span style="color: var(--text-secondary);">Understand your actual consistency needs before over-engineering.</span></span></div>
+                    <div class="prompt-item"><span class="prompt-prefix" style="color: var(--accent-yellow);">3.</span> <span><span style="color: var(--text-primary);">Monitoring is not optional.</span> <span style="color: var(--text-secondary);">Consumer lag alerts saved us more than any code review.</span></span></div>
+                    <div class="prompt-item"><span class="prompt-prefix" style="color: var(--accent-yellow);">4.</span> <span><span style="color: var(--text-primary);">Start with Flink SQL.</span> <span style="color: var(--text-secondary);">Drop to Java only when SQL can't express your logic.</span></span></div>
+                    <div class="prompt-item"><span class="prompt-prefix" style="color: var(--accent-yellow);">5.</span> <span><span style="color: var(--text-primary);">Backpressure is a feature.</span> <span style="color: var(--text-secondary);">Don't fight it. Instrument it, tune it, respect it.</span></span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: CODE — Kafka Config =================== -->
+    <section class="slide" aria-label="Kafka Configuration">
+        <div class="slide-content">
+            <span class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.2em;">08 — Config</span>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); margin-top: var(--element-gap);">
+                Production Kafka Tuning
+            </h2>
+            <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                <div class="code-header">
+                    <span>kafka-config.yml</span>
+                    <span style="opacity: 0.5;">YAML</span>
+                </div>
+                <div class="code-body"><code><span class="cm"># Broker — optimized for throughput + durability</span>
+<span class="type">num.partitions</span>: <span class="num">12</span>
+<span class="type">replication.factor</span>: <span class="num">3</span>
+<span class="type">min.insync.replicas</span>: <span class="num">2</span>
+<span class="type">compression.type</span>: <span class="str">lz4</span>
+
+<span class="cm"># Producer — exactly-once semantics</span>
+<span class="type">acks</span>: <span class="str">all</span>
+<span class="type">enable.idempotence</span>: <span class="kw">true</span>
+<span class="type">max.in.flight.requests</span>: <span class="num">5</span>
+
+<span class="cm"># Consumer — backpressure-aware</span>
+<span class="type">max.poll.records</span>: <span class="num">500</span>
+<span class="type">fetch.max.wait.ms</span>: <span class="num">100</span>
+<span class="type">auto.offset.reset</span>: <span class="str">earliest</span></code></div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--element-gap);">
+                <span class="prompt-prefix">$</span> These settings sustain 1.2M events/s across 3 AZs with p99 latency under 50ms.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: CLOSING =================== -->
+    <section class="slide" aria-label="Closing">
+        <div class="slide-bg-image" style="background-image: url('images/pipeline-arch.webp');"></div>
+        <div class="slide-bg-overlay"></div>
+        <div class="slide-content" style="position: relative; z-index: 2; align-items: center; justify-content: center; text-align: center;">
+            <div class="reveal" style="font-size: var(--small-size); color: var(--accent); text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: var(--element-gap);">
+                datastream.io/pipeline
+            </div>
+            <h2 class="reveal cursor" style="font-size: var(--title-size); font-family: var(--font-display);">
+                Stop Batching,<br>Start Streaming
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap);">
+                Questions? Let's talk architecture.
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: var(--content-gap); font-size: var(--small-size); color: var(--text-muted);">
+                <span>GitHub: datastream/pipeline</span>
+                <span>|</span>
+                <span>@datastreamhq</span>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5; z-index: 3;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true; this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+            updateUI() {
+                const total = this.slides.length, current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+
+        /* Counter animation */
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const suffix = el.dataset.suffix || '';
+                    const prefix = el.dataset.prefix || '';
+                    const duration = 1500;
+                    const start = performance.now();
+                    function tick(now) {
+                        const elapsed = now - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

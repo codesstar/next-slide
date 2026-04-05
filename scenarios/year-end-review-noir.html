@@ -23,8 +23,8 @@
             --bg-secondary: #0a0a0a;
             --bg-tertiary: #1d1d1f;
             --text-primary: #ffffff;
-            --text-secondary: #86868b;
-            --text-muted: #6e6e73;
+            --text-secondary: #a1a1a6;
+            --text-muted: #8e8e93;
             --accent: #2997ff;
             --accent-secondary: #30d158;
             --accent-glow: rgba(41, 151, 255, 0.3);
@@ -148,7 +148,7 @@
         /* 9. CJK typography */
         :lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) {
             line-height: 1.8;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: break-word;
         }
 
@@ -870,6 +870,7 @@
                             break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

@@ -21,7 +21,7 @@
             --bg-tertiary: #eeeeee;
             --text-primary: #0a0a0a;
             --text-secondary: #666666;
-            --text-muted: #999999;
+            --text-muted: #767676;
             --accent: #ff3300;
             --accent-secondary: #ff3300;
             --accent-glow: rgba(255, 51, 0, 0.15);
@@ -351,7 +351,7 @@
            =========================================== */
         .code-keyword { color: #d32f2f; }
         .code-string { color: #1565c0; }
-        .code-comment { color: #999999; font-style: italic; }
+        .code-comment { color: #767676; font-style: italic; }
         .code-function { color: #6a1b9a; }
         .code-type { color: #0277bd; }
         .code-number { color: #0277bd; }
@@ -728,6 +728,7 @@
                         case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
                     }
                 });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
             }
 
             setupTouchNav() {

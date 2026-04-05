@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>李雨晴 · 竞聘销售总监</title>
+
+    <!-- Fonts: Archivo (display) + Nunito (body) + Noto Sans SC (CJK) — Swiss Modern -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&family=Nunito:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #666666;
+            --accent-red: #ff3300;
+            --grid-line: rgba(0,0,0,0.06);
+            --border: #0a0a0a;
+            --surface: rgba(0,0,0,0.03);
+            --text-muted: #767676;
+            --accent: #ff3300;
+            --accent-glow: rgba(255,51,0,0.2);
+            --border-subtle: rgba(0,0,0,0.1);
+
+            --font-display: 'Archivo', 'Noto Sans SC', sans-serif;
+            --font-body: 'Nunito', 'Noto Sans SC', sans-serif;
+            --font-cn: 'Noto Sans SC', sans-serif;
+
+            --title-size: clamp(2rem, 6vw, 4.5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.5s;
+        }
+
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        html,body{height:100%;overflow-x:hidden;}
+        html{scroll-snap-type:y mandatory;scroll-behavior:smooth;}
+        body{-webkit-font-smoothing:antialiased;font-family:var(--font-body);background:var(--bg-primary);color:var(--text-primary);}
+        .slide{width:100vw;height:100vh;height:100dvh;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column;position:relative;}
+        .slide-content{flex:1;display:flex;flex-direction:column;justify-content:center;max-height:100%;overflow:hidden;padding:var(--slide-padding);}
+        :lang(zh){line-height:1.6;word-break:normal;overflow-wrap:break-word;}
+        h1,h2,h3{overflow-wrap:break-word;}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:clamp(0.5rem,1.5vw,1rem);}
+
+        @media(max-height:700px){:root{--slide-padding:clamp(0.75rem,3vw,2rem);--content-gap:clamp(0.4rem,1.5vw,1rem);--title-size:clamp(1.25rem,4.5vw,2.5rem);--h2-size:clamp(1rem,3vw,1.75rem);}}
+        @media(max-height:600px){:root{--slide-padding:clamp(0.5rem,2.5vw,1.5rem);--body-size:clamp(0.7rem,1.2vw,0.95rem);}.nav-dots{display:none;}}
+        @media(max-height:500px){:root{--slide-padding:clamp(0.4rem,2vw,1rem);--title-size:clamp(1rem,3.5vw,1.5rem);}.grid{grid-template-columns:1fr!important;}}
+        @media(max-width:600px){:root{--title-size:clamp(1.25rem,7vw,2.5rem);}.grid{grid-template-columns:1fr;}.slide-counter{display:none;}.two-col{flex-direction:column!important;}}
+        @media(min-width:2000px){.slide-content{max-width:1600px;margin:0 auto;}}
+
+        @media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.2s!important;scroll-behavior:auto!important;}html{scroll-behavior:auto;scroll-snap-type:none;}.reveal{opacity:0;transform:none!important;transition:opacity 0.2s ease!important;}.visible .reveal{opacity:1;}}
+        @media print{html{scroll-snap-type:none;}.slide{height:auto;min-height:100vh;overflow:visible;page-break-after:always;}.progress-bar,.nav-dots,.slide-counter{display:none!important;}.reveal{opacity:1!important;transform:none!important;}}
+
+        /* Swiss grid background */
+        .grid-bg{background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:clamp(30px,5vw,60px) clamp(30px,5vw,60px);}
+
+        .reveal{opacity:0;transform:translateY(15px);transition:opacity var(--duration-normal) ease-out,transform var(--duration-normal) var(--ease-out-expo);}
+        .slide.visible .reveal{opacity:1;transform:translateY(0);}
+        .reveal:nth-child(1){transition-delay:.05s}.reveal:nth-child(2){transition-delay:.1s}.reveal:nth-child(3){transition-delay:.15s}.reveal:nth-child(4){transition-delay:.2s}.reveal:nth-child(5){transition-delay:.25s}.reveal:nth-child(6){transition-delay:.3s}
+
+        .progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent-red);width:0%;z-index:9999;transition:width 0.3s ease;}
+        .nav-dots{position:fixed;right:clamp(12px,2vw,24px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:9998;}
+        .nav-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);border:none;cursor:pointer;transition:all 0.3s ease;padding:0;}
+        .nav-dot.active{background:var(--accent-red);transform:scale(1.3);}
+        .slide-counter{position:fixed;bottom:clamp(12px,2vw,24px);right:clamp(12px,2vw,24px);font-size:var(--small-size);color:var(--text-muted);z-index:9998;}
+
+        /* Swiss: bold red accent bar */
+        .accent-bar{width:clamp(4px,0.5vw,6px);height:100%;background:var(--accent-red);position:absolute;left:0;top:0;}
+        .swiss-card{position:relative;padding-left:clamp(1rem,2vw,1.5rem);border-left:clamp(3px,0.4vw,5px) solid var(--accent-red);}
+
+        /* Oversized numbers */
+        .big-num{font-family:var(--font-display);font-size:var(--stat-size);font-weight:900;line-height:1;color:var(--text-primary);}
+
+        /* Growth chart bars (horizontal) */
+        .h-bar-wrap{display:flex;align-items:center;gap:clamp(0.5rem,1.5vw,1rem);}
+        .h-bar-label{min-width:clamp(60px,10vw,90px);font-size:var(--body-size);font-weight:700;}
+        .h-bar-track{flex:1;height:clamp(20px,3vh,32px);background:var(--surface);border-radius:0;overflow:hidden;}
+        .h-bar-fill{height:100%;transition:width 1s var(--ease-out-expo);}
+        .h-bar-value{min-width:clamp(50px,8vw,80px);font-size:var(--body-size);font-weight:700;text-align:right;}
+
+        /* Clean card */
+        .clean-card{background:var(--bg-primary);border:2px solid var(--border);padding:clamp(0.8rem,2vw,1.2rem);}
+
+        /* Two col */
+        .two-col{display:flex;gap:var(--content-gap);align-items:flex-start;}.two-col>*{flex:1;min-width:0;}
+
+        /* Pillar card */
+        .pillar{border-top:clamp(3px,0.4vw,5px) solid var(--accent-red);padding-top:clamp(0.6rem,1.2vw,1rem);}
+
+        /* Projection bars */
+        .proj-bar{display:flex;align-items:center;gap:clamp(0.5rem,1vw,0.8rem);}
+        .proj-bar-year{font-family:var(--font-display);font-size:var(--body-size);font-weight:900;min-width:clamp(40px,5vw,55px);}
+        .proj-bar-track{flex:1;height:clamp(16px,2.5vh,28px);background:var(--surface);overflow:hidden;}
+        .proj-bar-fill{height:100%;transition:width 1s var(--ease-out-expo);}
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide grid-bg" aria-label="Title">
+        <div class="slide-content">
+            <div style="display:flex;align-items:baseline;gap:clamp(0.5rem,1.5vw,1rem);">
+                <div class="reveal" style="font-family:var(--font-display);font-size:clamp(4rem,12vw,10rem);font-weight:900;line-height:0.85;color:var(--accent-red);opacity:0.15;">01</div>
+                <div>
+                    <h1 class="reveal" style="font-family:var(--font-cn);font-size:var(--title-size);font-weight:900;">李雨晴</h1>
+                    <p class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">竞聘销售总监</p>
+                    <div class="reveal" style="width:clamp(40px,6vw,60px);height:clamp(3px,0.4vw,5px);background:var(--accent-red);margin-top:var(--content-gap);"></div>
+                    <p class="reveal" style="font-size:var(--small-size);color:var(--text-secondary);margin-top:var(--element-gap);">8年B2B销售经验 · 连续4年超额完成</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROFILE -->
+    <section class="slide grid-bg" aria-label="Profile">
+        <div class="slide-content">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">PROFILE</p>
+            <h2 class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">个人简介</h2>
+            <div class="two-col" style="margin-top:var(--content-gap);">
+                <div style="display:flex;gap:clamp(0.5rem,1.2vw,1rem);">
+                    <div class="reveal" style="text-align:center;flex:1;">
+                        <div class="big-num" style="color:var(--accent-red);">8</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);">年B2B销售</div>
+                    </div>
+                    <div class="reveal" style="text-align:center;flex:1;">
+                        <div class="big-num">4</div>
+                        <div style="font-size:var(--small-size);color:var(--text-secondary);">年连续超额</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="reveal swiss-card" style="margin-bottom:clamp(0.3rem,0.8vw,0.6rem);">
+                        <p style="font-size:var(--body-size);">现任高级销售经理，管理8人团队</p>
+                    </div>
+                    <div class="reveal swiss-card" style="margin-bottom:clamp(0.3rem,0.8vw,0.6rem);">
+                        <p style="font-size:var(--body-size);">个人累计签约 ¥5.5亿</p>
+                    </div>
+                    <div class="reveal swiss-card">
+                        <p style="font-size:var(--body-size);">2025年度销售亚军 ¥4,200万</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: PHILOSOPHY -->
+    <section class="slide" aria-label="Philosophy">
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">PHILOSOPHY</p>
+            <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">顾问式销售</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--content-gap);max-width:min(70vw,550px);line-height:1.8;">
+                不卖产品，卖解决方案。先理解客户业务痛点，再匹配最优方案。<br>关系优先，信任驱动长期价值。
+            </p>
+            <div class="reveal" style="width:clamp(40px,6vw,60px);height:clamp(3px,0.4vw,5px);background:var(--accent-red);margin-top:var(--content-gap);"></div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: TRACK RECORD -->
+    <section class="slide grid-bg" aria-label="Track Record">
+        <div class="slide-content">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">TRACK RECORD</p>
+            <h2 class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">业绩增长曲线</h2>
+            <div style="margin-top:var(--content-gap);max-width:min(85vw,700px);display:flex;flex-direction:column;gap:clamp(0.4rem,1vw,0.8rem);">
+                <div class="reveal h-bar-wrap">
+                    <div class="h-bar-label">2023</div>
+                    <div class="h-bar-track"><div class="h-bar-fill animated-hbar" data-width="48" style="width:0;background:var(--text-primary);"></div></div>
+                    <div class="h-bar-value">¥1.2亿</div>
+                </div>
+                <div class="reveal h-bar-wrap">
+                    <div class="h-bar-label">2024</div>
+                    <div class="h-bar-track"><div class="h-bar-fill animated-hbar" data-width="72" style="width:0;background:var(--text-primary);"></div></div>
+                    <div class="h-bar-value">¥1.8亿</div>
+                </div>
+                <div class="reveal h-bar-wrap">
+                    <div class="h-bar-label">2025</div>
+                    <div class="h-bar-track"><div class="h-bar-fill animated-hbar" data-width="100" style="width:0;background:var(--accent-red);"></div></div>
+                    <div class="h-bar-value" style="color:var(--accent-red);">¥2.5亿</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-secondary);margin-top:var(--element-gap);">年均增长率 44%，连续3年翻倍式增长</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: KEY ACCOUNTS -->
+    <section class="slide" aria-label="Key Accounts">
+        <div class="slide-content">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">KEY ACCOUNTS</p>
+            <h2 class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">标杆案例</h2>
+            <div class="grid" style="margin-top:var(--content-gap);grid-template-columns:repeat(3,1fr);">
+                <div class="reveal clean-card">
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:900;color:var(--accent-red);">¥3,200万</div>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;margin-top:0.3em;">中国平安</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.5;">从0到1开拓金融行业线，6个月完成签约</p>
+                </div>
+                <div class="reveal clean-card">
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:900;color:var(--accent-red);">¥2,100万</div>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;margin-top:0.3em;">美的集团</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.5;">制造业数智化转型项目，竞标胜出SAP方案</p>
+                </div>
+                <div class="reveal clean-card">
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:900;color:var(--accent-red);">¥1,800万</div>
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;margin-top:0.3em;">京东健康</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.5;">医疗大数据平台，推动续约2年</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: TEAM LEADERSHIP -->
+    <section class="slide grid-bg" aria-label="Team">
+        <div class="slide-content">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">LEADERSHIP</p>
+            <h2 class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">团队带教</h2>
+            <div style="display:flex;justify-content:flex-start;gap:clamp(2rem,6vw,5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:left;">
+                    <div class="big-num" style="color:var(--accent-red);">12</div>
+                    <div style="font-size:var(--body-size);color:var(--text-secondary);">辅导过的销售代表</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div class="big-num">3</div>
+                    <div style="font-size:var(--body-size);color:var(--text-secondary);">人晋升为经理</div>
+                </div>
+                <div class="reveal" style="text-align:left;">
+                    <div class="big-num">92%</div>
+                    <div style="font-size:var(--body-size);color:var(--text-secondary);">团队目标达成率</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--content-gap);max-width:min(75vw,550px);line-height:1.7;">建立 "陪访-复盘-迭代" 培训体系，新人3个月独立签单率从40%提升至75%。</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: MARKET INSIGHT -->
+    <section class="slide" aria-label="Market">
+        <div class="slide-content">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">MARKET</p>
+            <h2 class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">市场洞察</h2>
+            <div class="grid" style="margin-top:var(--content-gap);grid-template-columns:repeat(2,1fr);max-width:min(85vw,750px);">
+                <div class="reveal swiss-card">
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">行业趋势</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.6;">企业数字化投入持续增长，中型企业是最大增量市场。AI应用从探索进入落地阶段。</p>
+                </div>
+                <div class="reveal swiss-card">
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">竞争格局</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.6;">头部厂商价格战加剧，差异化服务和行业深耕成为核心壁垒。</p>
+                </div>
+                <div class="reveal swiss-card">
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">客户画像</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.6;">决策权下移至业务部门，需要更懂业务的顾问式销售。</p>
+                </div>
+                <div class="reveal swiss-card">
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">机会窗口</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.6;">国产替代加速，我们在金融、制造业具备先发优势。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: STRATEGY -->
+    <section class="slide grid-bg" aria-label="Strategy">
+        <div class="slide-content">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">STRATEGY</p>
+            <h2 class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">三大战略支柱</h2>
+            <div class="grid" style="margin-top:var(--content-gap);grid-template-columns:repeat(3,1fr);">
+                <div class="reveal pillar">
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">大客户深耕</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.6;">Top 20客户人均产出提升30%，建立KA专属服务团队</p>
+                </div>
+                <div class="reveal pillar">
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">行业解决方案</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.6;">聚焦金融、制造、医疗三大行业，打造标杆案例复制模式</p>
+                </div>
+                <div class="reveal pillar">
+                    <h3 style="font-family:var(--font-cn);font-size:var(--h3-size);font-weight:700;">数字化销售</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.4em;line-height:1.6;">CRM智能化升级，数据驱动线索分配和跟进节奏</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: FORECAST -->
+    <section class="slide" aria-label="Forecast">
+        <div class="slide-content">
+            <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">FORECAST</p>
+            <h2 class="reveal" style="font-family:var(--font-display);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">营收预测 2026-2028</h2>
+            <div style="margin-top:var(--content-gap);max-width:min(85vw,700px);display:flex;flex-direction:column;gap:clamp(0.4rem,1vw,0.8rem);">
+                <div class="reveal proj-bar">
+                    <div class="proj-bar-year">2026</div>
+                    <div class="proj-bar-track"><div class="proj-bar-fill animated-hbar" data-width="57" style="width:0;background:var(--text-primary);"></div></div>
+                    <div style="font-size:var(--body-size);font-weight:700;min-width:clamp(50px,8vw,80px);text-align:right;">¥4亿</div>
+                </div>
+                <div class="reveal proj-bar">
+                    <div class="proj-bar-year">2027</div>
+                    <div class="proj-bar-track"><div class="proj-bar-fill animated-hbar" data-width="79" style="width:0;background:var(--accent-red);"></div></div>
+                    <div style="font-size:var(--body-size);font-weight:700;min-width:clamp(50px,8vw,80px);text-align:right;color:var(--accent-red);">¥5.5亿</div>
+                </div>
+                <div class="reveal proj-bar">
+                    <div class="proj-bar-year">2028</div>
+                    <div class="proj-bar-track"><div class="proj-bar-fill animated-hbar" data-width="100" style="width:0;background:var(--accent-red);"></div></div>
+                    <div style="font-size:var(--body-size);font-weight:700;min-width:clamp(50px,8vw,80px);text-align:right;color:var(--accent-red);">¥7亿</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-secondary);margin-top:var(--element-gap);">三年复合增长率 41%</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: WHY ME -->
+    <section class="slide grid-bg" aria-label="Why Me">
+        <div class="slide-content" style="align-items:flex-start;">
+            <div style="display:flex;align-items:baseline;gap:clamp(0.5rem,1.5vw,1rem);">
+                <div class="reveal" style="font-family:var(--font-display);font-size:clamp(4rem,12vw,10rem);font-weight:900;line-height:0.85;color:var(--accent-red);opacity:0.15;">10</div>
+                <div>
+                    <p class="reveal" style="font-family:var(--font-display);font-size:var(--small-size);font-weight:900;letter-spacing:0.2em;color:var(--accent-red);">WHY ME</p>
+                    <h2 class="reveal" style="font-family:var(--font-cn);font-size:var(--h2-size);font-weight:900;margin-top:var(--element-gap);">为什么是我</h2>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:clamp(0.4rem,1vw,0.7rem);margin-top:var(--content-gap);max-width:min(85vw,650px);">
+                <div class="reveal swiss-card"><p style="font-size:var(--body-size);"><strong>实战验证</strong> &mdash; 8年一线经验，从个人贡献者成长为团队Leader</p></div>
+                <div class="reveal swiss-card"><p style="font-size:var(--body-size);"><strong>增长引擎</strong> &mdash; 连续3年带动团队营收翻倍增长</p></div>
+                <div class="reveal swiss-card"><p style="font-size:var(--body-size);"><strong>人才培养</strong> &mdash; 搭建了可复制的销售培训体系</p></div>
+                <div class="reveal swiss-card"><p style="font-size:var(--body-size);"><strong>战略视野</strong> &mdash; 深刻理解市场趋势，具备制定长期战略的能力</p></div>
+            </div>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.4;">Made with <a href="https://github.com/user/next-slide" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init();}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible');}setupIntersectionObserver(){const o=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const idx=this.slides.indexOf(entry.target);if(idx!==-1){this.currentSlide=idx;this.updateUI();}}});},{threshold:0.5});this.slides.forEach(s=>o.observe(s));}setupKeyboardNav(){document.addEventListener('keydown',(e)=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}});}setupTouchNav(){document.addEventListener('touchstart',(e)=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true});document.addEventListener('touchend',(e)=>{const dy=this.touchStartY-e.changedTouches[0].clientY;const dx=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dy)<50||Math.abs(dx)>Math.abs(dy))return;if(dy>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true});}setupWheelNav(){let t;document.addEventListener('wheel',(e)=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true});}setupProgressBar(){this.progressBar=document.getElementById('progressBar');}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);});}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI();}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600);}updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`;}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const bObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.querySelectorAll('.animated-hbar').forEach((b,i)=>{setTimeout(()=>{b.style.width=b.dataset.width+'%';},i*150);});bObs.unobserve(entry.target);}});},{threshold:0.3});
+        document.querySelectorAll('.slide').forEach(s=>bObs.observe(s));
+    </script>
+</body>
+</html>

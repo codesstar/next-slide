@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小米 · 智能家居套装</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0f1c; --bg-gradient: radial-gradient(ellipse at 30% 50%, #0d1a2d 0%, #0a0f1c 70%);
+            --accent-cyan: #00ffcc; --accent-magenta: #ff00aa; --accent-blue: #4466ff;
+            --text-primary: #e0f0ff; --text-secondary: #7a9abc; --text-muted: #6a8aaa;
+            --glow-cyan: 0 0 20px rgba(0, 255, 204, 0.3); --glow-magenta: 0 0 20px rgba(255, 0, 170, 0.3);
+            --border-subtle: rgba(0, 255, 204, 0.1); --surface: rgba(13, 26, 45, 0.8);
+            --font-display: 'Clash Display', 'Noto Sans SC', sans-serif; --font-body: 'Satoshi', 'Noto Sans SC', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem); --h2-size: clamp(1.5rem, 4vw, 3rem); --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem); --body-size: clamp(0.75rem, 1.5vw, 1.125rem); --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem); --content-gap: clamp(1rem, 2.5vw, 2.5rem); --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; background: var(--bg-gradient); }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); position: relative; z-index: 2; }
+        h1, h2, h3 { overflow-wrap: break-word; } p, li { overflow-wrap: break-word; }
+
+        /* Neon Cyber: Scan lines overlay */
+        .slide::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,255,204,0.015) 2px, rgba(0,255,204,0.015) 4px); pointer-events: none; z-index: 1; }
+        /* Dot grid background */
+        .dot-grid { background-image: radial-gradient(circle, rgba(0,255,204,0.06) 1px, transparent 1px); background-size: clamp(30px, 4vw, 50px) clamp(30px, 4vw, 50px); }
+        /* Neon-bordered cards */
+        .neon-card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 8px; padding: clamp(1rem, 2vw, 1.5rem); position: relative; backdrop-filter: blur(8px); }
+        .neon-card::before { content: ''; position: absolute; inset: -1px; border-radius: 9px; background: linear-gradient(135deg, var(--accent-cyan), transparent 50%, var(--accent-magenta)); opacity: 0.15; z-index: -1; pointer-events: none; }
+        /* Corner brackets */
+        .corner-bracket { position: absolute; width: 16px; height: 16px; border-color: var(--accent-cyan); border-style: solid; pointer-events: none; opacity: 0.4; }
+        .corner-bracket.tl { top: var(--slide-padding); left: var(--slide-padding); border-width: 2px 0 0 2px; }
+        .corner-bracket.tr { top: var(--slide-padding); right: var(--slide-padding); border-width: 2px 2px 0 0; }
+        .corner-bracket.bl { bottom: var(--slide-padding); left: var(--slide-padding); border-width: 0 0 2px 2px; }
+        .corner-bracket.br { bottom: var(--slide-padding); right: var(--slide-padding); border-width: 0 2px 2px 0; }
+        /* Gradient text */
+        .gradient-text { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .glow-text-cyan { text-shadow: var(--glow-cyan); color: var(--accent-cyan); }
+        .glow-text-magenta { text-shadow: var(--glow-magenta); color: var(--accent-magenta); }
+
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo); }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+        .reveal:nth-child(1) { transition-delay: 0.1s; } .reveal:nth-child(2) { transition-delay: 0.2s; } .reveal:nth-child(3) { transition-delay: 0.35s; } .reveal:nth-child(4) { transition-delay: 0.5s; } .reveal:nth-child(5) { transition-delay: 0.65s; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta)); width: 0%; z-index: 9999; transition: width 0.3s ease; box-shadow: 0 0 10px rgba(0,255,204,0.3); }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent-cyan); transform: scale(1.4); box-shadow: var(--glow-cyan); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-body); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; font-weight: 500; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .float-anim { animation: float 6s ease-in-out infinite; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .corner-bracket { display: none; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; animation: none !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-scale { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; } .slide.visible .reveal, .slide.visible .reveal-scale { opacity: 1; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .slide::before { display: none; } .progress-bar, .nav-dots, .slide-counter, .corner-bracket { display: none !important; } .reveal, .reveal-scale { opacity: 1 !important; transform: none !important; } .gradient-text { -webkit-text-fill-color: var(--accent-cyan); } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide dot-grid" aria-label="标题">
+        <div class="corner-bracket tl"></div><div class="corner-bracket tr"></div><div class="corner-bracket bl"></div><div class="corner-bracket br"></div>
+        <div class="slide-content" style="align-items: center; text-align: center; justify-content: center;">
+            <div class="reveal" style="font-size: var(--small-size); letter-spacing: 0.3em; color: var(--accent-cyan); font-weight: 500;">[ 小米智能家居 ]</div>
+            <h1 class="reveal gradient-text" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; line-height: 1.1; margin-top: var(--element-gap);">全屋智能<br>触手可及</h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 500px; line-height: 1.7;">智能门锁 + 摄像头 + 传感器套装<br><span class="glow-text-cyan" style="font-weight: 700;">￥1,999</span> 全家桶</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: HERO IMAGE -->
+    <section class="slide" aria-label="产品">
+        <div class="corner-bracket tl" style="border-color: var(--accent-magenta);"></div><div class="corner-bracket br" style="border-color: var(--accent-magenta);"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal-scale float-anim"><img src="images/xiaomi-smart-home-kit.webp" alt="小米智能家居套装" loading="lazy" style="max-width: min(85vw, 800px); max-height: min(42vh, 380px); object-fit: cover; border-radius: 8px; border: 1px solid var(--border-subtle); box-shadow: 0 0 40px rgba(0,255,204,0.1), 0 20px 60px rgba(0,0,0,0.4);"></div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: 450px; line-height: 1.7;">一个套装，三重守护。<br>从入户到客厅，<span class="glow-text-cyan">全屋联动</span>。</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: PAIN POINTS -->
+    <section class="slide dot-grid" aria-label="痛点">
+        <div class="corner-bracket tl"></div><div class="corner-bracket br"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal" style="font-size: var(--small-size); letter-spacing: 0.2em; color: var(--accent-magenta);">[ PROBLEM ]</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap);">单品智能 ≠ 全屋智能</h2>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1rem, 2vw, 2rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="neon-card" style="min-width: 150px; max-width: 200px; text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 700;" class="glow-text-magenta">73%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">用户放弃率</div>
+                </div>
+                <div class="neon-card" style="min-width: 150px; max-width: 200px; text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 700;" class="glow-text-cyan">5+</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">需要的 App 数</div>
+                </div>
+                <div class="neon-card" style="min-width: 150px; max-width: 200px; text-align: center;">
+                    <div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 700; color: var(--accent-blue);">¥8K+</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">传统方案起步价</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: PRODUCTS -->
+    <section class="slide" aria-label="产品组成">
+        <div class="corner-bracket tl"></div><div class="corner-bracket tr"></div><div class="corner-bracket bl"></div><div class="corner-bracket br"></div>
+        <div class="slide-content">
+            <div class="reveal" style="font-size: var(--small-size); letter-spacing: 0.2em; color: var(--accent-cyan); text-align: center;">[ KIT CONTENTS ]</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap); text-align: center;">三件套，零门槛</h2>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(0.8rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div class="neon-card" style="flex: 1; min-width: 180px; max-width: 260px; border-color: var(--accent-cyan);">
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--h3-size);" class="glow-text-cyan">智能门锁 Pro</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.7;">指纹 + 密码 + NFC<br>猫眼可视 · 远程开锁<br>C级锁芯 · 165天续航</div>
+                </div>
+                <div class="neon-card" style="flex: 1; min-width: 180px; max-width: 260px; border-color: var(--accent-magenta);">
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--h3-size);" class="glow-text-magenta">智能摄像头 2K</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.7;">2K 超清 · AI 人形侦测<br>双向语音 · 夜视增强<br>本地 + 云存储</div>
+                </div>
+                <div class="neon-card" style="flex: 1; min-width: 180px; max-width: 260px; border-color: var(--accent-blue);">
+                    <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--h3-size); color: var(--accent-blue);">多合一传感器</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.4em; line-height: 1.7;">温度 · 湿度 · 光照<br>人体存在感应<br>门窗开合检测</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: SCENARIO -->
+    <section class="slide dot-grid" aria-label="场景">
+        <div class="corner-bracket tl" style="border-color: var(--accent-magenta);"></div><div class="corner-bracket br" style="border-color: var(--accent-magenta);"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal-scale"><img src="images/xiaomi-smart-home-lifestyle.webp" alt="智能家居生活场景" loading="lazy" style="max-width: min(85vw, 750px); max-height: min(35vh, 300px); object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,0,170,0.15); box-shadow: 0 0 40px rgba(255,0,170,0.1), 0 20px 60px rgba(0,0,0,0.4);"></div>
+            <h2 class="reveal gradient-text" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--content-gap);">一句话的事</h2>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(0.8rem, 1.5vw, 1.2rem); margin-top: var(--element-gap); flex-wrap: wrap;">
+                <span class="neon-card" style="padding: 0.5em 1.2em; border-color: var(--accent-cyan); font-size: var(--body-size);">"小爱，我到家了"</span>
+                <span class="neon-card" style="padding: 0.5em 1.2em; border-color: var(--accent-magenta); font-size: var(--body-size);">"离家模式"</span>
+                <span class="neon-card" style="padding: 0.5em 1.2em; border-color: var(--accent-blue); font-size: var(--body-size);">"有人按门铃"</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: SPECS -->
+    <section class="slide" aria-label="参数">
+        <div class="corner-bracket tl"></div><div class="corner-bracket br"></div>
+        <div class="slide-content" style="align-items: center;">
+            <div class="reveal" style="font-size: var(--small-size); letter-spacing: 0.2em; color: var(--accent-cyan); text-align: center;">[ SPECIFICATIONS ]</div>
+            <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: clamp(0.6rem, 1vw, 0.8rem); margin-top: var(--content-gap); max-width: 700px; width: 100%;">
+                <div class="neon-card" style="text-align: center; border-color: var(--accent-cyan);">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;" class="glow-text-cyan">2K</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">摄像头分辨率</div>
+                </div>
+                <div class="neon-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;">165天</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">门锁续航</div>
+                </div>
+                <div class="neon-card" style="text-align: center; border-color: var(--accent-magenta);">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;" class="glow-text-magenta">5合1</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">传感器</div>
+                </div>
+                <div class="neon-card" style="text-align: center; border-color: var(--accent-blue);">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700; color: var(--accent-blue);">10ms</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">联动响应</div>
+                </div>
+                <div class="neon-card" style="text-align: center;">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;">C级</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">锁芯安全</div>
+                </div>
+                <div class="neon-card" style="text-align: center; border-color: var(--accent-cyan);">
+                    <div style="font-size: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-display); font-weight: 700;" class="glow-text-cyan">1 App</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary);">米家统一控制</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: COMPARISON -->
+    <section class="slide dot-grid" aria-label="对比">
+        <div class="corner-bracket tl"></div><div class="corner-bracket br"></div>
+        <div class="slide-content" style="align-items: center;">
+            <h2 class="reveal gradient-text" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center;">同样的能力，1/4 价格</h2>
+            <div class="reveal neon-card" style="margin-top: var(--content-gap); max-width: 650px; width: 100%; padding: 0; overflow: hidden;">
+                <div style="display: grid; grid-template-columns: 2fr 2fr 1fr; font-size: var(--small-size);">
+                    <div style="padding: 0.6em 1em; border-bottom: 1px solid var(--border-subtle); color: var(--text-muted); font-weight: 700;">品牌</div>
+                    <div style="padding: 0.6em 1em; border-bottom: 1px solid var(--border-subtle); color: var(--text-muted); font-weight: 700;">配置</div>
+                    <div style="padding: 0.6em 1em; border-bottom: 1px solid var(--border-subtle); color: var(--text-muted); font-weight: 700; text-align: right;">价格</div>
+                    <div style="padding: 0.7em 1em; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-secondary);">品牌 A</div>
+                    <div style="padding: 0.7em 1em; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-secondary);">门锁+摄像头</div>
+                    <div style="padding: 0.7em 1em; border-bottom: 1px solid rgba(255,255,255,0.04); text-align: right;">¥5,999</div>
+                    <div style="padding: 0.7em 1em; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-secondary);">品牌 B</div>
+                    <div style="padding: 0.7em 1em; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-secondary);">三件套</div>
+                    <div style="padding: 0.7em 1em; border-bottom: 1px solid rgba(255,255,255,0.04); text-align: right;">¥8,499</div>
+                    <div style="padding: 0.7em 1em; font-weight: 700;" class="glow-text-cyan">小米</div>
+                    <div style="padding: 0.7em 1em; font-weight: 700; color: var(--text-primary);">三件套 + 联动</div>
+                    <div style="padding: 0.7em 1em; font-weight: 700; text-align: right;" class="glow-text-cyan">¥1,999</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: ECOSYSTEM -->
+    <section class="slide" aria-label="生态">
+        <div class="corner-bracket tl"></div><div class="corner-bracket tr"></div><div class="corner-bracket bl"></div><div class="corner-bracket br"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal" style="font-size: var(--small-size); letter-spacing: 0.2em; color: var(--accent-magenta);">[ ECOSYSTEM ]</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; margin-top: var(--element-gap);">今天三件套，明天全屋智能</h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); max-width: 450px; line-height: 1.7;">5000+ 兼容设备，米家生态全线兼容，随时扩展。</p>
+            <div class="reveal" style="display: flex; justify-content: center; gap: clamp(2rem, 5vw, 5rem); margin-top: var(--content-gap); flex-wrap: wrap;">
+                <div><div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 700;" class="glow-text-cyan"><span class="counter" data-target="5000" data-suffix="+">0</span></div><div style="font-size: var(--small-size); color: var(--text-secondary);">兼容设备</div></div>
+                <div><div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 700;"><span class="counter" data-target="600" data-suffix="M+">0</span></div><div style="font-size: var(--small-size); color: var(--text-secondary);">米家用户</div></div>
+                <div><div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: var(--font-display); font-weight: 700;" class="glow-text-magenta">#1</div><div style="font-size: var(--small-size); color: var(--text-secondary);">中国 IoT 平台</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: CTA -->
+    <section class="slide dot-grid" aria-label="CTA">
+        <div class="corner-bracket tl"></div><div class="corner-bracket tr"></div><div class="corner-bracket bl"></div><div class="corner-bracket br"></div>
+        <div class="slide-content" style="align-items: center; text-align: center; justify-content: center;">
+            <h2 class="reveal gradient-text" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; line-height: 1.1;">￥1,999</h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">全屋智能，即刻开启</p>
+            <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); flex-wrap: wrap; justify-content: center;">
+                <span style="display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: var(--bg-primary); font-family: var(--font-display); font-weight: 700; font-size: var(--body-size); padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem); border-radius: 4px; box-shadow: var(--glow-cyan);">立即抢购</span>
+                <span style="display: inline-block; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: var(--body-size); padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem); border-radius: 4px;">预约体验</span>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">4.12 首发 · 前 10,000 名赠安装服务</p>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.3; z-index: 2;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation { constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); } init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); } setupIntersectionObserver() { const o = new IntersectionObserver((e) => { e.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); const idx = this.slides.indexOf(entry.target); if (idx !== -1) { this.currentSlide = idx; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(s => o.observe(s)); } setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch (e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide + 1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide - 1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break; } }); } setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const dY = this.touchStartY - e.changedTouches[0].clientY; const dX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return; if (dY > 0) this.goToSlide(this.currentSlide + 1); else this.goToSlide(this.currentSlide - 1); }, { passive: true }); } setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1); }, 50); }, { passive: true }); } setupProgressBar() { this.progressBar = document.getElementById('progressBar'); } setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `Slide ${i + 1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); } setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); } goToSlide(i) { if (i < 0 || i >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = i; this.slides[i].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600); } updateUI() { const t = this.slides.length, c = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((c + 1) / t) * 100}%`; document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === c)); if (this.counter) this.counter.textContent = `${c + 1} / ${t}`; } }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters = document.querySelectorAll('.counter'); const cObs = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { const el = entry.target; const target = parseFloat(el.dataset.target); const suffix = el.dataset.suffix || ''; const dur = 1500; const st = performance.now(); function tick(now) { const p = Math.min((now - st) / dur, 1); const eased = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(target * eased).toLocaleString() + suffix; if (p < 1) requestAnimationFrame(tick); } requestAnimationFrame(tick); cObs.unobserve(el); } }); }, { threshold: 0.5 }); counters.forEach(c => cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

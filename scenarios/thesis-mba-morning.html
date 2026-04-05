@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新茶饮品牌出海战略 · Morning Brief</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=Libre+Franklin:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Morning Brief
+           Warm, professional, readable, editorial
+           =========================================== */
+        :root {
+            --bg-primary: #fefdfb;
+            --bg-highlight: #fdf6e3;
+            --bg-sidebar: #f5f2ec;
+            --text-primary: #1c1c1c;
+            --text-secondary: #6b6b6b;
+            --text-muted: #a0a0a0;
+            --accent-navy: #1a365d;
+            --accent-navy-dim: rgba(26, 54, 93, 0.08);
+            --rule-dark: #1c1c1c;
+            --rule-light: #d4d0c8;
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --surface: rgba(0, 0, 0, 0.02);
+
+            --font-display: 'Playfair Display', 'Noto Serif SC', serif;
+            --font-body: 'Libre Franklin', 'Noto Sans SC', sans-serif;
+            --font-cjk: 'Noto Sans SC', sans-serif;
+            --font-cjk-display: 'Noto Serif SC', serif;
+            --font-mono: 'Libre Franklin', monospace;
+
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.5s;
+            --duration-slow: 0.8s;
+
+            --accent: var(--accent-navy);
+            --accent-glow: rgba(26, 54, 93, 0.15);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility; font-family: var(--font-body);
+            background: var(--bg-primary); color: var(--text-primary);
+        }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        :lang(zh), :lang(zh-CN) { line-height: 1.8; word-break: normal; overflow-wrap: break-word; }
+        h1, h2, h3 { overflow-wrap: break-word; } p, li { overflow-wrap: break-word; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.5rem, 4.5vw, 3rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --title-size: clamp(1.2rem, 4vw, 2.5rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .morning-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.5rem, 8vw, 2.5rem); } .morning-grid { grid-template-columns: 1fr !important; } .slide-counter { display: none; } .two-col-morning { flex-direction: column !important; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1400px; margin: 0 auto; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-mask { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-mask { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; clip-path: none !important; } }
+
+        /* ===========================================
+           MORNING BRIEF THEME
+           =========================================== */
+        /* Masthead line */
+        .masthead { border-top: 3px double var(--rule-dark); border-bottom: 1px solid var(--rule-dark); padding: clamp(0.3rem, 0.6vw, 0.5rem) 0; display: flex; justify-content: space-between; align-items: baseline; }
+        .masthead-title { font-family: var(--font-display); font-size: var(--h3-size); font-weight: 900; }
+        .masthead-date { font-size: var(--small-size); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.15em; }
+
+        /* Category label */
+        .cat-label { font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-navy); font-weight: 600; font-family: var(--font-body); }
+
+        /* Section rule */
+        .section-rule { border: none; border-top: 2px solid var(--rule-dark); margin: var(--element-gap) 0; }
+        .section-rule-light { border: none; border-top: 1px solid var(--rule-light); margin: var(--element-gap) 0; }
+
+        /* Morning card */
+        .morning-card {
+            background: var(--bg-primary); border: 1px solid var(--rule-light);
+            padding: clamp(0.8rem, 1.5vw, 1.2rem); border-top: 3px solid var(--accent-navy);
+        }
+
+        /* Highlight box */
+        .highlight-box { background: var(--bg-highlight); padding: clamp(0.8rem, 1.5vw, 1.2rem); border-left: 3px solid var(--accent-navy); }
+
+        .morning-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.5vw, 1.2rem); }
+        .two-col-morning { display: flex; gap: var(--content-gap); align-items: flex-start; }
+        .two-col-morning > * { flex: 1; min-width: 0; }
+
+        /* Data bar */
+        .data-bar-container { background: var(--bg-sidebar); height: clamp(8px, 1.2vh, 12px); border-radius: 6px; overflow: hidden; }
+        .data-bar-fill { height: 100%; background: var(--accent-navy); border-radius: 6px; transition: width 1s var(--ease-out-expo); }
+
+        /* Table */
+        .morning-table { width: 100%; border-collapse: collapse; font-size: var(--small-size); }
+        .morning-table th { text-align: left; padding: clamp(0.3rem, 0.6vw, 0.5rem); border-bottom: 2px solid var(--rule-dark); font-family: var(--font-display); font-weight: 700; color: var(--accent-navy); }
+        .morning-table td { padding: clamp(0.3rem, 0.6vw, 0.5rem); border-bottom: 1px solid var(--rule-light); font-family: var(--font-cjk); }
+
+        /* Stat */
+        .stat-navy { font-family: var(--font-display); font-size: var(--stat-size); font-weight: 900; color: var(--accent-navy); line-height: 1; }
+
+        /* Timeline */
+        .brief-timeline { display: flex; position: relative; }
+        .brief-timeline::before { content: ''; position: absolute; top: clamp(12px, 2vw, 18px); left: 0; right: 0; height: 2px; background: var(--accent-navy); }
+        .brief-step { flex: 1; text-align: center; position: relative; z-index: 1; }
+        .brief-dot { width: clamp(24px, 3.5vw, 36px); height: clamp(24px, 3.5vw, 36px); border-radius: 50%; background: var(--accent-navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--small-size); font-weight: 700; }
+
+        /* Drop cap */
+        .drop-cap::first-letter {
+            float: left; font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900; color: var(--accent-navy); line-height: 0.85;
+            margin-right: clamp(0.3rem, 0.5vw, 0.5rem); margin-top: clamp(0.1rem, 0.3vw, 0.2rem);
+        }
+
+        /* ===========================================
+           ANIMATIONS — Editorial / Staggered
+           =========================================== */
+        .reveal { opacity: 0; transform: translateY(15px); transition: opacity var(--duration-normal) ease, transform var(--duration-normal) var(--ease-out-expo); }
+        .reveal-mask { clip-path: inset(0 0 100% 0); transition: clip-path 0.7s var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .slide.visible .reveal-mask { clip-path: inset(0 0 0 0); }
+        .reveal:nth-child(1) { transition-delay: 0.08s; } .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.28s; } .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.52s; } .reveal:nth-child(6) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS & NAV
+           =========================================== */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-navy); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rule-light); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent-navy); transform: scale(1.4); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-display); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide" aria-label="Title">
+        <div class="slide-content">
+            <div class="masthead reveal">
+                <div class="masthead-title">MBA Thesis Defense</div>
+                <div class="masthead-date">April 2026</div>
+            </div>
+            <div style="margin-top: var(--content-gap);">
+                <div class="cat-label reveal">Graduate Research</div>
+                <h1 class="reveal-mask" style="font-family: var(--font-cjk-display); font-size: var(--title-size); font-weight: 900; margin-top: var(--element-gap); max-width: 16ch;">
+                    新茶饮品牌出海战略研究
+                </h1>
+                <p class="reveal" style="font-family: var(--font-cjk); font-size: var(--h3-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                    &mdash; 以喜茶为例
+                </p>
+                <hr class="section-rule-light reveal">
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); font-family: var(--font-cjk);">
+                    答辩人：张明远 &nbsp;&middot;&nbsp; 导师：李教授 &nbsp;&middot;&nbsp; 工商管理硕士
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: BACKGROUND =================== -->
+    <section class="slide" aria-label="Background" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <div class="masthead reveal">
+                <div class="cat-label">01 Research Background</div>
+                <div class="masthead-date">研究背景</div>
+            </div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">市场现状</h2>
+            <div class="two-col-morning" style="margin-top: var(--content-gap);">
+                <div>
+                    <p class="reveal drop-cap" style="font-size: var(--body-size); color: var(--text-secondary); line-height: 2; font-family: var(--font-cjk);">
+                        中国新茶饮市场规模突破3000亿元，年均增速18%。但国内竞争白热化，门店密度趋于饱和，头部品牌纷纷将目光投向海外。出海成为行业新增长引擎。
+                    </p>
+                    <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1.5rem, 3vw, 3rem);">
+                        <div>
+                            <div class="stat-navy counter" data-target="3000" data-suffix="亿">0</div>
+                            <div style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk);">市场规模</div>
+                        </div>
+                        <div>
+                            <div class="stat-navy counter" data-target="18" data-suffix="%">0</div>
+                            <div style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk);">年均增速</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <!-- Bar chart with editorial style -->
+                    <div style="display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vw, 0.5rem);">
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="font-size: var(--small-size); color: var(--text-muted); width: 3em; text-align: right; font-family: var(--font-cjk);">2020</span>
+                            <div class="data-bar-container" style="flex: 1;"><div class="data-bar-fill" style="width: 27%;"></div></div>
+                            <span style="font-size: var(--small-size); font-weight: 600; width: 4em;">800亿</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="font-size: var(--small-size); color: var(--text-muted); width: 3em; text-align: right; font-family: var(--font-cjk);">2021</span>
+                            <div class="data-bar-container" style="flex: 1;"><div class="data-bar-fill" style="width: 47%;"></div></div>
+                            <span style="font-size: var(--small-size); font-weight: 600; width: 4em;">1400亿</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="font-size: var(--small-size); color: var(--text-muted); width: 3em; text-align: right; font-family: var(--font-cjk);">2022</span>
+                            <div class="data-bar-container" style="flex: 1;"><div class="data-bar-fill" style="width: 70%;"></div></div>
+                            <span style="font-size: var(--small-size); font-weight: 600; width: 4em;">2100亿</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="font-size: var(--small-size); color: var(--text-muted); width: 3em; text-align: right; font-family: var(--font-cjk);">2023</span>
+                            <div class="data-bar-container" style="flex: 1;"><div class="data-bar-fill" style="width: 87%;"></div></div>
+                            <span style="font-size: var(--small-size); font-weight: 600; width: 4em;">2600亿</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="font-size: var(--small-size); color: var(--text-muted); width: 3em; text-align: right; font-family: var(--font-cjk);">2024</span>
+                            <div class="data-bar-container" style="flex: 1;"><div class="data-bar-fill" style="width: 100%;"></div></div>
+                            <span style="font-size: var(--small-size); font-weight: 600; width: 4em; color: var(--accent-navy);">3000亿</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: LITERATURE =================== -->
+    <section class="slide" aria-label="Literature">
+        <div class="slide-content">
+            <div class="masthead reveal"><div class="cat-label">02 Literature Review</div><div class="masthead-date">理论框架</div></div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">国际化理论基础</h2>
+            <div class="morning-grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(2, 1fr);">
+                <div class="reveal morning-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">Uppsala Model</h3>
+                    <hr class="section-rule-light">
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; font-family: var(--font-cjk);">渐进式国际化：从心理距离近的市场逐步扩展至远距离市场</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.5em;">Johanson & Vahlne, 1977</p>
+                </div>
+                <div class="reveal morning-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700;">OLI Paradigm</h3>
+                    <hr class="section-rule-light">
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8; font-family: var(--font-cjk);">所有权(O)、区位(L)、内部化(I) 三位一体决策框架</p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.5em;">Dunning, 1981</p>
+                </div>
+            </div>
+            <div class="reveal highlight-box" style="margin-top: var(--content-gap);">
+                <p style="font-size: var(--body-size); color: var(--text-primary); line-height: 2; font-family: var(--font-cjk);">
+                    本研究构建「<strong>文化势能 + 渐进扩张</strong>」分析框架，解释新茶饮品牌的出海路径选择。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: METHODOLOGY =================== -->
+    <section class="slide" aria-label="Methodology" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <div class="masthead reveal"><div class="cat-label">03 Methodology</div><div class="masthead-date">研究方法</div></div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">三维研究设计</h2>
+            <div class="morning-grid" style="margin-top: var(--content-gap);">
+                <div class="reveal morning-card">
+                    <div style="font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 900; color: var(--accent-navy);">I</div>
+                    <h3 style="font-family: var(--font-cjk); font-size: var(--h3-size); font-weight: 700; margin-top: 0.2em;">案例研究法</h3>
+                    <hr class="section-rule-light">
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk); line-height: 1.8;">喜茶2018-2025年海外布局全景分析，追踪关键决策节点</p>
+                </div>
+                <div class="reveal morning-card">
+                    <div style="font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 900; color: var(--accent-navy);">II</div>
+                    <h3 style="font-family: var(--font-cjk); font-size: var(--h3-size); font-weight: 700; margin-top: 0.2em;">深度访谈</h3>
+                    <hr class="section-rule-light">
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk); line-height: 1.8;">喜茶海外团队 + 3位行业专家，12小时录音资料</p>
+                </div>
+                <div class="reveal morning-card">
+                    <div style="font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 900; color: var(--accent-navy);">III</div>
+                    <h3 style="font-family: var(--font-cjk); font-size: var(--h3-size); font-weight: 700; margin-top: 0.2em;">数据分析</h3>
+                    <hr class="section-rule-light">
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk); line-height: 1.8;">500+海外门店经营数据 + 社交媒体用户画像</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: MARKET COMPARISON =================== -->
+    <section class="slide" aria-label="Market Comparison">
+        <div class="slide-content">
+            <div class="masthead reveal"><div class="cat-label">04 Market Analysis</div><div class="masthead-date">市场对比</div></div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">海外三大市场矩阵</h2>
+            <div class="reveal" style="margin-top: var(--content-gap); overflow-x: auto;">
+                <table class="morning-table">
+                    <thead><tr><th style="font-family: var(--font-cjk);">维度</th><th style="color: var(--accent-navy); font-family: var(--font-cjk);">东南亚</th><th style="font-family: var(--font-cjk);">欧美</th><th style="font-family: var(--font-cjk);">日韩</th></tr></thead>
+                    <tbody>
+                        <tr><td>文化接受度</td><td style="color: var(--accent-navy); font-weight: 700;">&#9733;&#9733;&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;&#9733;</td></tr>
+                        <tr><td>市场规模</td><td>&#9733;&#9733;&#9733;</td><td style="font-weight: 700;">&#9733;&#9733;&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td></tr>
+                        <tr><td>竞争强度</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;&#9733;</td></tr>
+                        <tr><td>供应链难度</td><td style="color: var(--accent-navy);">低</td><td>高</td><td>中</td></tr>
+                        <tr><td>进入优先级</td><td style="color: var(--accent-navy); font-weight: 700;">第一梯队</td><td>第三梯队</td><td>第二梯队</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="reveal highlight-box" style="margin-top: var(--content-gap);">
+                <p style="font-size: var(--body-size); font-family: var(--font-cjk); line-height: 1.8;">东南亚文化接近、供应链便利、华人群体庞大 &mdash; 最优先出海目标市场</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: CASE STUDY =================== -->
+    <section class="slide" aria-label="Case Study" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <div class="masthead reveal"><div class="cat-label">05 Case Study</div><div class="masthead-date">案例分析</div></div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">喜茶出海路线图</h2>
+            <div class="reveal brief-timeline" style="margin-top: var(--content-gap);">
+                <div class="brief-step">
+                    <div class="brief-dot">1</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800;">2018</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk);">新加坡首店</div>
+                    </div>
+                </div>
+                <div class="brief-step">
+                    <div class="brief-dot">2</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800;">2022</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk);">伦敦</div>
+                    </div>
+                </div>
+                <div class="brief-step">
+                    <div class="brief-dot">3</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800;">2023</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk);">纽约</div>
+                    </div>
+                </div>
+                <div class="brief-step">
+                    <div class="brief-dot">4</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800;">2024</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk);">东京 · 首尔</div>
+                    </div>
+                </div>
+                <div class="brief-step">
+                    <div class="brief-dot">5</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800;">2025</div>
+                        <div style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk);">500+门店</div>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--content-gap); font-family: var(--font-cjk); line-height: 2;">
+                路径验证 Uppsala 模型：<strong style="color: var(--text-primary);">东南亚 → 欧洲 → 北美 → 东亚</strong>，由近及远、由易到难。
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: 4P STRATEGY =================== -->
+    <section class="slide" aria-label="Strategy">
+        <div class="slide-content">
+            <div class="masthead reveal"><div class="cat-label">06 Strategy Framework</div><div class="masthead-date">策略框架</div></div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">4P 本土化策略</h2>
+            <div class="morning-grid" style="margin-top: var(--content-gap); grid-template-columns: repeat(2, 1fr);">
+                <div class="reveal morning-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size);"><span style="color: var(--accent-navy);">P</span>roduct</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; font-family: var(--font-cjk); line-height: 1.8;">核心SKU + 本地限定。新加坡榴莲系列，伦敦伯爵茶系列。</p>
+                </div>
+                <div class="reveal morning-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size);"><span style="color: var(--accent-navy);">P</span>rice</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; font-family: var(--font-cjk); line-height: 1.8;">中高端定位。东南亚30-50元，欧美40-70元。</p>
+                </div>
+                <div class="reveal morning-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size);"><span style="color: var(--accent-navy);">P</span>lace</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; font-family: var(--font-cjk); line-height: 1.8;">核心商圈旗舰店。首店注重打卡属性和话题性。</p>
+                </div>
+                <div class="reveal morning-card">
+                    <h3 style="font-family: var(--font-display); font-size: var(--h3-size);"><span style="color: var(--accent-navy);">P</span>romotion</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em; font-family: var(--font-cjk); line-height: 1.8;">KOL营销 + 排队经济 + TikTok/Instagram 重点投放。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: KEY FINDINGS =================== -->
+    <section class="slide" aria-label="Findings" style="background: var(--bg-primary);">
+        <div class="slide-content">
+            <div class="masthead reveal"><div class="cat-label">07 Key Findings</div><div class="masthead-date">核心发现</div></div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">三项核心发现</h2>
+            <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 1rem);">
+                <div class="reveal" style="display: flex; gap: clamp(0.5rem, 1.2vw, 1rem); align-items: flex-start; border-bottom: 1px solid var(--rule-light); padding-bottom: clamp(0.5rem, 1vw, 0.8rem);">
+                    <div style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 900; color: var(--accent-navy); flex-shrink: 0;">1</div>
+                    <div>
+                        <h3 style="font-family: var(--font-cjk); font-size: var(--h3-size); font-weight: 700;">文化势能是核心驱动力</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk); line-height: 1.8;">海外 Z 世代对中国潮流文化接受度达 <strong style="color: var(--accent-navy);">72%</strong></p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.5rem, 1.2vw, 1rem); align-items: flex-start; border-bottom: 1px solid var(--rule-light); padding-bottom: clamp(0.5rem, 1vw, 0.8rem);">
+                    <div style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 900; color: var(--accent-navy); flex-shrink: 0;">2</div>
+                    <div>
+                        <h3 style="font-family: var(--font-cjk); font-size: var(--h3-size); font-weight: 700;">供应链本土化是生死线</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk); line-height: 1.8;">欧美门店毛利率较国内低 <strong style="color: var(--accent-navy);">8-12个百分点</strong></p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.5rem, 1.2vw, 1rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-display); font-size: var(--h2-size); font-weight: 900; color: var(--accent-navy); flex-shrink: 0;">3</div>
+                    <div>
+                        <h3 style="font-family: var(--font-cjk); font-size: var(--h3-size); font-weight: 700;">加盟模式需品控约束</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); font-family: var(--font-cjk); line-height: 1.8;">加盟店产品一致性仅为直营店 <strong style="color: var(--accent-navy);">78%</strong>，客诉率高出 <strong style="color: var(--accent-navy);">2.3倍</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: RECOMMENDATIONS =================== -->
+    <section class="slide" aria-label="Recommendations">
+        <div class="slide-content">
+            <div class="masthead reveal"><div class="cat-label">08 Recommendations</div><div class="masthead-date">建议</div></div>
+            <h2 class="reveal" style="font-family: var(--font-cjk-display); font-size: var(--h2-size); font-weight: 900; margin-top: var(--content-gap);">三阶段扩张路线</h2>
+            <div class="reveal brief-timeline" style="margin-top: var(--content-gap);">
+                <div class="brief-step">
+                    <div class="brief-dot" style="background: var(--accent-navy);">I</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800; color: var(--accent-navy);">深耕期</div>
+                        <div style="font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-cjk);">1-2年</div>
+                        <div style="font-size: var(--small-size); color: var(--text-primary); font-family: var(--font-cjk); margin-top: 0.2em;">东南亚密度深耕<br>区域供应链中心</div>
+                    </div>
+                </div>
+                <div class="brief-step">
+                    <div class="brief-dot" style="background: #6b6b6b;">II</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800;">拓展期</div>
+                        <div style="font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-cjk);">3-4年</div>
+                        <div style="font-size: var(--small-size); color: var(--text-primary); font-family: var(--font-cjk); margin-top: 0.2em;">日韩及中东<br>品牌联名国际化</div>
+                    </div>
+                </div>
+                <div class="brief-step">
+                    <div class="brief-dot" style="background: #a0a0a0;">III</div>
+                    <div style="margin-top: 0.5em;">
+                        <div style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800;">成熟期</div>
+                        <div style="font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-cjk);">5年+</div>
+                        <div style="font-size: var(--small-size); color: var(--text-primary); font-family: var(--font-cjk); margin-top: 0.2em;">欧美主流市场<br>全球供应链网络</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: CONCLUSION =================== -->
+    <section class="slide" aria-label="Conclusion" style="background: var(--bg-primary);">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="masthead reveal" style="width: 100%; max-width: min(90vw, 600px);">
+                <div class="masthead-title">Conclusion</div>
+                <div class="masthead-date">结论与展望</div>
+            </div>
+            <h2 class="reveal-mask" style="font-family: var(--font-cjk-display); font-size: var(--title-size); font-weight: 900; margin-top: var(--content-gap); max-width: 14ch;">
+                谢谢各位老师
+            </h2>
+            <hr class="section-rule-light reveal" style="max-width: 200px; margin: var(--content-gap) auto;">
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); line-height: 2; max-width: 50ch; font-family: var(--font-cjk);">
+                新茶饮出海不仅是商业扩张，更是中国消费品牌全球化的缩影。文化势能、供应链能力与本土化智慧，缺一不可。
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); padding: clamp(0.6rem, 1.2vw, 1rem) clamp(1.2rem, 2.5vw, 2rem); border: 2px solid var(--accent-navy); display: inline-block;">
+                <span style="font-family: var(--font-display); font-size: var(--h3-size); font-weight: 800; color: var(--accent-navy);">Q & A</span>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init();}
+            init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible');}
+            setupIntersectionObserver(){const o=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');const i=this.slides.indexOf(en.target);if(i!==-1){this.currentSlide=i;this.updateUI();}}});},{threshold:0.5});this.slides.forEach(s=>o.observe(s));}
+            setupKeyboardNav(){document.addEventListener('keydown',e=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}});}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupTouchNav(){document.addEventListener('touchstart',e=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true});document.addEventListener('touchend',e=>{const dy=this.touchStartY-e.changedTouches[0].clientY;const dx=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dy)<50||Math.abs(dx)>Math.abs(dy))return;if(dy>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true});}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupWheelNav(){let t;document.addEventListener('wheel',e=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true});}
+            setupProgressBar(){this.progressBar=document.getElementById('progressBar');}
+            setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);});}
+            setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI();}
+            goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600);}
+            updateUI(){const t=this.slides.length,c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`;}
+        }
+        const counters=document.querySelectorAll('.counter');
+        const cObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const el=e.target;const tgt=parseInt(el.dataset.target);const sfx=el.dataset.suffix||'';const dur=1500;const st=performance.now();function tick(now){const p=Math.min((now-st)/dur,1);const ea=1-Math.pow(1-p,3);el.textContent=Math.round(tgt*ea).toLocaleString()+sfx;if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);cObs.unobserve(el);}});},{threshold:0.5});
+        counters.forEach(c=>cObs.observe(c));
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+    </script>
+</body>
+</html>

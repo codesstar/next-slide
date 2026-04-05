@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fashion Editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@200;300;400&family=Noto+Sans+SC:wght@200;300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+:lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } .two-col { flex-direction: column !important; } .col-left { width: 100% !important; height: 40% !important; } .col-right { width: 100% !important; } }
+@media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, [class*="reveal-"] { opacity: 0; transform: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; } .slide.active .reveal, .slide.active [class*="reveal-"] { opacity: 1; } }
+@media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .page-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; clip-path: none !important; } }
+
+/* === FASHION EDITORIAL THEME === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cream: #F5F1ED;
+  --dark: #1A1A1A;
+  --gold: #C4A265;
+  --wine: #8B0000;
+  --gray: #666;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--dark); color: var(--cream); }
+body { font-family: 'Montserrat', 'Noto Sans SC', sans-serif; font-weight: 200; }
+
+.serif { font-family: 'Bodoni Moda', 'Noto Sans SC', serif; }
+.sans { font-family: 'Montserrat', 'Noto Sans SC', sans-serif; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--gold); z-index: 1000;
+  transition: width 0.5s var(--ease-out-expo);
+}
+
+.page-counter {
+  position: fixed; bottom: clamp(16px, 2.5vh, 36px); right: clamp(20px, 3vw, 48px);
+  font-family: 'Bodoni Moda', serif; font-size: clamp(11px, 1vw, 14px);
+  color: var(--gold); z-index: 1000; letter-spacing: 0.2em; opacity: 0.6;
+}
+.page-counter .current { opacity: 1; }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Gold border */
+.gold-border {
+  position: absolute; inset: clamp(4px, 0.5vw, 6px);
+  border: 2px solid var(--gold); pointer-events: none; z-index: 10; opacity: 0.6;
+}
+.gold-inner-border {
+  position: absolute; inset: clamp(8px, 1vw, 12px);
+  border: 1px solid var(--gold); pointer-events: none; z-index: 10; opacity: 0.25;
+}
+
+/* Decorative elements */
+.deco-letter {
+  position: absolute; font-family: 'Bodoni Moda', serif; font-style: italic;
+  color: transparent; -webkit-text-stroke: 1px rgba(196, 162, 101, 0.15);
+  line-height: 1; pointer-events: none;
+}
+.dot-grid {
+  position: absolute; background-image: radial-gradient(circle, var(--gold) 1px, transparent 1px);
+  background-size: 12px 12px; opacity: 0.2; pointer-events: none;
+}
+.gold-diamond {
+  position: absolute; width: 12px; height: 12px; background: var(--gold);
+  transform: rotate(45deg); opacity: 0.5;
+}
+
+/* Animations */
+.reveal-mask {
+  clip-path: inset(0 0 100% 0); opacity: 0;
+  transition: clip-path 0.7s var(--ease-out-expo), opacity 0.5s ease;
+}
+.slide.active .reveal-mask { clip-path: inset(0 0 0 0); opacity: 1; }
+
+.reveal-quote {
+  opacity: 0; transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal-quote { opacity: 1; transform: translateX(0); }
+
+.reveal {
+  opacity: 0; transform: translateY(25px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+
+.d1 { transition-delay: 0.1s !important; }
+.d2 { transition-delay: 0.25s !important; }
+.d3 { transition-delay: 0.4s !important; }
+.d4 { transition-delay: 0.55s !important; }
+.d5 { transition-delay: 0.7s !important; }
+.d6 { transition-delay: 0.85s !important; }
+
+/* Composition blocks (simulating photography) */
+.comp-block { position: absolute; }
+
+/* Stats grid */
+.stats-fashion {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0; position: relative;
+}
+.stats-fashion::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  height: 1px; background: var(--gold); opacity: 0.4; z-index: 2;
+}
+.stats-fashion::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 1px; background: var(--gold); opacity: 0.4; z-index: 2;
+}
+.stat-cell {
+  padding: clamp(20px, 3vh, 40px); display: flex;
+  flex-direction: column; align-items: center; text-align: center;
+}
+.stat-number {
+  font-family: 'Bodoni Moda', serif; font-size: clamp(40px, 7vw, 100px);
+  color: var(--cream); line-height: 1; font-weight: 400;
+}
+.stat-label {
+  font-family: 'Montserrat', sans-serif; font-size: clamp(9px, 0.8vw, 11px);
+  letter-spacing: 4px; text-transform: uppercase; color: var(--gold);
+  margin-top: clamp(8px, 1vh, 16px); font-weight: 200;
+}
+
+@media (max-width: 600px) {
+  .stats-fashion { grid-template-columns: 1fr; }
+  .stats-fashion::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide active" data-i="0" style="background: var(--dark);">
+  <div class="gold-border"></div>
+  <!-- Photo composition area -->
+  <div style="position: absolute; left: clamp(16px, 2vw, 24px); top: clamp(16px, 2vw, 24px); width: 55%; height: calc(100% - clamp(32px, 4vw, 48px)); overflow: hidden;">
+    <div class="deco-letter" style="font-size: clamp(200px, 40vw, 520px); left: -40px; top: -60px;">A</div>
+    <div class="comp-block" style="width: clamp(120px, 17vw, 220px); height: clamp(180px, 28vh, 340px); background: linear-gradient(160deg, #3D2B1F, #5C3D2E, #2A1A12); left: 15%; top: 18%;"></div>
+    <div class="comp-block" style="width: clamp(100px, 14vw, 180px); height: clamp(140px, 22vh, 260px); background: linear-gradient(140deg, #8B0000, #5C1A1A, #3A0F0F); left: 30%; top: 30%; z-index: 1;"></div>
+    <div class="comp-block" style="width: clamp(80px, 11vw, 140px); height: clamp(110px, 16vh, 200px); background: linear-gradient(150deg, #C4A265, #8B7340, #5C4A28); opacity: 0.7; left: 8%; top: 45%;"></div>
+    <div class="dot-grid" style="width: 200px; height: 200px; right: 10%; top: 10%;"></div>
+    <div style="position: absolute; width: 100%; height: 1px; background: var(--gold); opacity: 0.2; top: 30%;"></div>
+    <div style="position: absolute; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--gold) 20%, var(--gold) 80%, transparent); opacity: 0.15; left: 60%;"></div>
+  </div>
+  <!-- Text area -->
+  <div style="position: absolute; right: 0; top: 0; width: 45%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: clamp(30px, 5vh, 60px) clamp(24px, 4vw, 50px) clamp(30px, 5vh, 60px) clamp(16px, 2vw, 30px);">
+    <div class="reveal-mask d1 sans" style="font-size: clamp(11px, 1vw, 14px); color: var(--gold); letter-spacing: clamp(6px, 1vw, 12px); text-transform: uppercase; margin-bottom: 12px;">Atelier</div>
+    <div class="reveal d2 sans" style="font-size: clamp(8px, 0.7vw, 10px); letter-spacing: 5px; text-transform: uppercase; color: var(--gray); margin-bottom: clamp(24px, 4vh, 40px);">设计革命 &middot; 2026</div>
+    <div class="reveal-mask d3 serif" style="font-size: clamp(36px, 6vw, 80px); line-height: 0.95; font-weight: 400;">THE NEW</div>
+    <div class="reveal-mask d4 serif" style="font-style: italic; font-size: clamp(40px, 7vw, 90px); line-height: 1; margin-bottom: clamp(16px, 3vh, 30px);">Revolution</div>
+    <div class="reveal d5 sans" style="font-size: clamp(9px, 0.8vw, 11px); font-weight: 200; letter-spacing: 3px; text-transform: uppercase; color: var(--gray); line-height: 2.2;">当 AI 遇见设计美学<br>克制与光辉的交汇<br>一场关于「少即是多」的探索</div>
+    <div class="reveal d6" style="width: 60px; height: 1px; background: var(--gold); margin-top: clamp(12px, 2vh, 24px);"></div>
+  </div>
+</div>
+
+<!-- Slide 2: Features / Quote -->
+<div class="slide" data-i="1" style="background: var(--cream); color: var(--dark);">
+  <!-- Composition area -->
+  <div style="position: absolute; left: clamp(24px, 3vw, 40px); top: clamp(24px, 3vw, 40px); width: 45%; height: calc(100% - clamp(48px, 6vw, 80px)); overflow: hidden;">
+    <div class="deco-letter" style="font-size: clamp(200px, 36vw, 480px); left: -30px; top: -40px; -webkit-text-stroke-color: rgba(26,26,26,0.06);">S</div>
+    <div class="comp-block" style="width: clamp(50px, 6vw, 80px); height: clamp(220px, 35vh, 420px); background: var(--dark); left: 12%; top: 12%;"></div>
+    <div class="comp-block" style="width: clamp(70px, 9vw, 120px); height: clamp(150px, 24vh, 280px); background: linear-gradient(180deg, #8B0000, #5C1A1A); left: 28%; top: 24%; opacity: 0.85;"></div>
+    <div class="comp-block" style="width: clamp(60px, 8vw, 100px); height: clamp(100px, 15vh, 180px); background: var(--gold); opacity: 0.25; left: 52%; top: 36%;"></div>
+  </div>
+  <!-- Text area -->
+  <div style="position: absolute; right: clamp(30px, 4vw, 50px); top: clamp(24px, 3vw, 40px); width: 45%; height: calc(100% - clamp(48px, 6vw, 80px)); display: flex; flex-direction: column; justify-content: center; padding-left: clamp(24px, 3vw, 40px);">
+    <div class="reveal-quote d1 serif" style="font-style: italic; font-size: clamp(28px, 4vw, 48px); line-height: 1.4; color: var(--dark);">
+      设计是一种<br>无声的<br>表达方式。
+    </div>
+    <div class="reveal d3 sans" style="margin-top: clamp(20px, 3vh, 30px); font-size: clamp(9px, 0.8vw, 11px); font-weight: 200; letter-spacing: 4px; text-transform: uppercase; color: var(--gray); line-height: 2.2;">
+      当 AI 理解美学的本质<br>设计便成为了思想的延伸<br>在喧嚣世界中，优雅轻声细语
+    </div>
+    <div class="reveal d4" style="width: 6px; height: 6px; background: var(--gold); border-radius: 50%; margin-top: clamp(12px, 2vh, 20px);"></div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats Grid -->
+<div class="slide" data-i="2" style="background: var(--dark);">
+  <div class="gold-border" style="opacity: 0.3;"></div>
+  <div style="position: absolute; left: clamp(16px, 2vw, 20px); top: 50%; transform: translateY(-50%) rotate(-90deg); font-size: clamp(10px, 0.9vw, 12px); color: var(--gold); text-transform: uppercase; letter-spacing: 8px; font-weight: 200; white-space: nowrap;" class="sans">Collection</div>
+  <div style="position: absolute; left: clamp(60px, 7vw, 80px); top: clamp(24px, 3vh, 30px); right: clamp(20px, 2vw, 30px); bottom: clamp(24px, 3vh, 30px); display: flex; align-items: center; justify-content: center;">
+    <div class="stats-fashion" style="width: min(90%, 800px);">
+      <div class="stat-cell reveal d1">
+        <div class="stat-number serif">10x</div>
+        <div class="stat-label">效率提升</div>
+      </div>
+      <div class="stat-cell reveal d2">
+        <div class="stat-number serif" style="font-style: italic;">93%</div>
+        <div class="stat-label">用户满意度</div>
+      </div>
+      <div class="stat-cell reveal d3">
+        <div class="stat-number serif">50M</div>
+        <div class="stat-label">设计生成</div>
+      </div>
+      <div class="stat-cell reveal d4">
+        <div class="stat-number serif" style="font-style: italic;">∞</div>
+        <div class="stat-label">创意可能</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: absolute; bottom: clamp(8px, 1.2vh, 12px); right: clamp(16px, 2vw, 20px); font-size: 9px; color: var(--gray); text-transform: uppercase; letter-spacing: 3px;" class="sans">03 / 05</div>
+</div>
+
+<!-- Slide 4: Feature / Quote -->
+<div class="slide" data-i="3" style="background: var(--cream); color: var(--dark);">
+  <!-- Composition area -->
+  <div style="position: absolute; left: clamp(24px, 3vw, 40px); top: clamp(24px, 3vw, 40px); width: 60%; height: calc(100% - clamp(48px, 6vw, 80px)); overflow: hidden;">
+    <div class="deco-letter" style="font-size: clamp(300px, 46vw, 600px); right: -80px; top: -80px; -webkit-text-stroke-color: rgba(26,26,26,0.04);">L</div>
+    <div class="comp-block" style="width: clamp(120px, 15vw, 200px); height: clamp(260px, 40vh, 460px); background: var(--dark); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>
+    <div class="comp-block" style="width: clamp(80px, 9vw, 120px); height: clamp(170px, 26vh, 300px); background: linear-gradient(180deg, #8B0000, #5C1A1A); left: calc(50% + 80px); top: 50%; transform: translateY(-50%); opacity: 0.7;"></div>
+    <div style="position: absolute; width: clamp(140px, 18vw, 240px); height: clamp(140px, 18vw, 240px); border: 1px solid var(--dark); border-radius: 50%; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 0.3;"></div>
+    <div class="dot-grid" style="width: 160px; height: 120px; left: 20px; top: 30px; background-image: radial-gradient(circle, var(--dark) 1px, transparent 1px); background-size: 10px 10px; opacity: 0.1;"></div>
+  </div>
+  <!-- Text area -->
+  <div style="position: absolute; right: 0; top: 0; width: 35%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: clamp(30px, 5vh, 60px) clamp(24px, 4vw, 50px) clamp(30px, 5vh, 60px) clamp(12px, 1.5vw, 20px);">
+    <div class="reveal d1 sans" style="font-size: clamp(11px, 1vw, 14px); color: var(--gold); letter-spacing: 6px; text-transform: uppercase; font-weight: 200; margin-bottom: 8px;">The Art Of</div>
+    <div class="reveal-mask d2 serif" style="font-size: clamp(60px, 9vw, 120px); color: var(--dark); line-height: 0.9; margin-bottom: clamp(12px, 2vh, 20px);">LESS</div>
+    <div class="reveal d3" style="width: 40px; height: 1px; background: var(--gold); margin-bottom: clamp(16px, 2vh, 24px);"></div>
+    <div class="reveal d4 sans" style="font-size: clamp(9px, 0.8vw, 11px); font-weight: 200; letter-spacing: 4px; text-transform: uppercase; color: var(--gray); line-height: 2.2; margin-bottom: clamp(16px, 2vh, 28px);">
+      简约是一切真正优雅的基石<br>剥离多余，显现本质<br>形式追随意图
+    </div>
+    <div class="reveal-quote d5 serif" style="font-style: italic; font-size: clamp(14px, 1.4vw, 18px); color: var(--wine); line-height: 1.6; margin-bottom: 8px;">"美始于你决定做自己的那一刻。"</div>
+    <div class="reveal d6 sans" style="font-size: clamp(8px, 0.7vw, 10px); letter-spacing: 4px; text-transform: uppercase; color: var(--gray);">— Coco Chanel</div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" data-i="4" style="background: var(--dark);">
+  <div class="gold-inner-border"></div>
+  <div class="deco-letter" style="font-size: clamp(200px, 32vw, 400px); left: -40px; top: 50%; transform: translateY(-50%); -webkit-text-stroke-color: rgba(196,162,101,0.08);">A</div>
+  <div class="deco-letter" style="font-size: clamp(200px, 32vw, 400px); right: -40px; top: 50%; transform: translateY(-50%); -webkit-text-stroke-color: rgba(196,162,101,0.08);">E</div>
+  <div class="dot-grid" style="width: 80px; height: 80px; left: 40px; bottom: 60px;"></div>
+  <div class="dot-grid" style="width: 80px; height: 80px; right: 40px; top: 60px;"></div>
+  <div style="position: absolute; top: clamp(30px, 4vh, 40px); left: 50%; transform: translateX(-50%); width: 1px; height: clamp(30px, 4vh, 60px); background: linear-gradient(to bottom, var(--gold), transparent); opacity: 0.3;"></div>
+  <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
+    <div class="reveal-blur d1 serif" style="font-style: italic; font-size: clamp(60px, 12vw, 160px); background: linear-gradient(135deg, var(--cream), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: clamp(16px, 2vh, 24px);">Merci</div>
+    <div class="reveal d2" style="width: clamp(50px, 6vw, 80px); height: 1px; background: var(--gold); margin-bottom: clamp(24px, 3vh, 36px);"></div>
+    <div class="reveal d3 sans" style="text-align: center; font-size: clamp(8px, 0.7vw, 10px); color: var(--gold); text-transform: uppercase; letter-spacing: 5px; font-weight: 200; line-height: 2.4;">
+      <p>AI 驱动的设计革命</p>
+      <p>hello@revolution.design</p>
+    </div>
+  </div>
+  <div style="position: absolute; left: clamp(16px, 2vw, 20px); right: clamp(16px, 2vw, 20px); bottom: clamp(16px, 2vh, 20px); height: 2px; background: var(--gold); opacity: 0.5;"></div>
+  <div class="gold-diamond" style="bottom: clamp(28px, 3.5vh, 34px); left: 50%; transform: translateX(-50%) rotate(45deg);"></div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal, .reveal-mask, .reveal-quote, .reveal-blur').forEach(el=>{
+      el.style.transition='none'; el.offsetHeight; el.style.transition='';
+    });
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click',function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

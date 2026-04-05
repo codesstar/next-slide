@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计革命 — Neon Brutalism</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@900&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0A0E27;
+  --green: #00FF41;
+  --magenta: #FF00FF;
+  --cyan: #00FFFF;
+  --gold: #FFD700;
+  --red: #FF3131;
+
+  --title-size: clamp(2.5rem, 10vw, 11rem);
+  --h2-size: clamp(1.8rem, 5vw, 4.5rem);
+  --h3-size: clamp(1.2rem, 3vw, 2rem);
+  --body-size: clamp(0.7rem, 1.2vw, 1rem);
+  --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+  --stat-size: clamp(2.5rem, 8vw, 5.5rem);
+  --slide-padding: clamp(1.5rem, 4vw, 3.5rem);
+  --block-num-size: clamp(2rem, 5vw, 5rem);
+}
+
+/* =========================================
+   VIEWPORT BASE (inlined)
+   ========================================= */
+html, body { height: 100%; overflow: hidden; background: #050812; color: #fff; }
+body {
+  font-family: 'Space Mono', 'Noto Sans SC', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+:lang(zh), :lang(zh-CN) {
+  line-height: 1.6;
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+/* =========================================
+   PROGRESS BAR
+   ========================================= */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: clamp(3px, 0.4vh, 5px);
+  background: var(--green);
+  box-shadow: 0 0 12px var(--green), 0 0 30px var(--green);
+  z-index: 1000;
+  transition: width 0.15s steps(8);
+}
+
+/* =========================================
+   PAGE COUNTER
+   ========================================= */
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 2vh, 32px);
+  right: clamp(20px, 3vw, 48px);
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(11px, 1.1vw, 15px);
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  z-index: 1000;
+  letter-spacing: 0.15em;
+}
+.page-counter .current { color: var(--green); text-shadow: 0 0 8px var(--green); }
+
+/* =========================================
+   SLIDE BASE
+   ========================================= */
+.slide {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--bg);
+}
+
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Hard-cut transition — brutalist, no smooth fading */
+.slide.entering { animation: hardCutIn 0.25s steps(3) forwards; }
+.slide.leaving  { animation: hardCutOut 0.2s steps(2) forwards; }
+
+@keyframes hardCutIn {
+  0%   { opacity: 0; transform: translate(2px, -1px); filter: hue-rotate(90deg) brightness(2); }
+  33%  { opacity: 1; transform: translate(-3px, 2px); filter: hue-rotate(-45deg) brightness(1.5); }
+  66%  { opacity: 1; transform: translate(1px, -1px); filter: hue-rotate(20deg) brightness(1.2); }
+  100% { opacity: 1; transform: translate(0); filter: none; }
+}
+
+@keyframes hardCutOut {
+  0%   { opacity: 1; filter: none; }
+  50%  { opacity: 0.6; transform: translate(-4px, 2px); filter: hue-rotate(180deg) brightness(0.5); }
+  100% { opacity: 0; transform: translate(0); filter: none; }
+}
+
+/* =========================================
+   SCANLINE OVERLAY (global)
+   ========================================= */
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    rgba(0,0,0,0.12) 2px,
+    rgba(0,0,0,0.12) 3px
+  );
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* =========================================
+   GLITCH PIXELS (decorative, scattered)
+   ========================================= */
+.glitch-pixel {
+  position: absolute;
+  height: clamp(2px, 0.4vh, 4px);
+  z-index: 40;
+}
+
+/* =========================================
+   BLINK CURSOR
+   ========================================= */
+@keyframes blink { 50% { opacity: 0; } }
+
+.cursor {
+  display: inline-block;
+  width: clamp(6px, 0.8vw, 10px);
+  height: clamp(10px, 1.4vw, 16px);
+  background: var(--green);
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+
+/* =========================================
+   SCREEN SHAKE (triggered on navigate)
+   ========================================= */
+@keyframes screenShake {
+  0%   { transform: translate(0); }
+  10%  { transform: translate(-3px, 2px); }
+  20%  { transform: translate(4px, -1px); }
+  30%  { transform: translate(-2px, -3px); }
+  40%  { transform: translate(3px, 1px); }
+  50%  { transform: translate(-1px, 2px); }
+  60%  { transform: translate(2px, -2px); }
+  70%  { transform: translate(-3px, 1px); }
+  80%  { transform: translate(1px, -1px); }
+  90%  { transform: translate(-1px, 2px); }
+  100% { transform: translate(0); }
+}
+
+.shake { animation: screenShake 0.3s ease-out; }
+
+/* =========================================
+   REVEAL ANIMATIONS — brutal style
+   ========================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px) skewX(-2deg);
+}
+
+.slide.active .reveal {
+  animation: brutalReveal 0.4s steps(4) forwards;
+}
+
+.slide.active .reveal:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.15s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.28s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.4s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.52s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.64s; }
+.slide.active .reveal:nth-child(7) { animation-delay: 0.76s; }
+
+@keyframes brutalReveal {
+  0%   { opacity: 0; transform: translateY(20px) skewX(-2deg); filter: hue-rotate(90deg); }
+  50%  { opacity: 0.8; transform: translateY(-4px) skewX(1deg); filter: hue-rotate(-30deg); }
+  75%  { opacity: 1; transform: translateY(2px) skewX(0); filter: hue-rotate(10deg); }
+  100% { opacity: 1; transform: translateY(0) skewX(0); filter: none; }
+}
+
+/* =========================================
+   COLOR SHIFT FLASH (on transition)
+   ========================================= */
+.color-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.color-flash.fire {
+  animation: colorFlash 0.2s steps(3) forwards;
+}
+
+@keyframes colorFlash {
+  0%   { opacity: 0.8; background: var(--magenta); }
+  33%  { opacity: 0.5; background: var(--cyan); }
+  66%  { opacity: 0.3; background: var(--green); }
+  100% { opacity: 0; background: transparent; }
+}
+
+/* =========================================
+   SLIDE INNER (common layout wrapper)
+   ========================================= */
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  padding: var(--slide-padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* ===========================================
+   PAGE 1 — COVER: 设计革命
+   =========================================== */
+.s1 .loading {
+  position: absolute;
+  top: var(--slide-padding);
+  left: var(--slide-padding);
+  font-size: var(--small-size);
+  color: var(--green);
+  letter-spacing: 2px;
+  z-index: 10;
+}
+
+.s1 .title-group {
+  text-align: center;
+}
+
+.s1 .title-main {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  font-size: var(--title-size);
+  line-height: 0.9;
+  color: var(--magenta);
+  text-shadow:
+    clamp(3px, 0.4vw, 6px) clamp(3px, 0.4vw, 6px) 0px var(--green),
+    clamp(-2px, -0.2vw, -3px) clamp(-1px, -0.1vw, -2px) 0px var(--cyan);
+  letter-spacing: -0.04em;
+}
+
+.s1 .title-sub {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.5rem, 5vw, 5rem);
+  line-height: 0.9;
+  color: var(--cyan);
+  text-shadow:
+    clamp(3px, 0.4vw, 6px) clamp(3px, 0.4vw, 6px) 0px var(--magenta),
+    clamp(-2px, -0.2vw, -3px) clamp(-1px, -0.1vw, -2px) 0px var(--green);
+  letter-spacing: -0.04em;
+  margin-top: clamp(-10px, -1.5vw, -30px);
+}
+
+.s1 .code-block {
+  position: absolute;
+  bottom: var(--slide-padding);
+  left: var(--slide-padding);
+  font-size: var(--small-size);
+  color: var(--green);
+  line-height: 1.8;
+  letter-spacing: 1px;
+  background: rgba(0,0,0,0.6);
+  padding: clamp(8px, 1vw, 12px) clamp(10px, 1.2vw, 16px);
+  border-left: 3px solid var(--green);
+  z-index: 10;
+}
+
+.s1 .vol-box {
+  position: absolute;
+  bottom: var(--slide-padding);
+  right: var(--slide-padding);
+  border: clamp(2px, 0.3vw, 4px) solid var(--gold);
+  padding: clamp(8px, 1vw, 12px) clamp(12px, 1.5vw, 20px);
+  font-size: var(--small-size);
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+/* Glitch pixels for slide 1 */
+.s1 .gp-1 { width: 28px; background: var(--green); top: 18%; right: 14%; transform: rotate(3deg); }
+.s1 .gp-2 { width: 22px; background: var(--magenta); top: 28%; left: 8%; transform: rotate(-5deg); }
+.s1 .gp-3 { width: 32px; background: var(--cyan); bottom: 25%; right: 25%; transform: rotate(2deg); }
+.s1 .gp-4 { width: 18px; background: var(--red); top: 12%; right: 32%; transform: rotate(-3deg); }
+.s1 .gp-5 { width: 24px; background: var(--gold); top: 42%; right: 6%; transform: rotate(4deg); }
+
+/* ===========================================
+   PAGE 2 — MANIFESTO: 我们不跟风
+   =========================================== */
+.s2 {
+  border: clamp(2px, 0.3vw, 4px) dashed var(--cyan);
+}
+
+.s2::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--magenta);
+  clip-path: polygon(100% 0%, 100% 100%, 0% 100%, 5% 90%, 0% 80%, 8% 70%, 3% 60%, 10% 50%, 5% 40%, 12% 30%, 7% 20%, 15% 10%);
+  z-index: 0;
+}
+
+.s2 .slide-inner { z-index: 2; }
+
+.s2 .text-line {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.s2 .t1 {
+  font-size: var(--h2-size);
+  color: var(--green);
+  transform: rotate(-3deg);
+  text-shadow: clamp(2px, 0.3vw, 4px) clamp(2px, 0.3vw, 4px) 0px rgba(0,0,0,0.5);
+}
+
+.s2 .t2 {
+  font-size: var(--h2-size);
+  color: var(--bg);
+  transform: rotate(2deg);
+  text-shadow: clamp(2px, 0.2vw, 3px) clamp(2px, 0.2vw, 3px) 0px rgba(0,0,0,0.3);
+  margin-top: clamp(16px, 3vh, 40px);
+  text-align: right;
+}
+
+.s2 .t3 {
+  font-size: clamp(1.5rem, 4.2vw, 3.8rem);
+  color: var(--gold);
+  text-shadow: clamp(2px, 0.3vw, 4px) clamp(2px, 0.3vw, 4px) 0px var(--red);
+  text-align: center;
+  margin-top: clamp(24px, 4vh, 56px);
+}
+
+.s2 .cyan-rule {
+  width: clamp(100px, 15vw, 200px);
+  height: 3px;
+  background: var(--cyan);
+  margin: clamp(16px, 2vh, 28px) auto 0;
+}
+
+.s2 .annotation {
+  font-size: var(--small-size);
+  letter-spacing: 2px;
+  position: absolute;
+  z-index: 10;
+}
+
+.s2 .ann-reject {
+  top: var(--slide-padding);
+  right: var(--slide-padding);
+  color: var(--green);
+}
+
+.s2 .ann-rebuild {
+  bottom: var(--slide-padding);
+  left: var(--slide-padding);
+  color: var(--cyan);
+}
+
+.s2 .ascii-arrow {
+  position: absolute;
+  bottom: clamp(60px, 12vh, 120px);
+  right: clamp(60px, 8vw, 120px);
+  font-size: clamp(20px, 3vw, 36px);
+  color: var(--green);
+  letter-spacing: 4px;
+  transform: rotate(-5deg);
+  z-index: 10;
+}
+
+/* ===========================================
+   PAGE 3 — METHODOLOGY: 解构 / 颠覆 / 重建
+   =========================================== */
+.s3 {
+  background:
+    repeating-linear-gradient(90deg, transparent 0, transparent 63px, rgba(0,255,65,0.05) 63px, rgba(0,255,65,0.05) 64px),
+    repeating-linear-gradient(0deg, transparent 0, transparent 63px, rgba(0,255,65,0.05) 63px, rgba(0,255,65,0.05) 64px),
+    var(--bg);
+}
+
+.s3 .blocks-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 2.5vw, 32px);
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.s3 .block {
+  width: clamp(200px, 28vw, 360px);
+  padding: clamp(16px, 2.5vw, 32px);
+  background: var(--bg);
+  position: relative;
+}
+
+.s3 .block .counter {
+  position: absolute;
+  top: clamp(4px, 0.6vh, 8px);
+  right: clamp(6px, 0.8vw, 10px);
+  font-size: var(--small-size);
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 1px;
+}
+
+.s3 .block .num {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: var(--block-num-size);
+  line-height: 1;
+  margin-bottom: clamp(4px, 0.6vh, 8px);
+}
+
+.s3 .block .label {
+  font-size: clamp(0.9rem, 1.8vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: clamp(6px, 1vh, 12px);
+}
+
+.s3 .block .desc {
+  font-size: var(--body-size);
+  line-height: 1.7;
+  color: rgba(255,255,255,0.6);
+}
+
+.s3 .b1 {
+  border: clamp(2px, 0.3vw, 4px) solid var(--green);
+  transform: rotate(-2deg);
+  box-shadow: 5px 5px 0px var(--green);
+}
+.s3 .b1 .num { color: var(--cyan); }
+.s3 .b1 .label { color: var(--green); }
+
+.s3 .b2 {
+  border: clamp(2px, 0.3vw, 4px) solid var(--magenta);
+  transform: rotate(1deg);
+  box-shadow: 5px 5px 0px var(--magenta);
+  margin-top: clamp(20px, 4vh, 60px);
+}
+.s3 .b2 .num { color: var(--gold); }
+.s3 .b2 .label { color: var(--magenta); }
+
+.s3 .b3 {
+  border: clamp(2px, 0.3vw, 4px) solid var(--cyan);
+  transform: rotate(-1deg);
+  box-shadow: 5px 5px 0px var(--cyan);
+}
+.s3 .b3 .num { color: var(--red); }
+.s3 .b3 .label { color: var(--cyan); }
+
+/* Scattered X marks */
+.x-mark {
+  position: absolute;
+  font-size: clamp(12px, 1.4vw, 16px);
+  font-weight: 700;
+  z-index: 40;
+}
+
+.s3 .xm-1 { top: 6%; left: 16%; color: var(--magenta); transform: rotate(15deg); }
+.s3 .xm-2 { top: 9%; right: 8%; color: var(--green); transform: rotate(-20deg); }
+.s3 .xm-3 { bottom: 8%; left: 28%; color: var(--cyan); transform: rotate(30deg); }
+.s3 .xm-4 { bottom: 12%; right: 16%; color: var(--gold); transform: rotate(-10deg); }
+.s3 .xm-5 { top: 5%; right: 28%; color: var(--red); transform: rotate(25deg); }
+.s3 .xm-6 { bottom: 5%; left: 8%; color: var(--magenta); transform: rotate(-35deg); }
+
+/* ===========================================
+   PAGE 4 — STATS: 数据冲击
+   =========================================== */
+.s4 .title-exe {
+  font-size: clamp(12px, 1.3vw, 16px);
+  color: var(--green);
+  letter-spacing: 2px;
+  margin-bottom: clamp(12px, 2vh, 24px);
+}
+.s4 .title-exe .sub {
+  display: block;
+  font-size: var(--small-size);
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+.s4 .warning-text {
+  position: absolute;
+  top: var(--slide-padding);
+  right: var(--slide-padding);
+  font-size: var(--small-size);
+  color: var(--red);
+  letter-spacing: 1px;
+  z-index: 10;
+  animation: blink 2s step-end infinite;
+}
+
+.s4 .stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2.5vw, 32px);
+}
+
+.s4 .stat-box {
+  padding: clamp(16px, 2.5vw, 28px) clamp(18px, 2.5vw, 32px);
+  background: rgba(10,14,39,0.8);
+}
+
+.s4 .stat-box .number {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: var(--stat-size);
+  line-height: 1;
+  margin-bottom: clamp(4px, 0.6vh, 8px);
+}
+
+.s4 .stat-box .stat-label {
+  font-size: var(--small-size);
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.5);
+}
+
+.s4 .s-1 {
+  border-left: clamp(3px, 0.4vw, 6px) solid var(--magenta);
+  transform: rotate(-1deg);
+  box-shadow: 4px 4px 0px var(--magenta);
+}
+.s4 .s-1 .number { color: var(--magenta); text-shadow: 3px 2px 0px var(--cyan), -2px -1px 0px var(--green); }
+
+.s4 .s-2 {
+  border-left: clamp(3px, 0.4vw, 6px) solid var(--cyan);
+  transform: rotate(0.5deg);
+  box-shadow: 4px 4px 0px var(--cyan);
+}
+.s4 .s-2 .number { color: var(--cyan); text-shadow: 3px 2px 0px var(--magenta), -2px -1px 0px var(--gold); }
+
+.s4 .s-3 {
+  border-left: clamp(3px, 0.4vw, 6px) solid var(--gold);
+  transform: rotate(1deg);
+  box-shadow: 4px 4px 0px var(--gold);
+}
+.s4 .s-3 .number { color: var(--gold); text-shadow: 3px 2px 0px var(--red), -2px -1px 0px var(--cyan); }
+
+.s4 .s-4 {
+  border-left: clamp(3px, 0.4vw, 6px) solid var(--red);
+  transform: rotate(-0.5deg);
+  box-shadow: 4px 4px 0px var(--red);
+}
+.s4 .s-4 .number { color: var(--red); text-shadow: 3px 2px 0px var(--magenta), -2px -1px 0px var(--green); }
+
+.s4 .progress-wrap {
+  margin-top: clamp(16px, 3vh, 40px);
+}
+
+.s4 .progress-label {
+  font-size: var(--small-size);
+  color: var(--green);
+  margin-bottom: clamp(4px, 0.6vh, 8px);
+  letter-spacing: 2px;
+}
+
+.s4 .progress-inner {
+  width: 100%;
+  height: clamp(16px, 2.5vh, 28px);
+  border: 3px solid var(--green);
+  position: relative;
+}
+
+.s4 .progress-fill {
+  height: 100%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: progressPulse 2s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+  0%, 100% { width: 73%; }
+  50% { width: 76%; }
+}
+
+/* ===========================================
+   PAGE 5 — CLOSING: 一起颠覆
+   =========================================== */
+.s5 .big-x {
+  position: absolute;
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: clamp(200px, 40vw, 500px);
+  color: rgba(255,49,49,0.1);
+  line-height: 1;
+  z-index: 0;
+  user-select: none;
+}
+
+.s5 .text-line {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  position: relative;
+}
+
+.s5 .t1 {
+  font-size: clamp(2rem, 6vw, 5rem);
+  color: var(--cyan);
+  transform: rotate(-2deg);
+  text-shadow: clamp(2px, 0.3vw, 4px) clamp(2px, 0.3vw, 4px) 0px var(--magenta);
+}
+
+.s5 .t2 {
+  font-size: clamp(2rem, 6vw, 5rem);
+  color: var(--magenta);
+  transform: rotate(1deg);
+  text-shadow: clamp(2px, 0.3vw, 4px) clamp(2px, 0.3vw, 4px) 0px var(--cyan);
+  margin-top: clamp(8px, 1.5vh, 16px);
+  margin-left: clamp(40px, 10vw, 140px);
+}
+
+.s5 .t3 {
+  font-size: clamp(2rem, 6vw, 5rem);
+  color: var(--green);
+  transform: rotate(-1deg);
+  text-shadow: clamp(2px, 0.3vw, 4px) clamp(2px, 0.3vw, 4px) 0px var(--gold);
+  margin-top: clamp(8px, 1.5vh, 16px);
+  margin-left: clamp(80px, 20vw, 280px);
+}
+
+.s5 .contact-block {
+  position: absolute;
+  bottom: clamp(40px, 8vh, 80px);
+  right: var(--slide-padding);
+  border: clamp(2px, 0.3vw, 4px) solid var(--gold);
+  padding: clamp(14px, 2vw, 24px) clamp(18px, 2.5vw, 32px);
+  z-index: 10;
+  background: var(--bg);
+  box-shadow: 6px 6px 0px var(--gold);
+  overflow: hidden;
+}
+
+.s5 .contact-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0,255,255,0.03) 2px, rgba(0,255,255,0.03) 3px);
+  pointer-events: none;
+}
+
+.s5 .contact-block .line {
+  font-size: clamp(10px, 1.1vw, 14px);
+  line-height: 2.2;
+  letter-spacing: 1px;
+}
+
+.s5 .c-green { color: var(--green); }
+.s5 .c-cyan { color: var(--cyan); }
+.s5 .c-magenta { color: var(--magenta); }
+
+.s5 .x-pattern {
+  position: absolute;
+  bottom: clamp(30px, 6vh, 60px);
+  left: var(--slide-padding);
+  font-size: clamp(12px, 1.4vw, 18px);
+  color: var(--red);
+  line-height: 1.2;
+  z-index: 1;
+  letter-spacing: 2px;
+}
+
+.s5 .end-transmission {
+  position: absolute;
+  bottom: clamp(10px, 1.5vh, 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--small-size);
+  color: var(--gold);
+  letter-spacing: 3px;
+  z-index: 10;
+  animation: blink 1.5s step-end infinite;
+}
+
+/* =========================================
+   RESPONSIVE BREAKPOINTS
+   ========================================= */
+@media (max-height: 700px) {
+  :root {
+    --title-size: clamp(2rem, 8vw, 7rem);
+    --h2-size: clamp(1.5rem, 4.5vw, 3.5rem);
+    --slide-padding: clamp(1rem, 3vw, 2rem);
+  }
+}
+
+@media (max-height: 500px) {
+  :root {
+    --title-size: clamp(1.5rem, 6vw, 4rem);
+    --h2-size: clamp(1.2rem, 3.5vw, 2.5rem);
+    --stat-size: clamp(1.8rem, 6vw, 3.5rem);
+  }
+  .s5 .contact-block { display: none; }
+}
+
+@media (max-width: 600px) {
+  .s4 .stats-grid { grid-template-columns: 1fr; }
+  .s3 .blocks-container { flex-direction: column; align-items: center; }
+}
+
+/* =========================================
+   REDUCED MOTION
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.1s !important;
+  }
+  .slide.active .reveal { opacity: 1; transform: none; filter: none; }
+  .slide.entering { animation: none !important; opacity: 1; }
+  .slide.leaving { animation: none !important; opacity: 0; }
+}
+
+/* =========================================
+   PRINT
+   ========================================= */
+@media print {
+  .slide { position: relative; height: auto; min-height: 100vh; overflow: visible; opacity: 1; pointer-events: auto; page-break-after: always; }
+  .progress-bar, .page-counter, .color-flash { display: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+<div class="color-flash" id="flash"></div>
+
+<!-- ==========================================
+     SLIDE 1 — COVER: 设计革命
+     ========================================== -->
+<div class="slide s1 active" data-i="0">
+  <div class="loading reveal">// SYSTEM LOADING...<span class="cursor"></span></div>
+
+  <div class="slide-inner" style="justify-content: center; align-items: center;">
+    <div class="title-group">
+      <div class="title-main reveal">设计</div>
+      <div class="title-sub reveal">革命</div>
+    </div>
+  </div>
+
+  <div class="code-block reveal">
+$ init --rebellion<br>
+$ destroy conventions.css<br>
+$ rebuild --from-ashes<br>
+> READY_
+  </div>
+
+  <div class="vol-box reveal">2026 / 反设计宣言 / VOL.01</div>
+
+  <div class="glitch-pixel gp-1"></div>
+  <div class="glitch-pixel gp-2"></div>
+  <div class="glitch-pixel gp-3"></div>
+  <div class="glitch-pixel gp-4"></div>
+  <div class="glitch-pixel gp-5"></div>
+</div>
+
+<!-- ==========================================
+     SLIDE 2 — MANIFESTO: 我们不跟风
+     ========================================== -->
+<div class="slide s2" data-i="1">
+  <div class="slide-inner">
+    <div class="text-line t1 reveal">我们不追随</div>
+    <div class="text-line t2 reveal">任何潮流</div>
+    <div class="text-line t3 reveal">我们点燃它。</div>
+    <div class="cyan-rule reveal"></div>
+  </div>
+  <span class="annotation ann-reject reveal">[拒绝]</span>
+  <span class="annotation ann-rebuild reveal">[重建]</span>
+  <div class="ascii-arrow reveal">>>>>>>></div>
+</div>
+
+<!-- ==========================================
+     SLIDE 3 — METHODOLOGY: 解构 / 颠覆 / 重建
+     ========================================== -->
+<div class="slide s3" data-i="2">
+  <div class="slide-inner" style="justify-content: center; align-items: center;">
+    <div class="blocks-container">
+      <div class="block b1 reveal">
+        <span class="counter">[01/03]</span>
+        <div class="num">001</div>
+        <div class="label">解构</div>
+        <div class="desc">剥离一切装饰，回到最原始的像素。<br>从网格开始，只留意图。</div>
+      </div>
+      <div class="block b2 reveal">
+        <span class="counter">[02/03]</span>
+        <div class="num">002</div>
+        <div class="label">颠覆</div>
+        <div class="desc">杀死你的最爱，烧掉模板。<br>删除所有安全选项，从零开始。</div>
+      </div>
+      <div class="block b3 reveal">
+        <span class="counter">[03/03]</span>
+        <div class="num">003</div>
+        <div class="label">重建</div>
+        <div class="desc">从灰烬中，诞生新的东西。<br>粗暴、诚实、有生命力。</div>
+      </div>
+    </div>
+  </div>
+
+  <span class="x-mark xm-1">x</span>
+  <span class="x-mark xm-2">x</span>
+  <span class="x-mark xm-3">x</span>
+  <span class="x-mark xm-4">x</span>
+  <span class="x-mark xm-5">x</span>
+  <span class="x-mark xm-6">x</span>
+</div>
+
+<!-- ==========================================
+     SLIDE 4 — STATS: 数据冲击
+     ========================================== -->
+<div class="slide s4" data-i="3">
+  <div class="slide-inner">
+    <div class="title-exe reveal">
+      IMPACT.exe
+      <span class="sub">> running...</span>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box s-1 reveal">
+        <div class="number">10x</div>
+        <div class="stat-label">创作效率</div>
+      </div>
+      <div class="stat-box s-2 reveal">
+        <div class="number">&infin;</div>
+        <div class="stat-label">可能性</div>
+      </div>
+      <div class="stat-box s-3 reveal">
+        <div class="number">0</div>
+        <div class="stat-label">遵循的规则</div>
+      </div>
+      <div class="stat-box s-4 reveal">
+        <div class="number">404</div>
+        <div class="stat-label">妥协次数</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap reveal">
+      <div class="progress-label">LOADING FUTURE: 73%</div>
+      <div class="progress-inner">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warning-text">// WARNING: 创造性破坏进行中</div>
+</div>
+
+<!-- ==========================================
+     SLIDE 5 — CLOSING: 一起颠覆
+     ========================================== -->
+<div class="slide s5" data-i="4">
+  <div class="big-x">X</div>
+
+  <div class="slide-inner">
+    <div class="text-line t1 reveal">想要一起</div>
+    <div class="text-line t2 reveal">打破规则</div>
+    <div class="text-line t3 reveal">吗？</div>
+  </div>
+
+  <div class="contact-block reveal">
+    <div class="line c-green">EMAIL: hello@break.design</div>
+    <div class="line c-cyan">SITE: break.design</div>
+    <div class="line c-magenta">SIGNAL: @breakrules</div>
+  </div>
+
+  <div class="x-pattern">
+&nbsp;\&nbsp;&nbsp;/<br>
+&nbsp;&nbsp;\/&nbsp;<br>
+&nbsp;&nbsp;/\&nbsp;<br>
+&nbsp;/&nbsp;&nbsp;\
+  </div>
+
+  <div class="end-transmission">// END OF TRANSMISSION</div>
+</div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var bar = document.getElementById('progress');
+  var cur = document.getElementById('cur');
+  var flash = document.getElementById('flash');
+  var c = 0;
+  var transitioning = false;
+
+  function go(i) {
+    if (i < 0 || i >= total || i === c || transitioning) return;
+    transitioning = true;
+
+    // Fire color flash
+    flash.classList.remove('fire');
+    void flash.offsetHeight;
+    flash.classList.add('fire');
+
+    // Screen shake on body
+    document.body.classList.remove('shake');
+    void document.body.offsetHeight;
+    document.body.classList.add('shake');
+
+    var prev = slides[c];
+    var next = slides[i];
+
+    // Hard-cut leaving
+    prev.classList.add('leaving');
+    prev.classList.remove('active');
+
+    // Reset reveal animations on previous slide
+    prev.querySelectorAll('.reveal').forEach(function(el) {
+      el.style.animation = 'none';
+      void el.offsetHeight;
+      el.style.animation = '';
+    });
+
+    // Hard-cut entering
+    next.classList.add('entering');
+    next.classList.add('active');
+
+    c = i;
+    bar.style.width = ((c + 1) / total * 100) + '%';
+    cur.textContent = String(c + 1).padStart(2, '0');
+
+    // Clean up classes after animations
+    setTimeout(function() {
+      prev.classList.remove('leaving');
+      next.classList.remove('entering');
+      transitioning = false;
+    }, 300);
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      go(c + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      go(c - 1);
+    }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  // Touch support
+  var touchStartX = 0;
+  var touchStartY = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      dx < 0 ? go(c + 1) : go(c - 1);
+    } else if (Math.abs(dy) > 50) {
+      dy < 0 ? go(c + 1) : go(c - 1);
+    }
+  }, { passive: true });
+
+  // Initialize progress bar
+  bar.style.width = (1 / total * 100) + '%';
+
+  // Clean up shake
+  document.body.addEventListener('animationend', function() {
+    document.body.classList.remove('shake');
+  });
+
+  // Clean up flash
+  flash.addEventListener('animationend', function() {
+    flash.classList.remove('fire');
+  });
+})();
+</script>
+</body>
+</html>

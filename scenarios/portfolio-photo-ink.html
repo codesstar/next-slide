@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>林小雨 — 独立摄影师作品集</title>
+
+    <!-- Fonts: Noto Serif SC / Ma Shan Zheng (display) + Noto Sans SC (body) — 东方墨韵 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700;900&family=Cormorant:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #f7f4ef; --bg-scroll: #efe8dc;
+            --ink-black: #1a1a1a; --ink-gray: #4a4a4a; --ink-wash: rgba(26, 26, 26, 0.08);
+            --accent-red: #c53d43; --accent-gold: #b8860b; --text-secondary: #8a8070; --text-muted: #b0a898;
+            --border-subtle: rgba(26, 26, 26, 0.08); --surface: rgba(26, 26, 26, 0.03);
+
+            --font-display: 'Noto Serif SC', serif; --font-calligraphy: 'Ma Shan Zheng', cursive;
+            --font-body: 'Noto Sans SC', sans-serif; --font-latin: 'Cormorant', serif;
+
+            --title-size: clamp(2rem, 6vw, 4.5rem); --h2-size: clamp(1.25rem, 3.5vw, 2.5rem); --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem); --body-size: clamp(0.75rem, 1.5vw, 1.125rem); --small-size: clamp(0.65rem, 1vw, 0.875rem); --stat-size: clamp(2rem, 8vw, 6rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem); --content-gap: clamp(1rem, 2vw, 2rem); --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); --duration-slow: 1s; --duration-dramatic: 1.5s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; font-family: var(--font-body); background: var(--bg-primary); color: var(--ink-black); }
+        :lang(zh), :lang(zh-CN) { line-height: 1.8; word-break: normal; overflow-wrap: break-word; }
+
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; background: var(--bg-primary); }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .keyboard-hint, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-content[style*="flex-direction: row"] { flex-direction: column !important; } .slide-counter { display: none; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-gentle { opacity: 0; transform: none !important; filter: none !important; clip-path: none !important; transition: opacity 0.2s ease !important; } .visible .reveal, .visible .reveal-gentle { opacity: 1; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; } }
+
+        /* Gentle animations for ink wash feel */
+        .reveal { opacity: 0; transform: translateY(15px); transition: opacity var(--duration-dramatic) ease, transform var(--duration-dramatic) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal-gentle { opacity: 0; transition: opacity 2s ease; } .visible .reveal-gentle { opacity: 1; }
+        .reveal:nth-child(1) { transition-delay: 0.15s; } .reveal:nth-child(2) { transition-delay: 0.35s; } .reveal:nth-child(3) { transition-delay: 0.55s; } .reveal:nth-child(4) { transition-delay: 0.75s; } .reveal:nth-child(5) { transition-delay: 0.95s; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent-red); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent-red); transform: scale(1.4); box-shadow: 0 0 8px rgba(197, 61, 67, 0.3); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-body); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* ===========================================
+           东方墨韵 — Signature Elements
+           =========================================== */
+
+        /* Ink wash gradient blobs */
+        .ink-wash { position: absolute; border-radius: 50%; background: radial-gradient(circle, var(--ink-wash) 0%, transparent 70%); filter: blur(40px); pointer-events: none; }
+
+        /* Red seal stamp */
+        .seal {
+            width: clamp(40px, 5vw, 60px); height: clamp(40px, 5vw, 60px);
+            border: 2px solid var(--accent-red); display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display); font-size: clamp(0.6rem, 1vw, 0.9rem); color: var(--accent-red);
+            transform: rotate(-5deg); font-weight: 700;
+        }
+
+        /* Scroll paper texture */
+        .scroll-bg {
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-scroll) 50%, var(--bg-primary) 100%);
+        }
+
+        /* Vertical text */
+        .vertical-text {
+            writing-mode: vertical-rl; text-orientation: mixed;
+        }
+
+        /* Brush stroke border */
+        .brush-border { border-bottom: 1px solid rgba(26, 26, 26, 0.12); }
+
+        .stat-number { font-family: var(--font-display); font-weight: 900; color: var(--ink-black); line-height: 1; }
+        .stat-label { font-family: var(--font-body); font-weight: 400; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE — Ink Wash =================== -->
+    <section class="slide scroll-bg" aria-label="Title">
+        <div class="ink-wash decorative" style="width: clamp(300px, 50vw, 600px); height: clamp(300px, 50vw, 600px); top: -15%; right: -10%;"></div>
+        <div class="ink-wash decorative" style="width: clamp(200px, 30vw, 400px); height: clamp(200px, 30vw, 400px); bottom: -10%; left: 5%; opacity: 0.5;"></div>
+
+        <div class="slide-content" style="align-items: flex-start; justify-content: center; max-width: min(85vw, 800px); position: relative;">
+            <!-- Vertical calligraphic title on right -->
+            <div class="reveal decorative" style="position: absolute; right: 0; top: 10%; font-family: var(--font-calligraphy); font-size: clamp(1.5rem, 4vw, 3rem); color: rgba(26, 26, 26, 0.08); writing-mode: vertical-rl;">
+                光影之间
+            </div>
+
+            <div class="reveal seal" style="margin-bottom: var(--element-gap);">
+                <span>林</span>
+            </div>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-calligraphy); margin-top: var(--element-gap); line-height: 1.3;">
+                林小雨
+            </h1>
+            <p class="reveal" style="font-size: var(--h3-size); font-family: var(--font-latin); font-weight: 400; font-style: italic; color: var(--text-secondary); margin-top: var(--element-gap);">
+                Independent Photographer
+            </p>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--ink-gray); margin-top: var(--content-gap); max-width: min(55vw, 420px); line-height: 1.9; border-left: 2px solid var(--accent-red); padding-left: clamp(0.8rem, 1.5vw, 1.2rem);">
+                用光影讲述大地的故事。<br>专注风光与街头摄影，记录转瞬即逝的美。
+            </p>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                杭州 &ensp;&middot;&ensp; 八年 &ensp;&middot;&ensp; 二零二六年接受预约
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: GALLERY =================== -->
+    <section class="slide" aria-label="Gallery">
+        <div class="ink-wash decorative" style="width: clamp(250px, 35vw, 450px); height: clamp(250px, 35vw, 450px); bottom: -10%; right: -5%;"></div>
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.3em;">精 选 作 品</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; text-align: center; margin-top: var(--element-gap);">光影集</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(8px, 1vw, 16px); margin-top: var(--content-gap); max-width: min(85vw, 800px); width: 100%;">
+                <div class="reveal" style="aspect-ratio: 3/4; overflow: hidden; border-radius: 2px;">
+                    <img src="images/photo-landscape-mountains.webp" alt="山景" style="width: 100%; height: 100%; object-fit: cover; max-height: none;">
+                </div>
+                <div class="reveal" style="aspect-ratio: 3/4; overflow: hidden; border-radius: 2px;">
+                    <img src="images/photo-street-rain.webp" alt="街头" style="width: 100%; height: 100%; object-fit: cover; max-height: none;">
+                </div>
+                <div class="reveal" style="aspect-ratio: 3/4; overflow: hidden; border-radius: 2px;">
+                    <img src="images/photo-botanical-closeup.webp" alt="自然" style="width: 100%; height: 100%; object-fit: cover; max-height: none;">
+                </div>
+            </div>
+            <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 4rem); margin-top: var(--content-gap); justify-content: center;">
+                <span style="font-size: var(--small-size); color: var(--ink-gray); font-family: var(--font-display);">风光</span>
+                <span style="font-size: var(--small-size); color: var(--ink-gray); font-family: var(--font-display);">街头</span>
+                <span style="font-size: var(--small-size); color: var(--ink-gray); font-family: var(--font-display);">自然</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: LANDSCAPE SERIES =================== -->
+    <section class="slide scroll-bg" aria-label="Landscape Series">
+        <div class="ink-wash decorative" style="width: clamp(300px, 45vw, 550px); height: clamp(300px, 45vw, 550px); top: -20%; left: -10%;"></div>
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
+            <div style="flex: 1.3; min-width: 0;">
+                <div class="reveal-gentle" style="width: 100%; max-width: min(50vw, 500px); aspect-ratio: 3/2; overflow: hidden; border-radius: 2px;">
+                    <img src="images/photo-landscape-mountains.webp" alt="Mountain landscape" style="width: 100%; height: 100%; object-fit: cover; max-height: none;">
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <div class="reveal seal" style="margin-bottom: var(--element-gap);"><span>壹</span></div>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-calligraphy); margin-top: var(--element-gap); line-height: 1.3;">
+                    山河远阔
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); font-family: var(--font-latin); font-style: italic; color: var(--text-secondary); margin-top: var(--element-gap);">
+                    Vast Horizons
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--ink-gray); line-height: 1.9;">
+                    <p>三年间走遍中国西部的高原与山脉。在海拔三千米以上等待光线，记录自然最原始的力量与宁静。</p>
+                </div>
+                <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(1.5rem, 3vw, 3rem); flex-wrap: wrap;">
+                    <div><p style="font-size: var(--small-size); color: var(--text-muted);">拍摄</p><p style="font-size: var(--body-size); font-weight: 500; margin-top: 0.15em;">三年</p></div>
+                    <div><p style="font-size: var(--small-size); color: var(--text-muted);">作品</p><p style="font-size: var(--body-size); font-weight: 500; margin-top: 0.15em;">四十八幅</p></div>
+                    <div><p style="font-size: var(--small-size); color: var(--text-muted);">展览</p><p style="font-size: var(--body-size); font-weight: 500; margin-top: 0.15em;">杭 / 沪 / 蓉</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: STATS =================== -->
+    <section class="slide" aria-label="Stats">
+        <div class="ink-wash decorative" style="width: clamp(200px, 30vw, 400px); height: clamp(200px, 30vw, 400px); top: 10%; right: 5%;"></div>
+        <div class="slide-content" style="align-items: center;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.3em;">数 据 一 览</p>
+            <div style="display: flex; justify-content: center; gap: clamp(3rem, 8vw, 8rem); margin-top: clamp(2rem, 5vw, 4rem); flex-wrap: wrap;">
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number counter" data-target="12" style="font-size: var(--stat-size);">0</div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">个展 / 联展</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number" style="font-size: var(--stat-size);"><span class="counter" data-target="3.2" data-suffix="M" style="font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit;">0</span></div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">全网关注</div>
+                </div>
+                <div class="reveal" style="text-align: center;">
+                    <div class="stat-number counter" data-target="6" style="font-size: var(--stat-size);">0</div>
+                    <div class="stat-label" style="font-size: var(--body-size); margin-top: clamp(0.3rem, 0.8vw, 0.6rem);">摄影奖项</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: STREET SERIES =================== -->
+    <section class="slide scroll-bg" aria-label="Street Series">
+        <div class="ink-wash decorative" style="width: clamp(250px, 40vw, 500px); height: clamp(250px, 40vw, 500px); bottom: -15%; right: -8%;"></div>
+        <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
+            <div style="flex: 1; min-width: 0;">
+                <div class="reveal seal" style="margin-bottom: var(--element-gap);"><span>贰</span></div>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-calligraphy); margin-top: var(--element-gap); line-height: 1.3;">
+                    夜雨声烦
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); font-family: var(--font-latin); font-style: italic; color: var(--text-secondary); margin-top: var(--element-gap);">
+                    Rain Stories
+                </p>
+                <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--body-size); color: var(--ink-gray); line-height: 1.9;">
+                    <p>雨天是城市最诚实的时刻。霓虹灯在湿漉漉的地面上倒映，行人的脚步变慢，世界被冲洗成另一个版本。</p>
+                </div>
+            </div>
+            <div style="flex: 1.3; min-width: 0;">
+                <div class="reveal-gentle" style="width: 100%; max-width: min(50vw, 500px); aspect-ratio: 3/2; overflow: hidden; border-radius: 2px;">
+                    <img src="images/photo-street-rain.webp" alt="Rainy street" style="width: 100%; height: 100%; object-fit: cover; max-height: none;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: TESTIMONIAL =================== -->
+    <section class="slide" aria-label="Testimonial">
+        <div class="ink-wash decorative" style="width: clamp(300px, 40vw, 500px); height: clamp(300px, 40vw, 500px); top: -10%; left: 30%;"></div>
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center; max-width: min(70vw, 650px); margin: 0 auto;">
+            <div class="reveal" style="font-size: clamp(2rem, 5vw, 3.5rem); color: var(--accent-red); line-height: 1; opacity: 0.3; font-family: var(--font-calligraphy);">
+                &ldquo;
+            </div>
+            <blockquote class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 600; line-height: 1.6; margin-top: -0.3em;">
+                小雨的照片让你<em style="font-style: normal; border-bottom: 2px solid var(--accent-red); padding-bottom: 2px;">停下来</em>。在这个一切都在加速的世界里，她的作品是一个安静的入口。
+            </blockquote>
+            <cite class="reveal" style="display: block; margin-top: var(--content-gap); font-size: var(--body-size); color: var(--text-secondary); font-style: normal;">
+                &mdash; 陈明远，《中国摄影》杂志编辑
+            </cite>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: PROCESS =================== -->
+    <section class="slide scroll-bg" aria-label="Process">
+        <div class="ink-wash decorative" style="width: clamp(200px, 25vw, 350px); height: clamp(200px, 25vw, 350px); bottom: 5%; left: -5%;"></div>
+        <div class="slide-content" style="max-width: min(80vw, 700px); margin: 0 auto;">
+            <p class="reveal" style="font-size: var(--small-size); color: var(--accent-red); letter-spacing: 0.3em;">创 作 方 法</p>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-calligraphy); margin-top: var(--element-gap);">拍摄之道</h2>
+            <ul style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); color: var(--accent-red); min-width: 1.5em; font-size: var(--body-size); font-weight: 700;">壹</span>
+                    <span style="font-size: var(--body-size); line-height: 1.9;"><strong>踩点与等待。</strong>每个拍摄点至少去三次，了解光线变化。最好的照片往往在第三次才出现。</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); color: var(--accent-red); min-width: 1.5em; font-size: var(--body-size); font-weight: 700;">贰</span>
+                    <span style="font-size: var(--body-size); line-height: 1.9;"><strong>现场感知。</strong>构图、曝光、时机，全部在按下快门的瞬间决定。不依赖后期。</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-family: var(--font-display); color: var(--accent-red); min-width: 1.5em; font-size: var(--body-size); font-weight: 700;">叁</span>
+                    <span style="font-size: var(--body-size); line-height: 1.9;"><strong>严格筛选。</strong>每千张保留不到十张。质量永远高于数量。</span>
+                </li>
+                <li class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 1.5vw, 1.2rem); padding: clamp(0.6rem, 1.2vh, 1rem) 0;">
+                    <span style="font-family: var(--font-display); color: var(--accent-red); min-width: 1.5em; font-size: var(--body-size); font-weight: 700;">肆</span>
+                    <span style="font-size: var(--body-size); line-height: 1.9;"><strong>叙事编排。</strong>不是单张好照片，而是一个完整的视觉故事。</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: CONTACT =================== -->
+    <section class="slide closing-slide" aria-label="Contact">
+        <div class="ink-wash decorative" style="width: clamp(300px, 45vw, 550px); height: clamp(300px, 45vw, 550px); bottom: -15%; right: -5%;"></div>
+        <div class="ink-wash decorative" style="width: clamp(200px, 30vw, 400px); height: clamp(200px, 30vw, 400px); top: -10%; left: 10%; opacity: 0.5;"></div>
+
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <div class="reveal seal" style="margin: 0 auto;"><span>约</span></div>
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-calligraphy); margin-top: var(--content-gap); line-height: 1.3;">
+                合作邀约
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--ink-gray); margin-top: var(--content-gap); max-width: min(50vw, 420px); line-height: 1.9;">
+                接受商业拍摄、杂志约稿、展览合作。<br>二零二六年档期开放中。
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); display: flex; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap; justify-content: center;">
+                <div style="text-align: center;"><p style="font-size: var(--small-size); color: var(--text-muted);">邮箱</p><p style="font-size: var(--body-size); font-weight: 500; margin-top: 0.2em; color: var(--accent-red);">xiaoyu@linphoto.cn</p></div>
+                <div style="text-align: center;"><p style="font-size: var(--small-size); color: var(--text-muted);">网站</p><p style="font-size: var(--body-size); font-weight: 500; margin-top: 0.2em;">linxiaoyu.photo</p></div>
+                <div style="text-align: center;"><p style="font-size: var(--small-size); color: var(--text-muted);">状态</p><p style="font-size: var(--body-size); font-weight: 500; margin-top: 0.2em; color: var(--accent-red);">接受预约</p></div>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init()}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible')}setupIntersectionObserver(){const o=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');const i=this.slides.indexOf(e.target);if(i!==-1){this.currentSlide=i;this.updateUI()}}})},{threshold:0.5});this.slides.forEach(s=>o.observe(s))}setupKeyboardNav(){document.addEventListener('keydown',e=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break}})}setupTouchNav(){document.addEventListener('touchstart',e=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const dy=this.touchStartY-e.changedTouches[0].clientY;const dx=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dy)<50||Math.abs(dx)>Math.abs(dy))return;if(dy>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1)},{passive:true})}setupWheelNav(){let t;document.addEventListener('wheel',e=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1)},50)},{passive:true})}setupProgressBar(){this.progressBar=document.getElementById('progressBar')}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label',`Go to slide ${i+1}`);d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d)})}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI()}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false},600)}updateUI(){const t=this.slides.length;const c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=`${((c+1)/t)*100}%`;document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=`${c+1} / ${t}`}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters=document.querySelectorAll('.counter');const co=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const el=e.target;const t=parseFloat(el.dataset.target);const s=el.dataset.suffix||'';const p=el.dataset.prefix||'';const d=t%1!==0;const dur=1500;const st=performance.now();function tick(n){const el2=n-st;const pr=Math.min(el2/dur,1);const ea=1-Math.pow(1-pr,3);const cu=t*ea;if(d)el.textContent=p+cu.toFixed(1)+s;else el.textContent=p+Math.round(cu).toLocaleString()+s;if(pr<1)requestAnimationFrame(tick)}requestAnimationFrame(tick);co.unobserve(el)}})},{threshold:0.5});counters.forEach(c=>co.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation()});
+    </script>
+</body>
+</html>

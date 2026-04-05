@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python 进阶技巧 — Tricks You Wish You Knew Sooner</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Tokyo Night IDE
+           Dark editor theme with Python brand colors
+           =========================================== */
+        :root {
+            --bg-primary: #1a1b26;
+            --bg-secondary: #16161e;
+            --bg-tertiary: #1f2335;
+            --bg-editor: #1a1b26;
+            --bg-sidebar: #13131a;
+            --bg-tab: #1f2335;
+            --bg-tab-active: #1a1b26;
+            --bg-terminal: #0f0f14;
+            --text-primary: #c0caf5;
+            --text-secondary: #7982a9;
+            --text-muted: #565f89;
+            --accent: #306998;
+            --accent-bright: #4b8bbe;
+            --accent-secondary: #FFD43B;
+            --accent-glow: rgba(48, 105, 152, 0.3);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --surface: rgba(255, 255, 255, 0.03);
+
+            /* Syntax colors — Tokyo Night palette */
+            --syn-keyword: #bb9af7;
+            --syn-string: #9ece6a;
+            --syn-function: #7aa2f7;
+            --syn-comment: #565f89;
+            --syn-number: #ff9e64;
+            --syn-operator: #89ddff;
+            --syn-type: #2ac3de;
+            --syn-decorator: #ff9e64;
+            --syn-param: #e0af68;
+            --syn-builtin: #7dcfff;
+            --syn-const: #ff757f;
+
+            /* Typography */
+            --font-display: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+            --font-body: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(2rem, 5vw, 4rem);
+            --h2-size: clamp(1.2rem, 3.2vw, 2.2rem);
+            --h3-size: clamp(0.95rem, 2.2vw, 1.5rem);
+            --subtitle-size: clamp(0.85rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.72rem, 1.4vw, 1rem);
+            --small-size: clamp(0.62rem, 0.95vw, 0.8rem);
+            --code-size: clamp(0.65rem, 1.2vw, 0.92rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 1.8vw, 1.6rem);
+            --element-gap: clamp(0.25rem, 0.8vw, 0.75rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+        }
+
+        /* ===========================================
+           BASE RESET + VIEWPORT (from viewport-base.css)
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        :lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+        }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .decorative { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid, .two-col { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .grid, .two-col { grid-template-columns: 1fr !important; }
+            .slide-counter { display: none; }
+            .tab-bar { display: none !important; }
+        }
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); }
+        }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box { border-width: 0.5px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-bounce { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-bounce { opacity: 1; }
+            .bar-fill { transition-duration: 0.2s !important; }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* ===========================================
+           IDE TAB BAR — top of each content slide
+           =========================================== */
+        .tab-bar {
+            display: flex; align-items: stretch;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+        .tab {
+            padding: clamp(6px, 0.8vw, 10px) clamp(12px, 1.5vw, 20px);
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-subtle);
+            display: flex; align-items: center; gap: clamp(4px, 0.5vw, 8px);
+            white-space: nowrap; cursor: default;
+            transition: background 0.2s, color 0.2s;
+        }
+        .tab.active {
+            background: var(--bg-tab-active);
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--accent-secondary);
+            margin-bottom: -1px;
+        }
+        .tab-icon { font-size: clamp(0.6rem, 0.9vw, 0.85rem); }
+        .tab-icon.py { color: var(--accent-secondary); }
+
+        /* ===========================================
+           CODE EDITOR BLOCK
+           VS Code inspired with line numbers
+           =========================================== */
+        .code-editor {
+            background: var(--bg-tertiary);
+            border-radius: clamp(6px, 0.8vw, 10px);
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+        .code-header {
+            padding: clamp(4px, 0.5vw, 7px) clamp(10px, 1.2vw, 16px);
+            background: var(--bg-secondary);
+            display: flex; justify-content: space-between; align-items: center;
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .code-header-name { color: var(--text-secondary); }
+        .code-header-lang { color: var(--text-muted); }
+        .code-header-dots {
+            display: flex; gap: clamp(4px, 0.4vw, 6px);
+        }
+        .code-header-dots span {
+            width: clamp(8px, 0.8vw, 11px); height: clamp(8px, 0.8vw, 11px);
+            border-radius: 50%;
+        }
+        .dot-red { background: #ff5f57; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #28c840; }
+
+        .code-body {
+            display: flex; overflow-x: auto;
+        }
+        .line-numbers {
+            padding: clamp(0.5rem, 0.8vw, 0.8rem) 0;
+            text-align: right;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: var(--code-size);
+            line-height: 1.65;
+            user-select: none;
+            min-width: clamp(24px, 2.5vw, 36px);
+            padding-right: clamp(6px, 0.6vw, 10px);
+            border-right: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+        }
+        .code-body pre {
+            padding: clamp(0.5rem, 0.8vw, 0.8rem) clamp(0.6rem, 1vw, 1rem);
+            font-family: var(--font-mono);
+            font-size: var(--code-size);
+            line-height: 1.65;
+            color: var(--text-primary);
+            flex: 1; min-width: 0;
+        }
+
+        /* Syntax classes */
+        .kw { color: var(--syn-keyword); }
+        .s { color: var(--syn-string); }
+        .fn { color: var(--syn-function); }
+        .cm { color: var(--syn-comment); font-style: italic; }
+        .n { color: var(--syn-number); }
+        .op { color: var(--syn-operator); }
+        .ty { color: var(--syn-type); }
+        .dec { color: var(--syn-decorator); }
+        .p { color: var(--syn-param); }
+        .bi { color: var(--syn-builtin); }
+        .ct { color: var(--syn-const); }
+
+        /* ===========================================
+           TERMINAL OUTPUT BLOCK
+           =========================================== */
+        .terminal {
+            background: var(--bg-terminal);
+            border-radius: clamp(6px, 0.8vw, 10px);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+        }
+        .terminal-header {
+            padding: clamp(4px, 0.5vw, 7px) clamp(10px, 1.2vw, 16px);
+            background: rgba(255,255,255,0.03);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .terminal pre {
+            padding: clamp(0.4rem, 0.7vw, 0.7rem) clamp(0.6rem, 1vw, 1rem);
+            font-family: var(--font-mono);
+            font-size: var(--code-size);
+            line-height: 1.6;
+            color: #9ece6a;
+        }
+        .terminal .prompt { color: var(--accent-secondary); }
+        .terminal .out { color: var(--text-primary); }
+        .terminal .dim { color: var(--text-muted); }
+
+        /* ===========================================
+           PERFORMANCE BAR CHART
+           =========================================== */
+        .perf-bar-group {
+            display: flex; flex-direction: column;
+            gap: clamp(0.5rem, 1vh, 0.8rem);
+        }
+        .perf-bar-row {
+            display: grid;
+            grid-template-columns: clamp(80px, 12vw, 140px) 1fr clamp(40px, 6vw, 70px);
+            gap: clamp(0.4rem, 0.8vw, 0.8rem);
+            align-items: center;
+            font-size: var(--body-size);
+        }
+        .perf-bar-label {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            text-align: right;
+        }
+        .perf-bar-track {
+            height: clamp(18px, 2.5vh, 28px);
+            background: rgba(255,255,255,0.04);
+            border-radius: clamp(3px, 0.4vw, 5px);
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: clamp(3px, 0.4vw, 5px);
+            transition: width 1.2s var(--ease-out-expo);
+            width: 0;
+        }
+        .slide.visible .bar-fill { width: var(--bar-w); }
+        .perf-bar-val {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            font-weight: 600;
+        }
+
+        /* ===========================================
+           MEMORY VISUALIZATION
+           =========================================== */
+        .mem-blocks {
+            display: flex; gap: clamp(2px, 0.3vw, 3px);
+            flex-wrap: wrap;
+            max-width: min(80vw, 500px);
+        }
+        .mem-block {
+            width: clamp(6px, 0.8vw, 10px);
+            height: clamp(6px, 0.8vw, 10px);
+            border-radius: 2px;
+        }
+
+        /* ===========================================
+           CALLOUT / NOTE BOX
+           =========================================== */
+        .callout {
+            background: rgba(48, 105, 152, 0.1);
+            border-left: 3px solid var(--accent);
+            padding: clamp(0.5rem, 1vw, 0.8rem) clamp(0.6rem, 1.2vw, 1rem);
+            border-radius: 0 clamp(4px, 0.5vw, 6px) clamp(4px, 0.5vw, 6px) 0;
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .callout strong { color: var(--accent-secondary); }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(24px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.06s; }
+        .reveal:nth-child(2) { transition-delay: 0.14s; }
+        .reveal:nth-child(3) { transition-delay: 0.22s; }
+        .reveal:nth-child(4) { transition-delay: 0.30s; }
+        .reveal:nth-child(5) { transition-delay: 0.38s; }
+        .reveal:nth-child(6) { transition-delay: 0.46s; }
+        .reveal:nth-child(7) { transition-delay: 0.54s; }
+        .reveal:nth-child(8) { transition-delay: 0.62s; }
+
+        .reveal-bounce {
+            opacity: 0; transform: translateY(40px) scale(0.95);
+            transition: opacity 0.5s ease, transform 0.6s var(--ease-out-back);
+        }
+        .slide.visible .reveal-bounce { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* ===========================================
+           UI — Progress, Dots, Counter
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            width: 0%; z-index: 9999; transition: width 0.3s ease;
+        }
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%;
+            transform: translateY(-50%); display: flex; flex-direction: column;
+            gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--text-muted); border: none;
+            cursor: pointer; transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent-secondary);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px rgba(255, 212, 59, 0.3);
+        }
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono); font-size: var(--small-size);
+            color: var(--text-muted); z-index: 9998;
+        }
+
+        /* ===========================================
+           TWO COLUMN LAYOUT
+           =========================================== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--content-gap);
+            margin-top: var(--content-gap);
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: Title slide gradient
+           =========================================== */
+        .title-bg {
+            background: linear-gradient(135deg, #1a1b26 0%, #1f2335 40%, #24283b 100%);
+            position: relative;
+        }
+        .title-bg::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 600px 400px at 20% 50%, rgba(48, 105, 152, 0.15), transparent),
+                radial-gradient(ellipse 400px 300px at 80% 30%, rgba(255, 212, 59, 0.08), transparent);
+            pointer-events: none;
+        }
+
+        /* Python logo decoration */
+        .py-logo {
+            font-family: var(--font-mono);
+            font-size: clamp(0.7rem, 1.2vw, 1rem);
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+        }
+
+        /* Slide heading area with icon */
+        .slide-heading {
+            display: flex; align-items: center;
+            gap: clamp(0.5rem, 1vw, 1rem);
+        }
+        .slide-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: clamp(28px, 3.2vw, 38px); height: clamp(28px, 3.2vw, 38px);
+            border-radius: clamp(6px, 0.6vw, 8px);
+            font-family: var(--font-mono); font-weight: 700; font-size: var(--body-size);
+            flex-shrink: 0;
+        }
+
+        /* Takeaway cards */
+        .takeaway-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: clamp(8px, 1vw, 12px);
+            padding: clamp(0.6rem, 1.2vw, 1rem);
+        }
+        .takeaway-card h3 {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);
+        }
+        .takeaway-card p {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- ===========================================
+         SLIDE 1: TITLE
+         =========================================== -->
+    <section class="slide title-bg" aria-label="Title">
+        <div class="slide-content" style="align-items: center; text-align: center; justify-content: center; position: relative; z-index: 1;">
+            <div class="reveal py-logo" style="margin-bottom: var(--element-gap);">
+                &gt;&gt;&gt; import this
+            </div>
+            <h1 class="reveal-bounce" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; color: #fff; line-height: 1.2;">
+                Python <span style="color: var(--accent-secondary);">进阶</span>技巧
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); font-family: var(--font-display);">
+                Tricks You Wish You Knew Sooner
+            </p>
+            <div class="reveal" style="display: flex; gap: clamp(0.5rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono);">
+                <span style="color: var(--accent-bright);">Python 3.10+</span>
+                <span style="opacity: 0.3;">|</span>
+                <span>中级</span>
+                <span style="opacity: 0.3;">|</span>
+                <span>9 slides</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 2: List Comprehensions vs For Loops
+         =========================================== -->
+    <section class="slide" aria-label="List Comprehensions">
+        <div class="tab-bar">
+            <div class="tab active"><span class="tab-icon py">&#9679;</span> comprehensions.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> decorators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> context.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> fstrings.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> match.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> generators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> typing.py</div>
+        </div>
+        <div class="slide-content">
+            <div class="slide-heading reveal">
+                <div class="slide-icon" style="background: var(--accent); color: #fff;">1</div>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">列表推导式的威力</h2>
+            </div>
+
+            <div class="two-col">
+                <div class="code-editor reveal" style="max-width: 100%;">
+                    <div class="code-header">
+                        <span class="code-header-name" style="color: var(--syn-const);">&#10007; 传统写法</span>
+                        <span class="code-header-lang">23ms</span>
+                    </div>
+                    <div class="code-body">
+                        <div class="line-numbers">1<br>2<br>3<br>4<br>5</div>
+                        <pre><code>result = []
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="n">10000</span>):
+    <span class="kw">if</span> i % <span class="n">2</span> == <span class="n">0</span>:
+        result.<span class="fn">append</span>(i ** <span class="n">2</span>)
+<span class="cm"># 4 行, 可读性一般</span></code></pre>
+                    </div>
+                </div>
+                <div class="code-editor reveal" style="max-width: 100%;">
+                    <div class="code-header">
+                        <span class="code-header-name" style="color: var(--syn-string);">&#10003; 推导式写法</span>
+                        <span class="code-header-lang">17ms</span>
+                    </div>
+                    <div class="code-body">
+                        <div class="line-numbers">1<br>2<br>3<br>4<br>5</div>
+                        <pre><code>result = [
+    i ** <span class="n">2</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="n">10000</span>)
+    <span class="kw">if</span> i % <span class="n">2</span> == <span class="n">0</span>
+]  <span class="cm"># 快 ~26%, 更 Pythonic</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="perf-bar-group reveal" style="margin-top: var(--content-gap); max-width: min(88vw, 600px);">
+                <div class="perf-bar-row">
+                    <div class="perf-bar-label">for loop</div>
+                    <div class="perf-bar-track"><div class="bar-fill" style="--bar-w: 100%; background: var(--syn-const);"></div></div>
+                    <div class="perf-bar-val" style="color: var(--syn-const);">23ms</div>
+                </div>
+                <div class="perf-bar-row">
+                    <div class="perf-bar-label">comprehension</div>
+                    <div class="perf-bar-track"><div class="bar-fill" style="--bar-w: 74%; background: var(--syn-string);"></div></div>
+                    <div class="perf-bar-val" style="color: var(--syn-string);">17ms</div>
+                </div>
+                <div class="perf-bar-row">
+                    <div class="perf-bar-label">map+filter</div>
+                    <div class="perf-bar-track"><div class="bar-fill" style="--bar-w: 82%; background: var(--accent-bright);"></div></div>
+                    <div class="perf-bar-val" style="color: var(--accent-bright);">19ms</div>
+                </div>
+            </div>
+
+            <div class="callout reveal" style="margin-top: var(--element-gap); max-width: min(88vw, 600px);">
+                <strong>dict / set 推导式同理</strong> &mdash; <code style="font-family: var(--font-mono); color: var(--text-primary);">{k: v <span style="color:var(--syn-keyword)">for</span> k, v <span style="color:var(--syn-keyword)">in</span> pairs}</code> 比循环快且意图更清晰
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 3: Decorators Demystified
+         =========================================== -->
+    <section class="slide" aria-label="Decorators">
+        <div class="tab-bar">
+            <div class="tab"><span class="tab-icon py">&#9679;</span> comprehensions.py</div>
+            <div class="tab active"><span class="tab-icon py">&#9679;</span> decorators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> context.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> fstrings.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> match.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> generators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> typing.py</div>
+        </div>
+        <div class="slide-content">
+            <div class="slide-heading reveal">
+                <div class="slide-icon" style="background: var(--syn-decorator); color: #1a1b26;">2</div>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">装饰器不神秘</h2>
+            </div>
+
+            <div class="code-editor reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 650px);">
+                <div class="code-header">
+                    <div class="code-header-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+                    <span class="code-header-name">decorators.py</span>
+                    <span class="code-header-lang">Python</span>
+                </div>
+                <div class="code-body">
+                    <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16</div>
+                    <pre><code><span class="kw">import</span> time, functools
+
+<span class="kw">def</span> <span class="fn">retry</span>(max_attempts=<span class="n">3</span>, delay=<span class="n">1</span>):
+    <span class="kw">def</span> <span class="fn">decorator</span>(func):
+        <span class="dec">@functools.wraps</span>(func)
+        <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+            <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_attempts):
+                <span class="kw">try</span>:
+                    <span class="kw">return</span> func(*args, **kwargs)
+                <span class="kw">except</span> <span class="ty">Exception</span> <span class="kw">as</span> e:
+                    <span class="kw">if</span> attempt == max_attempts - <span class="n">1</span>:
+                        <span class="kw">raise</span>
+                    time.<span class="fn">sleep</span>(delay)
+            <span class="kw">return</span> wrapper
+        <span class="kw">return</span> decorator</code></pre>
+                </div>
+            </div>
+
+            <div class="code-editor reveal" style="margin-top: var(--element-gap); max-width: min(90vw, 650px);">
+                <div class="code-header">
+                    <span class="code-header-name">usage</span>
+                    <span class="code-header-lang">3 行搞定重试逻辑</span>
+                </div>
+                <div class="code-body">
+                    <div class="line-numbers">1<br>2<br>3<br>4</div>
+                    <pre><code><span class="dec">@retry</span>(max_attempts=<span class="n">5</span>, delay=<span class="n">2</span>)
+<span class="kw">def</span> <span class="fn">fetch_data</span>(url):
+    <span class="kw">return</span> requests.<span class="fn">get</span>(url).<span class="fn">json</span>()
+<span class="cm"># 网络不稳？自动重试 5 次，每次间隔 2 秒</span></code></pre>
+                </div>
+            </div>
+
+            <div class="callout reveal" style="margin-top: var(--element-gap); max-width: min(90vw, 650px);">
+                <strong>本质</strong> &mdash; 装饰器 = 接收函数、返回新函数的高阶函数。<code style="font-family: var(--font-mono); color: var(--text-primary);">functools.wraps</code> 保留原函数的 name 和 docstring
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 4: Context Managers
+         =========================================== -->
+    <section class="slide" aria-label="Context Managers">
+        <div class="tab-bar">
+            <div class="tab"><span class="tab-icon py">&#9679;</span> comprehensions.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> decorators.py</div>
+            <div class="tab active"><span class="tab-icon py">&#9679;</span> context.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> fstrings.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> match.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> generators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> typing.py</div>
+        </div>
+        <div class="slide-content">
+            <div class="slide-heading reveal">
+                <div class="slide-icon" style="background: var(--syn-type); color: #1a1b26;">3</div>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">Context Manager: 资源安全的优雅解法</h2>
+            </div>
+
+            <div class="two-col">
+                <div style="display: flex; flex-direction: column; gap: var(--element-gap);">
+                    <div class="code-editor reveal" style="max-width: 100%;">
+                        <div class="code-header">
+                            <span class="code-header-name">经典用法</span>
+                            <span class="code-header-lang">with/as</span>
+                        </div>
+                        <div class="code-body">
+                            <div class="line-numbers">1<br>2<br>3</div>
+                            <pre><code><span class="kw">with</span> <span class="fn">open</span>(<span class="s">"data.json"</span>) <span class="kw">as</span> f:
+    data = json.<span class="fn">load</span>(f)
+<span class="cm"># 文件自动关闭，即使出异常</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="code-editor reveal" style="max-width: 100%;">
+                        <div class="code-header">
+                            <span class="code-header-name">自定义 (class)</span>
+                        </div>
+                        <div class="code-body">
+                            <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7</div>
+                            <pre><code><span class="kw">class</span> <span class="ty">Timer</span>:
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="p">self</span>):
+        <span class="p">self</span>.start = time.<span class="fn">perf_counter</span>()
+        <span class="kw">return</span> <span class="p">self</span>
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="p">self</span>, *args):
+        elapsed = time.<span class="fn">perf_counter</span>() - <span class="p">self</span>.start
+        <span class="fn">print</span>(<span class="s">f"耗时 </span>{elapsed:.3f}<span class="s">s"</span>)</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: var(--element-gap);">
+                    <div class="code-editor reveal" style="max-width: 100%;">
+                        <div class="code-header">
+                            <span class="code-header-name" style="color: var(--accent-secondary);">更简洁 (generator)</span>
+                        </div>
+                        <div class="code-body">
+                            <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8</div>
+                            <pre><code><span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="dec">@contextmanager</span>
+<span class="kw">def</span> <span class="fn">timer</span>(label):
+    start = time.<span class="fn">perf_counter</span>()
+    <span class="kw">yield</span>
+    elapsed = time.<span class="fn">perf_counter</span>() - start
+    <span class="fn">print</span>(<span class="s">f"</span>{label}<span class="s">: </span>{elapsed:.3f}<span class="s">s"</span>)</code></pre>
+                        </div>
+                    </div>
+                    <div class="terminal reveal">
+                        <div class="terminal-header">Terminal</div>
+                        <pre><span class="prompt">&gt;&gt;&gt; </span><span class="out"><span style="color:var(--syn-keyword)">with</span> timer(<span style="color:var(--syn-string)">"查询"</span>):</span>
+<span class="prompt">... </span><span class="out">    db.query(sql)</span>
+<span style="color: var(--text-primary);">查询: 0.042s</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 5: f-string Power Features
+         =========================================== -->
+    <section class="slide" aria-label="f-strings">
+        <div class="tab-bar">
+            <div class="tab"><span class="tab-icon py">&#9679;</span> comprehensions.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> decorators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> context.py</div>
+            <div class="tab active"><span class="tab-icon py">&#9679;</span> fstrings.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> match.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> generators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> typing.py</div>
+        </div>
+        <div class="slide-content">
+            <div class="slide-heading reveal">
+                <div class="slide-icon" style="background: var(--accent-secondary); color: #1a1b26;">4</div>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">f-string 的隐藏功能</h2>
+            </div>
+
+            <div class="code-editor reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 700px);">
+                <div class="code-header">
+                    <div class="code-header-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+                    <span class="code-header-name">fstrings.py</span>
+                    <span class="code-header-lang">Python 3.8+</span>
+                </div>
+                <div class="code-body">
+                    <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15</div>
+                    <pre><code>x = <span class="n">42</span>
+name = <span class="s">"Alice"</span>
+
+<span class="cm"># 调试神器: = 号自动打印变量名+值 (3.8+)</span>
+<span class="fn">print</span>(<span class="s">f"</span>{x=}<span class="s">"</span>)           <span class="cm"># x=42</span>
+<span class="fn">print</span>(<span class="s">f"</span>{name=}<span class="s">"</span>)        <span class="cm"># name='Alice'</span>
+<span class="fn">print</span>(<span class="s">f"</span>{x * 2=}<span class="s">"</span>)       <span class="cm"># x * 2=84</span>
+
+<span class="cm"># 格式化 spec</span>
+pi = <span class="n">3.14159</span>
+<span class="fn">print</span>(<span class="s">f"</span>{pi:<span class="n">.2f</span>}<span class="s">"</span>)        <span class="cm"># 3.14</span>
+<span class="fn">print</span>(<span class="s">f"</span>{<span class="n">1000000</span>:<span class="n">,</span>}<span class="s">"</span>)     <span class="cm"># 1,000,000</span>
+<span class="fn">print</span>(<span class="s">f"</span>{<span class="n">0.856</span>:<span class="n">.1%</span>}<span class="s">"</span>)    <span class="cm"># 85.6%</span>
+
+<span class="cm"># 对齐和填充</span>
+<span class="fn">print</span>(<span class="s">f"</span>{name:<span class="n">*^20</span>}<span class="s">"</span>)   <span class="cm"># *******Alice********</span></code></pre>
+                </div>
+            </div>
+
+            <div class="terminal reveal" style="margin-top: var(--element-gap); max-width: min(90vw, 700px);">
+                <div class="terminal-header">Output</div>
+                <pre><span class="out">x=42</span>
+<span class="out">name='Alice'</span>
+<span class="out">x * 2=84</span>
+<span class="out">3.14</span>
+<span class="out">1,000,000</span>
+<span class="out">85.6%</span>
+<span class="out">*******Alice********</span></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 6: Pattern Matching
+         =========================================== -->
+    <section class="slide" aria-label="Pattern Matching">
+        <div class="tab-bar">
+            <div class="tab"><span class="tab-icon py">&#9679;</span> comprehensions.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> decorators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> context.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> fstrings.py</div>
+            <div class="tab active"><span class="tab-icon py">&#9679;</span> match.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> generators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> typing.py</div>
+        </div>
+        <div class="slide-content">
+            <div class="slide-heading reveal">
+                <div class="slide-icon" style="background: var(--syn-keyword); color: #1a1b26;">5</div>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">match/case: 不只是 switch</h2>
+            </div>
+
+            <div class="two-col">
+                <div class="code-editor reveal" style="max-width: 100%;">
+                    <div class="code-header">
+                        <span class="code-header-name">结构化匹配</span>
+                        <span class="code-header-lang">Python 3.10+</span>
+                    </div>
+                    <div class="code-body">
+                        <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12</div>
+                        <pre><code><span class="kw">def</span> <span class="fn">handle</span>(command):
+    <span class="kw">match</span> command.<span class="fn">split</span>():
+        <span class="kw">case</span> [<span class="s">"quit"</span>]:
+            sys.<span class="fn">exit</span>()
+        <span class="kw">case</span> [<span class="s">"go"</span>, direction]:
+            <span class="fn">move</span>(direction)
+        <span class="kw">case</span> [<span class="s">"pick"</span>, *items]:
+            <span class="kw">for</span> item <span class="kw">in</span> items:
+                <span class="fn">take</span>(item)
+        <span class="kw">case</span> _:
+            <span class="fn">print</span>(<span class="s">"未知命令"</span>)
+<span class="cm"># 可解构 list, dict, class!</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="code-editor reveal" style="max-width: 100%;">
+                    <div class="code-header">
+                        <span class="code-header-name" style="color: var(--accent-secondary);">实战: API 响应处理</span>
+                    </div>
+                    <div class="code-body">
+                        <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11</div>
+                        <pre><code><span class="kw">match</span> response:
+    <span class="kw">case</span> {<span class="s">"status"</span>: <span class="n">200</span>, <span class="s">"data"</span>: data}:
+        <span class="fn">process</span>(data)
+
+    <span class="kw">case</span> {<span class="s">"status"</span>: <span class="n">404</span>}:
+        <span class="fn">log</span>(<span class="s">"Not found"</span>)
+
+    <span class="kw">case</span> {<span class="s">"status"</span>: code} <span class="kw">if</span> code >= <span class="n">500</span>:
+        <span class="fn">alert</span>(<span class="s">f"Server error: </span>{code}<span class="s">"</span>)
+
+<span class="cm"># dict 解构 + guard clause</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout reveal" style="margin-top: var(--element-gap); max-width: min(90vw, 700px);">
+                <strong>对比 if/elif</strong> &mdash; match/case 在处理嵌套结构和类型判断时代码量减少 40%+，且编译器可以检查覆盖完整性
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 7: Generators & Lazy Evaluation
+         =========================================== -->
+    <section class="slide" aria-label="Generators">
+        <div class="tab-bar">
+            <div class="tab"><span class="tab-icon py">&#9679;</span> comprehensions.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> decorators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> context.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> fstrings.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> match.py</div>
+            <div class="tab active"><span class="tab-icon py">&#9679;</span> generators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> typing.py</div>
+        </div>
+        <div class="slide-content">
+            <div class="slide-heading reveal">
+                <div class="slide-icon" style="background: var(--syn-string); color: #1a1b26;">6</div>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">Generator: 用 yield 省下 99% 内存</h2>
+            </div>
+
+            <div class="two-col">
+                <div style="display: flex; flex-direction: column; gap: var(--element-gap);">
+                    <div class="code-editor reveal" style="max-width: 100%;">
+                        <div class="code-header">
+                            <span class="code-header-name" style="color: var(--syn-const);">List: 一次性加载</span>
+                        </div>
+                        <div class="code-body">
+                            <div class="line-numbers">1<br>2<br>3</div>
+                            <pre><code><span class="cm"># 读取 100万行 CSV</span>
+rows = [parse(line)
+    <span class="kw">for</span> line <span class="kw">in</span> <span class="fn">open</span>(<span class="s">"big.csv"</span>)]</code></pre>
+                        </div>
+                    </div>
+                    <div class="code-editor reveal" style="max-width: 100%;">
+                        <div class="code-header">
+                            <span class="code-header-name" style="color: var(--syn-string);">Generator: 按需计算</span>
+                        </div>
+                        <div class="code-body">
+                            <div class="line-numbers">1<br>2<br>3<br>4</div>
+                            <pre><code><span class="kw">def</span> <span class="fn">read_csv</span>(path):
+    <span class="kw">with</span> <span class="fn">open</span>(path) <span class="kw">as</span> f:
+        <span class="kw">for</span> line <span class="kw">in</span> f:
+            <span class="kw">yield</span> <span class="fn">parse</span>(line)</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: var(--element-gap);">
+                    <div class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: var(--element-gap);">
+                        内存占用对比 (100 万行):
+                    </div>
+                    <div class="perf-bar-group reveal" style="max-width: 100%;">
+                        <div class="perf-bar-row">
+                            <div class="perf-bar-label">List</div>
+                            <div class="perf-bar-track"><div class="bar-fill" style="--bar-w: 100%; background: var(--syn-const);"></div></div>
+                            <div class="perf-bar-val" style="color: var(--syn-const);">~800MB</div>
+                        </div>
+                        <div class="perf-bar-row">
+                            <div class="perf-bar-label">Generator</div>
+                            <div class="perf-bar-track"><div class="bar-fill" style="--bar-w: 1%; background: var(--syn-string); min-width: 4px;"></div></div>
+                            <div class="perf-bar-val" style="color: var(--syn-string);">~8KB</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: clamp(0.3rem, 0.6vw, 0.6rem); margin-top: var(--element-gap);">
+                        <div class="reveal" style="text-align: center;">
+                            <div class="mem-blocks">
+                                <!-- 100 blocks for list visualization -->
+                                <span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span>
+                                <span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span>
+                                <span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span>
+                                <span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.55);"></span><span class="mem-block" style="background: rgba(255,117,127,0.65);"></span><span class="mem-block" style="background: rgba(255,117,127,0.7);"></span><span class="mem-block" style="background: rgba(255,117,127,0.6);"></span>
+                            </div>
+                            <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 4px; font-family: var(--font-mono);">List: 全部占满</div>
+                        </div>
+                        <div class="reveal" style="text-align: center;">
+                            <div class="mem-blocks">
+                                <span class="mem-block" style="background: rgba(158,206,106,0.8);"></span>
+                                <span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span>
+                                <span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span>
+                                <span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span>
+                                <span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span><span class="mem-block" style="background: rgba(255,255,255,0.03);"></span>
+                            </div>
+                            <div style="font-size: var(--small-size); color: var(--text-muted); margin-top: 4px; font-family: var(--font-mono);">Generator: 只占 1 格</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 8: Type Hints + Dataclass
+         =========================================== -->
+    <section class="slide" aria-label="Type Hints">
+        <div class="tab-bar">
+            <div class="tab"><span class="tab-icon py">&#9679;</span> comprehensions.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> decorators.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> context.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> fstrings.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> match.py</div>
+            <div class="tab"><span class="tab-icon py">&#9679;</span> generators.py</div>
+            <div class="tab active"><span class="tab-icon py">&#9679;</span> typing.py</div>
+        </div>
+        <div class="slide-content">
+            <div class="slide-heading reveal">
+                <div class="slide-icon" style="background: var(--syn-function); color: #1a1b26;">7</div>
+                <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700;">Type Hints: 不只是文档</h2>
+            </div>
+
+            <div class="two-col">
+                <div style="display: flex; flex-direction: column; gap: var(--element-gap);">
+                    <div class="code-editor reveal" style="max-width: 100%;">
+                        <div class="code-header">
+                            <span class="code-header-name" style="color: var(--syn-const);">没有 type hint</span>
+                        </div>
+                        <div class="code-body">
+                            <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7</div>
+                            <pre><code><span class="kw">class</span> <span class="ty">User</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="p">self</span>, name, age,
+                 email, active):
+        <span class="p">self</span>.name = name
+        <span class="p">self</span>.age = age
+        <span class="p">self</span>.email = email
+        <span class="p">self</span>.active = active</code></pre>
+                        </div>
+                    </div>
+                    <div class="callout reveal" style="max-width: 100%;">
+                        还要手写 <code style="font-family:var(--font-mono);color:var(--text-primary)">__repr__</code>, <code style="font-family:var(--font-mono);color:var(--text-primary)">__eq__</code>, <code style="font-family:var(--font-mono);color:var(--text-primary)">__hash__</code> ...
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: var(--element-gap);">
+                    <div class="code-editor reveal" style="max-width: 100%;">
+                        <div class="code-header">
+                            <span class="code-header-name" style="color: var(--syn-string);">dataclass + type hints</span>
+                        </div>
+                        <div class="code-body">
+                            <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</div>
+                            <pre><code><span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+<span class="dec">@dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="ty">User</span>:
+    name: <span class="bi">str</span>
+    age: <span class="bi">int</span>
+    email: <span class="bi">str</span>
+    active: <span class="bi">bool</span> = <span class="kw">True</span>
+
+<span class="cm"># 自动生成 init, repr, eq, hash</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="terminal reveal" style="max-width: 100%;">
+                        <div class="terminal-header">mypy 静态检查</div>
+                        <pre><span class="prompt">$ </span><span class="out">mypy app.py</span>
+<span style="color:var(--syn-string)">Success: no issues found</span>
+<span class="dim"># IDE 自动补全、重构、错误提示</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 9: Key Takeaways + Resources
+         =========================================== -->
+    <section class="slide" aria-label="Takeaways" style="background: linear-gradient(135deg, #1a1b26 0%, #1f2335 50%, #24283b 100%);">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <h2 class="reveal-bounce" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 700; color: #fff; text-align: center;">
+                写出 <span style="color: var(--accent-secondary);">Pythonic</span> 代码的 7 个关键
+            </h2>
+
+            <div class="grid reveal" style="margin-top: var(--content-gap); max-width: min(92vw, 900px); grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(0.4rem, 1vw, 0.8rem);">
+                <div class="takeaway-card">
+                    <h3 style="color: var(--accent-bright);">推导式</h3>
+                    <p>用表达式替代循环，意图更清晰</p>
+                </div>
+                <div class="takeaway-card">
+                    <h3 style="color: var(--syn-decorator);">装饰器</h3>
+                    <p>把横切逻辑从业务代码中抽离</p>
+                </div>
+                <div class="takeaway-card">
+                    <h3 style="color: var(--syn-type);">Context Manager</h3>
+                    <p>资源管理零泄漏，with 一行搞定</p>
+                </div>
+                <div class="takeaway-card">
+                    <h3 style="color: var(--accent-secondary);">f-string</h3>
+                    <p>调试用 =, 格式化用 spec</p>
+                </div>
+                <div class="takeaway-card">
+                    <h3 style="color: var(--syn-keyword);">match/case</h3>
+                    <p>结构化匹配替代冗长 if/elif</p>
+                </div>
+                <div class="takeaway-card">
+                    <h3 style="color: var(--syn-string);">Generator</h3>
+                    <p>yield 实现惰性求值，内存降 99%</p>
+                </div>
+                <div class="takeaway-card">
+                    <h3 style="color: var(--syn-function);">Type Hints</h3>
+                    <p>dataclass + mypy = 少写一半代码</p>
+                </div>
+            </div>
+
+            <div class="reveal" style="display: flex; gap: clamp(0.8rem, 2vw, 1.5rem); margin-top: var(--content-gap); flex-wrap: wrap; justify-content: center;">
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: clamp(0.5rem, 1vw, 0.8rem) clamp(0.8rem, 1.5vw, 1.2rem); font-size: var(--small-size); color: var(--text-secondary);">
+                    <strong style="color: var(--accent-secondary);">Fluent Python</strong> &mdash; Luciano Ramalho
+                </div>
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: clamp(0.5rem, 1vw, 0.8rem) clamp(0.8rem, 1.5vw, 1.2rem); font-size: var(--small-size); color: var(--text-secondary);">
+                    <strong style="color: var(--accent-secondary);">docs.python.org/3/whatsnew</strong>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: clamp(0.5rem, 1vw, 0.8rem) clamp(0.8rem, 1.5vw, 1.2rem); font-size: var(--small-size); color: var(--text-secondary);">
+                    <strong style="color: var(--accent-secondary);">realpython.com</strong>
+                </div>
+            </div>
+
+            <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+                Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         NAVIGATION JS
+         =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const dY = this.touchStartY - e.changedTouches[0].clientY;
+                    const dX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return;
+                    if (dY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let t;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+                if (this.counter) this.counter.textContent = `${current + 1} / ${total}`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbital — Space Logistics SaaS | Neon Cyber</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
+    <style>
+        /* ===========================================
+           NEON CYBER — Futuristic, glowing, immersive
+           =========================================== */
+        :root {
+            --bg-primary: #0a0f1c;
+            --bg-gradient: radial-gradient(ellipse at 30% 50%, #0d1a2d 0%, #0a0f1c 70%);
+            --accent-cyan: #00ffcc;
+            --accent-magenta: #ff00aa;
+            --accent-blue: #4466ff;
+            --text-primary: #e0f0ff;
+            --text-secondary: #7a9abc;
+            --text-muted: #6a8aaa;
+            --glow-cyan: 0 0 20px rgba(0,255,204,0.3);
+            --glow-magenta: 0 0 20px rgba(255,0,170,0.3);
+            --border-subtle: rgba(0,255,204,0.1);
+            --surface: rgba(255,255,255,0.04);
+            --font-display: 'Clash Display', 'Exo 2', sans-serif;
+            --font-body: 'Satoshi', 'Exo 2', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.35rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2.5rem, 8vw, 6rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; background: var(--bg-gradient); }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        /* Scan lines overlay */
+        .slide::before {
+            content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+        }
+        /* Dot grid background */
+        .dot-grid { position: absolute; inset: 0; pointer-events: none; z-index: 0; background-image: radial-gradient(circle, rgba(0,255,204,0.06) 1px, transparent 1px); background-size: 30px 30px; }
+
+        /* Corner brackets */
+        .corner-brackets::before, .corner-brackets::after { font-family: var(--font-mono); font-size: var(--small-size); color: var(--accent-cyan); opacity: 0.4; position: absolute; }
+        .corner-brackets::before { content: '[ '; top: clamp(8px,2vw,20px); left: clamp(8px,2vw,20px); }
+        .corner-brackets::after { content: ' ]'; bottom: clamp(8px,2vw,20px); right: clamp(8px,2vw,20px); }
+
+        /* Neon glow text */
+        .neon-text { text-shadow: 0 0 10px rgba(0,255,204,0.5), 0 0 40px rgba(0,255,204,0.2); }
+        .neon-magenta { text-shadow: 0 0 10px rgba(255,0,170,0.5), 0 0 40px rgba(255,0,170,0.2); }
+
+        /* HUD card */
+        .hud-card { background: rgba(0,255,204,0.04); border: 1px solid rgba(0,255,204,0.15); border-radius: 2px; padding: clamp(0.6rem,1.5vw,1.2rem); position: relative; }
+        .hud-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent); animation: scan 4s linear infinite; }
+        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(25px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal-blur { opacity: 0; filter: blur(12px); transition: opacity 1s ease, filter 1s var(--ease-out-expo); }
+        .slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+        .reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity var(--duration-slow) ease, transform var(--duration-slow) var(--ease-out-expo); }
+        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+        .reveal:nth-child(1) { transition-delay: 0.08s; } .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.28s; } .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.52s; } .reveal:nth-child(6) { transition-delay: 0.64s; }
+        .reveal-blur:nth-child(1) { transition-delay: 0.1s; }
+
+        @keyframes glow-pulse { 0%,100% { box-shadow: 0 0 10px rgba(0,255,204,0.2); } 50% { box-shadow: 0 0 30px rgba(0,255,204,0.4), 0 0 60px rgba(0,255,204,0.15); } }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+        /* Data vis */
+        .neon-bar-chart { display: flex; align-items: flex-end; gap: clamp(8px,1.2vw,16px); height: clamp(80px,18vh,180px); }
+        .neon-bar-chart .bar { flex: 1; border-radius: 2px 2px 0 0; background: linear-gradient(180deg, var(--accent-cyan), rgba(0,255,204,0.15)); box-shadow: 0 0 12px rgba(0,255,204,0.2); position: relative; min-width: 20px; transition: height 1.2s var(--ease-out-expo); }
+        .neon-bar-chart .bar-label { position: absolute; bottom: calc(-1 * clamp(18px,2.5vw,24px)); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-secondary); white-space: nowrap; font-family: var(--font-mono); }
+        .neon-bar-chart .bar-value { position: absolute; top: calc(-1 * clamp(18px,2.5vw,24px)); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--accent-cyan); font-weight: 600; font-family: var(--font-mono); }
+
+        /* Progress & Nav */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta)); width: 0%; z-index: 9999; transition: width 0.3s ease; box-shadow: 0 0 10px rgba(0,255,204,0.3); }
+        .nav-dots { position: fixed; right: clamp(12px,2vw,24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 6px; height: 6px; border-radius: 1px; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent-cyan); transform: scale(1.5); box-shadow: var(--glow-cyan); }
+        .slide-counter { position: fixed; bottom: clamp(12px,2vw,24px); right: clamp(12px,2vw,24px); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Competition table */
+        .comp-table { width: 100%; border-collapse: collapse; font-size: var(--body-size); font-family: var(--font-mono); }
+        .comp-table th, .comp-table td { padding: clamp(0.3rem,0.8vh,0.6rem) clamp(0.4rem,1.2vw,0.8rem); text-align: left; border-bottom: 1px solid rgba(0,255,204,0.08); }
+        .comp-table th { font-size: var(--small-size); color: var(--accent-cyan); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+        .comp-table tr.highlight { background: rgba(0,255,204,0.06); }
+
+        /* Responsive */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem,3vw,2rem); --content-gap: clamp(0.4rem,1.5vw,1rem); --title-size: clamp(1.25rem,4.5vw,2.5rem); --h2-size: clamp(1rem,3vw,1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem,2.5vw,1.5rem); --body-size: clamp(0.7rem,1.2vw,0.95rem); } .nav-dots,.decorative { display: none; } }
+        @media (max-height: 500px) { :root { --title-size: clamp(1rem,3.5vw,1.5rem); --body-size: clamp(0.65rem,1vw,0.85rem); } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem,7vw,2.5rem); } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal,.reveal-scale,.reveal-blur { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; }
+            .slide.visible .reveal,.slide.visible .reveal-scale,.slide.visible .reveal-blur { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar,.nav-dots,.slide-counter { display: none !important; } .reveal,[class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide corner-brackets" aria-label="Title">
+        <div class="dot-grid"></div>
+        <div style="position:absolute;width:40%;height:40%;background:radial-gradient(ellipse,rgba(0,255,204,0.08),transparent);top:20%;left:30%;pointer-events:none;"></div>
+        <div style="position:absolute;width:30%;height:30%;background:radial-gradient(ellipse,rgba(255,0,170,0.06),transparent);bottom:20%;right:10%;pointer-events:none;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:2;">
+            <div class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.4em;color:var(--accent-cyan);">// SERIES_A.INIT</div>
+            <h1 class="reveal-blur neon-text" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:700;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ORBITAL</h1>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(70vw,600px);">The operating system for space logistics</p>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-muted);margin-top:var(--content-gap);font-family:var(--font-mono);">CLASSIFIED  //  2026.04</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROBLEM -->
+    <section class="slide corner-brackets" aria-label="Problem">
+        <div class="dot-grid"></div>
+        <div class="slide-content" style="z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-magenta);">// CRITICAL_ALERT</span>
+            <h2 class="reveal neon-magenta" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Space is getting crowded.</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(65vw,700px);line-height:1.7;">Over 10,000 active satellites orbit Earth. By 2030, that number triples. Without intelligent coordination, collisions and debris cascades become inevitable.</p>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal hud-card">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:700;color:var(--accent-magenta);">36K+</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">debris.objects</div>
+                </div>
+                <div class="reveal hud-card">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:700;color:var(--accent-cyan);">$300M</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">annual.loss</div>
+                </div>
+                <div class="reveal hud-card">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:700;color:var(--text-primary);">1 in 5</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">monthly.near_miss</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: SOLUTION -->
+    <section class="slide corner-brackets" aria-label="Solution">
+        <div class="dot-grid"></div>
+        <div style="position:absolute;width:35%;height:35%;background:radial-gradient(ellipse,rgba(0,255,204,0.06),transparent);top:5%;right:5%;pointer-events:none;"></div>
+        <div class="slide-content" style="z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// SOLUTION.DEPLOY</span>
+            <h2 class="reveal neon-text" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">AI-powered space traffic control</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,600px);line-height:1.7;">Predict collision risks 72hrs out. Optimize constellation maneuvers. Reduce fuel waste by 40%.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal hud-card" style="animation:glow-pulse 4s ease-in-out infinite;">
+                    <div style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--accent-cyan);margin-bottom:0.4em;">01 //</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);">Predict</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">ML on 15yr orbital dataset forecasts conjunction events</p>
+                </div>
+                <div class="reveal hud-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--accent-magenta);margin-bottom:0.4em;">02 //</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);">Optimize</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Automated maneuver planning minimizes delta-v burn</p>
+                </div>
+                <div class="reveal hud-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--accent-blue);margin-bottom:0.4em;">03 //</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);">Coordinate</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Multi-operator deconfliction via shared orbital mesh</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: PRODUCT DEMO -->
+    <section class="slide corner-brackets" aria-label="Product">
+        <div class="dot-grid"></div>
+        <div class="slide-content" style="z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// DASHBOARD.RENDER</span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Mission Control, reimagined</h2>
+            <div class="reveal-scale" style="margin-top:var(--content-gap);background:rgba(10,15,28,0.9);border:1px solid rgba(0,255,204,0.2);border-radius:4px;padding:clamp(0.6rem,1.5vw,1.2rem);box-shadow:0 0 40px rgba(0,255,204,0.08),inset 0 0 40px rgba(0,255,204,0.02);">
+                <div style="display:flex;align-items:center;gap:clamp(0.4rem,0.8vw,0.75rem);margin-bottom:clamp(0.4rem,1vw,0.75rem);padding-bottom:clamp(0.3rem,0.6vw,0.5rem);border-bottom:1px solid rgba(0,255,204,0.08);">
+                    <span style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--accent-cyan);">orbital://dashboard</span>
+                    <span style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--text-muted);margin-left:auto;">v3.2.1</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,120px),1fr));gap:clamp(0.4rem,1vw,0.75rem);">
+                    <div class="hud-card"><div style="font-family:var(--font-display);font-size:clamp(1rem,2.5vw,1.75rem);font-weight:700;color:var(--accent-cyan);">12</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">active_sats</div></div>
+                    <div class="hud-card"><div style="font-family:var(--font-display);font-size:clamp(1rem,2.5vw,1.75rem);font-weight:700;color:#30d158;">0</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">warnings</div></div>
+                    <div class="hud-card"><div style="font-family:var(--font-display);font-size:clamp(1rem,2.5vw,1.75rem);font-weight:700;color:var(--accent-blue);">847</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">debris_tracked</div></div>
+                    <div class="hud-card"><div style="font-family:var(--font-display);font-size:clamp(1rem,2.5vw,1.75rem);font-weight:700;color:var(--text-primary);">99.7%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">accuracy</div></div>
+                </div>
+                <!-- Mini orbit visualization -->
+                <div style="margin-top:clamp(0.4rem,1vw,0.75rem);height:clamp(35px,7vh,70px);position:relative;background:rgba(0,255,204,0.02);border:1px solid rgba(0,255,204,0.06);border-radius:2px;overflow:hidden;">
+                    <div style="position:absolute;width:80%;height:160%;border-radius:50%;border:1px dashed rgba(0,255,204,0.12);top:20%;left:10%;transform:rotateX(65deg);"></div>
+                    <div style="position:absolute;width:5px;height:5px;background:var(--accent-cyan);border-radius:50%;top:35%;left:55%;box-shadow:0 0 12px rgba(0,255,204,0.6);animation:float 3s ease-in-out infinite;"></div>
+                    <div style="position:absolute;width:4px;height:4px;background:var(--accent-magenta);border-radius:50%;top:50%;left:30%;box-shadow:0 0 8px rgba(255,0,170,0.4);animation:float 4s ease-in-out infinite 1s;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: MARKET -->
+    <section class="slide corner-brackets" aria-label="Market">
+        <div class="dot-grid"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// MARKET.SCOPE</span>
+            <h2 class="reveal-blur neon-text" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">$400B</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);">Global space economy by 2030</p>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;justify-content:center;">
+                <div class="reveal" style="text-align:center;">
+                    <div style="width:clamp(70px,10vw,110px);height:clamp(70px,10vw,110px);border-radius:50%;border:3px solid var(--accent-cyan);display:flex;align-items:center;justify-content:center;box-shadow:var(--glow-cyan);margin:0 auto;">
+                        <span style="font-family:var(--font-display);font-weight:700;font-size:clamp(0.8rem,1.8vw,1.2rem);color:var(--accent-cyan);">$120B</span>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;font-family:var(--font-mono);">sat.services</div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div style="width:clamp(70px,10vw,110px);height:clamp(70px,10vw,110px);border-radius:50%;border:3px solid var(--accent-magenta);display:flex;align-items:center;justify-content:center;box-shadow:var(--glow-magenta);margin:0 auto;">
+                        <span style="font-family:var(--font-display);font-weight:700;font-size:clamp(0.8rem,1.8vw,1.2rem);color:var(--accent-magenta);">$80B</span>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;font-family:var(--font-mono);">launch.ops</div>
+                </div>
+                <div class="reveal" style="text-align:center;">
+                    <div style="width:clamp(70px,10vw,110px);height:clamp(70px,10vw,110px);border-radius:50%;border:3px solid var(--accent-blue);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(68,102,255,0.3);margin:0 auto;">
+                        <span style="font-family:var(--font-display);font-weight:700;font-size:clamp(0.8rem,1.8vw,1.2rem);color:var(--accent-blue);">$42B</span>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;font-family:var(--font-mono);">space.logistics</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: TRACTION -->
+    <section class="slide corner-brackets" aria-label="Traction">
+        <div class="dot-grid"></div>
+        <div class="slide-content" style="z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// TRACTION.LOG</span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">From prototype to production</h2>
+            <div style="display:flex;gap:clamp(2rem,5vw,5rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal hud-card" style="text-align:center;flex:1;min-width:min(100%,120px);">
+                    <div class="counter" data-target="12" style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:700;color:var(--accent-cyan);">0</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">satellites.tracked</div>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;flex:1;min-width:min(100%,120px);">
+                    <div class="counter" data-target="3" style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:700;color:var(--accent-magenta);">0</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">agency.contracts</div>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;flex:1;min-width:min(100%,120px);">
+                    <div class="counter" data-target="847" style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:700;color:var(--accent-blue);">0</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">debris.catalog</div>
+                </div>
+            </div>
+            <div class="reveal" style="margin-top:var(--content-gap);">
+                <div style="font-size:var(--small-size);color:var(--text-muted);margin-bottom:0.5em;font-family:var(--font-mono);">// ARR_GROWTH ($K)</div>
+                <div class="neon-bar-chart" style="padding-bottom:clamp(20px,3vw,30px);">
+                    <div class="bar" style="height:15%;"><div class="bar-label">Q1</div><div class="bar-value">$40K</div></div>
+                    <div class="bar" style="height:30%;"><div class="bar-label">Q2</div><div class="bar-value">$120K</div></div>
+                    <div class="bar" style="height:55%;"><div class="bar-label">Q3</div><div class="bar-value">$280K</div></div>
+                    <div class="bar" style="height:85%;background:linear-gradient(180deg,var(--accent-cyan),rgba(0,255,204,0.3));"><div class="bar-label">Q4</div><div class="bar-value">$580K</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: BUSINESS MODEL -->
+    <section class="slide corner-brackets" aria-label="Business Model">
+        <div class="dot-grid"></div>
+        <div class="slide-content" style="z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// PRICING.CONFIG</span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">SaaS tiers built for scale</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal hud-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--text-muted);letter-spacing:0.1em;">SCOUT</div>
+                    <div style="font-size:clamp(1.5rem,3vw,2.5rem);font-family:var(--font-display);font-weight:700;margin-top:0.2em;color:var(--text-primary);">$5K<span style="font-size:var(--small-size);color:var(--text-secondary);font-weight:400;">/mo</span></div>
+                    <ul style="list-style:none;margin-top:0.6em;font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);"><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> 5 satellites</li><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> 48hr alerts</li><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> Basic dashboard</li></ul>
+                </div>
+                <div class="reveal hud-card" style="border-color:var(--accent-cyan);box-shadow:0 0 20px rgba(0,255,204,0.1);position:relative;">
+                    <div style="position:absolute;top:clamp(4px,0.6vw,8px);right:clamp(4px,0.6vw,8px);font-size:clamp(0.45rem,0.7vw,0.6rem);background:var(--accent-cyan);color:var(--bg-primary);padding:2px 8px;border-radius:1px;font-weight:600;font-family:var(--font-mono);">POPULAR</div>
+                    <div style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--accent-cyan);letter-spacing:0.1em;">CONSTELLATION</div>
+                    <div style="font-size:clamp(1.5rem,3vw,2.5rem);font-family:var(--font-display);font-weight:700;margin-top:0.2em;color:var(--text-primary);">$25K<span style="font-size:var(--small-size);color:var(--text-secondary);font-weight:400;">/mo</span></div>
+                    <ul style="list-style:none;margin-top:0.6em;font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);"><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> 50 satellites</li><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> 72hr AI predict</li><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> Maneuver opt</li></ul>
+                </div>
+                <div class="reveal hud-card">
+                    <div style="font-size:var(--small-size);font-family:var(--font-mono);color:var(--text-muted);letter-spacing:0.1em;">ENTERPRISE</div>
+                    <div style="font-size:clamp(1.5rem,3vw,2.5rem);font-family:var(--font-display);font-weight:700;margin-top:0.2em;color:var(--text-primary);">Custom</div>
+                    <ul style="list-style:none;margin-top:0.6em;font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);"><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> Unlimited sats</li><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> Dedicated API</li><li style="padding:0.15em 0;"><span style="color:var(--accent-cyan);">+</span> Multi-op sync</li></ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: COMPETITION -->
+    <section class="slide corner-brackets" aria-label="Competition">
+        <div class="dot-grid"></div>
+        <div class="slide-content" style="z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// COMPETITIVE.SCAN</span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Intelligence gap in the market</h2>
+            <div class="reveal-scale" style="margin-top:var(--content-gap);overflow-x:auto;">
+                <table class="comp-table">
+                    <thead><tr><th></th><th>AI Predict</th><th>Maneuver</th><th>Multi-Op</th><th>Realtime</th></tr></thead>
+                    <tbody>
+                        <tr class="highlight"><td style="font-weight:600;color:var(--accent-cyan);">Orbital</td><td style="color:var(--accent-cyan);">&#10003;</td><td style="color:var(--accent-cyan);">&#10003;</td><td style="color:var(--accent-cyan);">&#10003;</td><td style="color:var(--accent-cyan);">&#10003;</td></tr>
+                        <tr><td style="color:var(--text-secondary);">LeoLabs</td><td style="color:var(--text-muted);">~</td><td style="color:var(--accent-magenta);">&#10007;</td><td style="color:var(--accent-magenta);">&#10007;</td><td style="color:var(--accent-cyan);">&#10003;</td></tr>
+                        <tr><td style="color:var(--text-secondary);">AGI Space</td><td style="color:var(--accent-magenta);">&#10007;</td><td style="color:var(--accent-cyan);">&#10003;</td><td style="color:var(--accent-magenta);">&#10007;</td><td style="color:var(--text-muted);">~</td></tr>
+                        <tr><td style="color:var(--text-secondary);">18th SDS</td><td style="color:var(--text-muted);">~</td><td style="color:var(--accent-magenta);">&#10007;</td><td style="color:var(--text-muted);">~</td><td style="color:var(--accent-magenta);">&#10007;</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: TEAM -->
+    <section class="slide corner-brackets" aria-label="Team">
+        <div class="dot-grid"></div>
+        <div class="slide-content" style="z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// TEAM.ROSTER</span>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Built by people who know orbits</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(0.75rem,2vw,1.5rem);margin-top:var(--content-gap);">
+                <div class="reveal hud-card" style="text-align:center;">
+                    <div style="width:clamp(50px,6vw,70px);height:clamp(50px,6vw,70px);border-radius:50%;border:2px solid var(--accent-cyan);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,2vw,1.4rem);font-weight:700;font-family:var(--font-display);box-shadow:var(--glow-cyan);">ER</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);margin-top:0.5em;">Dr. Elena Roskova</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-cyan);font-family:var(--font-mono);">CEO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;line-height:1.4;">Ex-ESA orbital mechanics. 12yr astrodynamics.</p>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;">
+                    <div style="width:clamp(50px,6vw,70px);height:clamp(50px,6vw,70px);border-radius:50%;border:2px solid var(--accent-magenta);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,2vw,1.4rem);font-weight:700;font-family:var(--font-display);box-shadow:var(--glow-magenta);">MC</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);margin-top:0.5em;">Marcus Chen</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-magenta);font-family:var(--font-mono);">CTO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;line-height:1.4;">Ex-SpaceX Starlink. ML for 4K+ sats.</p>
+                </div>
+                <div class="reveal hud-card" style="text-align:center;">
+                    <div style="width:clamp(50px,6vw,70px);height:clamp(50px,6vw,70px);border-radius:50%;border:2px solid var(--accent-blue);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,2vw,1.4rem);font-weight:700;font-family:var(--font-display);box-shadow:0 0 20px rgba(68,102,255,0.3);">AK</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);margin-top:0.5em;">Dr. Amara Kone</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-blue);font-family:var(--font-mono);">COO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;line-height:1.4;">Former NASA PM. Led $200M sat ops.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: ASK -->
+    <section class="slide corner-brackets" aria-label="The Ask">
+        <div class="dot-grid"></div>
+        <div style="position:absolute;width:50%;height:50%;background:radial-gradient(ellipse,rgba(0,255,204,0.06),transparent);top:25%;left:25%;pointer-events:none;animation:pulse-glow 6s ease-in-out infinite;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:2;">
+            <span class="reveal" style="font-size:var(--small-size);font-family:var(--font-mono);letter-spacing:0.2em;color:var(--accent-cyan);">// FUNDING.REQUEST</span>
+            <h2 class="reveal-blur neon-text" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">$8M Series A</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,500px);">Scale team. Expand to 500+ satellites. 10 enterprise contracts by Q4 2027.</p>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;justify-content:center;">
+                <div class="reveal" style="text-align:center;"><div style="font-size:clamp(1.5rem,3vw,2rem);font-family:var(--font-display);font-weight:700;color:var(--accent-cyan);">40%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">engineering</div></div>
+                <div class="reveal" style="text-align:center;"><div style="font-size:clamp(1.5rem,3vw,2rem);font-family:var(--font-display);font-weight:700;color:var(--accent-magenta);">30%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">sales</div></div>
+                <div class="reveal" style="text-align:center;"><div style="font-size:clamp(1.5rem,3vw,2rem);font-family:var(--font-display);font-weight:700;color:var(--accent-blue);">20%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">infra</div></div>
+                <div class="reveal" style="text-align:center;"><div style="font-size:clamp(1.5rem,3vw,2rem);font-family:var(--font-display);font-weight:700;color:var(--text-primary);">10%</div><div style="font-size:var(--small-size);color:var(--text-secondary);font-family:var(--font-mono);">ops</div></div>
+            </div>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-muted);margin-top:var(--content-gap);font-family:var(--font-mono);">elena@orbital.space  //  orbital.space</p>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.35;">Made with <a href="https://nextslide.app" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init();}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible');}setupIntersectionObserver(){const o=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const idx=this.slides.indexOf(entry.target);if(idx!==-1){this.currentSlide=idx;this.updateUI();}}});},{threshold:0.5});this.slides.forEach(s=>o.observe(s));}setupKeyboardNav(){document.addEventListener('keydown',(e)=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}});}setupTouchNav(){document.addEventListener('touchstart',(e)=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true});document.addEventListener('touchend',(e)=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true});}setupWheelNav(){let t;document.addEventListener('wheel',(e)=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true});}setupProgressBar(){this.progressBar=document.getElementById('progressBar');}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label','Go to slide '+(i+1));d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);});}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI();}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600);}updateUI(){const t=this.slides.length;const c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=((c+1)/t*100)+'%';document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=(c+1)+' / '+t;}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters=document.querySelectorAll('.counter');const cObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){const el=entry.target;const target=parseInt(el.dataset.target);const suffix=el.dataset.suffix||'';const prefix=el.dataset.prefix||'';const duration=1500;const start=performance.now();function tick(now){const elapsed=now-start;const progress=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-progress,3);el.textContent=prefix+Math.round(target*eased).toLocaleString()+suffix;if(progress<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);cObs.unobserve(el);}});},{threshold:0.5});counters.forEach(c=>cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+    </script>
+</body>
+</html>

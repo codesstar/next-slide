@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vintage Poster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Roboto+Slab:wght@400;700;900&family=Roboto+Condensed:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --parchment: #F5E6CA;
+  --parchment-dark: #ECD5B3;
+  --navy: #2C3E50;
+  --red: #C0392B;
+  --mustard: #D4A017;
+  --mustard-light: #E8C547;
+  --text-dark: #2C3E50;
+  --text-muted: #8B7355;
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--parchment); color: var(--text-dark); }
+
+body {
+  font-family: 'Roboto Slab', 'Noto Sans SC', serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Progress bar */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--mustard), var(--navy));
+  z-index: 1000;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Page counter */
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 3vh, 36px);
+  right: clamp(20px, 3vw, 44px);
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  color: var(--mustard);
+  z-index: 1000;
+  letter-spacing: 0.05em;
+}
+.page-counter .current { color: var(--navy); }
+
+/* Slide base */
+.slide {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--parchment);
+  filter: sepia(0.05);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Vignette on all slides */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 120px rgba(139,90,43,0.15);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Scan line texture */
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139,90,43,0.02) 2px, rgba(139,90,43,0.02) 4px);
+  pointer-events: none;
+  z-index: 9;
+}
+
+.slide-inner {
+  width: 100%;
+  height: 100%;
+  padding: clamp(36px, 6vh, 70px) clamp(44px, 7vw, 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+}
+
+/* ===================== */
+/* Vintage Elements      */
+/* ===================== */
+
+/* Double-line border frame */
+.poster-frame {
+  position: absolute;
+  inset: clamp(14px, 2vh, 24px);
+  border: 3px double var(--mustard);
+  z-index: 5;
+  pointer-events: none;
+}
+.poster-frame::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(212,160,23,0.25);
+}
+.poster-frame::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(212,160,23,0.12);
+}
+
+/* Star decorations */
+.deco-star {
+  position: absolute;
+  z-index: 6;
+  width: clamp(10px, 1.2vw, 14px);
+  height: clamp(10px, 1.2vw, 14px);
+  background: var(--mustard);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  pointer-events: none;
+}
+
+/* Vintage HR divider */
+.vintage-hr {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--navy), transparent);
+  position: relative;
+  width: clamp(100px, 50%, 600px);
+  margin: 0 auto;
+}
+.vintage-hr::before {
+  content: '';
+  position: absolute;
+  top: -4px; left: 50%;
+  transform: translateX(-50%);
+  width: 10px; height: 10px;
+  border: 2px solid var(--navy);
+  border-radius: 50%;
+  background: var(--parchment);
+}
+
+/* Double horizontal rule */
+.double-hr {
+  position: relative;
+  height: 8px;
+  width: clamp(150px, 60%, 700px);
+  margin: 0 auto;
+}
+.double-hr::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 5%, var(--navy) 15%, var(--navy) 85%, transparent 95%);
+}
+.double-hr::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 5%, var(--navy) 15%, var(--navy) 85%, transparent 95%);
+}
+
+/* Badge circle */
+.badge-circle {
+  width: clamp(70px, 9vw, 110px);
+  height: clamp(70px, 9vw, 110px);
+  border: 3px solid var(--mustard);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: var(--navy);
+  position: relative;
+}
+.badge-circle::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1.5px solid var(--mustard);
+  border-radius: 50%;
+}
+.badge-circle::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(212,160,23,0.3);
+  border-radius: 50%;
+}
+.badge-circle .badge-text {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: clamp(8px, 0.8vw, 10px);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--mustard);
+}
+.badge-circle .badge-number {
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(22px, 2.8vw, 32px);
+  color: var(--parchment);
+  line-height: 1;
+}
+
+/* Ribbon banner */
+.ribbon {
+  height: clamp(32px, 4vh, 42px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+}
+.ribbon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(0,0,0,0.05) 100%);
+}
+.ribbon span {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 1.1vw, 13px);
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--parchment);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+/* Top/bottom bars */
+.top-bar {
+  width: 100%;
+  background: var(--navy);
+  padding: clamp(10px, 1.5vh, 14px) 0;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+.top-bar::before, .top-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: var(--mustard);
+}
+.top-bar::before { left: 20px; }
+.top-bar::after { right: 20px; }
+.top-bar span {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 1vw, 13px);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--mustard);
+}
+
+.bottom-bar {
+  width: 100%;
+  background: var(--red);
+  padding: clamp(8px, 1.2vh, 12px) 0;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+.bottom-bar::before, .bottom-bar::after {
+  content: '';
+  position: absolute;
+  top: 4px; bottom: 4px;
+  width: 1px;
+  background: rgba(245,230,202,0.3);
+}
+.bottom-bar::before { left: 30px; }
+.bottom-bar::after { right: 30px; }
+.bottom-bar span {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(9px, 0.9vw, 12px);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--parchment);
+}
+
+/* Content zones */
+.content-zone {
+  text-align: center;
+  padding: clamp(14px, 2vh, 22px) clamp(12px, 1.5vw, 18px);
+  border: 3px double rgba(44,62,80,0.3);
+  position: relative;
+  background: rgba(245,230,202,0.3);
+}
+.content-zone::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(44,62,80,0.1);
+}
+.content-zone::after {
+  content: '';
+  position: absolute;
+  top: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 14px; height: 14px;
+  background: var(--mustard);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.zone-title {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 1vw, 13px);
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.zone-text {
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--navy);
+  line-height: 1.5;
+}
+
+/* ===================== */
+/* Typography            */
+/* ===================== */
+
+.poster-headline {
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(44px, 7vw, 100px);
+  text-transform: uppercase;
+  color: var(--red);
+  line-height: 0.92;
+  letter-spacing: -2px;
+  text-shadow: 4px 4px 0 rgba(44,62,80,0.12), -1px -1px 0 rgba(192,57,43,0.1);
+  mix-blend-mode: multiply;
+  text-align: center;
+}
+
+.poster-headline-light {
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(44px, 7vw, 86px);
+  text-transform: uppercase;
+  color: var(--parchment);
+  letter-spacing: clamp(4px, 0.8vw, 10px);
+  text-shadow: 5px 5px 0 rgba(0,0,0,0.3), -2px -2px 0 rgba(192,57,43,0.2);
+  line-height: 0.92;
+  text-align: center;
+}
+
+.poster-sub {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(13px, 1.4vw, 20px);
+  letter-spacing: clamp(6px, 1vw, 12px);
+  text-transform: uppercase;
+  color: var(--navy);
+  text-align: center;
+}
+
+.section-header {
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(28px, 4vw, 50px);
+  text-transform: uppercase;
+  color: var(--navy);
+  letter-spacing: clamp(3px, 0.5vw, 6px);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.06);
+  text-align: center;
+}
+
+.section-sub {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(11px, 1.1vw, 14px);
+  letter-spacing: clamp(4px, 0.7vw, 7px);
+  text-transform: uppercase;
+  color: var(--red);
+  text-align: center;
+}
+
+.info-label {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(8px, 0.8vw, 10px);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(212,160,23,0.5);
+}
+
+.info-value {
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(16px, 1.8vw, 22px);
+  color: var(--parchment);
+  margin-top: 2px;
+}
+
+/* Ticket / item styling */
+.ticket-item {
+  text-align: center;
+  padding: clamp(12px, 2vh, 20px) clamp(10px, 1.5vw, 16px);
+  border: 3px double rgba(44,62,80,0.2);
+  position: relative;
+  background: rgba(250,243,230,0.5);
+}
+.ticket-item::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(44,62,80,0.06);
+}
+.item-number {
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(24px, 3vw, 36px);
+  color: var(--mustard);
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.05);
+}
+.item-title {
+  font-family: 'Roboto Condensed', 'Noto Sans SC', sans-serif;
+  font-size: clamp(10px, 1vw, 12px);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-top: 4px;
+  font-weight: 700;
+}
+.item-desc {
+  font-size: clamp(10px, 1vw, 12px);
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Seal for closing */
+.seal-ring-outer {
+  position: absolute;
+  inset: 0;
+  border: 4px solid var(--navy);
+  border-radius: 50%;
+}
+.seal-ring-outer::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 2.5px solid var(--red);
+  border-radius: 50%;
+}
+.seal-ring-outer::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border: 1.5px solid rgba(44,62,80,0.25);
+  border-radius: 50%;
+}
+
+.seal-inner {
+  position: absolute;
+  inset: 28px;
+  border: 2px solid var(--navy);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: radial-gradient(circle, rgba(250,243,230,0.5), transparent);
+}
+
+/* Decorative lines */
+.deco-line {
+  position: absolute;
+  left: clamp(35px, 5vw, 55px);
+  right: clamp(35px, 5vw, 55px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(44,62,80,0.15) 20%, rgba(44,62,80,0.15) 80%, transparent 95%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ===================== */
+/* ANIMATIONS            */
+/* ===================== */
+
+/* Stamp effect */
+@keyframes stampIn {
+  0% { opacity: 0; transform: scale(2.5) rotate(-8deg); }
+  40% { opacity: 1; transform: scale(0.92) rotate(1deg); }
+  60% { transform: scale(1.04) rotate(-0.5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Ribbon unfurl */
+@keyframes ribbonUnfurl {
+  0% { opacity: 0; clip-path: inset(0 50% 0 50%); }
+  100% { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+/* Block reveal (slide up from behind) */
+@keyframes blockReveal {
+  0% { opacity: 0; transform: translateY(50px); clip-path: inset(100% 0 0 0); }
+  100% { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); }
+}
+
+/* Poster fade in with slight zoom */
+@keyframes posterFade {
+  0% { opacity: 0; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Spin in (for badges) */
+@keyframes spinStamp {
+  0% { opacity: 0; transform: scale(0) rotate(-180deg); }
+  60% { opacity: 1; transform: scale(1.1) rotate(10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Frame draw */
+@keyframes frameDraw {
+  0% { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
+  25% { clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); }
+  50% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0); }
+  75% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+}
+.slide.active .reveal {
+  animation: blockReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .reveal:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { animation-delay: 0.15s; }
+.slide.active .reveal:nth-child(3) { animation-delay: 0.28s; }
+.slide.active .reveal:nth-child(4) { animation-delay: 0.42s; }
+.slide.active .reveal:nth-child(5) { animation-delay: 0.56s; }
+.slide.active .reveal:nth-child(6) { animation-delay: 0.7s; }
+.slide.active .reveal:nth-child(7) { animation-delay: 0.84s; }
+
+.reveal-stamp {
+  opacity: 0;
+  transform: scale(2.5) rotate(-8deg);
+}
+.slide.active .reveal-stamp {
+  animation: stampIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.reveal-ribbon {
+  opacity: 0;
+  clip-path: inset(0 50% 0 50%);
+}
+.slide.active .reveal-ribbon {
+  animation: ribbonUnfurl 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reveal-poster {
+  opacity: 0;
+  transform: scale(1.05);
+}
+.slide.active .reveal-poster {
+  animation: posterFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reveal-spin {
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+}
+.slide.active .reveal-spin {
+  animation: spinStamp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.reveal-frame-draw {
+  clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+}
+.slide.active .reveal-frame-draw {
+  animation: frameDraw 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.2s !important;
+  }
+  .reveal, .reveal-stamp, .reveal-ribbon, .reveal-poster, .reveal-spin {
+    opacity: 0;
+    transform: none !important;
+    clip-path: none !important;
+    transition: opacity 0.2s ease !important;
+  }
+  .slide.active .reveal, .slide.active .reveal-stamp,
+  .slide.active .reveal-ribbon, .slide.active .reveal-poster,
+  .slide.active .reveal-spin {
+    opacity: 1;
+  }
+}
+
+/* Print */
+@media print {
+  .slide { position: relative; height: auto; min-height: 100vh; opacity: 1; pointer-events: auto; page-break-after: always; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal, .reveal-stamp, .reveal-ribbon, .reveal-poster, .reveal-spin, .reveal-frame-draw {
+    opacity: 1 !important; transform: none !important; clip-path: none !important;
+  }
+}
+
+/* ===================== */
+/* SLIDE-SPECIFIC        */
+/* ===================== */
+
+.s1 {
+  background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+  flex-direction: column;
+}
+
+.s2 {
+  background: var(--navy);
+}
+
+.s2 .bg-sun {
+  position: absolute;
+  top: clamp(30px, 6vh, 60px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(200px, 28vw, 340px);
+  height: clamp(200px, 28vw, 340px);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--mustard) 0%, rgba(212,160,23,0.6) 20%, rgba(212,160,23,0.3) 40%, transparent 65%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.s2 .sun-rays {
+  position: absolute;
+  top: clamp(30px, 6vh, 60px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(300px, 40vw, 500px);
+  height: clamp(300px, 40vw, 500px);
+  z-index: 1;
+  background: repeating-conic-gradient(from 0deg, transparent 0deg, transparent 8deg, rgba(212,160,23,0.06) 8deg, rgba(212,160,23,0.06) 10deg);
+  border-radius: 50%;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.s2 .mountain-1 {
+  position: absolute;
+  bottom: 25%;
+  left: -5%; right: -5%;
+  height: 50%;
+  background: linear-gradient(168deg, transparent 38%, var(--red) 40%, var(--red) 55%, transparent 57%);
+  z-index: 2;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.s2 .mountain-2 {
+  position: absolute;
+  bottom: 18%;
+  left: -10%; right: -10%;
+  height: 56%;
+  background: linear-gradient(163deg, transparent 43%, #D4654A 45%, #D4654A 52%, transparent 54%);
+  z-index: 3;
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.s2 .ground {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 30%;
+  background: linear-gradient(180deg, rgba(44,62,80,0) 0%, rgba(44,62,80,0.7) 25%, var(--navy) 100%);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.s2 .info-bar {
+  position: absolute;
+  bottom: clamp(30px, 5vh, 45px);
+  left: clamp(35px, 5vw, 55px);
+  right: clamp(35px, 5vw, 55px);
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid rgba(212,160,23,0.35);
+  padding-top: clamp(8px, 1.5vh, 14px);
+}
+
+.info-sep {
+  width: 1px;
+  height: 30px;
+  background: rgba(212,160,23,0.2);
+}
+
+.s3 {
+  background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+}
+
+.s3 .ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(12px, 2vw, 24px);
+}
+
+.s4 {
+  background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 50%, var(--parchment-dark) 100%);
+}
+
+.s5 {
+  background: radial-gradient(ellipse at 50% 50%, var(--parchment) 25%, #E2D0AD 100%);
+}
+
+.s5 .central-seal {
+  position: relative;
+  width: clamp(180px, 22vw, 290px);
+  height: clamp(180px, 22vw, 290px);
+  z-index: 5;
+}
+
+.s5 .ribbon-container {
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 clamp(40px, 6vw, 70px);
+  pointer-events: none;
+}
+
+.s5 .ribbon-left {
+  flex: 0 0 auto;
+  width: clamp(100px, 14vw, 200px);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 8px 50%);
+}
+
+.s5 .ribbon-right {
+  flex: 0 0 auto;
+  width: clamp(100px, 14vw, 200px);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 14px 100%, 0 50%);
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- ======================== -->
+<!-- Slide 1: Cover           -->
+<!-- ======================== -->
+<div class="slide s1 active" data-i="0">
+  <div class="top-bar reveal-ribbon" style="animation-delay:0.05s"><span>AI 驱动的设计前沿 &middot; 2026</span></div>
+
+  <div class="slide-inner" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:clamp(20px,3vh,36px) clamp(40px,6vw,80px); gap:0;">
+    <h1 class="poster-headline reveal-stamp" style="animation-delay:0.2s">设计<br>革命</h1>
+    <div class="poster-sub reveal" style="margin-top:clamp(8px,1.5vh,14px); color:var(--navy); animation-delay:0.4s">从像素到体验，重新定义创造力的边界</div>
+
+    <div style="width:82%; padding:clamp(10px,1.5vh,16px) 0;">
+      <div class="double-hr reveal" style="animation-delay:0.5s"></div>
+    </div>
+
+    <!-- Badge -->
+    <div class="badge-circle reveal-spin" style="position:absolute; top:clamp(60px,10vh,80px); right:clamp(50px,7vw,80px); animation-delay:0.6s;">
+      <span class="badge-text">Issue</span>
+      <span class="badge-number">No.1</span>
+    </div>
+
+    <div style="display:flex; width:82%; gap:clamp(12px,2vw,24px); margin-top:clamp(8px,1.5vh,16px);">
+      <div class="content-zone reveal" style="flex:1; animation-delay:0.55s">
+        <div class="zone-title">智能</div>
+        <div class="zone-text">AI 理解语义，自动生成最优排版方案</div>
+      </div>
+      <div class="content-zone reveal" style="flex:1; animation-delay:0.65s">
+        <div class="zone-title">创新</div>
+        <div class="zone-text">风格迁移一键完成，灵感永不枯竭</div>
+      </div>
+      <div class="content-zone reveal" style="flex:1; animation-delay:0.75s">
+        <div class="zone-title">协作</div>
+        <div class="zone-text">多人实时编辑，AI 调和所有修改意图</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stars -->
+  <div class="deco-star reveal-spin" style="top:clamp(50px,8vh,70px); left:clamp(30px,4vw,50px); animation-delay:0.3s"></div>
+  <div class="deco-star reveal-spin" style="top:clamp(50px,8vh,70px); left:clamp(48px,5vw,68px); width:8px; height:8px; animation-delay:0.35s"></div>
+
+  <div class="bottom-bar reveal-ribbon" style="position:absolute; bottom:0; left:0; right:0; animation-delay:0.8s"><span>设计的未来从这里开始</span></div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 2: Travel Poster   -->
+<!-- ======================== -->
+<div class="slide s2" data-i="1">
+  <div class="bg-sun reveal-poster" style="animation-delay:0.1s"></div>
+  <div class="sun-rays reveal-poster" style="animation-delay:0.2s"></div>
+  <div class="mountain-1 reveal-poster" style="animation-delay:0.3s"></div>
+  <div class="mountain-2 reveal-poster" style="animation-delay:0.4s"></div>
+  <div class="ground reveal-poster" style="animation-delay:0.5s"></div>
+
+  <div class="poster-frame reveal-frame-draw"></div>
+
+  <!-- Stars -->
+  <div class="deco-star reveal-spin" style="top:clamp(28px,4vh,42px); left:clamp(28px,4vw,42px); animation-delay:0.5s"></div>
+  <div class="deco-star reveal-spin" style="top:clamp(28px,4vh,42px); right:clamp(28px,4vw,42px); animation-delay:0.55s"></div>
+  <div class="deco-star reveal-spin" style="top:clamp(28px,4vh,42px); left:50%; transform:translateX(-50%); width:10px; height:10px; animation-delay:0.6s"></div>
+
+  <div style="position:absolute; top:clamp(40px,6vh,60px); left:50%; transform:translateX(-50%); z-index:6; text-align:center;">
+    <h1 class="poster-headline-light reveal-stamp" style="animation-delay:0.3s">核心<br>能力</h1>
+    <div class="reveal" style="font-family:'Roboto Condensed','Noto Sans SC',sans-serif; font-size:clamp(13px,1.3vw,17px); letter-spacing:clamp(6px,1vw,10px); text-transform:uppercase; color:var(--mustard); margin-top:clamp(8px,1.5vh,14px); animation-delay:0.5s">Core Capabilities</div>
+  </div>
+
+  <div class="info-bar">
+    <div class="reveal" style="text-align:center; animation-delay:0.6s">
+      <div class="info-label">智能布局</div>
+      <div class="info-value">语义排版</div>
+    </div>
+    <div class="info-sep"></div>
+    <div class="reveal" style="text-align:center; animation-delay:0.68s">
+      <div class="info-label">风格迁移</div>
+      <div class="info-value">一键转换</div>
+    </div>
+    <div class="info-sep"></div>
+    <div class="reveal" style="text-align:center; animation-delay:0.76s">
+      <div class="info-label">实时协作</div>
+      <div class="info-value">多人同步</div>
+    </div>
+    <div class="info-sep"></div>
+    <div class="reveal" style="text-align:center; animation-delay:0.84s">
+      <div class="info-label">自适应</div>
+      <div class="info-value">全尺寸</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 3: Stats           -->
+<!-- ======================== -->
+<div class="slide s3" data-i="2">
+  <div class="poster-frame reveal-frame-draw" style="border-color:var(--navy);"></div>
+
+  <div class="slide-inner" style="align-items:center; gap:clamp(16px,3vh,32px);">
+    <div style="text-align:center;">
+      <h2 class="section-header reveal">数据说话</h2>
+      <div class="section-sub reveal" style="margin-top:clamp(4px,0.6vh,8px); animation-delay:0.12s">By The Numbers</div>
+    </div>
+
+    <div class="double-hr reveal" style="animation-delay:0.2s"></div>
+
+    <div class="ticket-grid" style="width:min(90%, 800px);">
+      <div class="ticket-item reveal-stamp" style="animation-delay:0.3s">
+        <div class="item-number" style="font-size:clamp(36px,5vw,60px); color:var(--red);">10x</div>
+        <div class="item-title">效率提升</div>
+        <div class="item-desc">设计产出速度提升十倍，让创意不再被工具拖累</div>
+      </div>
+      <div class="ticket-item reveal-stamp" style="animation-delay:0.45s">
+        <div class="item-number" style="font-size:clamp(36px,5vw,60px); color:var(--red);">93%</div>
+        <div class="item-title">满意度</div>
+        <div class="item-desc">用户满意度持续攀升，好评如潮</div>
+      </div>
+      <div class="ticket-item reveal-stamp" style="animation-delay:0.6s">
+        <div class="item-number" style="font-size:clamp(36px,5vw,60px); color:var(--red);">50M+</div>
+        <div class="item-title">设计生成</div>
+        <div class="item-desc">五千万次设计生成，覆盖全球创作者</div>
+      </div>
+    </div>
+
+    <div style="text-align:center; font-family:'Roboto Condensed',sans-serif; font-size:clamp(9px,0.9vw,11px); letter-spacing:5px; text-transform:uppercase; color:#aaa;" class="reveal">
+      Data as of 2026 &middot; All metrics verified
+    </div>
+  </div>
+
+  <div class="deco-star reveal-spin" style="top:clamp(20px,3vh,36px); left:clamp(20px,3vw,36px); animation-delay:0.4s"></div>
+  <div class="deco-star reveal-spin" style="top:clamp(20px,3vh,36px); right:clamp(20px,3vw,36px); animation-delay:0.45s"></div>
+  <div class="deco-star reveal-spin" style="bottom:clamp(20px,3vh,36px); left:clamp(20px,3vw,36px); animation-delay:0.5s"></div>
+  <div class="deco-star reveal-spin" style="bottom:clamp(20px,3vh,36px); right:clamp(20px,3vw,36px); animation-delay:0.55s"></div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 4: Quote           -->
+<!-- ======================== -->
+<div class="slide s4" data-i="3">
+  <div class="poster-frame reveal-frame-draw" style="border-color:rgba(44,62,80,0.4)"></div>
+
+  <!-- Outer frame line -->
+  <div style="position:absolute; inset:clamp(10px,1.5vh,18px); border:1px solid rgba(44,62,80,0.1); z-index:3; pointer-events:none;" class="reveal-poster"></div>
+
+  <div class="slide-inner" style="align-items:center; gap:clamp(16px,3vh,32px);">
+    <!-- Large quote mark as poster element -->
+    <div class="reveal-stamp" style="font-family:'Alfa Slab One',serif; font-size:clamp(60px,10vw,140px); color:rgba(192,57,43,0.12); line-height:0.6; animation-delay:0.15s">&ldquo;</div>
+
+    <div class="vintage-hr reveal" style="animation-delay:0.25s"></div>
+
+    <div class="reveal" style="animation-delay:0.35s; text-align:center;">
+      <div style="font-family:'Alfa Slab One',serif; font-size:clamp(26px,4vw,56px); color:var(--navy); line-height:1.2; text-transform:uppercase; letter-spacing:clamp(1px,0.3vw,4px); text-shadow:2px 2px 0 rgba(0,0,0,0.06);">
+        好的设计<br>不是装饰<br>是沟通
+      </div>
+    </div>
+
+    <div class="vintage-hr reveal" style="animation-delay:0.5s"></div>
+
+    <div class="reveal" style="animation-delay:0.6s; text-align:center;">
+      <div style="font-family:'Roboto Condensed','Noto Sans SC',sans-serif; font-size:clamp(12px,1.2vw,16px); letter-spacing:6px; text-transform:uppercase; color:var(--red);">Dieter Rams</div>
+    </div>
+
+    <!-- Decorative badge -->
+    <div class="badge-circle reveal-spin" style="position:absolute; bottom:clamp(40px,6vh,70px); right:clamp(40px,6vw,70px); width:clamp(60px,7vw,90px); height:clamp(60px,7vw,90px); animation-delay:0.7s">
+      <span class="badge-text" style="font-size:clamp(7px,0.7vw,9px)">Quote</span>
+      <span class="badge-number" style="font-size:clamp(16px,2vw,24px)">04</span>
+    </div>
+  </div>
+
+  <div class="deco-star reveal-spin" style="top:clamp(20px,3vh,36px); left:50%; transform:translateX(-50%); animation-delay:0.4s"></div>
+  <div class="deco-star reveal-spin" style="bottom:clamp(20px,3vh,36px); left:50%; transform:translateX(-50%); animation-delay:0.5s"></div>
+</div>
+
+<!-- ======================== -->
+<!-- Slide 5: Close           -->
+<!-- ======================== -->
+<div class="slide s5" data-i="4">
+  <!-- Multi-layer border -->
+  <div style="position:absolute; inset:clamp(12px,2vh,18px); border:3px double var(--navy); z-index:2; pointer-events:none;" class="reveal-frame-draw"></div>
+  <div style="position:absolute; inset:clamp(20px,3vh,26px); border:1.5px solid rgba(44,62,80,0.2); z-index:2; pointer-events:none;" class="reveal-poster"></div>
+  <div style="position:absolute; inset:clamp(26px,3.5vh,32px); border:1px solid rgba(44,62,80,0.1); z-index:2; pointer-events:none;"></div>
+
+  <!-- Decorative lines -->
+  <div class="deco-line" style="top:clamp(50px,8vh,76px);"></div>
+  <div class="deco-line" style="bottom:clamp(50px,8vh,76px);"></div>
+
+  <!-- Corner stars -->
+  <div class="deco-star reveal-spin" style="top:clamp(24px,3.5vh,36px); left:clamp(24px,3.5vw,36px); animation-delay:0.3s"></div>
+  <div class="deco-star reveal-spin" style="top:clamp(24px,3.5vh,36px); right:clamp(24px,3.5vw,36px); animation-delay:0.35s"></div>
+  <div class="deco-star reveal-spin" style="bottom:clamp(24px,3.5vh,36px); left:clamp(24px,3.5vw,36px); animation-delay:0.4s"></div>
+  <div class="deco-star reveal-spin" style="bottom:clamp(24px,3.5vh,36px); right:clamp(24px,3.5vw,36px); animation-delay:0.45s"></div>
+
+  <!-- Top text -->
+  <div style="position:absolute; top:clamp(30px,5vh,50px); left:50%; transform:translateX(-50%); z-index:5; text-align:center;" class="reveal">
+    <span style="font-family:'Roboto Condensed','Noto Sans SC',sans-serif; font-size:clamp(10px,1vw,13px); letter-spacing:10px; text-transform:uppercase; color:rgba(44,62,80,0.35);">设计革命 &middot; 2026</span>
+  </div>
+
+  <!-- Ribbons -->
+  <div class="ribbon-container">
+    <div class="ribbon ribbon-left reveal-ribbon" style="animation-delay:0.5s"><span>重新定义</span></div>
+    <div style="flex:1;"></div>
+    <div class="ribbon ribbon-right reveal-ribbon" style="animation-delay:0.6s"><span>创造力</span></div>
+  </div>
+
+  <!-- Central seal -->
+  <div class="central-seal reveal-spin" style="animation-delay:0.35s; z-index:5;">
+    <div class="seal-ring-outer"></div>
+    <div class="seal-inner">
+      <span style="font-family:'Roboto Condensed','Noto Sans SC',sans-serif; font-size:clamp(9px,0.9vw,11px); letter-spacing:5px; text-transform:uppercase; color:var(--red);">感谢</span>
+      <span style="font-family:'Alfa Slab One',serif; font-size:clamp(30px,4vw,46px); color:var(--navy); text-transform:uppercase; line-height:1; text-shadow:2px 2px 0 rgba(0,0,0,0.05);">FIN</span>
+      <span style="font-family:'Roboto Condensed',sans-serif; font-size:clamp(12px,1.2vw,16px); letter-spacing:8px; color:var(--mustard); margin-top:4px;">2026</span>
+    </div>
+  </div>
+
+  <!-- Seal stars -->
+  <div class="deco-star" style="top:50%; left:calc(50% - clamp(110px,14vw,175px)); transform:translateY(-50%); width:16px; height:16px;"></div>
+  <div class="deco-star" style="top:50%; left:calc(50% + clamp(96px,12vw,159px)); transform:translateY(-50%); width:16px; height:16px;"></div>
+
+  <!-- Bottom text -->
+  <div style="position:absolute; bottom:clamp(30px,5vh,50px); left:50%; transform:translateX(-50%); z-index:5; text-align:center;" class="reveal">
+    <span style="font-family:'Roboto Condensed','Noto Sans SC',sans-serif; font-size:clamp(9px,0.9vw,11px); letter-spacing:7px; text-transform:uppercase; color:rgba(44,62,80,0.25);">AI + 人类直觉 &middot; 设计的下一个十年</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal,.reveal-stamp,.reveal-ribbon,.reveal-poster,.reveal-spin,.reveal-frame-draw').forEach(el=>{
+      el.style.animation='none';
+      el.offsetHeight;
+      el.style.animation='';
+    });
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(c+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  // Touch support
+  let tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;});
+  document.addEventListener('touchend',function(e){
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50){dx<0?go(c+1):go(c-1);}
+  });
+
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memphis Pop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #ffffff;
+  --text: #000000;
+  --pink: #FF6B9D;
+  --yellow: #F5D547;
+  --teal: #4ECDC4;
+  --green: #2ECC71;
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --title-size: clamp(3rem, 9vw, 8rem);
+  --h2-size: clamp(2rem, 5vw, 5rem);
+  --h3-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  --body-size: clamp(0.75rem, 1.2vw, 0.95rem);
+  --small-size: clamp(0.6rem, 0.8vw, 0.75rem);
+  --stat-size: clamp(2.5rem, 8vw, 5rem);
+  --slide-padding: clamp(2rem, 5vw, 3.75rem);
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Poppins', 'Noto Sans SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: var(--bg); color: var(--text);
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 4px;
+  background: var(--pink); z-index: 1000;
+  transition: width 0.5s var(--ease-out-expo);
+}
+.page-counter {
+  position: fixed; bottom: clamp(16px,2.5vh,32px); right: clamp(20px,3vw,40px);
+  font-size: clamp(11px,1vw,14px); font-weight: 900; color: var(--text);
+  z-index: 1000; letter-spacing: 0.05em;
+  background: var(--yellow); padding: 4px 14px;
+  border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+}
+.page-counter .current { color: var(--pink); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; background: var(--bg);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  position: relative;
+}
+
+/* Dot background */
+.bg-dots {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle, #000 2px, transparent 2px);
+  background-size: 30px 30px; opacity: 0.05;
+}
+
+/* Stripe borders */
+.border-top, .border-bottom {
+  position: absolute; left: 0; right: 0; height: clamp(8px,1vh,12px); z-index: 20;
+}
+.border-top {
+  top: 0;
+  background: repeating-linear-gradient(90deg, var(--pink) 0px, var(--pink) 30px, var(--yellow) 30px, var(--yellow) 60px, var(--teal) 60px, var(--teal) 90px, var(--green) 90px, var(--green) 120px);
+}
+.border-bottom {
+  bottom: 0;
+  background: repeating-linear-gradient(90deg, var(--green) 0px, var(--green) 30px, var(--teal) 30px, var(--teal) 60px, var(--yellow) 60px, var(--yellow) 90px, var(--pink) 90px, var(--pink) 120px);
+}
+
+/* === ANIMATIONS === */
+.reveal-pop {
+  opacity: 0; transform: scale(0) rotate(-10deg);
+  transition: opacity 0.3s ease, transform 0.5s var(--ease-spring);
+}
+.slide.active .reveal-pop { opacity: 1; transform: scale(1) rotate(0); }
+
+.reveal-bounce {
+  opacity: 0; transform: translateY(60px) scale(0.9);
+  transition: opacity 0.5s ease, transform 0.6s var(--ease-out-back);
+}
+.slide.active .reveal-bounce { opacity: 1; transform: translateY(0) scale(1); }
+
+.slide.active .reveal-pop:nth-child(1), .slide.active .reveal-bounce:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal-pop:nth-child(2), .slide.active .reveal-bounce:nth-child(2) { transition-delay: 0.12s; }
+.slide.active .reveal-pop:nth-child(3), .slide.active .reveal-bounce:nth-child(3) { transition-delay: 0.2s; }
+.slide.active .reveal-pop:nth-child(4), .slide.active .reveal-bounce:nth-child(4) { transition-delay: 0.3s; }
+.slide.active .reveal-pop:nth-child(5), .slide.active .reveal-bounce:nth-child(5) { transition-delay: 0.4s; }
+
+/* Memphis decorative shapes */
+.deco-shape { position: absolute; z-index: 5; pointer-events: none; }
+.shape-circle {
+  border-radius: 50%; border: 4px solid #000;
+  box-shadow: 5px 5px 0 #000;
+}
+.shape-triangle {
+  width: 0; height: 0;
+  border-left: clamp(25px,3.5vw,50px) solid transparent;
+  border-right: clamp(25px,3.5vw,50px) solid transparent;
+  border-bottom: clamp(43px,6vw,86px) solid var(--yellow);
+}
+.shape-square {
+  border: 4px solid #000; box-shadow: 6px 6px 0 #000;
+}
+
+/* === SLIDE 1: COVER === */
+.s1 .title-block {
+  text-align: center; transform: rotate(-3deg); z-index: 10;
+}
+.s1 .title-block h1 {
+  font-size: var(--title-size); font-weight: 900;
+  line-height: 0.95; letter-spacing: -0.02em; text-transform: uppercase;
+}
+.s1 .title-block h1 .pink { color: var(--pink); }
+.s1 .title-block h1 .yellow-bg {
+  background: var(--yellow); padding: 0 clamp(6px,1vw,15px);
+  display: inline-block; transform: rotate(2deg);
+}
+.s1 .title-sub {
+  font-size: clamp(0.75rem,1.4vw,1.125rem); font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-top: clamp(8px,1.5vh,15px);
+  background: var(--teal); display: inline-block;
+  padding: clamp(4px,0.6vh,8px) clamp(12px,2vw,25px);
+  border: 3px solid #000; box-shadow: 5px 5px 0 #000;
+  transform: rotate(1deg);
+}
+
+/* === SLIDE 2: FEATURES === */
+.s2 .section-label {
+  position: absolute; top: clamp(16px,2.5vh,30px); left: var(--slide-padding);
+  font-size: var(--small-size); font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.2em;
+  background: var(--yellow); padding: 6px 15px;
+  border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+  transform: rotate(-2deg); z-index: 10;
+}
+.s2 .cards-container {
+  display: flex; gap: clamp(16px,2.5vw,30px);
+  width: 100%; max-width: 1100px; z-index: 5;
+}
+.s2 .card {
+  flex: 1; background: #fff;
+  border: 4px solid #000; box-shadow: 8px 8px 0 #000;
+  padding: clamp(16px,2.5vh,30px) clamp(14px,2vw,25px);
+  position: relative; display: flex; flex-direction: column;
+}
+.s2 .card:nth-child(1) { transform: rotate(-2deg); }
+.s2 .card:nth-child(2) { transform: rotate(1.5deg); margin-top: clamp(10px,1.5vh,20px); }
+.s2 .card:nth-child(3) { transform: rotate(-1deg); margin-top: clamp(5px,0.8vh,10px); }
+.s2 .card-num {
+  font-size: var(--stat-size); font-weight: 900; line-height: 1;
+  margin-bottom: clamp(4px,0.8vh,10px);
+}
+.s2 .card:nth-child(1) .card-num { color: var(--pink); }
+.s2 .card:nth-child(2) .card-num { color: var(--green); }
+.s2 .card:nth-child(3) .card-num { color: var(--teal); }
+.s2 .card-title {
+  font-size: var(--h3-size); font-weight: 900;
+  text-transform: uppercase; margin-bottom: clamp(6px,1vh,12px);
+}
+.s2 .card-text {
+  font-size: var(--body-size); color: #333; line-height: 1.6; flex: 1;
+}
+.s2 .card-tag {
+  display: inline-block; margin-top: clamp(8px,1vh,15px);
+  padding: 4px 12px; font-size: var(--small-size);
+  font-weight: 900; text-transform: uppercase;
+  letter-spacing: 0.1em; border: 2px solid #000;
+  background: var(--yellow); width: fit-content;
+}
+.s2 .card-stripe {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 8px;
+}
+.s2 .card:nth-child(1) .card-stripe { background: var(--pink); }
+.s2 .card:nth-child(2) .card-stripe { background: var(--green); }
+.s2 .card:nth-child(3) .card-stripe { background: var(--teal); }
+
+/* === SLIDE 3: STATS (yellow bg) === */
+.s3 { background: var(--yellow) !important; }
+.s3 .slide-inner { justify-content: center; align-items: center; }
+.s3 .center-text {
+  text-align: center; transform: rotate(-5deg); z-index: 10;
+}
+.s3 .center-text h2 {
+  font-size: var(--h2-size); font-weight: 900;
+  text-transform: uppercase; line-height: 0.9;
+  letter-spacing: -0.02em;
+  -webkit-text-stroke: 3px #000; paint-order: stroke fill;
+}
+.s3 .center-text h2 span { color: #fff; display: block; transform: rotate(3deg); }
+.s3 .stats-row {
+  display: flex; gap: clamp(20px,4vw,60px);
+  margin-top: clamp(20px,4vh,40px); z-index: 10;
+}
+.s3 .stat-box {
+  text-align: center; background: #fff;
+  border: 4px solid #000; box-shadow: 6px 6px 0 #000;
+  padding: clamp(12px,2vh,24px) clamp(16px,2.5vw,32px);
+}
+.s3 .stat-num {
+  font-size: clamp(2rem,5vw,3.5rem); font-weight: 900; line-height: 1;
+}
+.s3 .stat-label {
+  font-size: var(--small-size); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-top: clamp(4px,0.5vh,8px);
+}
+/* Pattern layers on slide 3 */
+.s3 .pattern-layer {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 10% 20%, var(--pink) 30px, transparent 30px),
+    radial-gradient(circle at 75% 30%, var(--green) 50px, transparent 50px),
+    radial-gradient(circle at 60% 80%, var(--pink) 25px, transparent 25px),
+    radial-gradient(circle at 90% 60%, var(--teal) 35px, transparent 35px);
+}
+.s3 .zigzag-top, .s3 .zigzag-bottom {
+  position: absolute; left: 0; right: 0; height: 40px;
+  background: repeating-linear-gradient(90deg, #000 0px, #000 40px, var(--yellow) 40px, var(--yellow) 80px);
+  z-index: 3;
+}
+.s3 .zigzag-top {
+  top: 0;
+  clip-path: polygon(0% 0%,5% 100%,10% 0%,15% 100%,20% 0%,25% 100%,30% 0%,35% 100%,40% 0%,45% 100%,50% 0%,55% 100%,60% 0%,65% 100%,70% 0%,75% 100%,80% 0%,85% 100%,90% 0%,95% 100%,100% 0%);
+}
+.s3 .zigzag-bottom {
+  bottom: 0;
+  clip-path: polygon(0% 100%,5% 0%,10% 100%,15% 0%,20% 100%,25% 0%,30% 100%,35% 0%,40% 100%,45% 0%,50% 100%,55% 0%,60% 100%,65% 0%,70% 100%,75% 0%,80% 100%,85% 0%,90% 100%,95% 0%,100% 100%);
+}
+
+/* === SLIDE 4: QUOTE === */
+.s4 .bg-grid {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(0deg, transparent 98%, rgba(0,0,0,0.04) 98%),
+    linear-gradient(90deg, transparent 98%, rgba(0,0,0,0.04) 98%);
+  background-size: 40px 40px;
+}
+.s4 .stripe-bar {
+  position: absolute; top: clamp(36px,5vh,60px); left: 0; width: 100%; height: 25px;
+  background: repeating-linear-gradient(90deg, var(--teal) 0px, var(--teal) 20px, #fff 20px, #fff 40px, var(--pink) 40px, var(--pink) 60px, #fff 60px, #fff 80px, var(--yellow) 80px, var(--yellow) 100px, #fff 100px, #fff 120px);
+  border-top: 3px solid #000; border-bottom: 3px solid #000; z-index: 3;
+}
+.s4 .quote-block {
+  max-width: 900px; text-align: center; transform: rotate(-4deg); z-index: 10;
+}
+.s4 .quote-text {
+  font-size: clamp(1.5rem, 4vw, 3.25rem); font-weight: 900;
+  text-transform: uppercase; line-height: 1.1;
+}
+.s4 .highlight {
+  background: var(--pink); padding: 0 10px;
+  border: 3px solid #000; color: #fff;
+}
+.s4 .highlight-2 {
+  background: var(--yellow); padding: 0 10px;
+  border: 3px solid #000;
+}
+.s4 .quote-attr {
+  display: inline-block; margin-top: clamp(16px,2.5vh,30px);
+  font-size: var(--body-size); font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  background: var(--teal); padding: 8px 20px;
+  border: 3px solid #000; box-shadow: 5px 5px 0 #000;
+  transform: rotate(2deg);
+}
+
+/* === SLIDE 5: CLOSING === */
+.s5 { background: var(--teal) !important; }
+.s5 .bg-pattern {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle, #000 2px, transparent 2px);
+  background-size: 25px 25px; opacity: 0.08;
+}
+.s5 .stripe-top, .s5 .stripe-bottom {
+  position: absolute; left: 0; right: 0; height: 20px; z-index: 3;
+}
+.s5 .stripe-top {
+  top: 0;
+  background: repeating-linear-gradient(90deg, #000 0px, #000 20px, var(--green) 20px, var(--green) 40px, #000 40px, #000 60px, #fff 60px, #fff 80px);
+}
+.s5 .stripe-bottom {
+  bottom: 0;
+  background: repeating-linear-gradient(90deg, #000 0px, #000 20px, var(--yellow) 20px, var(--yellow) 40px, #000 40px, #000 60px, var(--pink) 60px, var(--pink) 80px);
+}
+.s5 .badge {
+  width: clamp(320px,40vw,500px); padding: clamp(24px,4vh,40px);
+  background: #fff; border: 5px solid #000; box-shadow: 12px 12px 0 #000;
+  z-index: 10; text-align: center; transform: rotate(-6deg);
+  position: relative;
+}
+.s5 .badge::before {
+  content: ''; position: absolute; top: -20px; left: -20px;
+  width: 50px; height: 50px; background: var(--pink);
+  border: 4px solid #000; border-radius: 50%; box-shadow: 4px 4px 0 #000;
+}
+.s5 .badge::after {
+  content: ''; position: absolute; bottom: -25px; right: -25px;
+  width: 60px; height: 60px; background: var(--green);
+  border: 4px solid #000; transform: rotate(45deg); box-shadow: 4px 4px 0 #000;
+}
+.s5 .badge-title {
+  font-size: clamp(2.5rem,5.5vw,4.5rem); font-weight: 900;
+  text-transform: uppercase; line-height: 0.9;
+}
+.s5 .badge-title span { color: var(--pink); }
+.s5 .badge-sub {
+  font-size: clamp(0.75rem,1.2vw,1rem); font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.2em;
+  margin-top: clamp(8px,1.5vh,15px);
+  background: var(--yellow); padding: 8px 25px;
+  border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+  display: inline-block;
+}
+
+/* Scattered shapes */
+.scatter { position: absolute; z-index: 5; pointer-events: none; }
+
+@media (max-width: 600px) {
+  .s2 .cards-container { flex-direction: column; }
+  .s2 .card { transform: none !important; margin-top: 0 !important; }
+  .page-counter { display: none; }
+}
+@media (max-height: 600px) {
+  :root { --title-size: clamp(2rem, 7vw, 4rem); --stat-size: clamp(2rem, 4vw, 3rem); }
+  .s3 .zigzag-top, .s3 .zigzag-bottom { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pop, .reveal-bounce { transform: none !important; opacity: 0; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal-pop, .slide.active .reveal-bounce { opacity: 1; }
+}
+@media print {
+  .slide { position: relative; opacity: 1; pointer-events: auto; page-break-after: always; height: auto; min-height: 100vh; }
+  .progress-bar, .page-counter { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide s1 active" data-i="0">
+  <div class="bg-dots"></div>
+  <div class="border-top"></div>
+  <div class="border-bottom"></div>
+  <!-- Scattered shapes -->
+  <div class="scatter shape-triangle" style="top:8%;left:8%;transform:rotate(15deg);"></div>
+  <div class="scatter shape-circle" style="width:clamp(50px,7vw,100px);height:clamp(50px,7vw,100px);background:var(--pink);top:6%;right:14%;transform:rotate(-5deg);"></div>
+  <div class="scatter shape-square" style="width:clamp(40px,5vw,80px);height:clamp(40px,5vw,80px);background:var(--teal);bottom:14%;left:10%;transform:rotate(-12deg);"></div>
+  <div class="scatter" style="width:clamp(50px,6vw,80px);height:30px;background:var(--green);border:4px solid #000;border-radius:80px 80px 0 0;box-shadow:5px 5px 0 #000;bottom:12%;right:10%;transform:rotate(10deg);"></div>
+  <div class="slide-inner">
+    <div class="title-block reveal-pop">
+      <h1><span class="pink">设计</span><span class="yellow-bg">革命</span></h1>
+      <div class="title-sub">打破规则的创造力</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide s2" data-i="1">
+  <div class="bg-dots"></div>
+  <div class="section-label">核心能力</div>
+  <div class="slide-inner">
+    <div class="cards-container">
+      <div class="card reveal-bounce" style="transition-delay:0.05s">
+        <div class="card-num">01</div>
+        <div class="card-title">打破<br>网格</div>
+        <div class="card-text">忘掉对齐，忘掉秩序。AI 把元素放在最有生命力的位置，让混乱创造节奏。</div>
+        <span class="card-tag">混沌</span>
+        <div class="card-stripe"></div>
+      </div>
+      <div class="card reveal-bounce" style="transition-delay:0.15s">
+        <div class="card-num">02</div>
+        <div class="card-title">大胆<br>配色</div>
+        <div class="card-text">原色与马卡龙碰撞，冲突就是目标。如果画面在震动，说明做对了。</div>
+        <span class="card-tag">能量</span>
+        <div class="card-stripe"></div>
+      </div>
+      <div class="card reveal-bounce" style="transition-delay:0.25s">
+        <div class="card-num">03</div>
+        <div class="card-title">图形<br>语言</div>
+        <div class="card-text">锯齿、波浪、圆点、三角 — 每个表面都可以装饰。极简主义在这里是敌人。</div>
+        <span class="card-tag">模式</span>
+        <div class="card-stripe"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide s3" data-i="2">
+  <div class="zigzag-top"></div>
+  <div class="zigzag-bottom"></div>
+  <div class="pattern-layer"></div>
+  <div class="slide-inner">
+    <div class="center-text reveal-pop">
+      <h2>释放<br><span>狂野</span></h2>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box reveal-bounce" style="transition-delay:0.2s">
+        <div class="stat-num" style="color:var(--pink);">10x</div>
+        <div class="stat-label">创意速度</div>
+      </div>
+      <div class="stat-box reveal-bounce" style="transition-delay:0.3s">
+        <div class="stat-num" style="color:var(--teal);">93%</div>
+        <div class="stat-label">满意度</div>
+      </div>
+      <div class="stat-box reveal-bounce" style="transition-delay:0.4s">
+        <div class="stat-num" style="color:var(--green);">50M+</div>
+        <div class="stat-label">设计生成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide s4" data-i="3">
+  <div class="bg-grid"></div>
+  <div class="stripe-bar"></div>
+  <div class="slide-inner">
+    <div class="quote-block reveal-pop">
+      <div class="quote-text">设计不是关于 <span class="highlight">规则</span>，而是用 <span class="highlight-2">风格</span> 打破它们</div>
+    </div>
+    <div class="quote-attr reveal-bounce" style="transition-delay:0.3s">Ettore Sottsass</div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide s5" data-i="4">
+  <div class="bg-pattern"></div>
+  <div class="stripe-top"></div>
+  <div class="stripe-bottom"></div>
+  <div class="scatter shape-square" style="width:clamp(50px,8vw,100px);height:clamp(50px,8vw,100px);background:var(--yellow);border:4px solid #000;box-shadow:6px 6px 0 #000;transform:rotate(20deg);top:8%;left:5%;"></div>
+  <div class="scatter shape-circle" style="width:clamp(40px,6vw,80px);height:clamp(40px,6vw,80px);background:#fff;bottom:10%;left:8%;"></div>
+  <div class="slide-inner">
+    <div class="badge reveal-pop">
+      <div class="badge-title">设计<br><span>革命</span></div>
+      <div class="badge-sub">保持创造力</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total) return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal-pop,.reveal-bounce').forEach(el => {
+      el.style.transition = 'none'; el.offsetHeight; el.style.transition = '';
+    });
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c+1)/total*100)+'%';
+    cur.textContent = String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(c-1);}
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click', function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width = (1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

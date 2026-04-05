@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risograph Overprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper: #f5f0e8;
+  --ink-pink: #FF5477;
+  --ink-indigo: #0057B8;
+  --ink-yellow: #FFD700;
+  --text-dark: #1a1a1a;
+  --text-mid: #555;
+  --text-light: #888;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --title-size: clamp(2.5rem, 7vw, 6rem);
+  --h2-size: clamp(1.75rem, 4.5vw, 3rem);
+  --h3-size: clamp(1.25rem, 2.5vw, 2rem);
+  --body-size: clamp(0.75rem, 1.2vw, 0.95rem);
+  --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+  --stat-size: clamp(2.5rem, 8vw, 5rem);
+  --slide-padding: clamp(2.5rem, 6vw, 5rem);
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: var(--paper); color: var(--text-dark);
+}
+
+/* Paper grain texture */
+.slide::before {
+  content: ''; position: absolute; inset: 0; z-index: 100;
+  pointer-events: none; opacity: 0.3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+.overprint { mix-blend-mode: multiply; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 4px; z-index: 1000;
+  background: linear-gradient(90deg, var(--ink-pink) 33%, var(--ink-indigo) 33% 66%, var(--ink-yellow) 66%);
+  transition: width 0.5s var(--ease-out-expo);
+}
+.page-counter {
+  position: fixed; bottom: clamp(16px,2.5vh,32px); right: clamp(20px,3vw,40px);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(10px,0.9vw,13px); color: var(--text-light);
+  z-index: 1000; letter-spacing: 2px;
+}
+.page-counter .current { color: var(--text-dark); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; background: var(--paper);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s var(--ease-out-expo);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; z-index: 10;
+}
+
+/* Reveal */
+.reveal {
+  opacity: 0; transform: translateY(25px);
+  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+}
+.reveal-mask {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.8s var(--ease-out-expo);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+.slide.active .reveal-mask { clip-path: inset(0 0 0 0); }
+.slide.active .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { transition-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { transition-delay: 0.32s; }
+.slide.active .reveal:nth-child(4) { transition-delay: 0.46s; }
+.slide.active .reveal:nth-child(5) { transition-delay: 0.6s; }
+.slide.active .reveal-mask:nth-child(1) { transition-delay: 0.1s; }
+.slide.active .reveal-mask:nth-child(2) { transition-delay: 0.25s; }
+
+/* Halftone */
+.halftone {
+  position: absolute;
+  background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+  background-size: 6px 6px; mix-blend-mode: multiply;
+}
+
+/* Registration marks */
+.reg-mark {
+  position: absolute; width: 20px; height: 20px; z-index: 50;
+}
+.reg-mark::before {
+  content: ''; position: absolute; top: 50%; left: 0; right: 0;
+  height: 1px; background: #333;
+}
+.reg-mark::after {
+  content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+  width: 1px; background: #333;
+}
+
+/* === SLIDE 1: COVER === */
+.s1 .circle-pink {
+  position: absolute; width: clamp(240px,37vw,480px); height: clamp(240px,37vw,480px);
+  border-radius: 50%; background: var(--ink-pink);
+  mix-blend-mode: multiply; top: 11%; left: 9%;
+  transform: translate(3px, -2px);
+}
+.s1 .circle-indigo {
+  position: absolute; width: clamp(210px,33vw,420px); height: clamp(210px,33vw,420px);
+  border-radius: 50%; background: var(--ink-indigo);
+  mix-blend-mode: multiply; top: 19%; left: 31%;
+  transform: translate(-2px, 2px);
+}
+.s1 .rect-yellow {
+  position: absolute; width: clamp(175px,27vw,350px); height: clamp(150px,23vw,300px);
+  background: var(--ink-yellow); mix-blend-mode: multiply;
+  top: 36%; left: 53%; transform: translate(1px, -1px) rotate(-3deg);
+}
+.s1 .stripe-top {
+  position: absolute; top: 0; left: 0; right: 0; height: 8px;
+  background: linear-gradient(90deg, var(--ink-pink) 33%, var(--ink-indigo) 33% 66%, var(--ink-yellow) 66%);
+}
+.s1 .title-main {
+  font-size: var(--title-size); font-weight: 700;
+  line-height: 1; letter-spacing: -2px; position: relative;
+}
+.s1 .title-shadow {
+  position: absolute; top: 3px; left: 3px;
+  font-size: var(--title-size); font-weight: 700;
+  line-height: 1; letter-spacing: -2px;
+  color: var(--ink-indigo); mix-blend-mode: multiply; z-index: -1;
+}
+.s1 .subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--body-size); color: var(--ink-indigo);
+  margin-top: clamp(12px,2vh,24px); letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.s1 .bottom-bar {
+  position: absolute; bottom: clamp(24px,3.5vh,40px); left: var(--slide-padding);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--small-size); color: var(--text-light); letter-spacing: 1px;
+}
+.s1 .corner-stripe {
+  position: absolute; bottom: 0; right: 0;
+  width: clamp(120px,18vw,240px); height: clamp(30px,4.5vh,60px);
+  background: repeating-linear-gradient(-45deg, var(--ink-pink), var(--ink-pink) 8px, transparent 8px, transparent 16px);
+  mix-blend-mode: multiply; opacity: 0.7;
+}
+
+/* === SLIDE 2: FEATURES === */
+.s2 .left-block {
+  position: absolute; top: 0; left: 0;
+  width: 45%; height: 100%;
+  background: var(--ink-indigo); mix-blend-mode: multiply;
+}
+.s2 .left-halftone {
+  position: absolute; top: 0; left: 0; width: 45%; height: 100%;
+  background-image: radial-gradient(circle, var(--ink-pink) 2px, transparent 2px);
+  background-size: 8px 8px; mix-blend-mode: multiply; opacity: 0.4;
+}
+.s2 .yellow-strip {
+  position: absolute; top: 11%; left: 40%; width: 9%; height: 78%;
+  background: var(--ink-yellow); mix-blend-mode: multiply;
+}
+.s2 .left-text {
+  position: absolute; top: 14%; left: 4.5%; z-index: 10;
+  color: var(--paper); font-size: clamp(2rem,5.5vw,4.5rem);
+  font-weight: 700; line-height: 1.1;
+  writing-mode: vertical-lr; letter-spacing: 4px;
+}
+.s2 .text-block {
+  position: absolute; top: 11%; left: 53%; width: 42%; z-index: 10;
+}
+.s2 .text-block h2 {
+  font-size: var(--h2-size); font-weight: 700;
+  line-height: 1.15; margin-bottom: clamp(12px,2vh,24px);
+}
+.s2 .text-block p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--body-size); color: var(--text-mid);
+  line-height: 1.8; margin-bottom: clamp(8px,1.5vh,16px);
+}
+.s2 .text-block .accent { color: var(--ink-pink); font-weight: 500; }
+.s2 .stripe-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
+  background: repeating-linear-gradient(90deg, var(--ink-pink) 0, var(--ink-pink) 4px, transparent 4px, transparent 8px);
+  mix-blend-mode: multiply;
+}
+
+/* === SLIDE 3: STATS === */
+.s3 .side-stripe {
+  position: absolute; top: 0; left: 0; width: 8px; height: 100%;
+  background: linear-gradient(180deg, var(--ink-pink) 50%, var(--ink-indigo) 50%);
+  mix-blend-mode: multiply;
+}
+.s3 .grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,87,184,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,87,184,0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.s3 .section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--small-size); color: var(--ink-pink);
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: clamp(12px,2vh,20px);
+}
+.s3 .text-layers { position: relative; display: inline-block; }
+.s3 .text-layer-1 {
+  font-size: clamp(2rem, 5vw, 4rem); font-weight: 700;
+  color: var(--ink-indigo); mix-blend-mode: multiply; line-height: 1.15;
+}
+.s3 .text-layer-2 {
+  position: absolute; top: 3px; left: 3px;
+  font-size: clamp(2rem, 5vw, 4rem); font-weight: 700;
+  color: var(--ink-pink); mix-blend-mode: multiply; line-height: 1.15;
+}
+.s3 .stats-row {
+  display: flex; gap: clamp(32px,5vw,80px);
+  margin-top: clamp(24px,4vh,48px);
+}
+.s3 .stat-block { text-align: left; }
+.s3 .stat-num {
+  font-size: var(--stat-size); font-weight: 700; line-height: 1; letter-spacing: -2px;
+}
+.s3 .stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--small-size); color: var(--text-mid);
+  margin-top: clamp(4px,0.5vh,8px); letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.s3 .yellow-bar {
+  position: absolute; bottom: clamp(80px,12vh,120px); left: var(--slide-padding);
+  width: clamp(200px,30vw,400px); height: 12px;
+  background: var(--ink-yellow); mix-blend-mode: multiply;
+}
+.s3 .pink-bar {
+  position: absolute; bottom: calc(clamp(80px,12vh,120px) - 2px); left: calc(var(--slide-padding) + 2px);
+  width: clamp(200px,30vw,400px); height: 12px;
+  background: var(--ink-pink); mix-blend-mode: multiply; opacity: 0.5;
+}
+
+/* === SLIDE 4: QUOTE (PATTERN GRID) === */
+.s4 .pattern-grid {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr);
+}
+.s4 .pat-cell { position: relative; overflow: hidden; }
+.s4 .pat-cell:nth-child(1) { background: var(--ink-pink); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(2) { background: var(--ink-indigo); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(3) { background: var(--ink-yellow); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(4) { background-image: radial-gradient(circle, var(--ink-pink) 2px, transparent 2px); background-size: 8px 8px; }
+.s4 .pat-cell:nth-child(5) { background: repeating-linear-gradient(0deg, var(--ink-indigo), var(--ink-indigo) 4px, var(--paper) 4px, var(--paper) 8px); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(6) { background: var(--ink-pink); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(7) { background: repeating-linear-gradient(-45deg, var(--ink-yellow), var(--ink-yellow) 6px, var(--paper) 6px, var(--paper) 12px); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(8) { background: var(--ink-indigo); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(9) { background-image: radial-gradient(circle, var(--ink-indigo) 1.5px, transparent 1.5px); background-size: 6px 6px; }
+.s4 .pat-cell:nth-child(10) { background: var(--ink-yellow); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(11) { background: repeating-linear-gradient(90deg, var(--ink-pink), var(--ink-pink) 3px, var(--paper) 3px, var(--paper) 6px); mix-blend-mode: multiply; }
+.s4 .pat-cell:nth-child(12) { background: var(--ink-indigo); mix-blend-mode: multiply; }
+.s4 .overlay-text {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); z-index: 10;
+  font-size: clamp(2rem, 6vw, 5rem); font-weight: 700;
+  color: var(--paper); text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+  letter-spacing: -2px; text-align: center; line-height: 1.1;
+}
+.s4 .overlay-sub {
+  position: absolute; top: calc(50% + clamp(3rem,5vw,4.5rem)); left: 50%;
+  transform: translateX(-50%); z-index: 10;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--body-size); color: var(--paper);
+  letter-spacing: 2px; text-transform: uppercase;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+
+/* === SLIDE 5: CLOSING === */
+.s5 .slide-inner { justify-content: center; align-items: center; }
+.s5 .closing-title {
+  font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 700; margin-bottom: clamp(8px,1.5vh,16px);
+}
+.s5 .closing-title-shadow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(calc(-50% + 3px), calc(-50% + 3px));
+  font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 700;
+  color: var(--ink-pink); mix-blend-mode: multiply; opacity: 0.4;
+  z-index: 5; text-align: center;
+}
+.s5 .closing-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--body-size); color: var(--text-light);
+  letter-spacing: 3px; text-transform: uppercase;
+}
+.s5 .color-bar {
+  display: flex; margin-top: clamp(24px,4vh,40px); gap: 0;
+}
+.s5 .color-swatch { width: 40px; height: 24px; }
+.s5 .halftone-band-top {
+  position: absolute; top: 0; left: 0; right: 0; height: 80px;
+  background-image: radial-gradient(circle, var(--ink-indigo) 1.5px, transparent 1.5px);
+  background-size: 8px 8px; mix-blend-mode: multiply; opacity: 0.15;
+}
+.s5 .halftone-band-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+  background-image: radial-gradient(circle, var(--ink-pink) 1.5px, transparent 1.5px);
+  background-size: 8px 8px; mix-blend-mode: multiply; opacity: 0.15;
+}
+.s5 .thin-border {
+  position: absolute; top: 50px; left: 60px; right: 60px; bottom: 50px;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.s5 .info-line {
+  position: absolute; bottom: clamp(24px,3.5vh,40px); left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--small-size); color: #aaa; letter-spacing: 2px;
+}
+.s5 .subtle-circle {
+  position: absolute; border-radius: 50%;
+  mix-blend-mode: multiply; opacity: 0.15;
+}
+
+@media (max-width: 600px) {
+  .s2 .left-block, .s2 .left-halftone, .s2 .yellow-strip, .s2 .left-text { display: none; }
+  .s2 .text-block { left: var(--slide-padding); width: calc(100% - var(--slide-padding)*2); }
+  .s3 .stats-row { flex-direction: column; gap: clamp(16px,2vh,24px); }
+  .page-counter { display: none; }
+}
+@media (max-height: 600px) {
+  :root { --title-size: clamp(2rem, 5vw, 3.5rem); --stat-size: clamp(2rem, 5vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-mask { transform: none !important; clip-path: none !important; opacity: 0; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal, .slide.active .reveal-mask { opacity: 1; }
+}
+@media print {
+  .slide { position: relative; opacity: 1; pointer-events: auto; page-break-after: always; height: auto; min-height: 100vh; }
+  .progress-bar, .page-counter { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide s1 active" data-i="0">
+  <div class="stripe-top"></div>
+  <div class="circle-pink"></div>
+  <div class="circle-indigo"></div>
+  <div class="rect-yellow"></div>
+  <div class="slide-inner">
+    <div style="position:relative;display:inline-block;" class="reveal">
+      <div class="title-shadow">设计<br>革命</div>
+      <div class="title-main">设计<br>革命</div>
+    </div>
+    <div class="subtitle reveal">OVERPRINT / MULTIPLY / TEXTURE</div>
+  </div>
+  <div class="corner-stripe"></div>
+  <div class="bottom-bar reveal">EDITION 001 — AI x RISOGRAPH — 设计的质感时代</div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide s2" data-i="1">
+  <div class="left-block"></div>
+  <div class="left-halftone"></div>
+  <div class="yellow-strip"></div>
+  <div class="left-text">叠印</div>
+  <div class="text-block">
+    <h2 class="reveal">色彩叠加<br>创造新色彩</h2>
+    <p class="reveal">当两层油墨在纸上叠合，它们以减色法混合。粉红叠蓝创造深紫，黄叠蓝产生绿色。</p>
+    <p class="reveal">美在于不完美：轻微的套色偏移、纸张纹理、以及大豆油墨在非涂布纸上的有机质感。</p>
+    <p class="accent reveal">AI 让每一次设计都独一无二。</p>
+  </div>
+  <div class="stripe-bottom"></div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide s3" data-i="2">
+  <div class="side-stripe"></div>
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="section-num reveal">Section 03 — 数据</div>
+    <div class="text-layers reveal-mask">
+      <div class="text-layer-2">不完美的<br>艺术</div>
+      <div class="text-layer-1">不完美的<br>艺术</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <div class="stat-num" style="color:var(--ink-pink);">10x</div>
+        <div class="stat-label">创意效率提升</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="stat-num" style="color:var(--ink-indigo);">93%</div>
+        <div class="stat-label">用户满意度</div>
+      </div>
+      <div class="stat-block reveal">
+        <div class="stat-num" style="color:var(--ink-yellow);">50M+</div>
+        <div class="stat-label">设计作品生成</div>
+      </div>
+    </div>
+  </div>
+  <div class="yellow-bar"></div>
+  <div class="pink-bar"></div>
+</div>
+
+<!-- Slide 4: Pattern / Quote -->
+<div class="slide s4" data-i="3">
+  <div class="pattern-grid">
+    <div class="pat-cell"></div><div class="pat-cell"></div><div class="pat-cell"></div><div class="pat-cell"></div>
+    <div class="pat-cell"></div><div class="pat-cell"></div><div class="pat-cell"></div><div class="pat-cell"></div>
+    <div class="pat-cell"></div><div class="pat-cell"></div><div class="pat-cell"></div><div class="pat-cell"></div>
+  </div>
+  <div class="overlay-text reveal">好设计是<br>有温度的偶然</div>
+  <div class="overlay-sub reveal">每一张印刷都是独一无二的 — Risograph Philosophy</div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide s5" data-i="4">
+  <div class="halftone-band-top"></div>
+  <div class="halftone-band-bottom"></div>
+  <div class="thin-border"></div>
+  <div class="subtle-circle" style="width:300px;height:300px;background:var(--ink-pink);top:80px;left:-60px;"></div>
+  <div class="subtle-circle" style="width:250px;height:250px;background:var(--ink-indigo);top:-40px;right:100px;"></div>
+  <div class="subtle-circle" style="width:200px;height:200px;background:var(--ink-yellow);bottom:40px;right:-30px;"></div>
+  <div class="closing-title-shadow">重新定义创造力</div>
+  <div class="slide-inner" style="align-items:center;">
+    <div class="closing-title reveal">重新定义创造力</div>
+    <div class="closing-sub reveal">AI + 质感印刷 / 设计革命从这里开始</div>
+    <div class="color-bar reveal">
+      <div class="color-swatch" style="background:var(--ink-pink);"></div>
+      <div class="color-swatch" style="background:var(--ink-indigo);"></div>
+      <div class="color-swatch" style="background:var(--ink-yellow);"></div>
+      <div class="color-swatch" style="background:var(--paper);border:1px solid #ddd;"></div>
+    </div>
+  </div>
+  <div class="info-line">RISOGRAPH OVERPRINT / 3-COLOR / SOY INK / 设计革命</div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total) return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal,.reveal-mask').forEach(el => {
+      el.style.transition = 'none'; el.offsetHeight; el.style.transition = '';
+    });
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c+1)/total*100)+'%';
+    cur.textContent = String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(c-1);}
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click', function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width = (1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

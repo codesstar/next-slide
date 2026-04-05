@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint Tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+:lang(zh), :lang(zh-CN), :lang(zh-TW), :lang(ja), :lang(ko) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .keyboard-hint, .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } }
+@media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+@media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, .reveal-crisp, .reveal-left { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; } .slide.active .reveal, .slide.active .reveal-crisp, .slide.active .reveal-left { opacity: 1; } }
+@media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .page-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+
+/* === BLUEPRINT TECH THEME === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bp-bg: #1B3A5C;
+  --bp-bg-alt: #1A2744;
+  --bp-blue: #5B9BD5;
+  --bp-cyan: #A8D5E2;
+  --bp-white: rgba(255,255,255,0.85);
+  --bp-dim: rgba(255,255,255,0.4);
+  --bp-faint: rgba(255,255,255,0.15);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bp-bg); color: var(--bp-white); }
+
+body { font-family: 'IBM Plex Mono', 'Noto Sans SC', monospace; }
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--bp-blue), var(--bp-cyan));
+  z-index: 1000;
+  transition: width 0.4s var(--ease-out-expo);
+}
+
+.page-counter {
+  position: fixed;
+  bottom: clamp(12px, 2vh, 28px);
+  right: clamp(16px, 2vw, 36px);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(9px, 0.8vw, 12px);
+  font-weight: 400;
+  color: rgba(255,255,255,0.25);
+  z-index: 1000;
+  letter-spacing: 2px;
+}
+.page-counter .current { color: var(--bp-blue); }
+
+.slide {
+  position: fixed; inset: 0;
+  height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s ease;
+  background: var(--bp-bg);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Blueprint grid overlay */
+.slide::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: clamp(24px, 3vw, 40px) clamp(24px, 3vw, 40px);
+  z-index: 1; pointer-events: none;
+}
+.slide::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: clamp(120px, 15vw, 200px) clamp(120px, 15vw, 200px);
+  pointer-events: none; z-index: 1;
+}
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(36px, 5vh, 60px) clamp(44px, 6vw, 100px);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; z-index: 10;
+}
+
+/* Ruler tick marks */
+.ruler-top {
+  position: absolute; top: 0; left: 0; right: 0; height: clamp(10px, 1.5vh, 16px);
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 0.5px, transparent 0.5px, transparent clamp(24px, 3vw, 40px));
+  border-bottom: 0.5px solid var(--bp-faint);
+  z-index: 5;
+}
+.ruler-left {
+  position: absolute; top: 0; left: 0; width: clamp(10px, 1.5vw, 16px); bottom: 0;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 0.5px, transparent 0.5px, transparent clamp(24px, 3vw, 40px));
+  border-right: 0.5px solid var(--bp-faint);
+  z-index: 5;
+}
+
+/* Fold lines */
+.fold-v {
+  position: absolute; top: 0; bottom: 0; width: 0;
+  border-left: 0.5px dashed rgba(255,255,255,0.06);
+  z-index: 2; left: 50%;
+}
+.fold-h {
+  position: absolute; left: 0; right: 0; height: 0;
+  border-top: 0.5px dashed rgba(255,255,255,0.06);
+  z-index: 2; top: 50%;
+}
+
+/* Coordinate marks */
+.coord-mark {
+  position: absolute; z-index: 6;
+  font-size: clamp(6px, 0.6vw, 8px);
+  color: rgba(255,255,255,0.15);
+  letter-spacing: 1px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Crosshair */
+.crosshair {
+  position: absolute; z-index: 6;
+  width: clamp(100px, 14vw, 200px);
+  height: clamp(100px, 14vw, 200px);
+}
+.crosshair::before {
+  content: ''; position: absolute; left: 50%; top: 0; width: 0.5px; height: 100%;
+  background: rgba(255,255,255,0.25); transform: translateX(-50%);
+}
+.crosshair::after {
+  content: ''; position: absolute; top: 50%; left: 0; height: 0.5px; width: 100%;
+  background: rgba(255,255,255,0.25); transform: translateY(-50%);
+}
+.crosshair .ring {
+  position: absolute; border-radius: 50%;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  border: 0.5px solid rgba(91,155,213,0.3);
+}
+.crosshair .ring-1 { width: 40%; height: 40%; border-color: rgba(91,155,213,0.4); }
+.crosshair .ring-2 { width: 70%; height: 70%; border-color: rgba(91,155,213,0.2); }
+.crosshair .ring-3 { width: 100%; height: 100%; border-color: rgba(91,155,213,0.1); }
+
+/* Labels */
+.bp-label {
+  font-size: clamp(8px, 0.75vw, 10px);
+  letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); font-weight: 400;
+}
+.bp-highlight { color: var(--bp-blue); }
+
+/* Main title */
+.bp-title {
+  font-family: 'Space Mono', 'Noto Sans SC', monospace;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  color: var(--bp-white);
+  text-transform: uppercase;
+  letter-spacing: clamp(2px, 0.4vw, 6px);
+  line-height: 1.1;
+}
+.bp-subtitle {
+  font-size: clamp(11px, 1vw, 14px);
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px; text-transform: uppercase;
+  line-height: 1.8; max-width: 400px;
+  margin-top: clamp(12px, 2vh, 24px);
+}
+
+/* Section title */
+.bp-section-title {
+  font-family: 'Space Mono', 'Noto Sans SC', monospace;
+  font-size: clamp(20px, 2.5vw, 32px);
+  font-weight: 700;
+  color: var(--bp-white);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: clamp(4px, 0.8vh, 8px);
+}
+
+/* Project ID */
+.bp-project-id {
+  font-size: clamp(9px, 0.85vw, 11px);
+  letter-spacing: 4px;
+  color: rgba(91,155,213,0.65);
+  text-transform: uppercase;
+  margin-bottom: clamp(12px, 2vh, 20px);
+}
+
+/* Stamp box */
+.bp-stamp {
+  border: 0.5px solid rgba(255,255,255,0.18);
+  padding: clamp(8px, 1.2vh, 14px) clamp(12px, 1.5vw, 20px);
+}
+.bp-stamp-text {
+  font-size: clamp(7px, 0.65vw, 9px);
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 3px; text-transform: uppercase;
+  line-height: 2;
+}
+
+/* Note items (features) */
+.bp-note {
+  padding-left: clamp(12px, 1.5vw, 20px);
+  border-left: 0.5px solid rgba(91,155,213,0.3);
+  margin-bottom: clamp(16px, 2.5vh, 28px);
+}
+.bp-note-num {
+  font-size: clamp(7px, 0.65vw, 9px);
+  color: rgba(91,155,213,0.65);
+  letter-spacing: 2px; margin-bottom: 4px;
+}
+.bp-note-title {
+  font-size: clamp(11px, 1vw, 13px);
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 4px; font-weight: 600;
+}
+.bp-note-desc {
+  font-size: clamp(9px, 0.85vw, 11px);
+  color: rgba(255,255,255,0.35);
+  line-height: 1.7;
+}
+
+/* Stats */
+.bp-stat-value {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 700;
+  color: var(--bp-white);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.bp-stat-unit {
+  font-size: 0.4em;
+  color: var(--bp-blue);
+}
+.bp-stat-label {
+  font-size: clamp(9px, 0.85vw, 12px);
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-top: clamp(6px, 1vh, 12px);
+}
+
+/* Table */
+.bp-table {
+  width: 100%; border-collapse: collapse;
+  font-size: clamp(9px, 0.85vw, 11px);
+}
+.bp-table th {
+  font-size: clamp(7px, 0.65vw, 9px);
+  letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(91,155,213,0.75); font-weight: 500;
+  text-align: left;
+  padding: clamp(8px, 1.2vh, 12px) clamp(10px, 1.5vw, 16px);
+  border-bottom: 0.5px solid rgba(91,155,213,0.25);
+  border-top: 0.5px solid rgba(91,155,213,0.25);
+}
+.bp-table td {
+  color: rgba(255,255,255,0.55);
+  padding: clamp(6px, 1vh, 10px) clamp(10px, 1.5vw, 16px);
+  border-bottom: 0.5px dashed rgba(255,255,255,0.06);
+  font-weight: 300; font-size: clamp(8px, 0.75vw, 10px);
+}
+.status-active { color: var(--bp-blue) !important; }
+.status-pending { color: var(--bp-cyan) !important; }
+.status-inactive { color: rgba(255,255,255,0.2) !important; }
+
+/* Info bar */
+.bp-info-bar {
+  display: flex; justify-content: space-between;
+  border-top: 0.5px solid rgba(255,255,255,0.08);
+  padding-top: clamp(8px, 1.2vh, 12px);
+}
+.bp-info-item {
+  font-size: clamp(7px, 0.65vw, 9px);
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* Stamp box (closing) */
+.bp-stamp-box {
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: clamp(24px, 3.5vh, 40px) clamp(36px, 5vw, 60px);
+  position: relative;
+}
+.bp-stamp-box::before {
+  content: ''; position: absolute; inset: 4px;
+  border: 0.5px solid rgba(255,255,255,0.1);
+}
+.bp-stamp-title {
+  font-family: 'Space Mono', 'Noto Sans SC', monospace;
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 700;
+  color: var(--bp-white);
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  margin-bottom: clamp(10px, 1.5vh, 16px);
+}
+.bp-stamp-line {
+  width: 100%; height: 0;
+  border-top: 0.5px solid rgba(255,255,255,0.15);
+  margin-bottom: clamp(10px, 1.5vh, 16px);
+}
+.bp-stamp-detail {
+  font-size: clamp(8px, 0.75vw, 10px);
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 3px; text-transform: uppercase;
+  line-height: 2.2;
+}
+
+/* Approval row */
+.bp-approval-row {
+  display: flex; gap: clamp(24px, 4vw, 60px);
+  margin-top: clamp(12px, 2vh, 20px);
+  padding-top: clamp(10px, 1.5vh, 16px);
+  border-top: 0.5px dashed rgba(255,255,255,0.08);
+}
+.bp-approval-label {
+  font-size: clamp(6px, 0.55vw, 8px);
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 6px; text-align: center;
+}
+.bp-approval-line {
+  width: clamp(60px, 8vw, 100px); height: 0;
+  border-top: 0.5px solid rgba(255,255,255,0.12);
+  margin: 0 auto 3px;
+}
+.bp-approval-date {
+  font-size: clamp(7px, 0.6vw, 9px);
+  color: rgba(91,155,213,0.45);
+  letter-spacing: 1px; text-align: center;
+}
+
+/* Scanning border line animation */
+@keyframes scan-line {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+.scan-border { position: relative; overflow: hidden; }
+.scan-border::after {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--bp-blue), transparent);
+  animation: scan-line 4s linear infinite;
+}
+
+/* Animations */
+.reveal-crisp {
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+}
+.slide.active .reveal-crisp { opacity: 1; transform: translateY(0); }
+.slide.active .reveal-crisp.d1 { transition-delay: 0.05s; }
+.slide.active .reveal-crisp.d2 { transition-delay: 0.12s; }
+.slide.active .reveal-crisp.d3 { transition-delay: 0.2s; }
+.slide.active .reveal-crisp.d4 { transition-delay: 0.28s; }
+.slide.active .reveal-crisp.d5 { transition-delay: 0.36s; }
+.slide.active .reveal-crisp.d6 { transition-delay: 0.44s; }
+.slide.active .reveal-crisp.d7 { transition-delay: 0.52s; }
+.slide.active .reveal-crisp.d8 { transition-delay: 0.6s; }
+
+.reveal-left {
+  opacity: 0; transform: translateX(-20px);
+  transition: opacity 0.4s ease, transform 0.4s var(--ease-out-expo);
+}
+.slide.active .reveal-left { opacity: 1; transform: translateX(0); }
+
+/* Neon glow for accents */
+@keyframes glow-pulse {
+  0% { box-shadow: 0 0 6px rgba(91,155,213,0.3); }
+  100% { box-shadow: 0 0 16px rgba(91,155,213,0.6), 0 0 40px rgba(91,155,213,0.2); }
+}
+
+@media (max-width: 768px) {
+  .bp-features-grid { flex-direction: column !important; }
+  .bp-stats-row { flex-direction: column !important; gap: clamp(20px, 3vh, 32px) !important; }
+  .bp-approval-row { flex-direction: column; align-items: center; }
+  .crosshair { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide active" data-i="0">
+  <div class="ruler-top"></div>
+  <div class="ruler-left"></div>
+  <div class="fold-v"></div>
+  <div class="fold-h"></div>
+  <div class="coord-mark" style="top: clamp(18px, 2.5vh, 24px); left: clamp(18px, 2vw, 24px);">0,0</div>
+  <div class="coord-mark" style="bottom: clamp(8px, 1.5vh, 12px); right: clamp(8px, 1vw, 12px);">1280,720</div>
+  <div class="crosshair" style="right: clamp(100px, 14vw, 200px); top: clamp(80px, 14vh, 160px);">
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+  </div>
+  <div class="slide-inner">
+    <div class="bp-project-id reveal-crisp d1">Project No. DR-2026-001</div>
+    <div class="bp-title reveal-crisp d2">Design<br>Revolution</div>
+    <div class="bp-subtitle reveal-crisp d3">AI-driven design architecture<br>Revision 1.0 -- Initial specification</div>
+  </div>
+  <div class="bp-stamp reveal-crisp d4" style="position: absolute; right: clamp(36px, 5vw, 60px); bottom: clamp(32px, 5vh, 50px); z-index: 10;">
+    <div class="bp-stamp-text">Classification: Open<br>Scale: 1:1 Viewport<br>Sheet 01 of 05</div>
+  </div>
+</div>
+
+<!-- Slide 2: Features / Schematic -->
+<div class="slide" data-i="1" style="background: var(--bp-bg-alt);">
+  <div class="ruler-top"></div>
+  <div class="ruler-left"></div>
+  <div class="fold-v"></div>
+  <div class="fold-h"></div>
+  <div class="coord-mark" style="top: clamp(18px, 2.5vh, 24px); right: clamp(20px, 2.5vw, 30px);">SHT 02/05</div>
+  <div class="slide-inner">
+    <div class="bp-section-title reveal-crisp d1">System Schematic</div>
+    <div class="bp-label reveal-crisp d1" style="margin-bottom: clamp(24px, 4vh, 40px);">Sheet 02 of 05 // Module overview</div>
+    <div class="bp-features-grid" style="display: flex; gap: clamp(24px, 3vw, 48px);">
+      <div style="flex: 1;">
+        <div class="bp-note reveal-crisp d2">
+          <div class="bp-note-num">NOTE 01</div>
+          <div class="bp-note-title">Intelligent Layout</div>
+          <div class="bp-note-desc">AI understands content semantics, auto-generates compositions following visual hierarchy principles.</div>
+        </div>
+        <div class="bp-note reveal-crisp d3">
+          <div class="bp-note-num">NOTE 02</div>
+          <div class="bp-note-title">Style Transfer</div>
+          <div class="bp-note-desc">One-click migration of any reference image's visual language into your design system.</div>
+        </div>
+      </div>
+      <div style="flex: 1;">
+        <div class="bp-note reveal-crisp d4">
+          <div class="bp-note-num">NOTE 03</div>
+          <div class="bp-note-title">Real-Time Collaboration</div>
+          <div class="bp-note-desc">Multi-user sync editing. AI reconciles conflicting modifications in real time.</div>
+        </div>
+        <div class="bp-note reveal-crisp d5">
+          <div class="bp-note-num">NOTE 04</div>
+          <div class="bp-note-title">Adaptive Typography</div>
+          <div class="bp-note-desc">Design once, auto-adapt from wristwatch to billboard across all viewport sizes.</div>
+        </div>
+      </div>
+    </div>
+    <div class="bp-info-bar reveal-crisp d6" style="position: absolute; bottom: clamp(28px, 4vh, 40px); left: clamp(44px, 6vw, 60px); right: clamp(44px, 6vw, 60px);">
+      <div class="bp-info-item">Drawn by: AI Engine</div>
+      <div class="bp-info-item">Date: 2026-04-05</div>
+      <div class="bp-info-item">Scale: NTS</div>
+      <div class="bp-info-item">Rev: 1.0</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats / Data -->
+<div class="slide" data-i="2">
+  <div class="ruler-top"></div>
+  <div class="ruler-left"></div>
+  <div class="fold-v"></div>
+  <div class="coord-mark" style="top: clamp(18px, 2.5vh, 24px); right: clamp(20px, 2.5vw, 30px);">SHT 03/05</div>
+  <div class="slide-inner">
+    <div class="bp-section-title reveal-crisp d1">Data Specifications</div>
+    <div class="bp-label reveal-crisp d1" style="margin-bottom: clamp(24px, 4vh, 36px);">Sheet 03 of 05 // Performance metrics</div>
+    <div class="bp-stats-row" style="display: flex; gap: clamp(32px, 5vw, 80px); margin-bottom: clamp(24px, 4vh, 40px);">
+      <div class="reveal-crisp d2">
+        <div class="bp-stat-value">10<span class="bp-stat-unit">x</span></div>
+        <div class="bp-stat-label">Efficiency Gain</div>
+      </div>
+      <div class="reveal-crisp d3">
+        <div class="bp-stat-value">93<span class="bp-stat-unit">%</span></div>
+        <div class="bp-stat-label">User Satisfaction</div>
+      </div>
+      <div class="reveal-crisp d4">
+        <div class="bp-stat-value">50<span class="bp-stat-unit">M+</span></div>
+        <div class="bp-stat-label">Designs Generated</div>
+      </div>
+    </div>
+    <div class="scan-border" style="max-width: 100%; overflow-x: auto;">
+      <table class="bp-table reveal-crisp d5">
+        <thead>
+          <tr><th>Component</th><th>Module</th><th>Type</th><th>Priority</th><th>Status</th><th>Load</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>LY-001</td><td>Layout</td><td>Engine</td><td>Critical</td><td class="status-active">Active</td><td>0.92</td></tr>
+          <tr><td>ST-001</td><td>Style</td><td>Transfer</td><td>High</td><td class="status-active">Active</td><td>0.78</td></tr>
+          <tr><td>CL-001</td><td>Collab</td><td>Sync</td><td>High</td><td class="status-pending">Pending</td><td>0.45</td></tr>
+          <tr><td>TY-001</td><td>Type</td><td>Adaptive</td><td>Medium</td><td class="status-active">Active</td><td>0.67</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote / Detail -->
+<div class="slide" data-i="3" style="background: var(--bp-bg-alt);">
+  <div class="ruler-top"></div>
+  <div class="ruler-left"></div>
+  <div class="fold-v"></div>
+  <div class="fold-h"></div>
+  <div class="coord-mark" style="top: clamp(18px, 2.5vh, 24px); right: clamp(20px, 2.5vw, 30px);">SHT 04/05</div>
+  <div class="slide-inner" style="align-items: center; text-align: center;">
+    <div class="bp-label reveal-crisp d1" style="margin-bottom: clamp(24px, 4vh, 40px);">Detail Section D-04 // Design Philosophy</div>
+    <div style="border: 0.5px solid rgba(91,155,213,0.3); padding: clamp(24px, 4vh, 48px) clamp(32px, 4vw, 60px); max-width: 700px; position: relative;" class="reveal-crisp d2">
+      <div style="position: absolute; top: -10px; left: 16px; font-size: clamp(7px, 0.6vw, 9px); color: rgba(91,155,213,0.5); letter-spacing: 2px; background: var(--bp-bg-alt); padding: 0 8px;">ANNOTATION D-04.1</div>
+      <div style="font-family: 'Space Mono', monospace; font-size: clamp(20px, 3vw, 36px); font-weight: 700; color: var(--bp-white); text-transform: uppercase; letter-spacing: 2px; line-height: 1.4; margin-bottom: clamp(12px, 2vh, 20px);">
+        "Good design is<br>making things<br>intelligible."
+      </div>
+      <div style="font-size: clamp(9px, 0.85vw, 12px); color: rgba(168,213,226,0.5); letter-spacing: 3px; text-transform: uppercase;">-- Dieter Rams</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing / Stamp -->
+<div class="slide" data-i="4">
+  <div class="ruler-top"></div>
+  <div class="ruler-left"></div>
+  <div class="fold-v"></div>
+  <div class="fold-h"></div>
+  <div class="coord-mark" style="top: clamp(18px, 2.5vh, 24px); right: clamp(20px, 2.5vw, 30px);">SHT 05/05</div>
+  <div class="coord-mark" style="bottom: clamp(36px, 5vh, 56px); left: 50%; transform: translateX(-50%);">FINAL SHEET</div>
+  <div class="slide-inner" style="align-items: center; text-align: center;">
+    <div class="bp-stamp-box reveal-crisp d1">
+      <div class="bp-stamp-title">Approved</div>
+      <div class="bp-stamp-line"></div>
+      <div class="bp-stamp-detail">
+        Project: DR-2026-001<br>
+        Document: Design Revolution Architecture<br>
+        Revision: 1.0 Final<br>
+        Classification: Open
+      </div>
+      <div class="bp-approval-row">
+        <div class="reveal-crisp d2">
+          <div class="bp-approval-label">Prepared</div>
+          <div class="bp-approval-line"></div>
+          <div class="bp-approval-date">2026-04-01</div>
+        </div>
+        <div class="reveal-crisp d3">
+          <div class="bp-approval-label">Reviewed</div>
+          <div class="bp-approval-line"></div>
+          <div class="bp-approval-date">2026-04-03</div>
+        </div>
+        <div class="reveal-crisp d4">
+          <div class="bp-approval-label">Approved</div>
+          <div class="bp-approval-line"></div>
+          <div class="bp-approval-date">2026-04-05</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+
+  function go(i){
+    if(i < 0 || i >= total) return;
+    slides[c].classList.remove('active');
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c+1)/total*100) + '%';
+    cur.textContent = String(c+1).padStart(2,'0');
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(c+1); }
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(c-1); }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  document.addEventListener('click', function(e){
+    if(e.clientX > window.innerWidth / 2) go(c+1);
+    else go(c-1);
+  });
+
+  bar.style.width = (1/total*100) + '%';
+})();
+</script>
+</body>
+</html>

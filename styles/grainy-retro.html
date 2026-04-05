@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grainy Retro - 设计革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   VIEWPORT BASE (inlined)
+   ═══════════════════════════════════════════ */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+:lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+  .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+  :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+}
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+}
+@media (max-width: 600px) and (min-height: 700px) {
+  :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); }
+}
+@media (min-width: 2000px) {
+  .slide-content { max-width: 1600px; margin: 0 auto; }
+}
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card, .content-box { border-width: 0.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+  .reveal, .reveal-left, .reveal-right, .reveal-paper, .reveal-stamp { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; }
+  .slide.active .reveal, .slide.active .reveal-left, .slide.active .reveal-right, .slide.active .reveal-paper, .slide.active .reveal-stamp { opacity: 1; }
+}
+@media print {
+  .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; position: relative !important; opacity: 1 !important; pointer-events: auto !important; }
+  .progress-bar, .page-counter { display: none !important; }
+  .reveal, .reveal-left, .reveal-right, .reveal-paper, .reveal-stamp { opacity: 1 !important; transform: none !important; }
+}
+
+/* ═══════════════════════════════════════════
+   GRAINY RETRO THEME
+   ═══════════════════════════════════════════ */
+:root {
+  --cream: #f4efe6;
+  --dark: #1a1a1a;
+  --orange: #e85d3a;
+  --brown: #8a8070;
+  --warm-bg: #f4efe6;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; background: var(--cream); color: var(--dark); }
+
+body {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+}
+
+/* ── Progress bar ── */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: clamp(2px, 0.4vh, 4px);
+  background: var(--orange);
+  z-index: 1000;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Page counter ── */
+.page-counter {
+  position: fixed;
+  bottom: clamp(16px, 3vh, 36px);
+  right: clamp(20px, 3vw, 48px);
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(11px, 1vw, 15px);
+  color: var(--brown);
+  z-index: 1000;
+  letter-spacing: 0.08em;
+}
+.page-counter .current { color: var(--dark); font-weight: 700; }
+
+/* ── Slides ── */
+.slide {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--cream);
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* ── Grain overlay on every slide ── */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── Shared Utilities ── */
+.mono {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 0.9vw, 13px);
+  color: var(--brown);
+  letter-spacing: 1px;
+}
+.tag-pill {
+  padding: clamp(4px, 0.6vh, 8px) clamp(10px, 1.2vw, 18px);
+  border: 1.5px solid var(--dark);
+  border-radius: 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 0.85vw, 12px);
+  color: var(--dark);
+  text-transform: uppercase;
+  display: inline-block;
+}
+.tag-pill--white { border-color: #fff; color: #fff; }
+.tag-pill--orange { border-color: var(--orange); color: var(--orange); }
+.tag-pill--filled { background: var(--dark); color: var(--cream); border-color: var(--dark); }
+.outline-text {
+  -webkit-text-stroke: clamp(1.5px, 0.2vw, 2.5px) var(--dark);
+  -webkit-text-fill-color: transparent;
+}
+.outline-text--white {
+  -webkit-text-stroke: clamp(1.5px, 0.2vw, 2.5px) #fff;
+  -webkit-text-fill-color: transparent;
+}
+.outline-text--orange {
+  -webkit-text-stroke: clamp(1.5px, 0.2vw, 2.5px) var(--orange);
+  -webkit-text-fill-color: transparent;
+}
+.color-orange { color: var(--orange); }
+.color-white { color: #fff; }
+.color-dark { color: var(--dark); }
+.bg-orange { background: var(--orange); }
+
+/* ── Halftone Dots ── */
+.dots {
+  position: absolute;
+  display: grid;
+  gap: clamp(3px, 0.4vw, 6px);
+  z-index: 1;
+}
+.dots--6 { grid-template-columns: repeat(6, clamp(5px, 0.6vw, 8px)); }
+.dots--8 { grid-template-columns: repeat(8, clamp(5px, 0.6vw, 8px)); }
+.dots--5 { grid-template-columns: repeat(5, clamp(5px, 0.6vw, 8px)); }
+.dots--10 { grid-template-columns: repeat(10, clamp(4px, 0.5vw, 7px)); }
+.dot {
+  width: clamp(5px, 0.6vw, 8px); height: clamp(5px, 0.6vw, 8px);
+  border-radius: 50%;
+  background: rgba(232, 93, 58, 0.15);
+}
+.dot--dark { background: rgba(26, 26, 26, 0.08); }
+.dot--white { background: rgba(255, 255, 255, 0.12); }
+.dot--sm { width: clamp(4px, 0.5vw, 7px); height: clamp(4px, 0.5vw, 7px); }
+
+/* Riso circle decoration */
+.riso-circle {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* ── Reveal Animations ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(clamp(20px, 3vh, 40px));
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(clamp(-30px, -3vw, -50px));
+}
+.reveal-right {
+  opacity: 0;
+  transform: translateX(clamp(30px, 3vw, 50px));
+}
+.reveal-paper {
+  opacity: 0;
+  transform: scale(0.96) rotate(-1deg);
+  filter: blur(2px);
+}
+.reveal-stamp {
+  opacity: 0;
+  transform: scale(1.3) rotate(3deg);
+}
+
+.slide.active .reveal,
+.slide.active .reveal-left,
+.slide.active .reveal-right,
+.slide.active .reveal-paper,
+.slide.active .reveal-stamp {
+  animation: retro-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide.active .reveal-left { animation-name: retro-slide-left; }
+.slide.active .reveal-right { animation-name: retro-slide-right; }
+.slide.active .reveal-paper { animation-name: retro-paper; }
+.slide.active .reveal-stamp { animation-name: retro-stamp; }
+
+.slide.active .reveal:nth-child(1), .slide.active .reveal-left:nth-child(1), .slide.active .reveal-right:nth-child(1), .slide.active .reveal-paper:nth-child(1), .slide.active .reveal-stamp:nth-child(1) { animation-delay: 0.05s; }
+.slide.active .reveal:nth-child(2), .slide.active .reveal-left:nth-child(2), .slide.active .reveal-right:nth-child(2), .slide.active .reveal-paper:nth-child(2), .slide.active .reveal-stamp:nth-child(2) { animation-delay: 0.15s; }
+.slide.active .reveal:nth-child(3), .slide.active .reveal-left:nth-child(3), .slide.active .reveal-right:nth-child(3), .slide.active .reveal-paper:nth-child(3), .slide.active .reveal-stamp:nth-child(3) { animation-delay: 0.28s; }
+.slide.active .reveal:nth-child(4), .slide.active .reveal-left:nth-child(4), .slide.active .reveal-right:nth-child(4), .slide.active .reveal-paper:nth-child(4), .slide.active .reveal-stamp:nth-child(4) { animation-delay: 0.42s; }
+.slide.active .reveal:nth-child(5), .slide.active .reveal-left:nth-child(5), .slide.active .reveal-right:nth-child(5), .slide.active .reveal-paper:nth-child(5), .slide.active .reveal-stamp:nth-child(5) { animation-delay: 0.56s; }
+.slide.active .reveal:nth-child(6), .slide.active .reveal-left:nth-child(6), .slide.active .reveal-right:nth-child(6), .slide.active .reveal-paper:nth-child(6), .slide.active .reveal-stamp:nth-child(6) { animation-delay: 0.7s; }
+
+@keyframes retro-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes retro-slide-left {
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes retro-slide-right {
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes retro-paper {
+  to { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes retro-stamp {
+  to { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ═══════════════════════════════════════════
+   SLIDE 1 — COVER
+   ═══════════════════════════════════════════ */
+.s1-layout {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr clamp(200px, 33vw, 420px);
+  position: relative;
+  z-index: 2;
+}
+.s1-main {
+  padding: clamp(28px, 5vh, 56px) clamp(32px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.s1-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.s1-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.s1-hero h1 {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(36px, 6.5vw, 82px);
+  font-weight: 400;
+  line-height: 0.95;
+  color: var(--dark);
+  letter-spacing: -0.02em;
+}
+.s1-tags {
+  display: flex;
+  gap: clamp(6px, 0.8vw, 12px);
+  margin-top: clamp(14px, 2.5vh, 28px);
+}
+.s1-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.arrow-icon {
+  width: clamp(32px, 3.5vw, 48px);
+  height: clamp(32px, 3.5vw, 48px);
+  border: 2px solid var(--dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 1.5vw, 20px);
+  color: var(--dark);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.arrow-icon:hover { background: var(--dark); color: var(--cream); }
+
+.s1-sidebar {
+  background: var(--orange);
+  padding: clamp(28px, 5vh, 56px) clamp(24px, 3.5vw, 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.s1-sidebar .riso-circle:nth-child(1) {
+  width: clamp(150px, 22vw, 300px); height: clamp(150px, 22vw, 300px);
+  background: rgba(0,0,0,0.08);
+  top: -10%; right: -10%;
+}
+.s1-sidebar .riso-circle:nth-child(2) {
+  width: clamp(100px, 15vw, 200px); height: clamp(100px, 15vw, 200px);
+  background: rgba(255,255,255,0.06);
+  bottom: -5%; left: -8%;
+}
+.s1-sidebar-title {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 1vw, 14px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  position: relative; z-index: 2;
+}
+.s1-list { position: relative; z-index: 2; }
+.s1-item {
+  padding: clamp(8px, 1.3vh, 16px) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.s1-item:last-child { border-bottom: none; }
+.s1-item-num {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 0.9vw, 12px);
+  color: rgba(255,255,255,0.5);
+  margin-bottom: clamp(3px, 0.5vh, 6px);
+}
+.s1-item-text {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(12px, 1.2vw, 16px);
+  color: #fff;
+  line-height: 1.3;
+}
+.s1-item-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 0.8vw, 12px);
+  color: rgba(255,255,255,0.55);
+  margin-top: clamp(2px, 0.3vh, 4px);
+}
+.s1-sidebar-footer {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 0.8vw, 11px);
+  color: rgba(255,255,255,0.4);
+  position: relative; z-index: 2;
+}
+
+/* ═══════════════════════════════════════════
+   SLIDE 2 — MANIFESTO
+   ═══════════════════════════════════════════ */
+.s2-inner {
+  height: 100%;
+  padding: clamp(28px, 5vh, 56px) clamp(36px, 5.5vw, 72px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+.s2-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.s2-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(4px, 0.6vh, 8px);
+}
+.s2-headline {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(38px, 6.8vw, 88px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--dark);
+}
+.s2-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--brown);
+  line-height: 1.7;
+  max-width: 50ch;
+  margin-top: clamp(12px, 2vh, 24px);
+}
+.s2-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.s2-bottom-tags {
+  display: flex;
+  gap: clamp(6px, 0.8vw, 10px);
+}
+.s2-stripe {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: clamp(48px, 7.5vw, 100px);
+  background: var(--orange);
+  z-index: 0;
+}
+.s2-stripe-inner {
+  position: absolute;
+  right: clamp(48px, 7.5vw, 100px);
+  top: 25%;
+  width: clamp(24px, 3.5vw, 48px);
+  height: 40%;
+  background: rgba(232, 93, 58, 0.08);
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════
+   SLIDE 3 — SERVICES GRID
+   ═══════════════════════════════════════════ */
+.s3-inner {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
+  z-index: 2;
+}
+.s3-header {
+  padding: clamp(22px, 4vh, 44px) clamp(32px, 5vw, 64px) 0 clamp(32px, 5vw, 64px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.s3-title {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(24px, 3.3vw, 42px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--dark);
+  line-height: 1;
+}
+.s3-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  margin: clamp(14px, 2.2vh, 28px) clamp(32px, 5vw, 64px) clamp(22px, 3.5vh, 44px) clamp(32px, 5vw, 64px);
+  border: 1.5px solid var(--dark);
+}
+.s3-card {
+  padding: clamp(16px, 2.5vh, 32px) clamp(18px, 2.8vw, 36px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 0.75px solid rgba(26,26,26,0.15);
+  position: relative;
+}
+.s3-card--orange { background: var(--orange); }
+.s3-card-num {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 1vw, 13px);
+  color: var(--brown);
+  letter-spacing: 1px;
+  margin-bottom: clamp(6px, 1vh, 12px);
+}
+.s3-card--orange .s3-card-num { color: rgba(255,255,255,0.5); }
+.s3-card-title {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(16px, 2vw, 26px);
+  color: var(--dark);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.s3-card--orange .s3-card-title { color: #fff; }
+.s3-card-desc {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 0.85vw, 11px);
+  color: var(--brown);
+  line-height: 1.5;
+  margin-top: auto;
+  padding-top: clamp(8px, 1.2vh, 16px);
+}
+.s3-card--orange .s3-card-desc { color: rgba(255,255,255,0.55); }
+
+/* ═══════════════════════════════════════════
+   SLIDE 4 — CASE STUDY
+   ═══════════════════════════════════════════ */
+.s4-layout {
+  height: 100%;
+  display: grid;
+  grid-template-columns: clamp(240px, 37vw, 480px) 1fr;
+  position: relative;
+  z-index: 2;
+}
+.s4-left {
+  padding: clamp(28px, 5vh, 56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.s4-label {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 0.9vw, 12px);
+  color: var(--brown);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: clamp(6px, 1vh, 12px);
+}
+.s4-number {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(72px, 12vw, 160px);
+  line-height: 0.85;
+  color: var(--dark);
+  letter-spacing: -0.04em;
+}
+.s4-title {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(20px, 2.8vw, 36px);
+  letter-spacing: -0.02em;
+  color: var(--dark);
+  line-height: 1.1;
+  margin-top: clamp(8px, 1.3vh, 16px);
+}
+.s4-left-footer {
+  display: flex;
+  gap: clamp(6px, 0.7vw, 10px);
+  flex-wrap: wrap;
+}
+.s4-right {
+  background: var(--orange);
+  padding: clamp(28px, 5vh, 56px) clamp(26px, 4vw, 52px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.s4-right-label {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 0.9vw, 12px);
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+.s4-points {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(10px, 1.6vh, 20px);
+}
+.s4-point {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(12px, 1.3vw, 17px);
+  color: #fff;
+  line-height: 1.45;
+}
+.s4-point-dash {
+  font-family: 'Space Mono', monospace;
+  color: rgba(255,255,255,0.45);
+  margin-right: clamp(5px, 0.7vw, 10px);
+}
+.s4-right-footer {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 0.8vw, 11px);
+  color: rgba(255,255,255,0.35);
+  margin-top: clamp(12px, 1.8vh, 24px);
+}
+
+/* ═══════════════════════════════════════════
+   SLIDE 5 — CONTACT / CTA
+   ═══════════════════════════════════════════ */
+.s5-inner {
+  height: 100%;
+  padding: clamp(28px, 5vh, 56px) clamp(36px, 5.5vw, 72px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+.s5-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.s5-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.s5-headline {
+  font-family: 'DM Serif Display', 'Noto Sans SC', serif;
+  font-size: clamp(48px, 8.5vw, 110px);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--dark);
+}
+.s5-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--brown);
+  margin-top: clamp(10px, 1.6vh, 20px);
+  margin-bottom: clamp(18px, 2.8vh, 36px);
+}
+.s5-contacts {
+  display: flex;
+  gap: clamp(8px, 1vw, 14px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.s5-pill {
+  padding: clamp(6px, 0.8vh, 10px) clamp(14px, 2vw, 28px);
+  border: 1.5px solid var(--dark);
+  border-radius: 40px;
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 1vw, 13px);
+  color: var(--dark);
+  transition: background 0.3s, color 0.3s;
+  cursor: pointer;
+}
+.s5-pill:hover { background: var(--dark); color: var(--cream); }
+.s5-pill--orange {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+}
+.s5-pill--orange:hover { background: #d04e2d; border-color: #d04e2d; }
+.s5-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.s5-arc {
+  position: absolute;
+  border: 2px solid rgba(232, 93, 58, 0.12);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════
+   KEYBOARD HINT
+   ═══════════════════════════════════════════ */
+.keyboard-hint {
+  position: fixed;
+  bottom: clamp(16px, 3vh, 36px);
+  left: clamp(20px, 3vw, 48px);
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 0.8vw, 11px);
+  color: var(--brown);
+  opacity: 0.5;
+  z-index: 1000;
+  transition: opacity 0.5s;
+}
+.keyboard-hint.hide { opacity: 0; }
+
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+<div class="keyboard-hint" id="hint">Space / Arrow Keys</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 1 — COVER: 设计革命
+     ═══════════════════════════════════════════ -->
+<div class="slide active" data-i="0">
+  <div class="dots dots--6 decorative" style="bottom:clamp(40px,7vh,80px);left:clamp(32px,5vw,64px);">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="s1-layout">
+    <div class="s1-main">
+      <div class="s1-top-bar reveal">
+        <span class="mono">设计前沿</span>
+        <span class="mono">Issue 05 / 2026</span>
+      </div>
+      <div class="s1-hero">
+        <h1 class="reveal">
+          <span class="outline-text">设计</span><br>
+          <span class="color-orange">革命</span><br>
+          新纪元
+        </h1>
+        <div class="s1-tags reveal">
+          <span class="tag-pill">AI 设计</span>
+          <span class="tag-pill">视觉系统</span>
+          <span class="tag-pill tag-pill--orange">2026</span>
+        </div>
+      </div>
+      <div class="s1-bottom reveal">
+        <span class="mono">按空格键继续</span>
+        <div class="arrow-icon" onclick="go(1)">&darr;</div>
+      </div>
+    </div>
+    <div class="s1-sidebar">
+      <div class="riso-circle" style="width:clamp(150px,22vw,300px);height:clamp(150px,22vw,300px);background:rgba(0,0,0,0.08);top:-10%;right:-10%;"></div>
+      <div class="riso-circle" style="width:clamp(100px,15vw,200px);height:clamp(100px,15vw,200px);background:rgba(255,255,255,0.06);bottom:-5%;left:-8%;"></div>
+      <div class="s1-sidebar-title reveal-right">议程</div>
+      <div class="s1-list">
+        <div class="s1-item reveal-right" style="animation-delay:0.1s;">
+          <div class="s1-item-num">01</div>
+          <div class="s1-item-text">设计宣言</div>
+          <div class="s1-item-sub">打破规则，重新定义</div>
+        </div>
+        <div class="s1-item reveal-right" style="animation-delay:0.2s;">
+          <div class="s1-item-num">02</div>
+          <div class="s1-item-text">核心能力</div>
+          <div class="s1-item-sub">AI 驱动的四大支柱</div>
+        </div>
+        <div class="s1-item reveal-right" style="animation-delay:0.3s;">
+          <div class="s1-item-num">03</div>
+          <div class="s1-item-text">实战案例</div>
+          <div class="s1-item-sub">品牌重塑的力量</div>
+        </div>
+        <div class="s1-item reveal-right" style="animation-delay:0.4s;">
+          <div class="s1-item-num">04</div>
+          <div class="s1-item-text">加入我们</div>
+          <div class="s1-item-sub">一起创造未来</div>
+        </div>
+      </div>
+      <div class="s1-sidebar-footer reveal-right" style="animation-delay:0.5s;">design-revolution.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 2 — MANIFESTO: 设计宣言
+     ═══════════════════════════════════════════ -->
+<div class="slide" data-i="1">
+  <div class="s2-stripe"></div>
+  <div class="s2-stripe-inner"></div>
+  <div class="dots dots--8 decorative" style="top:clamp(28px,5vh,56px);right:clamp(60px,9vw,130px);">
+    <div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div>
+    <div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div>
+    <div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div><div class="dot dot--white"></div>
+  </div>
+  <div class="dots dots--5 decorative" style="bottom:clamp(28px,5vh,56px);left:clamp(36px,5.5vw,72px);">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="s2-inner">
+    <div class="s2-top reveal">
+      <span class="mono">设计前沿</span>
+      <span class="mono">02 / 宣言</span>
+    </div>
+    <div class="s2-body">
+      <div class="s2-headline reveal-paper">
+        <span class="outline-text">我们不</span><br>
+        <span class="color-orange">遵循</span>规则<br>
+        我们<span class="outline-text">创造</span>规则
+      </div>
+      <p class="s2-sub reveal">
+        创造力不是一个部门，而是一种看待世界的方式<br>
+        ——然后用意图、匠心和一点点疯狂<br>
+        去重新构建它。
+      </p>
+    </div>
+    <div class="s2-bottom reveal">
+      <div class="s2-bottom-tags">
+        <span class="tag-pill">不同思考</span>
+        <span class="tag-pill">大胆构建</span>
+        <span class="tag-pill tag-pill--orange">极速发布</span>
+      </div>
+      <span class="mono">design-revolution.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 3 — SERVICES: 核心能力
+     ═══════════════════════════════════════════ -->
+<div class="slide" data-i="2">
+  <div class="dots dots--5 decorative" style="top:clamp(8px,1.2vh,16px);right:clamp(12px,1.8vw,24px);">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="s3-inner">
+    <div class="s3-header">
+      <div class="reveal">
+        <span class="mono" style="display:block;margin-bottom:clamp(4px,0.6vh,8px);">03 / 核心能力</span>
+        <div class="s3-title">AI 驱动的 <span class="outline-text">设计引擎</span></div>
+      </div>
+      <span class="mono reveal">设计前沿</span>
+    </div>
+    <div class="s3-grid">
+      <div class="s3-card reveal-paper" style="animation-delay:0.1s;">
+        <div>
+          <div class="s3-card-num">01</div>
+          <div class="s3-card-title">智能<br>布局</div>
+        </div>
+        <div class="s3-card-desc">AI 理解内容语义<br>自动生成视觉层次</div>
+      </div>
+      <div class="s3-card s3-card--orange reveal-paper" style="animation-delay:0.2s;">
+        <div>
+          <div class="s3-card-num">02</div>
+          <div class="s3-card-title">风格<br>迁移</div>
+        </div>
+        <div class="s3-card-desc">一键迁移视觉语言<br>保持品牌一致性</div>
+      </div>
+      <div class="s3-card s3-card--orange reveal-paper" style="animation-delay:0.3s;">
+        <div>
+          <div class="s3-card-num">03</div>
+          <div class="s3-card-title">实时<br>协作</div>
+        </div>
+        <div class="s3-card-desc">多人同步编辑<br>AI 调和设计意图</div>
+      </div>
+      <div class="s3-card reveal-paper" style="animation-delay:0.4s;">
+        <div>
+          <div class="s3-card-num">04</div>
+          <div class="s3-card-title">自适应<br>排版</div>
+        </div>
+        <div class="s3-card-desc">一次设计自动适配<br>从手表到巨幕</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 4 — CASE STUDY: 实战案例
+     ═══════════════════════════════════════════ -->
+<div class="slide" data-i="3">
+  <div class="dots dots--6 decorative" style="bottom:clamp(36px,6vh,72px);left:clamp(28px,4.3vw,56px);">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="s4-layout">
+    <div class="s4-left">
+      <div>
+        <div class="s4-label reveal">04 / 实战案例</div>
+        <div class="s4-number reveal-stamp">01</div>
+        <div class="s4-title reveal">品牌重塑<br>一家金融科技<br>初创公司</div>
+      </div>
+      <div class="s4-left-footer reveal">
+        <span class="tag-pill">金融科技</span>
+        <span class="tag-pill">2026</span>
+        <span class="tag-pill tag-pill--orange">已上线</span>
+      </div>
+    </div>
+    <div class="s4-right">
+      <div class="riso-circle" style="width:clamp(90px,14vw,180px);height:clamp(90px,14vw,180px);background:rgba(255,255,255,0.05);bottom:-7%;left:-7%;"></div>
+      <div class="s4-right-label reveal-right">关键成果</div>
+      <div class="s4-points">
+        <p class="s4-point reveal-right" style="animation-delay:0.12s;"><span class="s4-point-dash">&mdash;</span>上线首季品牌认知度提升 340%，社交媒体互动量翻倍</p>
+        <p class="s4-point reveal-right" style="animation-delay:0.24s;"><span class="s4-point-dash">&mdash;</span>统一 12 个数字触点和 3 个实体空间的视觉系统</p>
+        <p class="s4-point reveal-right" style="animation-delay:0.36s;"><span class="s4-point-dash">&mdash;</span>借助 AI 辅助生成，设计产出效率提升 60%</p>
+        <p class="s4-point reveal-right" style="animation-delay:0.48s;"><span class="s4-point-dash">&mdash;</span>荣获 2026 年度品牌设计系统卓越大奖</p>
+      </div>
+      <div class="s4-right-footer reveal-right" style="animation-delay:0.6s;">design-revolution.com / work</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 5 — CONTACT: 加入革命
+     ═══════════════════════════════════════════ -->
+<div class="slide" data-i="4">
+  <div class="s5-arc decorative" style="width:clamp(250px,38vw,500px);height:clamp(250px,38vw,500px);top:-15%;left:-8%;"></div>
+  <div class="s5-arc decorative" style="width:clamp(180px,28vw,360px);height:clamp(180px,28vw,360px);bottom:-10%;right:-6%;"></div>
+  <div class="dots dots--10 decorative" style="top:clamp(18px,3vh,36px);right:clamp(18px,2.8vw,36px);">
+    <div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div>
+    <div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div>
+    <div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div><div class="dot dot--sm"></div>
+  </div>
+  <div class="dots dots--8 decorative" style="bottom:clamp(18px,3vh,36px);left:clamp(18px,2.8vw,36px);">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="s5-inner">
+    <div class="s5-top reveal">
+      <span class="mono">设计前沿</span>
+      <span class="mono">05 / 联系</span>
+    </div>
+    <div class="s5-body">
+      <div class="s5-headline reveal-stamp">
+        <span class="outline-text">加入</span><br>
+        <span class="color-orange">革命</span>
+      </div>
+      <p class="s5-sub reveal">有想法？我们随时准备好倾听。</p>
+      <div class="s5-contacts reveal">
+        <span class="s5-pill s5-pill--orange">hello@design-rev.com</span>
+        <span class="s5-pill">@design.revolution</span>
+        <span class="s5-pill">WeChat: DesignRev</span>
+        <span class="s5-pill s5-pill--orange">预约沟通</span>
+      </div>
+    </div>
+    <div class="s5-bottom reveal">
+      <span class="mono">上海 / 深圳 / 东京</span>
+      <span class="mono">design-revolution.com</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var bar = document.getElementById('progress');
+  var cur = document.getElementById('cur');
+  var hint = document.getElementById('hint');
+  var c = 0;
+
+  function resetReveals(slide) {
+    var els = slide.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-paper, .reveal-stamp');
+    for (var i = 0; i < els.length; i++) {
+      els[i].style.animation = 'none';
+      els[i].offsetHeight;
+      els[i].style.animation = '';
+    }
+  }
+
+  function go(i) {
+    if (i < 0 || i >= total) return;
+    slides[c].classList.remove('active');
+    resetReveals(slides[c]);
+    c = i;
+    slides[c].classList.add('active');
+    bar.style.width = ((c + 1) / total * 100) + '%';
+    cur.textContent = String(c + 1).padStart(2, '0');
+    if (hint && !hint.classList.contains('hide')) {
+      hint.classList.add('hide');
+    }
+  }
+
+  window.go = go;
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      go(c + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      go(c - 1);
+    }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+
+  var touchStartY = 0;
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 50) {
+      go(dy < 0 ? c + 1 : c - 1);
+    } else if (Math.abs(dx) > 50) {
+      go(dx < 0 ? c + 1 : c - 1);
+    }
+  }, { passive: true });
+
+  bar.style.width = (1 / total * 100) + '%';
+
+  setTimeout(function() {
+    if (hint) hint.classList.add('hide');
+  }, 4000);
+})();
+</script>
+</body>
+</html>

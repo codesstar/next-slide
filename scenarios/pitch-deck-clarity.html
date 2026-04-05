@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity — AI Mental Health App | Pre-A</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=instrument-sans@400;500;600;700&f[]=switzer@400;500;600&display=swap">
+    <style>
+        /* ===========================================
+           SOFT LANDING + PASTEL GEOMETRY
+           Calming, approachable, welcoming
+           =========================================== */
+        :root {
+            --bg-primary: #f6f2ee;
+            --bg-card: #ffffff;
+            --card-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0px 4px rgba(0,0,0,0.03);
+            --text-primary: #1a1a2e;
+            --text-secondary: #5e5e74;
+            --text-muted: #9a9ab0;
+            --accent-violet: #7c6bbd;
+            --accent-violet-light: #ede7fb;
+            --accent-emerald: #3dba8c;
+            --accent-emerald-light: #e0f5ec;
+            --accent-rose: #e08dad;
+            --accent-rose-light: #fce8ef;
+            --accent-sky: #6aaed4;
+            --border-subtle: #e8e4e0;
+            --pill-mint: #a8d4c4;
+            --pill-lavender: #b8a8d8;
+            --pill-pink: #f0b4d4;
+            --pill-sage: #5a7c6a;
+            --font-display: 'Instrument Sans', 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'Switzer', 'Plus Jakarta Sans', sans-serif;
+            --title-size: clamp(2rem, 5.5vw, 4.5rem);
+            --h2-size: clamp(1.4rem, 3.5vw, 2.8rem);
+            --h3-size: clamp(1rem, 2.2vw, 1.6rem);
+            --subtitle-size: clamp(0.875rem, 1.8vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --stat-size: clamp(2.5rem, 7vw, 5rem);
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-normal: 0.6s;
+            --duration-slow: 0.8s;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; background: var(--bg-primary); }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        h1,h2,h3,h4,h5,h6 { overflow-wrap: break-word; }
+        p,li,blockquote { overflow-wrap: break-word; }
+
+        /* Pastel blobs */
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; pointer-events: none; z-index: 0; }
+
+        /* Soft cards */
+        .soft-card { background: var(--bg-card); border-radius: 16px; padding: clamp(0.75rem,2vw,1.5rem); box-shadow: var(--card-shadow); border: 1px solid var(--border-subtle); }
+        .pill { display: inline-block; padding: clamp(3px,0.4vw,5px) clamp(10px,1.5vw,16px); border-radius: 20px; font-size: var(--small-size); font-weight: 500; }
+
+        /* Section pills (vertical right edge) */
+        .section-pills { position: absolute; right: clamp(8px,1.5vw,16px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; z-index: 3; }
+        .section-pill { width: clamp(4px,0.5vw,6px); border-radius: 3px; background: var(--border-subtle); transition: all 0.3s ease; }
+        .section-pill.active { background: var(--accent-violet); }
+
+        /* Animations — Gentle bounce */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal-bounce { opacity: 0; transform: translateY(50px) scale(0.95); transition: opacity 0.5s ease, transform var(--duration-slow) var(--ease-out-back); }
+        .slide.visible .reveal-bounce { opacity: 1; transform: translateY(0) scale(1); }
+        .reveal-gentle { opacity: 0; transition: opacity 1.2s ease; }
+        .slide.visible .reveal-gentle { opacity: 1; }
+        .reveal:nth-child(1) { transition-delay: 0.08s; } .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.26s; } .reveal:nth-child(4) { transition-delay: 0.36s; }
+        .reveal:nth-child(5) { transition-delay: 0.46s; } .reveal:nth-child(6) { transition-delay: 0.56s; }
+        .reveal-bounce:nth-child(1) { transition-delay: 0.1s; } .reveal-bounce:nth-child(2) { transition-delay: 0.2s; }
+        .reveal-bounce:nth-child(3) { transition-delay: 0.3s; } .reveal-bounce:nth-child(4) { transition-delay: 0.4s; }
+
+        @keyframes breathe { 0%,100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.05); opacity: 0.4; } }
+        @keyframes float-hover { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        /* Data vis */
+        .progress-ring { width: clamp(70px,10vw,110px); height: clamp(70px,10vw,110px); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+        .progress-ring .center { font-family: var(--font-display); font-weight: 700; font-size: clamp(0.9rem,1.8vw,1.3rem); color: var(--text-primary); }
+        .stat-bar { height: clamp(8px,1.2vh,14px); background: var(--border-subtle); border-radius: 10px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; border-radius: 10px; transition: width 1.5s var(--ease-out-expo); }
+
+        /* Progress & Nav */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose)); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px,2vw,24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; opacity: 0.4; }
+        .nav-dot.active { background: var(--accent-violet); opacity: 1; transform: scale(1.3); }
+        .slide-counter { position: fixed; bottom: clamp(12px,2vw,24px); right: clamp(12px,2vw,24px); font-family: var(--font-body); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Responsive */
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem,3vw,2rem); --content-gap: clamp(0.4rem,1.5vw,1rem); --title-size: clamp(1.25rem,4.5vw,2.5rem); --h2-size: clamp(1rem,3vw,1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem,2.5vw,1.5rem); --body-size: clamp(0.7rem,1.2vw,0.95rem); } .nav-dots,.decorative,.section-pills { display: none; } }
+        @media (max-height: 500px) { :root { --title-size: clamp(1rem,3.5vw,1.5rem); --body-size: clamp(0.65rem,1vw,0.85rem); } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem,7vw,2.5rem); } .slide-counter { display: none; } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1400px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal,.reveal-bounce,.reveal-gentle { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .slide.visible .reveal,.slide.visible .reveal-bounce,.slide.visible .reveal-gentle { opacity: 1; }
+        }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar,.nav-dots,.slide-counter,.section-pills { display: none !important; } .reveal,[class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div class="blob" style="width:40%;height:40%;background:var(--accent-violet-light);top:10%;left:-5%;animation:breathe 8s ease-in-out infinite;"></div>
+        <div class="blob" style="width:35%;height:35%;background:var(--accent-rose-light);bottom:5%;right:-5%;animation:breathe 10s ease-in-out infinite 2s;"></div>
+        <div class="blob" style="width:25%;height:25%;background:var(--accent-emerald-light);top:40%;right:20%;animation:breathe 12s ease-in-out infinite 4s;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-violet-light);color:var(--accent-violet);">Pre-A Round</div>
+            <h1 class="reveal" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);letter-spacing:-0.02em;">Clarity</h1>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(65vw,550px);">AI-guided mental health care that meets people where they are</p>
+            <p class="reveal" style="font-size:var(--small-size);color:var(--text-muted);margin-top:var(--content-gap);">April 2026  |  Confidential</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: PROBLEM -->
+    <section class="slide" aria-label="Problem">
+        <div class="blob" style="width:30%;height:30%;background:var(--accent-rose-light);top:5%;right:10%;animation:breathe 9s ease-in-out infinite;"></div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-rose-light);color:var(--accent-rose);">The Problem</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">A silent crisis in mental health</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,600px);line-height:1.7;">1 in 5 adults struggle with mental health. Waitlists average 6 weeks. Therapy costs $150/session. Most people suffer in silence.</p>
+            <div style="display:flex;gap:clamp(1rem,3vw,3rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal-bounce soft-card" style="flex:1;min-width:min(100%,140px);text-align:center;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:800;color:var(--accent-rose);">1 in 5</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">Adults affected</div>
+                </div>
+                <div class="reveal-bounce soft-card" style="flex:1;min-width:min(100%,140px);text-align:center;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:800;color:var(--text-primary);">6 wks</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">Average waitlist</div>
+                </div>
+                <div class="reveal-bounce soft-card" style="flex:1;min-width:min(100%,140px);text-align:center;">
+                    <div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:800;color:var(--text-primary);">$150</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);">Per session avg</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: SOLUTION -->
+    <section class="slide" aria-label="Solution">
+        <div class="blob" style="width:35%;height:35%;background:var(--accent-emerald-light);bottom:10%;left:5%;animation:breathe 10s ease-in-out infinite;"></div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-emerald-light);color:var(--accent-emerald);">Our Solution</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">CBT meets AI journaling</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,600px);line-height:1.7;">Clarity combines clinically-validated CBT exercises with AI-powered reflective journaling. Personalized, affordable, and always available.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal-bounce soft-card" style="animation:float-hover 4s ease-in-out infinite;">
+                    <div style="width:clamp(32px,4vw,44px);height:clamp(32px,4vw,44px);border-radius:12px;background:var(--accent-violet-light);display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,1.5vw,1.3rem);margin-bottom:0.5em;">&#9825;</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:600;">AI Journaling</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Guided reflections that adapt to your emotional state</p>
+                </div>
+                <div class="reveal-bounce soft-card" style="animation:float-hover 4s ease-in-out infinite 1s;">
+                    <div style="width:clamp(32px,4vw,44px);height:clamp(32px,4vw,44px);border-radius:12px;background:var(--accent-emerald-light);display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,1.5vw,1.3rem);margin-bottom:0.5em;">&#9672;</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:600;">CBT Exercises</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Evidence-based cognitive restructuring, bite-sized</p>
+                </div>
+                <div class="reveal-bounce soft-card" style="animation:float-hover 4s ease-in-out infinite 2s;">
+                    <div style="width:clamp(32px,4vw,44px);height:clamp(32px,4vw,44px);border-radius:12px;background:var(--accent-rose-light);display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,1.5vw,1.3rem);margin-bottom:0.5em;">&#9673;</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:600;">Mood Tracking</h3>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Visual patterns reveal triggers and growth over time</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: PRODUCT FEATURES -->
+    <section class="slide" aria-label="Product">
+        <div class="blob" style="width:25%;height:25%;background:var(--accent-violet-light);top:15%;right:10%;animation:breathe 8s ease-in-out infinite;"></div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-violet-light);color:var(--accent-violet);">Product</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Designed for daily wellbeing</h2>
+            <!-- App mockup -->
+            <div class="reveal-bounce" style="margin-top:var(--content-gap);display:flex;gap:clamp(0.75rem,2vw,1.5rem);flex-wrap:wrap;justify-content:center;">
+                <div class="soft-card" style="width:min(45%,280px);text-align:center;">
+                    <div style="font-size:var(--small-size);color:var(--text-muted);margin-bottom:0.4em;">Today's Check-in</div>
+                    <div style="font-size:clamp(2rem,4vw,3rem);margin:0.2em 0;">&#128522;</div>
+                    <div style="font-size:var(--body-size);font-weight:600;">Feeling Good</div>
+                    <div style="display:flex;gap:4px;justify-content:center;margin-top:0.6em;">
+                        <div style="width:clamp(30px,4vw,50px);height:clamp(5px,0.8vh,8px);border-radius:4px;background:var(--accent-emerald);"></div>
+                        <div style="width:clamp(30px,4vw,50px);height:clamp(5px,0.8vh,8px);border-radius:4px;background:var(--accent-emerald);opacity:0.7;"></div>
+                        <div style="width:clamp(30px,4vw,50px);height:clamp(5px,0.8vh,8px);border-radius:4px;background:var(--accent-emerald);opacity:0.4;"></div>
+                        <div style="width:clamp(30px,4vw,50px);height:clamp(5px,0.8vh,8px);border-radius:4px;background:var(--border-subtle);"></div>
+                        <div style="width:clamp(30px,4vw,50px);height:clamp(5px,0.8vh,8px);border-radius:4px;background:var(--border-subtle);"></div>
+                    </div>
+                    <div style="font-size:var(--small-size);color:var(--text-muted);margin-top:0.4em;">7-day streak</div>
+                </div>
+                <div class="soft-card" style="width:min(45%,280px);">
+                    <div style="font-size:var(--small-size);color:var(--text-muted);margin-bottom:0.4em;">Journal Prompt</div>
+                    <p style="font-size:var(--body-size);line-height:1.6;font-style:italic;color:var(--text-primary);">"What's one thing you're grateful for that you usually take for granted?"</p>
+                    <div style="margin-top:0.6em;padding:clamp(0.3rem,0.8vw,0.6rem);background:var(--accent-violet-light);border-radius:8px;font-size:var(--small-size);color:var(--accent-violet);">AI: I notice you've been reflecting on work stress this week...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: CLINICAL VALIDATION -->
+    <section class="slide" aria-label="Validation">
+        <div class="blob" style="width:30%;height:30%;background:var(--accent-emerald-light);top:10%;left:5%;animation:breathe 11s ease-in-out infinite;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-emerald-light);color:var(--accent-emerald);">Clinical Validation</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Backed by science</h2>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,500px);line-height:1.7;">12-week RCT with Stanford Psychology Department. 340 participants.</p>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;justify-content:center;">
+                <div class="reveal-bounce" style="text-align:center;">
+                    <div class="progress-ring" style="background:conic-gradient(var(--accent-emerald) 0deg 241deg, var(--border-subtle) 241deg);margin:0 auto;"><div class="center">67%</div></div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;">Reduction in PHQ-9 scores</div>
+                </div>
+                <div class="reveal-bounce" style="text-align:center;">
+                    <div class="progress-ring" style="background:conic-gradient(var(--accent-violet) 0deg 310deg, var(--border-subtle) 310deg);margin:0 auto;"><div class="center">86%</div></div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;">Daily engagement rate</div>
+                </div>
+                <div class="reveal-bounce" style="text-align:center;">
+                    <div class="progress-ring" style="background:conic-gradient(var(--accent-rose) 0deg 331deg, var(--border-subtle) 331deg);margin:0 auto;"><div class="center">92%</div></div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.5em;">Would recommend to a friend</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: MARKET -->
+    <section class="slide" aria-label="Market">
+        <div class="blob" style="width:35%;height:35%;background:var(--accent-violet-light);bottom:10%;right:5%;animation:breathe 9s ease-in-out infinite;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-violet-light);color:var(--accent-violet);">Market</div>
+            <h2 class="reveal" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:800;margin-top:var(--element-gap);">$380B</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);">Global mental health market by 2030</p>
+            <div style="display:flex;gap:clamp(0.75rem,2vw,1.5rem);margin-top:var(--content-gap);flex-wrap:wrap;justify-content:center;max-width:min(80vw,600px);">
+                <div class="reveal-bounce soft-card" style="flex:1;min-width:min(100%,160px);text-align:center;">
+                    <div style="font-size:clamp(1.5rem,3vw,2.2rem);font-family:var(--font-display);font-weight:700;color:var(--accent-violet);">$18B</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">Digital therapeutics TAM</div>
+                </div>
+                <div class="reveal-bounce soft-card" style="flex:1;min-width:min(100%,160px);text-align:center;">
+                    <div style="font-size:clamp(1.5rem,3vw,2.2rem);font-family:var(--font-display);font-weight:700;color:var(--accent-emerald);">32%</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;">CAGR (2024-2030)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: TRACTION -->
+    <section class="slide" aria-label="Traction">
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-emerald-light);color:var(--accent-emerald);">Traction</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Growing organically</h2>
+            <div style="display:flex;gap:clamp(1.5rem,4vw,4rem);margin-top:var(--content-gap);flex-wrap:wrap;">
+                <div class="reveal" style="text-align:center;"><div class="counter" data-target="50" data-suffix="K" style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:800;color:var(--accent-violet);">0</div><div style="font-size:var(--body-size);color:var(--text-secondary);">Monthly active users</div></div>
+                <div class="reveal" style="text-align:center;"><div style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:800;color:var(--accent-emerald);">4.8</div><div style="font-size:var(--body-size);color:var(--text-secondary);">App Store rating</div></div>
+                <div class="reveal" style="text-align:center;"><div class="counter" data-target="72" data-suffix="%" style="font-size:var(--stat-size);font-family:var(--font-display);font-weight:800;color:var(--text-primary);">0</div><div style="font-size:var(--body-size);color:var(--text-secondary);">D30 retention</div></div>
+            </div>
+            <div class="reveal" style="margin-top:var(--content-gap);">
+                <div style="font-size:var(--small-size);color:var(--text-muted);margin-bottom:0.5em;">USER GROWTH (MAU, K)</div>
+                <div style="display:flex;align-items:flex-end;gap:clamp(4px,0.8vw,8px);height:clamp(60px,14vh,140px);padding-bottom:clamp(18px,2.5vw,26px);">
+                    <div style="flex:1;height:8%;background:linear-gradient(180deg,var(--accent-violet),var(--accent-violet-light));border-radius:6px 6px 0 0;position:relative;min-width:16px;"><div style="position:absolute;bottom:calc(-1 * clamp(16px,2vw,22px));left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);white-space:nowrap;">Jan</div></div>
+                    <div style="flex:1;height:15%;background:linear-gradient(180deg,var(--accent-violet),var(--accent-violet-light));border-radius:6px 6px 0 0;position:relative;min-width:16px;"><div style="position:absolute;bottom:calc(-1 * clamp(16px,2vw,22px));left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);white-space:nowrap;">Mar</div></div>
+                    <div style="flex:1;height:28%;background:linear-gradient(180deg,var(--accent-violet),var(--accent-violet-light));border-radius:6px 6px 0 0;position:relative;min-width:16px;"><div style="position:absolute;bottom:calc(-1 * clamp(16px,2vw,22px));left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);white-space:nowrap;">Jun</div></div>
+                    <div style="flex:1;height:48%;background:linear-gradient(180deg,var(--accent-violet),var(--accent-violet-light));border-radius:6px 6px 0 0;position:relative;min-width:16px;"><div style="position:absolute;bottom:calc(-1 * clamp(16px,2vw,22px));left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);white-space:nowrap;">Sep</div></div>
+                    <div style="flex:1;height:78%;background:linear-gradient(180deg,var(--accent-violet),var(--accent-violet-light));border-radius:6px 6px 0 0;position:relative;min-width:16px;"><div style="position:absolute;bottom:calc(-1 * clamp(16px,2vw,22px));left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);white-space:nowrap;">Dec</div></div>
+                    <div style="flex:1;height:100%;background:linear-gradient(180deg,var(--accent-violet),var(--accent-violet-light));border-radius:6px 6px 0 0;position:relative;min-width:16px;"><div style="position:absolute;bottom:calc(-1 * clamp(16px,2vw,22px));left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--accent-violet);font-weight:600;white-space:nowrap;">Now</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: REVENUE MODEL -->
+    <section class="slide" aria-label="Revenue">
+        <div class="blob" style="width:30%;height:30%;background:var(--accent-rose-light);top:5%;left:10%;animation:breathe 10s ease-in-out infinite;"></div>
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-rose-light);color:var(--accent-rose);">Revenue Model</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Freemium + B2B</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:clamp(0.5rem,1.5vw,1rem);margin-top:var(--content-gap);">
+                <div class="reveal-bounce soft-card">
+                    <div class="pill" style="background:var(--accent-violet-light);color:var(--accent-violet);margin-bottom:0.5em;">Consumer</div>
+                    <div style="font-size:clamp(1.3rem,2.5vw,2rem);font-family:var(--font-display);font-weight:700;">Free</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Basic journaling, 3 CBT exercises/week, mood check-ins</p>
+                </div>
+                <div class="reveal-bounce soft-card" style="border:2px solid var(--accent-violet);">
+                    <div class="pill" style="background:var(--accent-violet-light);color:var(--accent-violet);margin-bottom:0.5em;">Premium</div>
+                    <div style="font-size:clamp(1.3rem,2.5vw,2rem);font-family:var(--font-display);font-weight:700;">$12<span style="font-size:var(--small-size);font-weight:400;color:var(--text-secondary);">/mo</span></div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Unlimited AI sessions, advanced analytics, therapist matching</p>
+                </div>
+                <div class="reveal-bounce soft-card">
+                    <div class="pill" style="background:var(--accent-emerald-light);color:var(--accent-emerald);margin-bottom:0.5em;">Enterprise</div>
+                    <div style="font-size:clamp(1.3rem,2.5vw,2rem);font-family:var(--font-display);font-weight:700;">$8<span style="font-size:var(--small-size);font-weight:400;color:var(--text-secondary);">/user/mo</span></div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em;line-height:1.5;">Team wellness dashboard, HR analytics, EAP integration</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: TEAM -->
+    <section class="slide" aria-label="Team">
+        <div class="slide-content" style="z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-violet-light);color:var(--accent-violet);">Team</div>
+            <h2 class="reveal" style="font-size:var(--h2-size);font-family:var(--font-display);font-weight:700;margin-top:var(--element-gap);">Clinical expertise meets product craft</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(0.75rem,2vw,1.5rem);margin-top:var(--content-gap);">
+                <div class="reveal-bounce soft-card" style="text-align:center;">
+                    <div style="width:clamp(50px,6vw,72px);height:clamp(50px,6vw,72px);border-radius:50%;background:linear-gradient(135deg,var(--accent-violet-light),var(--accent-rose-light));margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:700;font-family:var(--font-display);color:var(--accent-violet);">SM</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:600;margin-top:0.4em;">Dr. Sarah Melo</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-violet);">CEO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;line-height:1.4;">Clinical psychologist, Harvard. 10yr CBT research.</p>
+                </div>
+                <div class="reveal-bounce soft-card" style="text-align:center;">
+                    <div style="width:clamp(50px,6vw,72px);height:clamp(50px,6vw,72px);border-radius:50%;background:linear-gradient(135deg,var(--accent-emerald-light),var(--accent-violet-light));margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:700;font-family:var(--font-display);color:var(--accent-emerald);">JL</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:600;margin-top:0.4em;">James Liu</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-emerald);">CTO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;line-height:1.4;">Ex-Calm engineering lead. NLP specialist.</p>
+                </div>
+                <div class="reveal-bounce soft-card" style="text-align:center;">
+                    <div style="width:clamp(50px,6vw,72px);height:clamp(50px,6vw,72px);border-radius:50%;background:linear-gradient(135deg,var(--accent-rose-light),var(--accent-emerald-light));margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:700;font-family:var(--font-display);color:var(--accent-rose);">AP</div>
+                    <h3 style="font-size:var(--h3-size);font-family:var(--font-display);font-weight:600;margin-top:0.4em;">Aisha Patel</h3>
+                    <div style="font-size:var(--small-size);color:var(--accent-rose);">CPO</div>
+                    <p style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.2em;line-height:1.4;">Ex-Headspace. 8yr health-tech product design.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: ASK -->
+    <section class="slide" aria-label="The Ask">
+        <div class="blob" style="width:40%;height:40%;background:var(--accent-violet-light);top:15%;left:30%;animation:breathe 8s ease-in-out infinite;"></div>
+        <div class="blob" style="width:30%;height:30%;background:var(--accent-emerald-light);bottom:10%;right:10%;animation:breathe 10s ease-in-out infinite 3s;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;z-index:1;">
+            <div class="reveal pill" style="background:var(--accent-violet-light);color:var(--accent-violet);">The Ask</div>
+            <h2 class="reveal" style="font-size:var(--title-size);font-family:var(--font-display);font-weight:800;margin-top:var(--element-gap);">$3M Pre-A</h2>
+            <p class="reveal" style="font-size:var(--subtitle-size);color:var(--text-secondary);margin-top:var(--element-gap);max-width:min(60vw,480px);">Scaling clinical content, expanding to 200K MAU, and launching B2B partnerships.</p>
+            <div style="display:flex;gap:clamp(1rem,3vw,3rem);margin-top:var(--content-gap);flex-wrap:wrap;justify-content:center;">
+                <div class="reveal" style="text-align:center;"><div style="font-size:clamp(1.3rem,2.5vw,1.8rem);font-family:var(--font-display);font-weight:700;color:var(--accent-violet);">45%</div><div style="font-size:var(--small-size);color:var(--text-secondary);">Product & AI</div></div>
+                <div class="reveal" style="text-align:center;"><div style="font-size:clamp(1.3rem,2.5vw,1.8rem);font-family:var(--font-display);font-weight:700;color:var(--accent-emerald);">30%</div><div style="font-size:var(--small-size);color:var(--text-secondary);">Growth & Marketing</div></div>
+                <div class="reveal" style="text-align:center;"><div style="font-size:clamp(1.3rem,2.5vw,1.8rem);font-family:var(--font-display);font-weight:700;color:var(--accent-rose);">25%</div><div style="font-size:var(--small-size);color:var(--text-secondary);">Clinical & Compliance</div></div>
+            </div>
+            <p class="reveal" style="font-size:var(--body-size);color:var(--text-muted);margin-top:var(--content-gap);">sarah@getclarity.ai  |  getclarity.ai</p>
+        </div>
+        <p style="position:absolute;bottom:clamp(8px,1.5vw,16px);left:50%;transform:translateX(-50%);font-size:var(--small-size);color:var(--text-muted);opacity:0.4;">Made with <a href="https://nextslide.app" style="color:inherit;text-decoration:underline;" target="_blank">Next Slide</a></p>
+    </section>
+
+    <script>
+        class SlidePresentation{constructor(){this.slides=[...document.querySelectorAll('.slide')];this.currentSlide=0;this.isAnimating=false;this.touchStartY=0;this.touchStartX=0;this.init();}init(){this.setupIntersectionObserver();this.setupKeyboardNav();this.setupTouchNav();this.setupWheelNav();this.setupProgressBar();this.setupNavDots();this.setupSlideCounter();if(this.slides[0])this.slides[0].classList.add('visible');}setupIntersectionObserver(){const o=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');const idx=this.slides.indexOf(entry.target);if(idx!==-1){this.currentSlide=idx;this.updateUI();}}});},{threshold:0.5});this.slides.forEach(s=>o.observe(s));}setupKeyboardNav(){document.addEventListener('keydown',(e)=>{if(e.target.getAttribute('contenteditable'))return;switch(e.key){case'ArrowDown':case'ArrowRight':case' ':case'PageDown':e.preventDefault();this.goToSlide(this.currentSlide+1);break;case'ArrowUp':case'ArrowLeft':case'PageUp':e.preventDefault();this.goToSlide(this.currentSlide-1);break;case'Home':e.preventDefault();this.goToSlide(0);break;case'End':e.preventDefault();this.goToSlide(this.slides.length-1);break;}});}setupTouchNav(){document.addEventListener('touchstart',(e)=>{this.touchStartY=e.touches[0].clientY;this.touchStartX=e.touches[0].clientX;},{passive:true});document.addEventListener('touchend',(e)=>{const dY=this.touchStartY-e.changedTouches[0].clientY;const dX=this.touchStartX-e.changedTouches[0].clientX;if(Math.abs(dY)<50||Math.abs(dX)>Math.abs(dY))return;if(dY>0)this.goToSlide(this.currentSlide+1);else this.goToSlide(this.currentSlide-1);},{passive:true});}setupWheelNav(){let t;document.addEventListener('wheel',(e)=>{clearTimeout(t);t=setTimeout(()=>{if(e.deltaY>30)this.goToSlide(this.currentSlide+1);else if(e.deltaY<-30)this.goToSlide(this.currentSlide-1);},50);},{passive:true});}setupProgressBar(){this.progressBar=document.getElementById('progressBar');}setupNavDots(){const c=document.getElementById('navDots');if(!c)return;this.slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label','Go to slide '+(i+1));d.addEventListener('click',()=>this.goToSlide(i));c.appendChild(d);});}setupSlideCounter(){this.counter=document.getElementById('slideCounter');this.updateUI();}goToSlide(i){if(i<0||i>=this.slides.length||this.isAnimating)return;this.isAnimating=true;this.currentSlide=i;this.slides[i].scrollIntoView({behavior:'smooth'});this.updateUI();setTimeout(()=>{this.isAnimating=false;},600);}updateUI(){const t=this.slides.length;const c=this.currentSlide;if(this.progressBar)this.progressBar.style.width=((c+1)/t*100)+'%';document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===c));if(this.counter)this.counter.textContent=(c+1)+' / '+t;}}
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters=document.querySelectorAll('.counter');const cObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){const el=entry.target;const target=parseInt(el.dataset.target);const suffix=el.dataset.suffix||'';const prefix=el.dataset.prefix||'';const duration=1500;const start=performance.now();function tick(now){const elapsed=now-start;const progress=Math.min(elapsed/duration,1);const eased=1-Math.pow(1-progress,3);el.textContent=prefix+Math.round(target*eased).toLocaleString()+suffix;if(progress<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);cObs.unobserve(el);}});},{threshold:0.5});counters.forEach(c=>cObs.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded',()=>{new SlidePresentation();});
+    </script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to UX Design Principles &mdash; Swiss Modern</title>
+
+    <!-- Fonts: Swiss Modern uses Archivo + Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=Nunito:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Swiss Modern (UX Teaching)
+           =========================================== */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f5;
+            --bg-tertiary: #eeede9;
+            --text-primary: #0a0a0a;
+            --text-secondary: #555555;
+            --text-muted: #888888;
+            --accent: #ff3300;
+            --accent-light: rgba(255, 51, 0, 0.06);
+            --accent-teal: #0d7377;
+            --accent-teal-light: rgba(13, 115, 119, 0.08);
+            --grid-line: rgba(0, 0, 0, 0.06);
+            --border: #0a0a0a;
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --surface: rgba(0, 0, 0, 0.03);
+
+            --font-display: 'Archivo', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(1.6rem, 4.5vw, 3.2rem);
+            --h2-size: clamp(1.2rem, 3vw, 2.2rem);
+            --h3-size: clamp(0.95rem, 2.2vw, 1.5rem);
+            --subtitle-size: clamp(0.85rem, 1.8vw, 1.15rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --stat-size: clamp(2rem, 7vw, 5rem);
+
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.6s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); }
+
+        .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+        h1, h2, h3 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4vw, 2.5rem); --h2-size: clamp(1rem, 2.8vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 3.5vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-content[style*="flex-direction: row"] { flex-direction: column !important; } .slide-counter { display: none; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; scroll-behavior: auto !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; } .visible .reveal { opacity: 1; } }
+        @media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; page-break-inside: avoid; } .progress-bar, .nav-dots, .slide-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; } }
+
+        /* Swiss Modern: Red accent bar */
+        .slide::before { content: ''; position: absolute; left: 0; top: 0; width: clamp(3px, 0.4vw, 5px); height: 100%; background: var(--accent); z-index: 2; }
+        .slide.title-slide::before, .slide.closing-slide::before { display: none; }
+
+        .section-label { font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); font-weight: 700; margin-bottom: clamp(0.3rem, 0.8vw, 0.6rem); }
+
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.08s; } .reveal:nth-child(2) { transition-delay: 0.16s; } .reveal:nth-child(3) { transition-delay: 0.24s; } .reveal:nth-child(4) { transition-delay: 0.32s; } .reveal:nth-child(5) { transition-delay: 0.40s; } .reveal:nth-child(6) { transition-delay: 0.48s; } .reveal:nth-child(7) { transition-delay: 0.56s; } .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.15); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--accent); transform: scale(1.4); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Wireframe placeholder */
+        .wireframe { background: var(--bg-secondary); border: 2px dashed var(--border-subtle); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.6rem, 1.2vw, 1rem); display: flex; flex-direction: column; gap: 0.4em; }
+        .wf-bar { background: rgba(0,0,0,0.1); border-radius: 3px; height: clamp(8px, 1vw, 12px); }
+        .wf-bar.short { width: 35%; }
+        .wf-bar.medium { width: 60%; }
+        .wf-bar.long { width: 85%; }
+        .wf-box { background: rgba(0,0,0,0.06); border-radius: 4px; aspect-ratio: 16/9; }
+        .wf-circle { width: clamp(20px, 2.5vw, 32px); height: clamp(20px, 2.5vw, 32px); border-radius: 50%; background: rgba(0,0,0,0.1); }
+        .wf-row { display: flex; gap: 0.5em; align-items: center; }
+
+        /* Before/After */
+        .ba-before { border-left: 3px solid var(--accent); background: var(--accent-light); border-radius: 0 clamp(6px, 1vw, 8px) clamp(6px, 1vw, 8px) 0; padding: clamp(0.6rem, 1.2vw, 1rem); }
+        .ba-after { border-left: 3px solid var(--accent-teal); background: var(--accent-teal-light); border-radius: 0 clamp(6px, 1vw, 8px) clamp(6px, 1vw, 8px) 0; padding: clamp(0.6rem, 1.2vw, 1rem); }
+
+        .footnote { font-size: var(--small-size); color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: clamp(0.4rem, 1vw, 0.6rem); margin-top: auto; font-style: italic; }
+
+        .stat-card { text-align: center; padding: clamp(0.8rem, 2vw, 1.5rem); }
+        .stat-value { font-size: var(--stat-size); font-family: var(--font-display); font-weight: 900; color: var(--accent); line-height: 1; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide title-slide" aria-label="Title">
+        <div class="slide-content" style="align-items: flex-start; justify-content: center;">
+            <div class="reveal" style="width: clamp(40px, 6vw, 80px); height: 3px; background: var(--accent); margin-bottom: clamp(0.8rem, 2vw, 1.5rem);"></div>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; line-height: 1.2; max-width: min(85vw, 800px); text-transform: uppercase;">
+                Introduction to UX Design Principles
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: clamp(0.5rem, 1.5vw, 1rem); line-height: 1.7; max-width: min(80vw, 650px);">
+                Heuristics, Wireframes &amp; the Art of User-Centered Thinking
+            </p>
+            <div class="reveal" style="margin-top: clamp(1.5rem, 4vw, 3rem); font-size: var(--body-size); color: var(--text-secondary); line-height: 2;">
+                <p>Design Foundations &nbsp;&middot;&nbsp; Lesson 01</p>
+                <p>Spring 2026 &nbsp;&middot;&nbsp; ~20 min</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: AGENDA -->
+    <section class="slide" aria-label="Agenda">
+        <div class="slide-content">
+            <div class="section-label reveal">CONTENTS</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">Today&rsquo;s Outline</h2>
+            <div style="margin-top: var(--content-gap); max-width: min(85vw, 650px);">
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">01</span>
+                    <span style="font-size: var(--body-size);">Defining UX: Beyond &ldquo;Making It Pretty&rdquo;</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">02</span>
+                    <span style="font-size: var(--body-size);">Nielsen&rsquo;s Heuristics &mdash; Your Evaluation Toolkit</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">03</span>
+                    <span style="font-size: var(--body-size);">Wireframing &amp; Visual Hierarchy</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">04</span>
+                    <span style="font-size: var(--body-size);">Before &amp; After: Real Case Study</span>
+                </div>
+                <div class="reveal" style="display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); padding: clamp(0.5rem, 1vw, 0.8rem) 0; border-bottom: 1px solid var(--border-subtle);">
+                    <span style="font-size: var(--h3-size); font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2em;">05</span>
+                    <span style="font-size: var(--body-size);">Hands-On Exercise &amp; Wrap-Up</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: WHAT IS UX -->
+    <section class="slide" aria-label="What is UX">
+        <div class="slide-content">
+            <div class="section-label reveal">01 / DEFINITION</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">UX Is Not UI</h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.7; max-width: min(80vw, 650px);">
+                User Experience is the total perception formed through every interaction with a product. UI is one layer; UX is the entire stack.
+            </p>
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.6rem, 1.2vw, 1rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Usability</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.6; margin-top: 0.3em;">Can users complete tasks efficiently and without confusion?</p>
+                </div>
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.6rem, 1.2vw, 1rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Desirability</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.6; margin-top: 0.3em;">Does the product evoke positive emotional responses?</p>
+                </div>
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.6rem, 1.2vw, 1rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Accessibility</h3>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.6; margin-top: 0.3em;">Is it inclusive for users of all abilities and contexts?</p>
+                </div>
+            </div>
+            <p class="reveal footnote">* Don Norman coined &ldquo;User Experience&rdquo; at Apple in 1993. Ref: &ldquo;The Design of Everyday Things&rdquo;, 2nd ed.</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: NIELSEN'S HEURISTICS -->
+    <section class="slide" aria-label="Heuristics">
+        <div class="slide-content">
+            <div class="section-label reveal">02 / HEURISTICS</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">Nielsen&rsquo;s Usability Heuristics</h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                10 general principles for interaction design (1994). Five key ones below.
+            </p>
+            <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.4rem, 0.8vw, 0.6rem);">
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">01</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Visibility of System Status</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">Loading spinners, progress bars, confirmation messages &mdash; tell users what&rsquo;s happening.</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">02</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Match Between System &amp; Real World</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">Use familiar language. A &ldquo;shopping cart&rdquo; not a &ldquo;purchase aggregation buffer.&rdquo;</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">03</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">User Control &amp; Freedom</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">Undo, redo, cancel. Every action should have a clear emergency exit.</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">04</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Error Prevention</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">Disable &ldquo;Submit&rdquo; until form is valid. Confirmation dialogs for destructive actions.</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">05</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Consistency &amp; Standards</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">Follow platform conventions. iOS back swipe, Android back button &mdash; don&rsquo;t fight muscle memory.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: WIREFRAMING -->
+    <section class="slide" aria-label="Wireframing">
+        <div class="slide-content">
+            <div class="section-label reveal">03 / WIREFRAMES</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">Wireframing &amp; Visual Hierarchy</h2>
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: start;">
+                <div>
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; margin-bottom: 0.5em;">Why Wireframe?</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary); line-height: 1.8;">
+                        <li style="padding: 0.2em 0;"><span style="color: var(--accent); font-size: 0.5em; vertical-align: middle; margin-right: 0.6em;">&#9679;</span>Focus on structure, not aesthetics</li>
+                        <li style="padding: 0.2em 0;"><span style="color: var(--accent); font-size: 0.5em; vertical-align: middle; margin-right: 0.6em;">&#9679;</span>Cheap to change early</li>
+                        <li style="padding: 0.2em 0;"><span style="color: var(--accent); font-size: 0.5em; vertical-align: middle; margin-right: 0.6em;">&#9679;</span>Align stakeholders before pixels</li>
+                        <li style="padding: 0.2em 0;"><span style="color: var(--accent); font-size: 0.5em; vertical-align: middle; margin-right: 0.6em;">&#9679;</span>Test information architecture</li>
+                    </ul>
+                    <div style="margin-top: 1em;">
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; margin-bottom: 0.4em;">Hierarchy Tools</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.7;">
+                            <strong>Size</strong> (bigger = more important), <strong>Color</strong> (contrast draws focus), <strong>Space</strong> (whitespace elevates), <strong>Position</strong> (top-left first).
+                        </p>
+                    </div>
+                </div>
+                <div style="width: 2px; background: var(--border-subtle); align-self: stretch;"></div>
+                <div class="wireframe">
+                    <div class="wf-row">
+                        <div class="wf-circle"></div>
+                        <div class="wf-bar medium" style="flex: 1;"></div>
+                    </div>
+                    <div class="wf-box"></div>
+                    <div class="wf-bar long"></div>
+                    <div class="wf-bar medium"></div>
+                    <div class="wf-bar short"></div>
+                    <div class="wf-row" style="gap: 0.6em;">
+                        <div style="background: var(--accent); color: white; border-radius: 4px; padding: 0.25em 0.8em; font-size: var(--small-size); font-weight: 600;">CTA</div>
+                        <div class="wf-bar short" style="opacity: 0.4;"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="reveal footnote">Tools: Figma, Balsamiq, Whimsical, or pen &amp; paper.</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: BEFORE / AFTER -->
+    <section class="slide" aria-label="Before After">
+        <div class="slide-content">
+            <div class="section-label reveal">04 / CASE STUDY</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">Before &amp; After: E-Commerce Checkout</h2>
+            <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.7;">
+                Redesigning a checkout flow based on heuristic evaluation and usability testing.
+            </p>
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div class="ba-before">
+                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 800; color: var(--accent); margin-bottom: 0.5em;">BEFORE</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8;">
+                        <li>&#10005; 5-page checkout, required sign-up</li>
+                        <li>&#10005; Shipping costs shown at final step</li>
+                        <li>&#10005; No progress indicator</li>
+                        <li>&#10005; Generic error messages</li>
+                        <li>&#10005; No guest checkout</li>
+                    </ul>
+                </div>
+                <div class="ba-after">
+                    <h3 style="font-size: var(--body-size); font-family: var(--font-display); font-weight: 800; color: var(--accent-teal); margin-bottom: 0.5em;">AFTER</h3>
+                    <ul style="list-style: none; padding: 0; font-size: var(--small-size); color: var(--text-secondary); line-height: 1.8;">
+                        <li>&#10003; Single-page accordion layout</li>
+                        <li>&#10003; Upfront cost breakdown</li>
+                        <li>&#10003; Step indicator with progress bar</li>
+                        <li>&#10003; Inline field validation</li>
+                        <li>&#10003; Guest checkout as default</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="reveal" style="display: flex; gap: clamp(2rem, 6vw, 6rem); margin-top: var(--content-gap); justify-content: center; flex-wrap: wrap;">
+                <div class="stat-card">
+                    <div class="stat-value counter" data-target="23" data-prefix="-" data-suffix="%" style="font-size: clamp(1.5rem, 5vw, 3.5rem);">0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">Cart abandonment</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: clamp(1.5rem, 5vw, 3.5rem); font-family: var(--font-display); font-weight: 900; color: var(--accent-teal); line-height: 1;">+18%</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">Conversion rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value counter" data-target="40" data-prefix="-" data-suffix="s" style="font-size: clamp(1.5rem, 5vw, 3.5rem);">0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.3em;">Time to complete</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: USABILITY TESTING -->
+    <section class="slide" aria-label="Testing">
+        <div class="slide-content">
+            <div class="section-label reveal">04 / TESTING</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">Usability Testing Protocol</h2>
+            <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: clamp(0.4rem, 1vw, 0.6rem);">
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">01</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Define Realistic Tasks</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">3&ndash;5 goal-oriented scenarios. Example: &ldquo;Find a size M blue jacket and add it to your cart.&rdquo;</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">02</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Recruit 5 Participants</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">5 users find ~85% of usability problems (Nielsen &amp; Landauer, 1993). Match target persona.</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">03</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Think-Aloud &amp; Record</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">Capture screen + audio. Never guide or hint. Ask &ldquo;what are you thinking?&rdquo; not &ldquo;click here.&rdquo;</p>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; gap: clamp(0.8rem, 1.5vw, 1.2rem); align-items: flex-start;">
+                    <div style="font-family: var(--font-mono); font-size: var(--h3-size); font-weight: 700; color: var(--accent); min-width: 2em;">04</div>
+                    <div>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800;">Severity-Rate &amp; Iterate</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.15em; line-height: 1.6;">Critical &rarr; Major &rarr; Minor &rarr; Cosmetic. Fix critical first, re-test, repeat.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal" style="margin-top: var(--content-gap); background: var(--accent-light); border-left: 3px solid var(--accent); padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.6rem, 1.2vw, 1rem); font-size: var(--body-size); line-height: 1.8;">
+                <strong>Remember:</strong> UX is iterative. Ship &rarr; test &rarr; learn &rarr; improve &rarr; repeat.
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: EXERCISE -->
+    <section class="slide" aria-label="Exercise">
+        <div class="slide-content">
+            <div class="section-label reveal">05 / HANDS-ON</div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800;">Class Exercise</h2>
+
+            <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--content-gap);">
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; color: var(--accent); margin-bottom: 0.5em;">Task A: Heuristic Audit</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7;">
+                        Choose any app. Evaluate against 5 heuristics from Slide 4. Score each 1&ndash;5, provide one concrete example per heuristic.
+                    </p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.6em;">10 min &middot; individual</p>
+                </div>
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem);">
+                    <h3 style="font-size: var(--h3-size); font-family: var(--font-display); font-weight: 800; color: var(--accent); margin-bottom: 0.5em;">Task B: Quick Wireframe</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.7;">
+                        Sketch a &ldquo;find nearby coffee shop&rdquo; screen. Include: search bar, map, results list, one filter. Focus on hierarchy, not beauty.
+                    </p>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.6em;">8 min &middot; pairs, paper or Figma</p>
+                </div>
+            </div>
+
+            <p class="reveal footnote">Submit your heuristic audit as a PDF to the course portal by next Wednesday.</p>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: CLOSING -->
+    <section class="slide closing-slide" aria-label="Summary">
+        <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+            <div class="reveal" style="width: clamp(40px, 6vw, 80px); height: 3px; background: var(--accent); margin-bottom: clamp(1rem, 2.5vw, 2rem);"></div>
+            <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 800; text-transform: uppercase;">Key Takeaways</h2>
+            <div class="reveal" style="margin-top: var(--content-gap); display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); text-align: left; max-width: min(85vw, 600px);">
+                <div style="display: flex; gap: 0.6em; align-items: baseline; font-size: var(--body-size); line-height: 1.8;">
+                    <span style="color: var(--accent); font-weight: 700; font-family: var(--font-mono);">01</span> UX = usability + desirability + accessibility
+                </div>
+                <div style="display: flex; gap: 0.6em; align-items: baseline; font-size: var(--body-size); line-height: 1.8;">
+                    <span style="color: var(--accent); font-weight: 700; font-family: var(--font-mono);">02</span> Heuristics are your diagnostic toolkit
+                </div>
+                <div style="display: flex; gap: 0.6em; align-items: baseline; font-size: var(--body-size); line-height: 1.8;">
+                    <span style="color: var(--accent); font-weight: 700; font-family: var(--font-mono);">03</span> Wireframe first, design later
+                </div>
+                <div style="display: flex; gap: 0.6em; align-items: baseline; font-size: var(--body-size); line-height: 1.8;">
+                    <span style="color: var(--accent); font-weight: 700; font-family: var(--font-mono);">04</span> Test early, test often, iterate
+                </div>
+            </div>
+            <div class="reveal" style="margin-top: clamp(2rem, 5vw, 4rem); font-size: var(--body-size); color: var(--text-muted); line-height: 2;">
+                <p style="font-weight: 600; color: var(--text-secondary);">Next Lesson: Personas, Journey Maps &amp; Design Thinking</p>
+                <p style="font-size: var(--small-size); font-family: var(--font-mono); margin-top: 0.3em;">Questions? &nbsp;&middot;&nbsp; office hours Wed 14:00&ndash;16:00</p>
+            </div>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation { constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); } init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); } setupIntersectionObserver() { const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); const idx = this.slides.indexOf(entry.target); if (idx !== -1) { this.currentSlide = idx; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(slide => observer.observe(slide)); } setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch (e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide + 1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide - 1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break; } }); } setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const deltaY = this.touchStartY - e.changedTouches[0].clientY; const deltaX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return; if (deltaY > 0) this.goToSlide(this.currentSlide + 1); else this.goToSlide(this.currentSlide - 1); }, { passive: true }); } setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1); }, 50); }, { passive: true }); } setupProgressBar() { this.progressBar = document.getElementById('progressBar'); } setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `Go to slide ${i + 1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); } setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); } goToSlide(index) { if (index < 0 || index >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = index; this.slides[index].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600); } updateUI() { const total = this.slides.length; const current = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((current + 1) / total) * 100}%`; document.querySelectorAll('.nav-dot').forEach((dot, i) => { dot.classList.toggle('active', i === current); }); if (this.counter) this.counter.textContent = `${current + 1} / ${total}`; } }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        const counters = document.querySelectorAll('.counter'); const counterObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { const el = entry.target; const target = parseInt(el.dataset.target); const suffix = el.dataset.suffix || ''; const prefix = el.dataset.prefix || ''; const duration = 1500; const start = performance.now(); function tick(now) { const elapsed = now - start; const progress = Math.min(elapsed / duration, 1); const eased = 1 - Math.pow(1 - progress, 3); el.textContent = prefix + Math.round(target * eased).toLocaleString() + suffix; if (progress < 1) requestAnimationFrame(tick); } requestAnimationFrame(tick); counterObserver.unobserve(el); } }); }, { threshold: 0.5 }); counters.forEach(c => counterObserver.observe(c));
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

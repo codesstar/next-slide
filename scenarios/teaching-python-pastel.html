@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python in 10 Minutes — Pastel</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Pastel Geometry
+           Friendly, organized, modern, approachable
+           =========================================== */
+        :root {
+            --bg-primary: #c8d9e6;
+            --card-bg: #faf9f7;
+            --text-primary: #2a2a2a;
+            --text-secondary: #5a5a5a;
+            --text-muted: #8a8a8a;
+            --pill-pink: #f0b4d4;
+            --pill-mint: #a8d4c4;
+            --pill-sage: #5a7c6a;
+            --pill-lavender: #9b8dc4;
+            --pill-violet: #7c6aad;
+            --accent: #5a7c6a;
+            --accent-secondary: #9b8dc4;
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --surface: #ffffff;
+
+            --font-display: 'Plus Jakarta Sans', 'Noto Sans SC', sans-serif;
+            --font-body: 'Plus Jakarta Sans', 'Noto Sans SC', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(2rem, 5.5vw, 4.5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+        }
+
+        /* === BASE RESET + VIEWPORT === */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary);
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+        }
+        :lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: normal; overflow-wrap: break-word; }
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+            background: var(--bg-primary);
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+        }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+        p, li, blockquote { overflow-wrap: break-word; }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+        @media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative, .pills-sidebar { display: none; } }
+        @media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } .grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } .slide-counter { display: none; } .pills-sidebar { display: none; } }
+        @media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+        @media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal, .reveal-bounce, .reveal-pop { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal, .visible .reveal-bounce, .visible .reveal-pop { opacity: 1; }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* ===========================================
+           PASTEL GEOMETRY THEME
+           =========================================== */
+
+        /* Main card container */
+        .pastel-card {
+            background: var(--card-bg); border-radius: clamp(16px, 2vw, 28px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            padding: var(--slide-padding); position: relative;
+            margin: auto; width: min(92vw, 1100px);
+            max-height: min(88vh, 800px); overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        /* Vertical pills sidebar */
+        .pills-sidebar {
+            position: absolute; right: clamp(-4px, -0.5vw, -8px); top: 50%;
+            transform: translateY(-50%); display: flex; flex-direction: column;
+            gap: clamp(4px, 0.5vw, 8px); z-index: 3;
+        }
+        .pill {
+            width: clamp(18px, 2.5vw, 28px); border-radius: 999px;
+            opacity: 0.7; transition: opacity 0.3s ease;
+        }
+        .pill.active { opacity: 1; }
+
+        /* Animations */
+        .reveal {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.06s; }
+        .reveal:nth-child(2) { transition-delay: 0.14s; }
+        .reveal:nth-child(3) { transition-delay: 0.22s; }
+        .reveal:nth-child(4) { transition-delay: 0.30s; }
+        .reveal:nth-child(5) { transition-delay: 0.38s; }
+        .reveal:nth-child(6) { transition-delay: 0.46s; }
+
+        .reveal-bounce {
+            opacity: 0; transform: translateY(50px) scale(0.92);
+            transition: opacity 0.5s ease, transform 0.6s var(--ease-out-back);
+        }
+        .slide.visible .reveal-bounce { opacity: 1; transform: translateY(0) scale(1); }
+
+        .reveal-pop {
+            opacity: 0; transform: scale(0) rotate(-8deg);
+            transition: opacity 0.3s ease, transform 0.5s var(--ease-spring);
+        }
+        .slide.visible .reveal-pop { opacity: 1; transform: scale(1) rotate(0); }
+
+        /* UI */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--pill-mint), var(--pill-lavender)); width: 0%; z-index: 9999; transition: width 0.3s ease; }
+        .nav-dots { position: fixed; right: clamp(12px, 2vw, 24px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 9998; }
+        .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.15); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .nav-dot.active { background: var(--pill-sage); transform: scale(1.4); }
+        .slide-counter { position: fixed; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-muted); z-index: 9998; }
+
+        /* Code block */
+        .pastel-code {
+            background: #1e1e2e; border-radius: clamp(10px, 1.2vw, 16px); overflow: hidden;
+        }
+        .pastel-code-hdr {
+            padding: clamp(4px, 0.5vw, 8px) clamp(10px, 1.2vw, 16px);
+            background: #15151f; color: #666; font-family: var(--font-mono); font-size: var(--small-size);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .pastel-code-dots { display: flex; gap: 5px; }
+        .pastel-code-dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .pastel-code pre { padding: clamp(0.5rem, 1vw, 1rem); font-family: var(--font-mono); font-size: var(--body-size); line-height: 1.6; overflow-x: auto; color: #cdd6f4; }
+        .pk { color: #cba6f7; }
+        .ps { color: #a6e3a1; }
+        .pf { color: #89b4fa; }
+        .pc { color: #585b70; }
+        .pn { color: #fab387; }
+
+        /* Feature pill badge */
+        .feature-pill {
+            display: inline-block; padding: clamp(3px, 0.4vw, 6px) clamp(8px, 1vw, 14px);
+            border-radius: 999px; font-size: var(--small-size); font-weight: 600;
+        }
+
+        /* Info card */
+        .p-info-card {
+            background: #fff; border: 1px solid var(--border-subtle);
+            border-radius: clamp(12px, 1.5vw, 20px); padding: clamp(0.8rem, 1.5vw, 1.2rem);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        /* Bar chart */
+        .p-bar-chart { display: flex; align-items: flex-end; gap: clamp(0.5rem, 1.2vw, 1.2rem); height: clamp(100px, 20vh, 200px); }
+        .p-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: clamp(0.2rem, 0.4vw, 0.4rem); height: 100%; justify-content: flex-end; }
+        .p-bar { width: 100%; max-width: clamp(35px, 6vw, 65px); border-radius: clamp(6px, 0.8vw, 12px) clamp(6px, 0.8vw, 12px) 0 0; transition: height 1s var(--ease-out-expo); }
+        .p-bar-val { font-size: var(--small-size); font-weight: 700; }
+        .p-bar-lbl { font-size: var(--small-size); color: var(--text-secondary); text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide" aria-label="Title">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card reveal-bounce" style="text-align: center; align-items: center;">
+                <div class="pills-sidebar">
+                    <div class="pill active" style="height: 30px; background: var(--pill-pink);"></div>
+                    <div class="pill" style="height: 50px; background: var(--pill-mint);"></div>
+                    <div class="pill" style="height: 70px; background: var(--pill-lavender);"></div>
+                    <div class="pill" style="height: 50px; background: var(--pill-sage);"></div>
+                    <div class="pill" style="height: 30px; background: var(--pill-violet);"></div>
+                </div>
+                <div style="font-size: clamp(2.5rem, 6vw, 5rem);">&#128013;</div>
+                <h1 style="font-size: var(--title-size); font-weight: 800; margin-top: var(--element-gap);">Python in 10 Minutes</h1>
+                <p style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">&#32473;&#23436;&#20840;&#38646;&#22522;&#30784;&#30340;&#20320; / For absolute beginners</p>
+                <div style="display: flex; gap: clamp(0.4rem, 0.8vw, 0.8rem); margin-top: var(--content-gap); justify-content: center; flex-wrap: wrap;">
+                    <span class="feature-pill" style="background: var(--pill-mint); color: var(--pill-sage);">&#21452;&#35821; Bilingual</span>
+                    <span class="feature-pill" style="background: rgba(155, 141, 196, 0.2); color: var(--pill-violet);">10 &#20998;&#38047;</span>
+                    <span class="feature-pill" style="background: rgba(240, 180, 212, 0.3); color: #9a4a7a;">&#38646;&#22522;&#30784;</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: WHY PYTHON -->
+    <section class="slide" aria-label="Why Python">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <div class="pills-sidebar">
+                    <div class="pill" style="height: 30px; background: var(--pill-pink);"></div>
+                    <div class="pill active" style="height: 50px; background: var(--pill-mint);"></div>
+                    <div class="pill" style="height: 70px; background: var(--pill-lavender);"></div>
+                    <div class="pill" style="height: 50px; background: var(--pill-sage);"></div>
+                    <div class="pill" style="height: 30px; background: var(--pill-violet);"></div>
+                </div>
+                <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#20026;&#20160;&#20040;&#36873; Python?</h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">Language Popularity Rankings</p>
+                <div class="p-bar-chart reveal" style="margin-top: var(--content-gap); max-width: min(85vw, 550px);">
+                    <div class="p-bar-col"><div class="p-bar-val" style="color: var(--pill-sage);">1st</div><div class="p-bar" style="height: 95%; background: var(--pill-sage);"></div><div class="p-bar-lbl">Python</div></div>
+                    <div class="p-bar-col"><div class="p-bar-val" style="color: var(--pill-lavender);">2nd</div><div class="p-bar" style="height: 80%; background: var(--pill-lavender);"></div><div class="p-bar-lbl">JS</div></div>
+                    <div class="p-bar-col"><div class="p-bar-val">3rd</div><div class="p-bar" style="height: 65%; background: var(--pill-pink);"></div><div class="p-bar-lbl">Java</div></div>
+                    <div class="p-bar-col"><div class="p-bar-val">4th</div><div class="p-bar" style="height: 55%; background: var(--pill-mint);"></div><div class="p-bar-lbl">C++</div></div>
+                    <div class="p-bar-col"><div class="p-bar-val">5th</div><div class="p-bar" style="height: 45%; background: rgba(0,0,0,0.08);"></div><div class="p-bar-lbl">Go</div></div>
+                </div>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--content-gap); line-height: 1.6;">
+                    &#128161; &#35821;&#27861;&#31616;&#27905;&#65292;AI / Web / &#25968;&#25454;&#20998;&#26512;&#37117;&#33021;&#29992;&#12290;Simple syntax, used everywhere.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: SETUP -->
+    <section class="slide" aria-label="Setup">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#23433;&#35013; + Hello World</h2>
+                <div class="pastel-code reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 600px);">
+                    <div class="pastel-code-hdr"><div class="pastel-code-dots"><span style="background:#f85149;"></span><span style="background:#e3b341;"></span><span style="background:#39d353;"></span></div><span>terminal</span></div>
+                    <pre><code><span class="pc"># python.org/downloads</span>
+$ python --version
+Python 3.12.0</code></pre>
+                </div>
+                <div class="pastel-code reveal" style="margin-top: var(--element-gap); max-width: min(90vw, 600px);">
+                    <div class="pastel-code-hdr"><div class="pastel-code-dots"><span style="background:#f85149;"></span><span style="background:#e3b341;"></span><span style="background:#39d353;"></span></div><span>hello.py</span></div>
+                    <pre><code><span class="pf">print</span>(<span class="ps">"Hello, World!"</span>)
+<span class="pf">print</span>(<span class="ps">"&#20320;&#22909;&#65292;&#19990;&#30028;&#65281;"</span>)</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: VARIABLES -->
+    <section class="slide" aria-label="Variables">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#21464;&#37327;&#19982;&#31867;&#22411; / Variables</h2>
+                <div class="pastel-code reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 650px);">
+                    <div class="pastel-code-hdr"><div class="pastel-code-dots"><span style="background:#f85149;"></span><span style="background:#e3b341;"></span><span style="background:#39d353;"></span></div><span>variables.py</span></div>
+                    <pre><code>age = <span class="pn">25</span>            <span class="pc"># int &#25972;&#25968;</span>
+name = <span class="ps">"Alice"</span>      <span class="pc"># str &#23383;&#31526;&#20018;</span>
+hobbies = [<span class="ps">"code"</span>, <span class="ps">"music"</span>]  <span class="pc"># list</span>
+is_student = <span class="pk">True</span>  <span class="pc"># bool</span>
+
+<span class="pf">print</span>(<span class="ps">f"</span>{name} is {age}<span class="ps">"</span>)</code></pre>
+                </div>
+                <div class="reveal" style="margin-top: var(--element-gap); display: flex; gap: clamp(0.3rem, 0.6vw, 0.6rem); flex-wrap: wrap;">
+                    <span class="feature-pill" style="background: rgba(90, 124, 106, 0.15); color: var(--pill-sage);">int</span>
+                    <span class="feature-pill" style="background: rgba(155, 141, 196, 0.15); color: var(--pill-violet);">str</span>
+                    <span class="feature-pill" style="background: rgba(240, 180, 212, 0.15); color: #9a4a7a;">list</span>
+                    <span class="feature-pill" style="background: rgba(168, 212, 196, 0.3); color: var(--pill-sage);">bool</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: CONTROL FLOW -->
+    <section class="slide" aria-label="Control flow">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#25511;&#21046;&#27969;&#31243; / Control Flow</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.5rem, 1vw, 1rem); margin-top: var(--content-gap);">
+                    <div class="pastel-code reveal">
+                        <div class="pastel-code-hdr"><span>if_else.py</span></div>
+                        <pre><code>score = <span class="pn">85</span>
+<span class="pk">if</span> score >= <span class="pn">90</span>:
+    <span class="pf">print</span>(<span class="ps">"A"</span>)
+<span class="pk">elif</span> score >= <span class="pn">80</span>:
+    <span class="pf">print</span>(<span class="ps">"B"</span>)
+<span class="pk">else</span>:
+    <span class="pf">print</span>(<span class="ps">"C"</span>)</code></pre>
+                    </div>
+                    <div class="pastel-code reveal">
+                        <div class="pastel-code-hdr"><span>for_loop.py</span></div>
+                        <pre><code>fruits = [<span class="ps">"apple"</span>,
+          <span class="ps">"banana"</span>]
+
+<span class="pk">for</span> f <span class="pk">in</span> fruits:
+    <span class="pf">print</span>(f)
+
+<span class="pk">for</span> i <span class="pk">in</span> <span class="pf">range</span>(<span class="pn">5</span>):
+    <span class="pf">print</span>(i)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: FUNCTIONS -->
+    <section class="slide" aria-label="Functions">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#20989;&#25968; / Functions</h2>
+                <div class="pastel-code reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 650px);">
+                    <div class="pastel-code-hdr"><div class="pastel-code-dots"><span style="background:#f85149;"></span><span style="background:#e3b341;"></span><span style="background:#39d353;"></span></div><span>functions.py</span></div>
+                    <pre><code><span class="pk">def</span> <span class="pf">greet</span>(name, greeting=<span class="ps">"Hello"</span>):
+    <span class="pk">return</span> <span class="ps">f"</span>{greeting}, {name}!<span class="ps">"</span>
+
+<span class="pf">print</span>(<span class="pf">greet</span>(<span class="ps">"Alice"</span>))
+<span class="pf">print</span>(<span class="pf">greet</span>(<span class="ps">"Bob"</span>, <span class="ps">"Hi"</span>))</code></pre>
+                </div>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.6;">
+                    <strong>def</strong> &#23450;&#20041;&#65292;<strong>return</strong> &#36820;&#22238;&#12290;&#21442;&#25968;&#21487;&#35774;&#40664;&#35748;&#20540;&#12290;
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: LISTS & DICTS -->
+    <section class="slide" aria-label="Lists dicts">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#21015;&#34920; & &#23383;&#20856;</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.5rem, 1vw, 1rem); margin-top: var(--content-gap);">
+                    <div class="p-info-card reveal">
+                        <h3 style="font-size: var(--h3-size); font-weight: 700; color: var(--pill-sage); margin-bottom: var(--element-gap);">List &#21015;&#34920;</h3>
+                        <div class="pastel-code" style="border-radius: 8px;">
+                            <pre style="padding: clamp(0.4rem, 0.8vw, 0.6rem); font-size: var(--small-size); line-height: 1.5; color: #cdd6f4;"><code>nums = [<span class="pn">1</span>, <span class="pn">2</span>, <span class="pn">3</span>]
+nums.<span class="pf">append</span>(<span class="pn">4</span>)
+<span class="pf">print</span>(nums[<span class="pn">0</span>])</code></pre>
+                        </div>
+                    </div>
+                    <div class="p-info-card reveal">
+                        <h3 style="font-size: var(--h3-size); font-weight: 700; color: var(--pill-violet); margin-bottom: var(--element-gap);">Dict &#23383;&#20856;</h3>
+                        <div class="pastel-code" style="border-radius: 8px;">
+                            <pre style="padding: clamp(0.4rem, 0.8vw, 0.6rem); font-size: var(--small-size); line-height: 1.5; color: #cdd6f4;"><code>user = {
+  <span class="ps">"name"</span>: <span class="ps">"Alice"</span>,
+  <span class="ps">"age"</span>: <span class="pn">25</span>
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: MINI PROJECT -->
+    <section class="slide" aria-label="Mini project">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <div style="display: flex; align-items: center; gap: clamp(0.4rem, 0.8vw, 0.8rem);">
+                    <span class="feature-pill reveal-pop" style="background: var(--pill-lavender); color: #fff; font-size: var(--body-size);">&#9733;</span>
+                    <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#29468;&#25968;&#23383;&#28216;&#25103;</h2>
+                </div>
+                <div class="pastel-code reveal" style="margin-top: var(--content-gap); max-width: min(90vw, 650px);">
+                    <div class="pastel-code-hdr"><div class="pastel-code-dots"><span style="background:#f85149;"></span><span style="background:#e3b341;"></span><span style="background:#39d353;"></span></div><span>guess.py</span></div>
+                    <pre><code><span class="pk">import</span> random
+
+secret = random.<span class="pf">randint</span>(<span class="pn">1</span>, <span class="pn">100</span>)
+attempts = <span class="pn">0</span>
+
+<span class="pk">while</span> <span class="pk">True</span>:
+    guess = <span class="pf">int</span>(<span class="pf">input</span>(<span class="ps">"Guess: "</span>))
+    attempts += <span class="pn">1</span>
+    <span class="pk">if</span> guess == secret:
+        <span class="pf">print</span>(<span class="ps">f"Got it in </span>{attempts}<span class="ps">!"</span>)
+        <span class="pk">break</span>
+    <span class="pf">print</span>(<span class="ps">"Higher"</span> <span class="pk">if</span> guess < secret <span class="pk">else</span> <span class="ps">"Lower"</span>)</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: COMMON MISTAKES -->
+    <section class="slide" aria-label="Mistakes">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-weight: 800;">&#24120;&#35265;&#38169;&#35823; / Mistakes</h2>
+                <ul style="list-style: none; margin-top: var(--content-gap);">
+                    <li class="reveal" style="display: flex; gap: 0.75em; padding: clamp(0.3rem, 0.5vh, 0.4rem) 0; font-size: var(--body-size); align-items: baseline;">
+                        <span class="feature-pill" style="background: rgba(240,180,212,0.3); color: #9a4a7a; min-width: 2em; text-align: center;">1</span>
+                        <span><strong>IndentationError</strong> <span style="color: var(--text-secondary);">&#8212; &#32553;&#36827;&#38169;&#35823;&#65292;&#21035;&#28151; Tab/&#31354;&#26684;</span></span>
+                    </li>
+                    <li class="reveal" style="display: flex; gap: 0.75em; padding: clamp(0.3rem, 0.5vh, 0.4rem) 0; font-size: var(--body-size); align-items: baseline;">
+                        <span class="feature-pill" style="background: rgba(168,212,196,0.3); color: var(--pill-sage); min-width: 2em; text-align: center;">2</span>
+                        <span><strong>= vs ==</strong> <span style="color: var(--text-secondary);">&#8212; &#36171;&#20540; vs &#27604;&#36739;</span></span>
+                    </li>
+                    <li class="reveal" style="display: flex; gap: 0.75em; padding: clamp(0.3rem, 0.5vh, 0.4rem) 0; font-size: var(--body-size); align-items: baseline;">
+                        <span class="feature-pill" style="background: rgba(155,141,196,0.2); color: var(--pill-violet); min-width: 2em; text-align: center;">3</span>
+                        <span><strong>Off-by-one</strong> <span style="color: var(--text-secondary);">&#8212; range(5) = 0,1,2,3,4</span></span>
+                    </li>
+                    <li class="reveal" style="display: flex; gap: 0.75em; padding: clamp(0.3rem, 0.5vh, 0.4rem) 0; font-size: var(--body-size); align-items: baseline;">
+                        <span class="feature-pill" style="background: rgba(240,180,212,0.3); color: #9a4a7a; min-width: 2em; text-align: center;">4</span>
+                        <span><strong>Type error</strong> <span style="color: var(--text-secondary);">&#8212; "5"+3 &#25253;&#38169;&#65292;&#35201; int("5")+3</span></span>
+                    </li>
+                    <li class="reveal" style="display: flex; gap: 0.75em; padding: clamp(0.3rem, 0.5vh, 0.4rem) 0; font-size: var(--body-size); align-items: baseline;">
+                        <span class="feature-pill" style="background: rgba(168,212,196,0.3); color: var(--pill-sage); min-width: 2em; text-align: center;">5</span>
+                        <span><strong>Missing :</strong> <span style="color: var(--text-secondary);">&#8212; if/for/def &#26411;&#23614;&#35201;&#21152;&#20882;&#21495;</span></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: NEXT STEPS -->
+    <section class="slide" aria-label="Next steps">
+        <div class="slide-content" style="align-items: center; justify-content: center;">
+            <div class="pastel-card" style="text-align: center; align-items: center;">
+                <h2 class="reveal-bounce" style="font-size: var(--title-size); font-weight: 800;">&#19979;&#19968;&#27493; Next Steps</h2>
+                <div style="display: flex; gap: clamp(0.6rem, 1.5vw, 1.2rem); margin-top: var(--content-gap); flex-wrap: wrap; justify-content: center;">
+                    <div class="p-info-card reveal" style="min-width: clamp(100px, 18vw, 160px); text-align: center;">
+                        <div style="font-size: clamp(1.2rem, 2vw, 1.8rem);">&#128218;</div>
+                        <strong>Official Docs</strong><br><span style="font-size: var(--small-size); color: var(--text-muted);">docs.python.org</span>
+                    </div>
+                    <div class="p-info-card reveal" style="min-width: clamp(100px, 18vw, 160px); text-align: center;">
+                        <div style="font-size: clamp(1.2rem, 2vw, 1.8rem);">&#127891;</div>
+                        <strong>Practice</strong><br><span style="font-size: var(--small-size); color: var(--text-muted);">LeetCode / Codewars</span>
+                    </div>
+                    <div class="p-info-card reveal" style="min-width: clamp(100px, 18vw, 160px); text-align: center;">
+                        <div style="font-size: clamp(1.2rem, 2vw, 1.8rem);">&#128736;</div>
+                        <strong>Build</strong><br><span style="font-size: var(--small-size); color: var(--text-muted);">&#20570;&#39033;&#30446;&#26368;&#24555;</span>
+                    </div>
+                </div>
+            </div>
+            <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.4;">Made with <a href="https://nextslide.app" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a></p>
+        </div>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() { this.slides = [...document.querySelectorAll('.slide')]; this.currentSlide = 0; this.isAnimating = false; this.touchStartY = 0; this.touchStartX = 0; this.init(); }
+            init() { this.setupIntersectionObserver(); this.setupKeyboardNav(); this.setupTouchNav(); this.setupWheelNav(); this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter(); if (this.slides[0]) this.slides[0].classList.add('visible'); }
+            setupIntersectionObserver() { const o = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); const i = this.slides.indexOf(e.target); if (i !== -1) { this.currentSlide = i; this.updateUI(); } } }); }, { threshold: 0.5 }); this.slides.forEach(s => o.observe(s)); }
+            setupKeyboardNav() { document.addEventListener('keydown', (e) => { if (e.target.getAttribute('contenteditable')) return; switch(e.key) { case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.goToSlide(this.currentSlide+1); break; case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.goToSlide(this.currentSlide-1); break; case 'Home': e.preventDefault(); this.goToSlide(0); break; case 'End': e.preventDefault(); this.goToSlide(this.slides.length-1); break; } }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupTouchNav() { document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true }); document.addEventListener('touchend', (e) => { const dY = this.touchStartY - e.changedTouches[0].clientY, dX = this.touchStartX - e.changedTouches[0].clientX; if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return; if (dY > 0) this.goToSlide(this.currentSlide+1); else this.goToSlide(this.currentSlide-1); }, { passive: true }); }
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            setupWheelNav() { let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide+1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide-1); }, 50); }, { passive: true }); }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+            setupNavDots() { const c = document.getElementById('navDots'); if (!c) return; this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `Slide ${i+1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); }); }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(i) { if (i < 0 || i >= this.slides.length || this.isAnimating) return; this.isAnimating = true; this.currentSlide = i; this.slides[i].scrollIntoView({ behavior: 'smooth' }); this.updateUI(); setTimeout(() => { this.isAnimating = false; }, 600); }
+            updateUI() { const t = this.slides.length, c = this.currentSlide; if (this.progressBar) this.progressBar.style.width = `${((c+1)/t)*100}%`; document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === c)); if (this.counter) this.counter.textContent = `${c+1} / ${t}`; }
+        }
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>

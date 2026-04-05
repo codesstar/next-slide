@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Grid in 10 Minutes — From Zero to Layout</title>
+
+    <!-- Fonts: Notebook Tabs uses Bodoni Moda + DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Notebook Tabs Theme
+           =========================================== */
+        :root {
+            /* --- Color Palette --- */
+            --bg-outer: #2d2d2d;
+            --bg-page: #f8f6f1;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5a5a5a;
+            --text-muted: #999999;
+            --tab-1: #98d4bb;
+            --tab-2: #c7b8ea;
+            --tab-3: #f4b8c5;
+            --tab-4: #a8d8ea;
+            --tab-5: #ffe6a7;
+            --border: #d4cfc5;
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --surface: #efeade;
+            --accent: #5a4a3a;
+            --accent-highlight: #c7b8ea;
+            --ruled-line: rgba(0, 0, 0, 0.06);
+            --margin-line: rgba(220, 80, 80, 0.15);
+
+            /* Syntax highlighting */
+            --code-bg: #2a2520;
+            --code-text: #e8e0d4;
+
+            /* --- Typography --- */
+            --font-display: 'Bodoni Moda', Georgia, serif;
+            --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-handwritten: 'Caveat', cursive;
+
+            --title-size: clamp(1.8rem, 5vw, 3.5rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.2rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.5rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --code-size: clamp(0.7rem, 1.3vw, 0.95rem);
+
+            /* --- Spacing --- */
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            /* --- Animation --- */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.6s;
+            --duration-slow: 1s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+
+        :root {
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --stat-size: clamp(2rem, 8vw, 6rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1000px);
+            max-height: min(80vh, 700px);
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.4rem, 1vh, 1rem);
+        }
+
+        .feature-list li, .bullet-list li {
+            font-size: var(--body-size);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        img, .image-container {
+            max-width: 100%;
+            max-height: min(50vh, 400px);
+            object-fit: contain;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        p, li, blockquote {
+            overflow-wrap: break-word;
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --h2-size: clamp(1rem, 3vw, 1.75rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.1rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative, .binder-holes {
+                display: none;
+            }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.4rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.25rem, 7vw, 2.5rem);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-content[style*="flex-direction: row"] {
+                flex-direction: column !important;
+            }
+            .slide-counter {
+                display: none;
+            }
+            .notebook-tabs {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) and (min-height: 700px) {
+            :root {
+                --slide-padding: clamp(1.5rem, 6vw, 3rem);
+                --content-gap: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (min-width: 2000px) {
+            .slide-content {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card, .content-box {
+                border-width: 0.5px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+                scroll-behavior: auto !important;
+            }
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+            .reveal, .reveal-scale, .reveal-left, .reveal-right,
+            .reveal-blur, .reveal-bounce, .reveal-pop, .reveal-flip,
+            .reveal-mask, .reveal-wipe, .reveal-slam, .reveal-diagonal,
+            .reveal-crisp, .reveal-gentle, .reveal-zoom-settle, .reveal-quote {
+                opacity: 0;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+                transition: opacity 0.2s ease !important;
+            }
+            .visible .reveal, .visible .reveal-scale, .visible .reveal-left,
+            .visible .reveal-right, .visible .reveal-blur, .visible .reveal-bounce,
+            .visible .reveal-pop, .visible .reveal-flip, .visible .reveal-mask,
+            .visible .reveal-wipe, .visible .reveal-slam, .visible .reveal-diagonal,
+            .visible .reveal-crisp, .visible .reveal-gentle, .visible .reveal-zoom-settle,
+            .visible .reveal-quote {
+                opacity: 1;
+            }
+        }
+
+        @media print {
+            html {
+                scroll-snap-type: none;
+            }
+            .slide {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .progress-bar, .nav-dots, .slide-counter,
+            .edit-hotzone, .edit-toggle {
+                display: none !important;
+            }
+            .reveal, [class*="reveal-"] {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                clip-path: none !important;
+            }
+        }
+
+        /* ===========================================
+           BODY & GLOBAL STYLES — Notebook Tabs
+           =========================================== */
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-outer);
+            color: var(--text-primary);
+        }
+
+        /* ===========================================
+           NOTEBOOK TABS — Page Container
+           Cream paper card on dark background
+           =========================================== */
+        .slide {
+            background: var(--bg-outer);
+            padding: clamp(8px, 1.5vw, 20px);
+        }
+
+        .notebook-page {
+            flex: 1;
+            background: var(--bg-page);
+            border-radius: clamp(4px, 0.8vw, 8px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .notebook-page .slide-content {
+            padding-left: clamp(3rem, 6vw, 5rem);
+        }
+
+        /* ===========================================
+           NOTEBOOK TABS — Binder Holes
+           =========================================== */
+        .binder-holes {
+            position: absolute;
+            left: clamp(10px, 2vw, 20px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 4vh, 40px);
+            z-index: 2;
+        }
+        .binder-hole {
+            width: clamp(10px, 1.5vw, 14px);
+            height: clamp(10px, 1.5vw, 14px);
+            border-radius: 50%;
+            background: var(--bg-outer);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* ===========================================
+           NOTEBOOK TABS — Colorful Section Tabs
+           =========================================== */
+        .notebook-tabs {
+            position: absolute;
+            right: calc(-1 * clamp(28px, 3.5vw, 44px));
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(4px, 0.8vh, 8px);
+            z-index: 2;
+        }
+        .notebook-tab {
+            width: clamp(28px, 3.5vw, 44px);
+            border-radius: 0 clamp(4px, 0.5vw, 6px) clamp(4px, 0.5vw, 6px) 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: clamp(0.5rem, 1vh, 0.7rem);
+            font-family: var(--font-body);
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+        .notebook-tab.active {
+            color: rgba(0, 0, 0, 0.8);
+            width: clamp(34px, 4vw, 52px);
+        }
+
+        /* ===========================================
+           NOTEBOOK TABS — Ruled Lines
+           =========================================== */
+        .notebook-page::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent clamp(24px, 3.5vh, 32px),
+                    var(--ruled-line) clamp(24px, 3.5vh, 32px),
+                    var(--ruled-line) calc(clamp(24px, 3.5vh, 32px) + 1px)
+                );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Red margin line */
+        .notebook-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: clamp(2.5rem, 5vw, 4rem);
+            width: 1px;
+            background: var(--margin-line);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .notebook-page > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.08s; }
+        .reveal:nth-child(2) { transition-delay: 0.16s; }
+        .reveal:nth-child(3) { transition-delay: 0.24s; }
+        .reveal:nth-child(4) { transition-delay: 0.32s; }
+        .reveal:nth-child(5) { transition-delay: 0.40s; }
+        .reveal:nth-child(6) { transition-delay: 0.48s; }
+        .reveal:nth-child(7) { transition-delay: 0.56s; }
+        .reveal:nth-child(8) { transition-delay: 0.64s; }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--tab-1), var(--tab-2), var(--tab-3));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(12px, 2vw, 24px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--tab-2);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px rgba(199, 184, 234, 0.5);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: rgba(255, 255, 255, 0.4);
+            z-index: 9998;
+        }
+
+        /* ===========================================
+           NOTEBOOK — Code Block Styling
+           =========================================== */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: clamp(6px, 1vw, 10px);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .code-header {
+            padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1.2rem);
+            background: rgba(0, 0, 0, 0.2);
+            font-size: var(--small-size);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-mono);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-block pre {
+            padding: clamp(0.8rem, 1.5vw, 1.2rem);
+            font-family: var(--font-mono);
+            font-size: var(--code-size);
+            line-height: 1.65;
+            overflow-x: auto;
+            color: var(--code-text);
+        }
+        .code-block pre code {
+            font-family: inherit;
+        }
+        .kw { color: #c792ea; }
+        .prop { color: #82aaff; }
+        .val { color: #c3e88d; }
+        .str { color: #c3e88d; }
+        .num { color: #f78c6c; }
+        .sel { color: #ffcb6b; }
+        .cm { color: #546e7a; font-style: italic; }
+        .punc { color: #89ddff; }
+        .unit { color: #f78c6c; }
+        .fn { color: #82aaff; }
+
+        /* ===========================================
+           NOTEBOOK — Inline Code
+           =========================================== */
+        .inline-code {
+            font-family: var(--font-mono);
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.1em 0.4em;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        /* ===========================================
+           NOTEBOOK — Handwritten Note
+           =========================================== */
+        .handwritten-note {
+            font-family: var(--font-handwritten);
+            color: #6a5acd;
+            font-size: clamp(0.9rem, 1.8vw, 1.3rem);
+            transform: rotate(-1deg);
+            display: inline-block;
+        }
+
+        /* ===========================================
+           NOTEBOOK — Sidebar Note
+           =========================================== */
+        .sidebar-note {
+            background: rgba(199, 184, 234, 0.15);
+            border-left: 3px solid var(--tab-2);
+            border-radius: 0 clamp(4px, 0.8vw, 6px) clamp(4px, 0.8vw, 6px) 0;
+            padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.2rem);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .sidebar-note strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 0.3em;
+            font-size: var(--body-size);
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide title-slide" aria-label="Title">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div>
+                <div class="binder-hole"></div>
+                <div class="binder-hole"></div>
+                <div class="binder-hole"></div>
+                <div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab active" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content" style="align-items: center; text-align: center;">
+                <p class="reveal handwritten-note" style="margin-bottom: var(--element-gap);">
+                    Lesson 12
+                </p>
+                <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 700; color: var(--text-primary); line-height: 1.1;">
+                    CSS Grid in 10 Minutes
+                </h1>
+                <div class="reveal" style="width: clamp(40px, 6vw, 60px); height: 2px; background: var(--tab-2); margin: var(--element-gap) auto;"></div>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); max-width: min(70vw, 550px); font-style: italic;">
+                    From Zero to Layout
+                </p>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--content-gap); line-height: 1.6; max-width: min(70vw, 500px);">
+                    After this lesson, you'll be able to build any two-dimensional layout with CSS Grid &mdash; no hacks, no floats, no tears.
+                </p>
+                <p class="reveal" style="font-size: var(--small-size); color: var(--text-muted); margin-top: var(--content-gap);">
+                    April 2026  |  ~10 min read
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: LEARNING OBJECTIVES =================== -->
+    <section class="slide" aria-label="Learning Objectives">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab active" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--accent);">
+                    Learning Objectives
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                    By the end of this lesson, you'll be able to:
+                </p>
+                <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0; max-width: min(80vw, 650px);">
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; border-bottom: 1px dashed var(--border);">
+                        <span style="background: var(--tab-1); color: var(--text-primary); font-family: var(--font-display); font-weight: 700; font-size: var(--small-size); padding: 0.15em 0.5em; border-radius: 3px; min-width: 2em; text-align: center;">01</span>
+                        <span style="font-size: var(--body-size); line-height: 1.5;">Explain the difference between Grid and Flexbox, and when to use each</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; border-bottom: 1px dashed var(--border);">
+                        <span style="background: var(--tab-2); color: var(--text-primary); font-family: var(--font-display); font-weight: 700; font-size: var(--small-size); padding: 0.15em 0.5em; border-radius: 3px; min-width: 2em; text-align: center;">02</span>
+                        <span style="font-size: var(--body-size); line-height: 1.5;">Create rows and columns using <code class="inline-code">grid-template</code> and the <code class="inline-code">fr</code> unit</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; border-bottom: 1px dashed var(--border);">
+                        <span style="background: var(--tab-3); color: var(--text-primary); font-family: var(--font-display); font-weight: 700; font-size: var(--small-size); padding: 0.15em 0.5em; border-radius: 3px; min-width: 2em; text-align: center;">03</span>
+                        <span style="font-size: var(--body-size); line-height: 1.5;">Build responsive grids with <code class="inline-code">auto-fit</code> and <code class="inline-code">minmax()</code></span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
+                        <span style="background: var(--tab-4); color: var(--text-primary); font-family: var(--font-display); font-weight: 700; font-size: var(--small-size); padding: 0.15em 0.5em; border-radius: 3px; min-width: 2em; text-align: center;">04</span>
+                        <span style="font-size: var(--body-size); line-height: 1.5;">Use named grid areas to create readable, maintainable page layouts</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: SECTION DIVIDER =================== -->
+    <section class="slide section-divider" aria-label="Section: Concepts">
+        <div class="notebook-page" style="background: var(--tab-2);">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="slide-content" style="align-items: center; justify-content: center; text-align: center;">
+                <span class="reveal" style="font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.2em; color: rgba(0,0,0,0.4); font-weight: 700;">
+                    Part 01
+                </span>
+                <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); margin-top: var(--element-gap); color: var(--text-primary);">
+                    Concepts
+                </h2>
+                <p class="reveal handwritten-note" style="margin-top: var(--element-gap); font-size: clamp(1rem, 2vw, 1.5rem); color: rgba(0,0,0,0.5);">
+                    The mental model that makes everything click.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: TWO-COLUMN — Core Concept =================== -->
+    <section class="slide" aria-label="Core Concept">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab active" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content" style="flex-direction: row; align-items: center; gap: var(--content-gap);">
+                <div style="flex: 1; min-width: 0;">
+                    <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--accent);">
+                        What Is CSS Grid?
+                    </h2>
+                    <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.65;">
+                        CSS Grid is a two-dimensional layout system. Unlike Flexbox (which works in one direction at a time), Grid lets you control <strong style="color: var(--text-primary);">both rows and columns simultaneously</strong>.
+                    </p>
+                    <div class="reveal sidebar-note" style="margin-top: var(--content-gap);">
+                        <strong>The Spreadsheet Analogy</strong>
+                        Think of Grid like a spreadsheet: you define the columns and rows, then place items into specific cells. Just like Excel, you can merge cells, skip cells, and resize columns &mdash; all with a few lines of CSS.
+                    </div>
+                    <p class="reveal handwritten-note" style="margin-top: var(--element-gap);">
+                        ^ Remember this analogy!
+                    </p>
+                </div>
+                <div style="flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center;">
+                    <div class="reveal" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: clamp(4px, 0.5vw, 8px); width: clamp(160px, 22vw, 280px); height: clamp(160px, 22vw, 280px); border: 2px solid var(--border); border-radius: 8px; padding: clamp(4px, 0.5vw, 8px); background: rgba(255,255,255,0.5);">
+                        <div style="background: var(--tab-2); border-radius: 4px; grid-column: 1 / 4; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-primary);">header</div>
+                        <div style="background: var(--tab-1); opacity: 0.6; border-radius: 4px; grid-row: 2 / 4; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-primary);">nav</div>
+                        <div style="background: rgba(255,255,255,0.8); border: 1px solid var(--border); border-radius: 4px; grid-column: 2 / 4; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary);">main</div>
+                        <div style="background: var(--tab-5); opacity: 0.5; border-radius: 4px; grid-column: 2 / 4; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-primary);">footer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: CARD GRID — Key Principles =================== -->
+    <section class="slide" aria-label="Key Principles">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab active" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; color: var(--accent);">
+                    The 4 Building Blocks
+                </h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, clamp(170px, 18vw, 220px)), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); margin-top: var(--content-gap); max-width: min(85vw, 800px); margin-left: auto; margin-right: auto;">
+                    <div class="reveal" style="background: rgba(255,255,255,0.6); border: 1px solid var(--border); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem); border-top: 3px solid var(--tab-1);">
+                        <span style="font-family: var(--font-handwritten); font-size: clamp(1.5rem, 3vw, 2rem); color: var(--tab-1); filter: brightness(0.7);">1</span>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: 0.2em; color: var(--text-primary);">Container</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; margin-top: 0.2em;">The parent element with <code class="inline-code">display: grid</code>. This is your spreadsheet.</p>
+                    </div>
+                    <div class="reveal" style="background: rgba(255,255,255,0.6); border: 1px solid var(--border); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem); border-top: 3px solid var(--tab-2);">
+                        <span style="font-family: var(--font-handwritten); font-size: clamp(1.5rem, 3vw, 2rem); color: var(--tab-2); filter: brightness(0.7);">2</span>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: 0.2em; color: var(--text-primary);">Tracks</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; margin-top: 0.2em;">Rows and columns defined with <code class="inline-code">grid-template-columns</code> and <code class="inline-code">grid-template-rows</code>.</p>
+                    </div>
+                    <div class="reveal" style="background: rgba(255,255,255,0.6); border: 1px solid var(--border); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem); border-top: 3px solid var(--tab-3);">
+                        <span style="font-family: var(--font-handwritten); font-size: clamp(1.5rem, 3vw, 2rem); color: var(--tab-3); filter: brightness(0.7);">3</span>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: 0.2em; color: var(--text-primary);">The <code style="font-family: var(--font-mono);">fr</code> Unit</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; margin-top: 0.2em;">A fraction of available space. <code class="inline-code">1fr 2fr</code> means "1 part + 2 parts" of whatever room is left.</p>
+                    </div>
+                    <div class="reveal" style="background: rgba(255,255,255,0.6); border: 1px solid var(--border); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem); border-top: 3px solid var(--tab-4);">
+                        <span style="font-family: var(--font-handwritten); font-size: clamp(1.5rem, 3vw, 2rem); color: var(--tab-4); filter: brightness(0.7);">4</span>
+                        <h3 style="font-size: var(--h3-size); font-family: var(--font-display); margin-top: 0.2em; color: var(--text-primary);">Gap</h3>
+                        <p style="font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; margin-top: 0.2em;">The gutter between cells. One property: <code class="inline-code">gap: 1rem</code>. No more margin gymnastics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: TIMELINE =================== -->
+    <section class="slide" aria-label="Step-by-Step Process">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab active" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; color: var(--accent);">
+                    How to Build a Grid Layout
+                </h2>
+                <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); text-align: center; margin-top: var(--element-gap);">
+                    Five steps, each one line of CSS.
+                </p>
+                <div style="display: flex; align-items: flex-start; gap: 0; margin-top: var(--content-gap); position: relative; max-width: min(85vw, 800px); margin-left: auto; margin-right: auto;">
+                    <div style="position: absolute; top: clamp(16px, 2.5vw, 20px); left: clamp(16px, 2.5vw, 20px); right: clamp(16px, 2.5vw, 20px); height: 2px; background: var(--border); border-style: dashed;"></div>
+                    <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--tab-1); color: var(--text-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--body-size); font-family: var(--font-handwritten);">1</div>
+                        <h3 style="font-size: var(--h3-size); margin-top: 0.5em; font-family: var(--font-display);">Set the container</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.2em; font-family: var(--font-mono);">display: grid</p>
+                    </div>
+                    <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--tab-2); color: var(--text-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--body-size); font-family: var(--font-handwritten);">2</div>
+                        <h3 style="font-size: var(--h3-size); margin-top: 0.5em; font-family: var(--font-display);">Define columns</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.2em; font-family: var(--font-mono);">grid-template-columns</p>
+                    </div>
+                    <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--tab-3); color: var(--text-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--body-size); font-family: var(--font-handwritten);">3</div>
+                        <h3 style="font-size: var(--h3-size); margin-top: 0.5em; font-family: var(--font-display);">Define rows</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.2em; font-family: var(--font-mono);">grid-template-rows</p>
+                    </div>
+                    <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--tab-4); color: var(--text-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--body-size); font-family: var(--font-handwritten);">4</div>
+                        <h3 style="font-size: var(--h3-size); margin-top: 0.5em; font-family: var(--font-display);">Add gaps</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.2em; font-family: var(--font-mono);">gap: 1rem</p>
+                    </div>
+                    <div class="reveal" style="flex: 1; text-align: center; position: relative; z-index: 1;">
+                        <div style="width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; background: var(--tab-5); color: var(--text-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--body-size); font-family: var(--font-handwritten);">5</div>
+                        <h3 style="font-size: var(--h3-size); margin-top: 0.5em; font-family: var(--font-display);">Place items</h3>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 0.2em; font-family: var(--font-mono);">grid-column / grid-row</p>
+                    </div>
+                </div>
+                <div class="reveal sidebar-note" style="margin-top: var(--content-gap); max-width: min(80vw, 650px); margin-left: auto; margin-right: auto;">
+                    <strong>Tip</strong>
+                    Steps 3 and 5 are optional. Grid auto-places items by default, and rows are created implicitly as needed. Start simple!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: CODE SHOWCASE =================== -->
+    <section class="slide" aria-label="Code Example">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab active" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content" style="flex-direction: row; align-items: center; gap: var(--content-gap);">
+                <div style="flex: 1.2; min-width: 0;">
+                    <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--accent);">Let's Build It</h2>
+                    <div class="reveal code-block" style="margin-top: var(--content-gap);">
+                        <div class="code-header">
+                            <span>style.css</span>
+                            <span>CSS</span>
+                        </div>
+                        <pre><code><span class="cm">/* Step 1: Activate Grid */</span>
+<span class="sel">.page</span> <span class="punc">{</span>
+  <span class="prop">display</span><span class="punc">:</span> <span class="val">grid</span><span class="punc">;</span>
+
+  <span class="cm">/* Step 2: 3 columns — sidebar, main, aside */</span>
+  <span class="prop">grid-template-columns</span><span class="punc">:</span> <span class="num">200px</span> <span class="num">1fr</span> <span class="num">200px</span><span class="punc">;</span>
+
+  <span class="cm">/* Step 3: 2 rows — header + content */</span>
+  <span class="prop">grid-template-rows</span><span class="punc">:</span> <span class="val">auto</span> <span class="num">1fr</span><span class="punc">;</span>
+
+  <span class="cm">/* Step 4: Spacing */</span>
+  <span class="prop">gap</span><span class="punc">:</span> <span class="num">1rem</span><span class="punc">;</span>
+
+  <span class="prop">height</span><span class="punc">:</span> <span class="num">100vh</span><span class="punc">;</span>
+<span class="punc">}</span>
+
+<span class="cm">/* Step 5: Place the header across all columns */</span>
+<span class="sel">.header</span> <span class="punc">{</span>
+  <span class="prop">grid-column</span><span class="punc">:</span> <span class="num">1</span> <span class="punc">/</span> <span class="num">-1</span><span class="punc">;</span>  <span class="cm">/* first to last line */</span>
+<span class="punc">}</span></code></pre>
+                    </div>
+                </div>
+                <div style="flex: 0.8; min-width: 0; display: flex; flex-direction: column; align-items: center;">
+                    <p class="reveal handwritten-note" style="margin-bottom: clamp(0.4rem, 1vw, 0.8rem);">Result</p>
+                    <div class="reveal" style="width: clamp(140px, 18vw, 220px); height: clamp(160px, 22vw, 260px); display: grid; grid-template-columns: 2fr 5fr 2fr; grid-template-rows: auto 1fr; gap: clamp(3px, 0.4vw, 5px); border: 2px solid var(--border); border-radius: 8px; padding: clamp(3px, 0.4vw, 5px); background: rgba(255,255,255,0.5);">
+                        <div style="grid-column: 1 / -1; background: var(--tab-2); border-radius: 4px; padding: clamp(3px, 0.5vw, 6px); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: clamp(0.5rem, 0.8vw, 0.65rem); color: var(--text-primary);">header</div>
+                        <div style="background: var(--tab-1); opacity: 0.5; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: clamp(0.45rem, 0.7vw, 0.6rem); color: var(--text-primary);">nav</div>
+                        <div style="background: rgba(255,255,255,0.8); border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: clamp(0.45rem, 0.7vw, 0.6rem); color: var(--text-secondary);">main</div>
+                        <div style="background: var(--tab-4); opacity: 0.4; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: clamp(0.45rem, 0.7vw, 0.6rem); color: var(--text-primary);">aside</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: COMPARISON =================== -->
+    <section class="slide" aria-label="Common Mistakes vs Best Practices">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab active" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); text-align: center; color: var(--accent);">
+                    Common Mistakes vs. Best Practices
+                </h2>
+                <div class="reveal" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--content-gap); margin-top: var(--content-gap); align-items: stretch; max-width: min(85vw, 800px); margin-left: auto; margin-right: auto;">
+                    <div style="background: rgba(244, 184, 197, 0.15); border: 1px solid rgba(244, 184, 197, 0.4); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem);">
+                        <h3 style="font-size: var(--h3-size); color: #c0392b; margin-bottom: 0.6em; font-family: var(--font-display);">&#10007; Don't Do This</h3>
+                        <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #c0392b;">&#10007;</span><span>Using <code class="inline-code">grid-template-columns: 200px 200px 200px</code> &mdash; breaks on small screens</span></li>
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #c0392b;">&#10007;</span><span>Adding margins to grid children for spacing instead of <code class="inline-code">gap</code></span></li>
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #c0392b;">&#10007;</span><span>Using Grid for a single row of items (Flexbox is simpler)</span></li>
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #c0392b;">&#10007;</span><span>Nesting grids 3+ levels deep</span></li>
+                        </ul>
+                    </div>
+                    <div style="width: 2px; background: var(--border); align-self: stretch;"></div>
+                    <div style="background: rgba(152, 212, 187, 0.15); border: 1px solid rgba(152, 212, 187, 0.4); border-radius: clamp(6px, 1vw, 10px); padding: clamp(0.8rem, 1.5vw, 1.2rem);">
+                        <h3 style="font-size: var(--h3-size); color: #27ae60; margin-bottom: 0.6em; font-family: var(--font-display);">&#10003; Do This Instead</h3>
+                        <ul style="list-style: none; padding: 0; font-size: var(--body-size); color: var(--text-secondary);">
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #27ae60;">&#10003;</span><span>Use <code class="inline-code">repeat(auto-fit, minmax(250px, 1fr))</code> for responsive grids</span></li>
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #27ae60;">&#10003;</span><span>Always use <code class="inline-code">gap</code> for gutters &mdash; it respects the grid geometry</span></li>
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #27ae60;">&#10003;</span><span>Use Grid for page layout, Flexbox for component internals</span></li>
+                            <li style="padding: clamp(0.2rem, 0.5vw, 0.35rem) 0; display: flex; gap: 0.5em;"><span style="color: #27ae60;">&#10003;</span><span>Try <code class="inline-code">grid-template-areas</code> for readable layouts</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 9: KEY TAKEAWAYS =================== -->
+    <section class="slide" aria-label="Key Takeaways">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab active" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content">
+                <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--accent);">
+                    Key Takeaways
+                </h2>
+                <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                    What to remember from today's lesson.
+                </p>
+                <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0; max-width: min(80vw, 650px);">
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; border-bottom: 1px dashed var(--border);">
+                        <span style="color: var(--tab-2); font-size: 0.8em;">&#9733;</span>
+                        <span style="font-size: var(--body-size); line-height: 1.6;"><strong style="color: var(--accent);">Grid = 2D, Flexbox = 1D.</strong> If you need to control both rows and columns, Grid is your tool.</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; border-bottom: 1px dashed var(--border);">
+                        <span style="color: var(--tab-2); font-size: 0.8em;">&#9733;</span>
+                        <span style="font-size: var(--body-size); line-height: 1.6;">The <code class="inline-code">fr</code> unit gives you proportional sizing without calculating percentages.</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; border-bottom: 1px dashed var(--border);">
+                        <span style="color: var(--tab-2); font-size: 0.8em;">&#9733;</span>
+                        <span style="font-size: var(--body-size); line-height: 1.6;"><code class="inline-code">repeat(auto-fit, minmax())</code> is the secret to responsive grids &mdash; no media queries needed.</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0; border-bottom: 1px dashed var(--border);">
+                        <span style="color: var(--tab-2); font-size: 0.8em;">&#9733;</span>
+                        <span style="font-size: var(--body-size); line-height: 1.6;"><code class="inline-code">grid-template-areas</code> makes complex layouts readable by naming regions instead of counting lines.</span>
+                    </li>
+                    <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.3rem, 0.8vw, 0.5rem) 0;">
+                        <span style="color: var(--tab-2); font-size: 0.8em;">&#9733;</span>
+                        <span style="font-size: var(--body-size); line-height: 1.6;">Start simple: <code class="inline-code">display: grid</code> + <code class="inline-code">grid-template-columns</code> + <code class="inline-code">gap</code> gets you 80% of the way.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 10: CLOSING =================== -->
+    <section class="slide" aria-label="Closing">
+        <div class="notebook-page">
+            <div class="binder-holes">
+                <div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div><div class="binder-hole"></div>
+            </div>
+            <div class="notebook-tabs">
+                <div class="notebook-tab" style="background: var(--tab-1); height: clamp(50px, 8vh, 70px);">Intro</div>
+                <div class="notebook-tab" style="background: var(--tab-2); height: clamp(40px, 6vh, 55px);">Concepts</div>
+                <div class="notebook-tab" style="background: var(--tab-3); height: clamp(55px, 9vh, 75px);">Code</div>
+                <div class="notebook-tab active" style="background: var(--tab-4); height: clamp(35px, 5vh, 50px);">Practice</div>
+                <div class="notebook-tab" style="background: var(--tab-5); height: clamp(45px, 7vh, 60px);">Resources</div>
+            </div>
+            <div class="slide-content" style="flex-direction: row; gap: var(--content-gap); align-items: flex-start;">
+                <div style="flex: 1; min-width: 0;">
+                    <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--accent);">
+                        Practice Exercises
+                    </h2>
+                    <p class="reveal" style="font-size: var(--body-size); color: var(--text-secondary); margin-top: var(--element-gap); line-height: 1.5;">
+                        Try these before the next lesson. Each one should take 5&ndash;15 minutes.
+                    </p>
+                    <ul class="bullet-list" style="margin-top: var(--content-gap); list-style: none; padding: 0;">
+                        <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.25rem, 0.6vw, 0.4rem) 0;">
+                            <span style="display: inline-flex; align-items: center; justify-content: center; width: clamp(20px, 2.5vw, 26px); height: clamp(20px, 2.5vw, 26px); background: var(--tab-1); border-radius: 50%; font-family: var(--font-handwritten); font-size: var(--body-size); font-weight: 700; color: var(--text-primary); flex-shrink: 0;">1</span>
+                            <span style="font-size: var(--body-size); line-height: 1.5;">Rebuild your portfolio's header + hero section using only Grid. No Flexbox allowed!</span>
+                        </li>
+                        <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.25rem, 0.6vw, 0.4rem) 0;">
+                            <span style="display: inline-flex; align-items: center; justify-content: center; width: clamp(20px, 2.5vw, 26px); height: clamp(20px, 2.5vw, 26px); background: var(--tab-3); border-radius: 50%; font-family: var(--font-handwritten); font-size: var(--body-size); font-weight: 700; color: var(--text-primary); flex-shrink: 0;">2</span>
+                            <span style="font-size: var(--body-size); line-height: 1.5;">Create a responsive photo gallery with <code class="inline-code">auto-fit</code> that looks good from 320px to 1920px wide.</span>
+                        </li>
+                        <li class="reveal" style="display: flex; align-items: baseline; gap: 0.75em; padding: clamp(0.25rem, 0.6vw, 0.4rem) 0;">
+                            <span style="display: inline-flex; align-items: center; justify-content: center; width: clamp(20px, 2.5vw, 26px); height: clamp(20px, 2.5vw, 26px); background: var(--tab-5); border-radius: 50%; font-family: var(--font-handwritten); font-size: var(--body-size); font-weight: 700; color: var(--text-primary); flex-shrink: 0;">3</span>
+                            <span style="font-size: var(--body-size); line-height: 1.5;">Use <code class="inline-code">grid-template-areas</code> to replicate the layout of any news website's homepage.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div style="flex: 0.8; min-width: 0;">
+                    <h2 class="reveal" style="font-size: var(--h2-size); font-family: var(--font-display); color: var(--accent);">
+                        Resources
+                    </h2>
+                    <div style="margin-top: var(--content-gap);">
+                        <div class="reveal" style="background: rgba(255,255,255,0.5); border: 1px solid var(--border); border-radius: clamp(4px, 0.8vw, 6px); padding: clamp(0.5rem, 1vw, 0.8rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
+                            <p style="font-size: var(--body-size); font-weight: 700; color: var(--text-primary);">CSS-Tricks: Complete Guide to Grid</p>
+                            <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">css-tricks.com/snippets/css/complete-guide-grid</p>
+                        </div>
+                        <div class="reveal" style="background: rgba(255,255,255,0.5); border: 1px solid var(--border); border-radius: clamp(4px, 0.8vw, 6px); padding: clamp(0.5rem, 1vw, 0.8rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
+                            <p style="font-size: var(--body-size); font-weight: 700; color: var(--text-primary);">Grid by Example &mdash; Rachel Andrew</p>
+                            <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">gridbyexample.com</p>
+                        </div>
+                        <div class="reveal" style="background: rgba(255,255,255,0.5); border: 1px solid var(--border); border-radius: clamp(4px, 0.8vw, 6px); padding: clamp(0.5rem, 1vw, 0.8rem); margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);">
+                            <p style="font-size: var(--body-size); font-weight: 700; color: var(--text-primary);">Grid Garden (interactive game)</p>
+                            <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">cssgridgarden.com</p>
+                        </div>
+                        <div class="reveal" style="background: rgba(255,255,255,0.5); border: 1px solid var(--border); border-radius: clamp(4px, 0.8vw, 6px); padding: clamp(0.5rem, 1vw, 0.8rem);">
+                            <p style="font-size: var(--body-size); font-weight: 700; color: var(--text-primary);">MDN: CSS Grid Layout</p>
+                            <p style="font-size: var(--small-size); color: var(--text-muted); margin-top: 0.2em;">developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Watermark -->
+            <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5; z-index: 2;">
+                Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+            </p>
+        </div>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Full-featured, production-ready
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+                this.setupSlideCounter();
+
+                if (this.slides[0]) {
+                    this.slides[0].classList.add('visible');
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) {
+                                this.currentSlide = idx;
+                                this.updateUI();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.slides.length - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                    this.touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(deltaY) < 50 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+                    if (deltaY > 0) this.goToSlide(this.currentSlide + 1);
+                    else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1);
+                        else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1);
+                    }, 50);
+                }, { passive: true });
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                if (!container) return;
+
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    container.appendChild(dot);
+                });
+            }
+
+            setupSlideCounter() {
+                this.counter = document.getElementById('slideCounter');
+                this.updateUI();
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            updateUI() {
+                const total = this.slides.length;
+                const current = this.currentSlide;
+
+                if (this.progressBar) {
+                    this.progressBar.style.width = `${((current + 1) / total) * 100}%`;
+                }
+
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === current);
+                });
+
+                if (this.counter) {
+                    this.counter.textContent = `${current + 1} / ${total}`;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>

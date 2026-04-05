@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Mesh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Poppins:wght@200;300;400;500;600&family=Noto+Sans+SC:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* === VIEWPORT BASE === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size: clamp(2rem, 8vw, 6rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.5; }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+:lang(zh), :lang(zh-CN) { line-height: 1.6; word-break: break-all; overflow-wrap: break-word; }
+h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; hyphens: auto; }
+p, li, blockquote { overflow-wrap: break-word; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .keyboard-hint, .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .slide-counter { display: none; } }
+@media (max-width: 600px) and (min-height: 700px) { :root { --slide-padding: clamp(1.5rem, 6vw, 3rem); --content-gap: clamp(1rem, 3vw, 2rem); } }
+@media (min-width: 2000px) { .slide-content { max-width: 1600px; margin: 0 auto; } }
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { .card, .content-box { border-width: 0.5px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; scroll-snap-type: none; } .reveal, [class*="reveal-"] { opacity: 0; transform: none !important; filter: none !important; transition: opacity 0.2s ease !important; } .slide.active .reveal, .slide.active [class*="reveal-"] { opacity: 1; } }
+@media print { html { scroll-snap-type: none; } .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; } .progress-bar, .page-counter { display: none !important; } .reveal, [class*="reveal-"] { opacity: 1 !important; transform: none !important; filter: none !important; } }
+
+/* === AURORA MESH THEME === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a1a;
+  --pink: rgba(255, 20, 147, 0.35);
+  --violet: rgba(139, 92, 246, 0.30);
+  --cyan: rgba(6, 182, 212, 0.25);
+  --emerald: rgba(16, 185, 129, 0.25);
+  --amber: rgba(245, 158, 11, 0.30);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: #fff; }
+body { font-family: 'Inter', 'Noto Sans SC', sans-serif; font-weight: 300; }
+
+/* Noise overlay */
+.noise-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, #ff1493, #8b5cf6, #06b6d4);
+  z-index: 1000; transition: width 0.5s var(--ease-out-expo);
+}
+
+.page-counter {
+  position: fixed; bottom: clamp(20px, 3vh, 40px); right: clamp(24px, 3vw, 48px);
+  font-family: 'Poppins', 'Noto Sans SC', sans-serif; font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 200; color: rgba(255,255,255,0.3); z-index: 1000; letter-spacing: 0.1em;
+}
+.page-counter .current { color: rgba(255,255,255,0.7); }
+
+.slide {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  overflow: hidden; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: clamp(40px, 6vh, 80px) clamp(48px, 8vw, 160px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+}
+
+/* Orbs */
+.orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-10px) translateX(6px); }
+  66% { transform: translateY(6px) translateX(-4px); }
+}
+
+/* Glass */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px;
+}
+
+/* Deco circles */
+.deco-circle {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.10); pointer-events: none;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 1), rgba(255, 255, 255, 1), rgba(139, 92, 246, 1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* Rainbow wrap */
+@keyframes rainbowRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animations */
+.reveal-gentle { opacity: 0; transition: opacity 1.2s ease; }
+.slide.active .reveal-gentle { opacity: 1; }
+.reveal-blur { opacity: 0; filter: blur(15px); transition: opacity 1s ease, filter 1s var(--ease-out-expo); }
+.slide.active .reveal-blur { opacity: 1; filter: blur(0); }
+.reveal { opacity: 0; transform: translateY(25px); transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo); }
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+
+.d1 { transition-delay: 0.1s !important; }
+.d2 { transition-delay: 0.25s !important; }
+.d3 { transition-delay: 0.4s !important; }
+.d4 { transition-delay: 0.55s !important; }
+.d5 { transition-delay: 0.7s !important; }
+
+/* Pillars */
+.pillars-row { display: flex; gap: clamp(16px, 2vw, 30px); flex-wrap: wrap; justify-content: center; }
+.pillar-card {
+  width: clamp(220px, 25vw, 340px); padding: clamp(24px, 3vh, 48px) clamp(20px, 2vw, 36px);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  border-radius: 20px; background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1); position: relative;
+}
+.pillar-icon {
+  width: clamp(36px, 4vw, 56px); height: clamp(36px, 4vw, 56px);
+  margin-bottom: clamp(16px, 2vh, 28px); display: flex; align-items: center; justify-content: center;
+}
+.icon-circle {
+  width: clamp(32px, 3.5vw, 48px); height: clamp(32px, 3.5vw, 48px);
+  border-radius: 50%; border: 2px solid rgba(255, 20, 147, 0.6);
+  box-shadow: inset 0 0 20px rgba(255, 20, 147, 0.25), 0 0 20px rgba(255, 20, 147, 0.15);
+}
+.icon-diamond {
+  width: clamp(24px, 2.5vw, 36px); height: clamp(24px, 2.5vw, 36px);
+  border: 2px solid rgba(139, 92, 246, 0.6); transform: rotate(45deg); border-radius: 4px;
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.25), 0 0 20px rgba(139, 92, 246, 0.15);
+}
+.icon-tri-wrap { filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.3)); }
+.icon-tri {
+  width: 0; height: 0;
+  border-left: clamp(16px, 1.5vw, 24px) solid transparent;
+  border-right: clamp(16px, 1.5vw, 24px) solid transparent;
+  border-bottom: clamp(28px, 2.5vw, 42px) solid rgba(6, 182, 212, 0.3);
+}
+.pillar-title {
+  font-family: 'Poppins', 'Noto Sans SC', sans-serif; font-weight: 600;
+  font-size: clamp(14px, 1.4vw, 20px); letter-spacing: 4px; color: #fff;
+  margin-bottom: clamp(12px, 1.5vh, 20px);
+}
+.pillar-desc {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(12px, 1.1vw, 15px); line-height: 1.75; color: rgba(255, 255, 255, 0.55);
+}
+
+/* Metrics */
+.metrics-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 32px);
+  max-width: min(90vw, 800px); position: relative;
+}
+.metric-panel {
+  padding: clamp(20px, 3vh, 40px) clamp(24px, 3vw, 48px);
+  border-radius: 20px; background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06); text-align: center;
+}
+.metric-number {
+  font-family: 'Poppins', 'Noto Sans SC', sans-serif; font-weight: 200;
+  font-size: clamp(36px, 6vw, 72px); line-height: 1;
+}
+.metric-label {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif; font-weight: 300;
+  font-size: clamp(11px, 1vw, 14px); color: rgba(255, 255, 255, 0.45);
+  margin-top: clamp(6px, 1vh, 12px); letter-spacing: 2px;
+}
+
+@media (max-width: 768px) {
+  .pillars-row { flex-direction: column; align-items: center; }
+  .metrics-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="noise-overlay"></div>
+<div class="progress-bar" id="progress"></div>
+<div class="page-counter"><span class="current" id="cur">01</span> / <span id="tot">05</span></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide active" data-i="0" style="background: radial-gradient(ellipse at 15% 20%, rgba(255,20,147,0.35) 0%, transparent 50%), radial-gradient(ellipse at 85% 80%, rgba(139,92,246,0.30) 0%, transparent 50%), radial-gradient(ellipse at 75% 40%, rgba(6,182,212,0.25) 0%, transparent 50%), #0a0a1a;">
+  <div class="orb" style="width: 300px; height: 300px; top: 60px; right: 120px; background: radial-gradient(circle, rgba(139,92,246,0.4), transparent 70%); filter: blur(60px); animation: pulse 6s ease-in-out infinite;"></div>
+  <div class="orb" style="width: 200px; height: 200px; bottom: 80px; left: 100px; background: radial-gradient(circle, rgba(6,182,212,0.35), transparent 70%); filter: blur(40px); animation: pulse 8s ease-in-out infinite 1s;"></div>
+  <div class="slide-inner">
+    <div class="reveal-blur d1" style="font-family: 'Poppins','Noto Sans SC',sans-serif; font-weight: 200; font-size: clamp(48px, 8vw, 100px); letter-spacing: clamp(12px, 3vw, 40px); text-indent: clamp(12px, 3vw, 40px);">AURORA</div>
+    <div class="reveal-gentle d2" style="width: 60%; max-width: 500px; height: 1px; background: linear-gradient(to right, transparent, rgba(255,20,147,0.5), rgba(139,92,246,0.5), transparent); margin-top: 16px;"></div>
+    <div class="reveal d3" style="font-family: 'Poppins','Noto Sans SC',sans-serif; font-weight: 300; font-size: clamp(16px, 2vw, 24px); color: rgba(255,255,255,0.6); margin-top: 12px; letter-spacing: 4px;">设计革命 &middot; 以光为笔</div>
+    <div class="reveal-gentle d4" style="width: 40%; max-width: 300px; height: 1px; background: rgba(255,255,255,0.2); margin-top: 48px;"></div>
+    <div class="reveal d5" style="position: absolute; bottom: clamp(30px, 4vh, 40px); font-family: 'Inter',sans-serif; font-weight: 300; font-size: 11px; letter-spacing: 6px; color: rgba(255,255,255,0.4);">2026 / DESIGN REVOLUTION</div>
+  </div>
+</div>
+
+<!-- Slide 2: Features -->
+<div class="slide" data-i="1" style="background: radial-gradient(ellipse at 10% 50%, rgba(255,20,147,0.28) 0%, transparent 45%), radial-gradient(ellipse at 30% 30%, rgba(139,92,246,0.22) 0%, transparent 45%), radial-gradient(ellipse at 80% 60%, rgba(6,182,212,0.25) 0%, transparent 45%), #0a0a1a;">
+  <div class="slide-inner">
+    <div class="reveal d1" style="font-family: 'Inter','Noto Sans SC',sans-serif; font-weight: 400; font-size: clamp(11px, 1vw, 14px); letter-spacing: 6px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: clamp(32px, 4vh, 48px);">核心能力</div>
+    <div class="pillars-row">
+      <div class="pillar-card reveal d2">
+        <div class="pillar-icon"><div class="icon-circle"></div></div>
+        <div class="pillar-title">智能布局</div>
+        <div class="pillar-desc">AI 理解内容语义，自动生成符合视觉层次的排版方案</div>
+      </div>
+      <div class="pillar-card reveal d3">
+        <div class="pillar-icon"><div class="icon-diamond"></div></div>
+        <div class="pillar-title">风格迁移</div>
+        <div class="pillar-desc">一键将任意参考图的视觉语言迁移到你的设计中</div>
+      </div>
+      <div class="pillar-card reveal d4">
+        <div class="pillar-icon"><div class="icon-tri-wrap"><div class="icon-tri"></div></div></div>
+        <div class="pillar-title">实时协作</div>
+        <div class="pillar-desc">多人同步编辑，AI 实时调和不同设计师的修改意图</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Stats -->
+<div class="slide" data-i="2" style="background: radial-gradient(ellipse at 50% 15%, rgba(245,158,11,0.30) 0%, transparent 45%), radial-gradient(ellipse at 15% 80%, rgba(139,92,246,0.25) 0%, transparent 50%), radial-gradient(ellipse at 85% 70%, rgba(6,182,212,0.15) 0%, transparent 45%), #0a0a1a;">
+  <div class="slide-inner">
+    <div class="metrics-grid">
+      <div class="metric-panel reveal d1">
+        <div class="metric-number gradient-text">10x</div>
+        <div class="metric-label">效率提升</div>
+      </div>
+      <div class="metric-panel reveal d2">
+        <div class="metric-number gradient-text">93%</div>
+        <div class="metric-label">用户满意度</div>
+      </div>
+      <div class="metric-panel reveal d3">
+        <div class="metric-number gradient-text">50M+</div>
+        <div class="metric-label">设计生成</div>
+      </div>
+      <div class="metric-panel reveal d4">
+        <div class="metric-number gradient-text">24/7</div>
+        <div class="metric-label">全球在线</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Quote -->
+<div class="slide" data-i="3" style="background: radial-gradient(ellipse at 15% 25%, rgba(16,185,129,0.30) 0%, transparent 50%), radial-gradient(ellipse at 55% 80%, rgba(6,182,212,0.25) 0%, transparent 50%), radial-gradient(ellipse at 85% 15%, rgba(139,92,246,0.28) 0%, transparent 50%), #0a0a1a;">
+  <div class="deco-circle" style="width: 180px; height: 180px; top: 60px; left: 80px; animation: floatSlow 10s ease-in-out infinite;"></div>
+  <div class="deco-circle" style="width: 120px; height: 120px; bottom: 100px; right: 140px; animation: floatSlow 12s ease-in-out infinite 2s;"></div>
+  <div class="slide-inner">
+    <div style="max-width: min(90vw, 820px); padding: 1px; border-radius: 25px; background: linear-gradient(135deg, rgba(16,185,129,0.4), rgba(6,182,212,0.3), rgba(139,92,246,0.4));" class="reveal-blur d1">
+      <div style="width: 100%; padding: clamp(40px, 5vh, 64px) clamp(36px, 5vw, 72px); text-align: center; background: rgba(255,255,255,0.09); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px;">
+        <div style="font-family: 'Poppins','Noto Sans SC',sans-serif; font-weight: 500; font-size: clamp(22px, 3vw, 36px); line-height: 1.5;">
+          "好的设计不是装饰，<br>是让复杂变得简单。"
+        </div>
+        <div style="margin-top: clamp(20px, 3vh, 32px); font-family: 'Inter',sans-serif; font-weight: 300; font-size: clamp(12px, 1vw, 14px); color: rgba(255,255,255,0.5);">— Dieter Rams</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Closing -->
+<div class="slide" data-i="4" style="background: radial-gradient(ellipse at 20% 30%, rgba(255,20,147,0.30) 0%, transparent 40%), radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.28) 0%, transparent 40%), radial-gradient(ellipse at 60% 70%, rgba(6,182,212,0.25) 0%, transparent 40%), radial-gradient(ellipse at 30% 80%, rgba(16,185,129,0.22) 0%, transparent 40%), #0a0a1a;">
+  <div class="orb" style="width: 100px; height: 100px; bottom: 180px; right: 200px; background: radial-gradient(circle, rgba(255,20,147,0.35), transparent 70%); filter: blur(30px); animation: pulse 7s ease-in-out infinite;"></div>
+  <div class="orb" style="width: 80px; height: 80px; top: 140px; left: 180px; background: radial-gradient(circle, rgba(16,185,129,0.35), transparent 70%); filter: blur(25px); animation: pulse 9s ease-in-out infinite 1.5s;"></div>
+  <div class="slide-inner">
+    <div class="reveal-blur d1" style="font-family: 'Poppins','Noto Sans SC',sans-serif; font-weight: 600; font-size: clamp(40px, 6vw, 84px); letter-spacing: 6px;">重新定义创造</div>
+    <div class="reveal d2" style="font-family: 'Poppins','Noto Sans SC',sans-serif; font-weight: 200; font-size: clamp(18px, 2.5vw, 32px); color: rgba(255,255,255,0.85); letter-spacing: 8px; margin-top: 4px;">DESIGN REVOLUTION</div>
+    <div class="reveal d3" style="margin-top: clamp(36px, 5vh, 52px); padding: 2px; border-radius: 24px; background: linear-gradient(135deg, rgba(255,20,147,0.6), rgba(139,92,246,0.6), rgba(6,182,212,0.6), rgba(16,185,129,0.6), rgba(245,158,11,0.6), rgba(255,20,147,0.6)); background-size: 300% 300%; animation: rainbowRotate 8s ease infinite;">
+      <div style="background: rgba(10,10,26,0.88); backdrop-filter: blur(24px); border-radius: 22px; padding: clamp(24px, 3vh, 40px) clamp(32px, 4vw, 64px); text-align: center;">
+        <div style="display: flex; gap: clamp(24px, 4vw, 56px); align-items: center; flex-wrap: wrap; justify-content: center;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 11px; letter-spacing: 3px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 8px;">Email</div>
+            <div style="font-size: clamp(13px, 1.2vw, 16px); color: rgba(255,255,255,0.75);">hello@aurora.design</div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 11px; letter-spacing: 3px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 8px;">Website</div>
+            <div style="font-size: clamp(13px, 1.2vw, 16px); color: rgba(255,255,255,0.75);">aurora.design</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-gentle d4" style="position: absolute; bottom: clamp(30px, 4vh, 40px); font-family: 'Inter',sans-serif; font-weight: 300; font-size: 14px; color: rgba(255,255,255,0.5); letter-spacing: 4px;">Thank you</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const bar = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  let c = 0;
+  function go(i){
+    if(i<0||i>=total)return;
+    slides[c].classList.remove('active');
+    slides[c].querySelectorAll('.reveal, .reveal-gentle, .reveal-blur').forEach(el=>{
+      el.style.transition='none'; el.offsetHeight; el.style.transition='';
+    });
+    c=i;
+    slides[c].classList.add('active');
+    bar.style.width=((c+1)/total*100)+'%';
+    cur.textContent=String(c+1).padStart(2,'0');
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(c+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1);
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest("button,a,.nav"))go(c+1);});
+  document.addEventListener('click',function(e){
+    if(e.clientX > window.innerWidth/2) go(c+1); else go(c-1);
+  });
+  bar.style.width=(1/total*100)+'%';
+})();
+</script>
+</body>
+</html>

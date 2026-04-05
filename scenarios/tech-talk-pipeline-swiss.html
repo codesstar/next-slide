@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Real-Time Data Pipeline — DataStream Inc.</title>
+
+    <!-- Fonts: Archivo + Nunito for Swiss Modern -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=Nunito:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — Swiss Modern
+           Clean, precise, Bauhaus-inspired
+           =========================================== */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #0a0a0a;
+            --text-secondary: #666666;
+            --text-muted: #767676;
+            --accent-red: #ff3300;
+            --grid-line: rgba(0, 0, 0, 0.06);
+            --border: #0a0a0a;
+            --border-light: #e0e0e0;
+            --surface: #f8f8f8;
+
+            --font-display: 'Archivo', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(2rem, 6vw, 4.5rem);
+            --h2-size: clamp(1.4rem, 3.5vw, 2.8rem);
+            --h3-size: clamp(0.9rem, 2vw, 1.4rem);
+            --subtitle-size: clamp(0.85rem, 1.8vw, 1.2rem);
+            --body-size: clamp(0.75rem, 1.3vw, 1rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --stat-size: clamp(2.5rem, 9vw, 6.5rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.5s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; max-height: 100%;
+            overflow: hidden; padding: var(--slide-padding);
+        }
+        h1, h2, h3 { overflow-wrap: break-word; }
+        p, li { overflow-wrap: break-word; }
+
+        /* ===========================================
+           SWISS GRID BACKGROUND
+           =========================================== */
+        .grid-bg::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: clamp(30px, 5vw, 60px) clamp(30px, 5vw, 60px);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Red accent bar */
+        .red-bar {
+            width: clamp(4px, 0.5vw, 6px);
+            background: var(--accent-red);
+            align-self: stretch;
+            flex-shrink: 0;
+        }
+
+        /* Section number */
+        .section-num {
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-family: var(--font-display);
+            font-weight: 900;
+            color: var(--bg-secondary);
+            line-height: 1;
+            position: absolute;
+            right: var(--slide-padding);
+            top: var(--slide-padding);
+            z-index: 0;
+        }
+
+        /* Swiss data bars */
+        .swiss-bar-group {
+            margin-top: var(--content-gap);
+        }
+        .swiss-bar-row {
+            display: flex; align-items: center;
+            border-bottom: 1px solid var(--border-light);
+            padding: clamp(8px, 1.2vh, 14px) 0;
+        }
+        .swiss-bar-label {
+            min-width: clamp(80px, 14vw, 160px);
+            font-size: var(--small-size);
+            font-family: var(--font-display);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .swiss-bar-track {
+            flex: 1; height: clamp(20px, 3vh, 32px);
+            background: var(--bg-secondary);
+            position: relative; overflow: hidden;
+        }
+        .swiss-bar-fill {
+            height: 100%;
+            transition: width 1.2s var(--ease-out-expo);
+        }
+        .swiss-bar-fill.red { background: var(--accent-red); }
+        .swiss-bar-fill.black { background: var(--text-primary); }
+        .swiss-bar-fill.gray { background: var(--text-secondary); }
+        .swiss-bar-value {
+            min-width: clamp(50px, 8vw, 90px);
+            text-align: right;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: var(--body-size);
+            padding-left: clamp(8px, 1vw, 16px);
+        }
+        .slide:not(.visible) .swiss-bar-fill { width: 0 !important; }
+
+        /* Swiss code block */
+        .swiss-code {
+            background: var(--text-primary);
+            color: #e6edf3;
+            border-radius: 0;
+            overflow: hidden;
+        }
+        .swiss-code-header {
+            padding: clamp(8px, 1vw, 12px) clamp(14px, 2vw, 20px);
+            background: #1a1a1a;
+            font-size: var(--small-size);
+            color: #999;
+            display: flex; justify-content: space-between;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .swiss-code-body {
+            padding: clamp(14px, 2vw, 24px);
+            font-family: var(--font-mono);
+            font-size: var(--body-size);
+            line-height: 1.7; overflow-x: auto;
+        }
+        .kw { color: #ff7b72; } .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; } .cm { color: #6e7681; }
+        .num { color: #79c0ff; } .type { color: #ffa657; }
+
+        /* Architecture nodes — Swiss style */
+        .swiss-arch {
+            display: flex; align-items: stretch;
+            gap: 0; margin-top: var(--content-gap);
+        }
+        .swiss-arch-node {
+            flex: 1;
+            padding: clamp(12px, 2vw, 24px);
+            border-right: 1px solid var(--border-light);
+            position: relative;
+        }
+        .swiss-arch-node:last-child { border-right: none; }
+        .swiss-arch-node.active {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+        .swiss-arch-node .node-num {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: var(--h3-size);
+            margin-bottom: clamp(4px, 0.5vh, 8px);
+        }
+        .swiss-arch-node.active .node-num { color: var(--accent-red); }
+        .swiss-arch-node .node-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: var(--body-size);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .swiss-arch-node .node-desc {
+            font-size: var(--small-size);
+            margin-top: clamp(4px, 0.5vh, 8px);
+            line-height: 1.5;
+        }
+        .swiss-arch-node.active .node-desc { color: #ccc; }
+
+        /* ===========================================
+           ANIMATIONS — Crisp, professional
+           =========================================== */
+        .reveal {
+            opacity: 0; transform: translateY(15px);
+            transition: opacity var(--duration-normal) ease-out,
+                        transform var(--duration-normal) ease-out;
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2) { transition-delay: 0.12s; }
+        .reveal:nth-child(3) { transition-delay: 0.19s; }
+        .reveal:nth-child(4) { transition-delay: 0.26s; }
+        .reveal:nth-child(5) { transition-delay: 0.33s; }
+        .reveal:nth-child(6) { transition-delay: 0.40s; }
+
+        /* Line accent reveal */
+        .line-accent { position: relative; display: inline-block; }
+        .line-accent::after {
+            content: ''; position: absolute; bottom: -4px; left: 0;
+            width: 0; height: 3px; background: var(--accent-red);
+            transition: width 0.6s var(--ease-out-expo);
+        }
+        .visible .line-accent::after { width: 100%; }
+
+        /* ===========================================
+           PROGRESS BAR / NAV / COUNTER
+           =========================================== */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 4px;
+            background: var(--accent-red);
+            width: 0%; z-index: 9999; transition: width 0.3s ease;
+        }
+        .nav-dots {
+            position: fixed; right: clamp(12px, 2vw, 24px); top: 50%;
+            transform: translateY(-50%); display: flex;
+            flex-direction: column; gap: 8px; z-index: 9998;
+        }
+        .nav-dot {
+            width: 8px; height: 8px; border-radius: 0;
+            background: var(--border-light); border: none;
+            cursor: pointer; transition: all 0.3s ease; padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent-red); transform: scale(1.3);
+        }
+        .slide-counter {
+            position: fixed; bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px); font-family: var(--font-display);
+            font-size: var(--small-size); color: var(--text-muted);
+            z-index: 9998; font-weight: 700;
+        }
+
+        /* ===========================================
+           RESPONSIVE
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 3vw, 2rem);
+                --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+                --title-size: clamp(1.5rem, 5vw, 3rem);
+                --h2-size: clamp(1.1rem, 3vw, 2rem);
+            }
+        }
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+                --title-size: clamp(1.25rem, 4vw, 2rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .section-num { display: none; }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.5rem, 8vw, 2.5rem); }
+            .slide-counter { display: none; }
+            .swiss-arch { flex-direction: column; }
+            .swiss-arch-node { border-right: none; border-bottom: 1px solid var(--border-light); }
+        }
+        @media (min-width: 2000px) {
+            .slide-content { max-width: 1400px; margin: 0 auto; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important; scroll-behavior: auto !important;
+            }
+            html { scroll-behavior: auto; scroll-snap-type: none; }
+            .reveal { opacity: 0; transform: none !important; transition: opacity 0.2s ease !important; }
+            .visible .reveal { opacity: 1; }
+        }
+        @media print {
+            html { scroll-snap-type: none; }
+            .slide { height: auto; min-height: 100vh; overflow: visible; page-break-after: always; }
+            .progress-bar, .nav-dots, .slide-counter { display: none !important; }
+            .reveal { opacity: 1 !important; transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+    <div class="slide-counter" id="slideCounter" aria-live="polite"></div>
+
+    <!-- =================== SLIDE 1: TITLE =================== -->
+    <section class="slide grid-bg" aria-label="Title">
+        <div class="slide-content" style="position: relative; z-index: 1;">
+            <div class="reveal" style="display: flex; align-items: center; gap: clamp(8px, 1.5vw, 16px); margin-bottom: var(--element-gap);">
+                <div style="width: clamp(24px, 4vw, 40px); height: 3px; background: var(--accent-red);"></div>
+                <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700;">DataStream Inc. / Tech Talk</span>
+            </div>
+            <h1 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; line-height: 1.0; letter-spacing: -0.02em;">
+                Building a<br>Real-Time<br>Data Pipeline
+            </h1>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap); max-width: 500px;">
+                From 10-minute batch delays to sub-second streaming architecture.
+            </p>
+            <div class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.1em;">
+                2026
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 2: PROBLEM =================== -->
+    <section class="slide grid-bg" aria-label="Problem">
+        <div class="section-num">01</div>
+        <div class="slide-content" style="position: relative; z-index: 1; max-width: 800px;">
+            <div class="reveal" style="display: flex; align-items: flex-start; gap: clamp(16px, 3vw, 32px);">
+                <div class="red-bar"></div>
+                <div>
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; color: var(--accent-red);">The Problem</span>
+                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.1;">
+                        Batch ETL was a liability.
+                    </h2>
+                </div>
+            </div>
+            <div style="margin-top: var(--content-gap); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: clamp(12px, 2vw, 24px); padding-left: clamp(24px, 4vw, 48px);">
+                <div class="reveal" style="border-top: 3px solid var(--text-primary); padding-top: clamp(8px, 1vh, 14px);">
+                    <div style="font-family: var(--font-display); font-weight: 900; font-size: var(--h2-size); line-height: 1;">$2.3M</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px;">Preventable fraud losses</div>
+                </div>
+                <div class="reveal" style="border-top: 3px solid var(--accent-red); padding-top: clamp(8px, 1vh, 14px);">
+                    <div style="font-family: var(--font-display); font-weight: 900; font-size: var(--h2-size); line-height: 1;">12x</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px;">Manual restarts per week</div>
+                </div>
+                <div class="reveal" style="border-top: 3px solid var(--text-primary); padding-top: clamp(8px, 1vh, 14px);">
+                    <div style="font-family: var(--font-display); font-weight: 900; font-size: var(--h2-size); line-height: 1;">20m</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px;">Dashboard staleness at peak</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 3: ARCHITECTURE =================== -->
+    <section class="slide" aria-label="Architecture">
+        <div class="section-num">02</div>
+        <div class="slide-content" style="position: relative; z-index: 1;">
+            <div class="reveal" style="display: flex; align-items: flex-start; gap: clamp(16px, 3vw, 32px);">
+                <div class="red-bar"></div>
+                <div>
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; color: var(--accent-red);">Architecture</span>
+                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.1;">
+                        The Streaming Stack
+                    </h2>
+                </div>
+            </div>
+            <div class="reveal swiss-arch">
+                <div class="swiss-arch-node">
+                    <div class="node-num">01</div>
+                    <div class="node-title">Sources</div>
+                    <div class="node-desc" style="color: var(--text-secondary);">PostgreSQL CDC via Debezium, REST APIs, IoT device streams</div>
+                </div>
+                <div class="swiss-arch-node active">
+                    <div class="node-num">02</div>
+                    <div class="node-title">Kafka</div>
+                    <div class="node-desc">Event bus with 12 partitions per topic, LZ4 compression, 3x replication</div>
+                </div>
+                <div class="swiss-arch-node">
+                    <div class="node-num">03</div>
+                    <div class="node-title">Flink</div>
+                    <div class="node-desc" style="color: var(--text-secondary);">Stream processor — SQL for 80% of jobs, Java for complex windowing</div>
+                </div>
+                <div class="swiss-arch-node">
+                    <div class="node-num">04</div>
+                    <div class="node-title">Sinks</div>
+                    <div class="node-desc" style="color: var(--text-secondary);">ClickHouse for analytics, Redis for hot path, S3 for cold storage</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 4: CODE =================== -->
+    <section class="slide grid-bg" aria-label="Code">
+        <div class="section-num">03</div>
+        <div class="slide-content" style="position: relative; z-index: 1; max-width: 900px;">
+            <div class="reveal" style="display: flex; align-items: flex-start; gap: clamp(16px, 3vw, 32px);">
+                <div class="red-bar"></div>
+                <div>
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; color: var(--accent-red);">Implementation</span>
+                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.1;">
+                        Flink SQL
+                    </h2>
+                </div>
+            </div>
+            <div class="reveal swiss-code" style="margin-top: var(--content-gap);">
+                <div class="swiss-code-header">
+                    <span>Fraud Detection</span>
+                    <span>Flink SQL</span>
+                </div>
+                <div class="swiss-code-body"><code><span class="kw">SELECT</span> user_id,
+       <span class="fn">COUNT</span>(*) <span class="kw">AS</span> tx_count,
+       <span class="fn">SUM</span>(amount) <span class="kw">AS</span> total_amount,
+       <span class="fn">TUMBLE_START</span>(event_time, <span class="fn">INTERVAL</span> <span class="str">'5'</span> <span class="type">MINUTE</span>)
+<span class="kw">FROM</span> transactions
+<span class="kw">GROUP BY</span> user_id,
+  <span class="fn">TUMBLE</span>(event_time, <span class="fn">INTERVAL</span> <span class="str">'5'</span> <span class="type">MINUTE</span>)
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) <span class="op">></span> <span class="num">20</span>
+   <span class="kw">OR</span> <span class="fn">SUM</span>(amount) <span class="op">></span> <span class="num">10000</span></code></div>
+            </div>
+            <p class="reveal" style="font-size: var(--small-size); color: var(--text-secondary); margin-top: var(--element-gap);">
+                5-minute tumbling windows detect anomalous transaction patterns. Alerts fire in under 1 second.
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 5: BENCHMARKS =================== -->
+    <section class="slide" aria-label="Benchmarks">
+        <div class="section-num">04</div>
+        <div class="slide-content" style="position: relative; z-index: 1; max-width: 900px;">
+            <div class="reveal" style="display: flex; align-items: flex-start; gap: clamp(16px, 3vw, 32px);">
+                <div class="red-bar"></div>
+                <div style="width: 100%;">
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; color: var(--accent-red);">Benchmarks</span>
+                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.1;">
+                        Before vs After
+                    </h2>
+                </div>
+            </div>
+            <div class="reveal swiss-bar-group">
+                <div class="swiss-bar-row">
+                    <span class="swiss-bar-label">Latency (Old)</span>
+                    <div class="swiss-bar-track"><div class="swiss-bar-fill red" style="width: 95%;"></div></div>
+                    <span class="swiss-bar-value" style="color: var(--accent-red);">10 min</span>
+                </div>
+                <div class="swiss-bar-row">
+                    <span class="swiss-bar-label">Latency (New)</span>
+                    <div class="swiss-bar-track"><div class="swiss-bar-fill black" style="width: 4%;"></div></div>
+                    <span class="swiss-bar-value">340ms</span>
+                </div>
+                <div class="swiss-bar-row">
+                    <span class="swiss-bar-label">Throughput</span>
+                    <div class="swiss-bar-track"><div class="swiss-bar-fill black" style="width: 82%;"></div></div>
+                    <span class="swiss-bar-value">1.2M/s</span>
+                </div>
+                <div class="swiss-bar-row">
+                    <span class="swiss-bar-label">Uptime</span>
+                    <div class="swiss-bar-track"><div class="swiss-bar-fill black" style="width: 99%;"></div></div>
+                    <span class="swiss-bar-value">99.97%</span>
+                </div>
+                <div class="swiss-bar-row">
+                    <span class="swiss-bar-label">Failures/wk</span>
+                    <div class="swiss-bar-track"><div class="swiss-bar-fill gray" style="width: 3%;"></div></div>
+                    <span class="swiss-bar-value">0.3</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 6: IMPACT =================== -->
+    <section class="slide grid-bg" aria-label="Impact">
+        <div class="section-num">05</div>
+        <div class="slide-content" style="position: relative; z-index: 1;">
+            <div class="reveal" style="display: flex; align-items: flex-start; gap: clamp(16px, 3vw, 32px);">
+                <div class="red-bar"></div>
+                <div>
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; color: var(--accent-red);">Impact</span>
+                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.1;">
+                        Production Numbers
+                    </h2>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 0; margin-top: var(--content-gap);">
+                <div class="reveal" style="border-right: 1px solid var(--border-light); padding: clamp(12px, 2vw, 24px);">
+                    <div class="counter" data-target="1760" data-suffix="x" style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 900;">0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-display);">Faster</div>
+                </div>
+                <div class="reveal" style="border-right: 1px solid var(--border-light); padding: clamp(12px, 2vw, 24px);">
+                    <div style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 900;"><span class="counter" data-target="2" data-prefix="$" data-suffix="M">0</span></div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-display);">Fraud Prevented</div>
+                </div>
+                <div class="reveal" style="border-right: 1px solid var(--border-light); padding: clamp(12px, 2vw, 24px);">
+                    <div class="counter" data-target="97" data-suffix="%" style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 900; color: var(--accent-red);">0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-display);">Less Manual Work</div>
+                </div>
+                <div class="reveal" style="padding: clamp(12px, 2vw, 24px);">
+                    <div class="counter" data-target="40" data-suffix="%" style="font-size: clamp(2rem, 6vw, 4rem); font-family: var(--font-display); font-weight: 900;">0</div>
+                    <div style="font-size: var(--small-size); color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-display);">Cost Reduction</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 7: LESSONS =================== -->
+    <section class="slide" aria-label="Lessons">
+        <div class="section-num">06</div>
+        <div class="slide-content" style="position: relative; z-index: 1; max-width: 800px;">
+            <div class="reveal" style="display: flex; align-items: flex-start; gap: clamp(16px, 3vw, 32px);">
+                <div class="red-bar"></div>
+                <div>
+                    <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; color: var(--accent-red);">Lessons</span>
+                    <h2 style="font-size: var(--h2-size); font-family: var(--font-display); font-weight: 900; margin-top: var(--element-gap); line-height: 1.1;">
+                        Five Hard-Won Insights
+                    </h2>
+                </div>
+            </div>
+            <div style="margin-top: var(--content-gap); display: flex; flex-direction: column; gap: 0;">
+                <div class="reveal" style="display: flex; border-bottom: 1px solid var(--border-light); padding: clamp(8px, 1.2vh, 14px) 0; gap: clamp(12px, 2vw, 24px);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent-red); min-width: 2em;">01</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size);">Schema Registry from day one.</span>
+                        <span style="font-size: var(--small-size); color: var(--text-secondary);"> Use Avro + Schema Registry before production.</span>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; border-bottom: 1px solid var(--border-light); padding: clamp(8px, 1.2vh, 14px) 0; gap: clamp(12px, 2vw, 24px);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent-red); min-width: 2em;">02</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size);">Start with Flink SQL.</span>
+                        <span style="font-size: var(--small-size); color: var(--text-secondary);"> Java only when SQL can't express your logic.</span>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; border-bottom: 1px solid var(--border-light); padding: clamp(8px, 1.2vh, 14px) 0; gap: clamp(12px, 2vw, 24px);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent-red); min-width: 2em;">03</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size);">Monitor consumer lag.</span>
+                        <span style="font-size: var(--small-size); color: var(--text-secondary);"> Lag alerts prevented more incidents than code reviews.</span>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; border-bottom: 1px solid var(--border-light); padding: clamp(8px, 1.2vh, 14px) 0; gap: clamp(12px, 2vw, 24px);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent-red); min-width: 2em;">04</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size);">Backpressure is a feature.</span>
+                        <span style="font-size: var(--small-size); color: var(--text-secondary);"> Instrument it, tune it, respect it.</span>
+                    </div>
+                </div>
+                <div class="reveal" style="display: flex; padding: clamp(8px, 1.2vh, 14px) 0; gap: clamp(12px, 2vw, 24px);">
+                    <span style="font-family: var(--font-display); font-weight: 900; color: var(--accent-red); min-width: 2em;">05</span>
+                    <div>
+                        <span style="font-family: var(--font-display); font-weight: 700; font-size: var(--body-size);">Exactly-once is a spectrum.</span>
+                        <span style="font-size: var(--small-size); color: var(--text-secondary);"> Know your consistency needs before over-engineering.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== SLIDE 8: CLOSING =================== -->
+    <section class="slide grid-bg" aria-label="Closing">
+        <div class="slide-content" style="position: relative; z-index: 1; align-items: flex-start; justify-content: flex-end; padding-bottom: clamp(3rem, 8vh, 6rem);">
+            <div class="reveal" style="display: flex; align-items: center; gap: clamp(8px, 1.5vw, 16px); margin-bottom: var(--element-gap);">
+                <div style="width: clamp(24px, 4vw, 40px); height: 3px; background: var(--accent-red);"></div>
+                <span style="font-family: var(--font-display); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700;">DataStream Inc.</span>
+            </div>
+            <h2 class="reveal" style="font-size: var(--title-size); font-family: var(--font-display); font-weight: 900; line-height: 1.0;">
+                Stop Batching.<br><span class="line-accent">Start Streaming.</span>
+            </h2>
+            <p class="reveal" style="font-size: var(--subtitle-size); color: var(--text-secondary); margin-top: var(--content-gap);">
+                datastream.io/pipeline  ·  @datastreamhq
+            </p>
+        </div>
+        <p style="position: absolute; bottom: clamp(8px, 1.5vw, 16px); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-muted); opacity: 0.5; z-index: 3;">
+            Made with <a href="https://github.com/user/next-slide" style="color: inherit; text-decoration: underline;" target="_blank">Next Slide</a>
+        </p>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = [...document.querySelectorAll('.slide')];
+                this.currentSlide = 0; this.isAnimating = false;
+                this.touchStartY = 0; this.touchStartX = 0;
+                this.init();
+            }
+            init() {
+                this.setupIntersectionObserver(); this.setupKeyboardNav();
+                this.setupTouchNav(); this.setupWheelNav();
+                this.setupProgressBar(); this.setupNavDots(); this.setupSlideCounter();
+                if (this.slides[0]) this.slides[0].classList.add('visible');
+            }
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            if (idx !== -1) { this.currentSlide = idx; this.updateUI(); }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch (e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+                document.addEventListener("click",(e)=>{if(!e.target.closest("button,a,.nav,[contenteditable],.slide-nav,.progress"))this.goToSlide(this.currentSlide+1);});
+            }
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => { this.touchStartY = e.touches[0].clientY; this.touchStartX = e.touches[0].clientX; }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const dY = this.touchStartY - e.changedTouches[0].clientY;
+                    const dX = this.touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(dY) < 50 || Math.abs(dX) > Math.abs(dY)) return;
+                    if (dY > 0) this.goToSlide(this.currentSlide + 1); else this.goToSlide(this.currentSlide - 1);
+                }, { passive: true });
+            }
+            setupWheelNav() {
+                let t; document.addEventListener('wheel', (e) => { clearTimeout(t); t = setTimeout(() => { if (e.deltaY > 30) this.goToSlide(this.currentSlide + 1); else if (e.deltaY < -30) this.goToSlide(this.currentSlide - 1); }, 50); }, { passive: true });
+            }
+            setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+            setupNavDots() {
+                const c = document.getElementById('navDots'); if (!c) return;
+                this.slides.forEach((_, i) => { const d = document.createElement('button'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.setAttribute('aria-label', `Slide ${i+1}`); d.addEventListener('click', () => this.goToSlide(i)); c.appendChild(d); });
+            }
+            setupSlideCounter() { this.counter = document.getElementById('slideCounter'); this.updateUI(); }
+            goToSlide(i) {
+                if (i < 0 || i >= this.slides.length || this.isAnimating) return;
+                this.isAnimating = true; this.currentSlide = i;
+                this.slides[i].scrollIntoView({ behavior: 'smooth' }); this.updateUI();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+            updateUI() {
+                const t = this.slides.length, c = this.currentSlide;
+                if (this.progressBar) this.progressBar.style.width = `${((c+1)/t)*100}%`;
+                document.querySelectorAll('.nav-dot').forEach((d,i) => d.classList.toggle('active', i===c));
+                if (this.counter) this.counter.textContent = `${c+1} / ${t}`;
+            }
+        }
+        const counters = document.querySelectorAll('.counter');
+        const cObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) { const el = entry.target; const target = parseInt(el.dataset.target); const suffix = el.dataset.suffix||''; const prefix = el.dataset.prefix||''; const dur = 1500; const start = performance.now(); function tick(now) { const p = Math.min((now-start)/dur,1); const e = 1-Math.pow(1-p,3); el.textContent = prefix+Math.round(target*e).toLocaleString()+suffix; if(p<1)requestAnimationFrame(tick); } requestAnimationFrame(tick); cObs.unobserve(el); } });
+        }, { threshold: 0.5 });
+        counters.forEach(c => cObs.observe(c));
+        document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+    </script>
+</body>
+</html>
