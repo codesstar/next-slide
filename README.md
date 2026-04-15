@@ -1,6 +1,12 @@
+<p align="right">
+  <strong>English</strong> | <a href="README_CN.md">中文</a>
+</p>
+
 # Next Slide
 
 ### 你的下个 ppt，何必是 PPT
+
+Works on **Claude Code** · **Hermes Agent** · **OpenClaw**
 
 > Describe what you want. Pick a style. Get a beautiful HTML presentation. No PowerPoint, no build tools, no dependencies.
 

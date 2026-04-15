@@ -6,7 +6,19 @@ license: MIT
 metadata:
   hermes:
     tags: [Presentation, HTML, Slides, Design, PPT]
-description: "Create stunning HTML presentations from scratch or by converting PowerPoint files. 50+ curated styles, bilingual support (EN/中文), zero dependencies. Use when the user wants to build a presentation, convert a PPT/PPTX to web slides, or create slides for a talk/pitch. Slogan: 你的下个 ppt，何必是 PPT"
+description: >
+  Next Slide (a.k.a. Next PPT / 下一代 PPT) — create stunning HTML presentations from scratch
+  or convert PowerPoint files. 50+ curated styles, bilingual (EN/中文), zero dependencies.
+  Works on Claude Code, Hermes Agent, and OpenClaw.
+  Trigger when the user says: "make a presentation", "build slides", "create a deck",
+  "pitch deck", "PPT", "PowerPoint", "convert pptx", "presentation about", "talk slides",
+  "slide deck", "next-slide", "next ppt",
+  "做个 PPT", "帮我做 PPT", "做个演示", "做个幻灯片", "做演示文稿",
+  "做个 slide", "做个分享", "做个 pitch", "做个汇报", "做个演讲材料",
+  "PPT 转 HTML", "把 PPT 改成网页", "PPT 转网页", "把 ppt 转成 HTML",
+  "做一份关于 X 的 PPT", "做一个 X 主题的演讲",
+  "下一代 PPT", "下个 PPT", "做幻灯片", "做提案", "做 demo deck".
+  Slogan: 你的下个 ppt，何必是 PPT.
 ---
 
 # Next Slide
