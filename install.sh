@@ -55,8 +55,10 @@ if [ -d "$HOME/.hermes/skills" ]; then
     rm -rf "$HERMES_SKILL_DIR"
   fi
 
-  ln -s "$SCRIPT_DIR" "$HERMES_SKILL_DIR"
-  echo "  Symlinked $SCRIPT_DIR -> $HERMES_SKILL_DIR"
+  # Hermes does NOT follow symlinks, so copy the directory contents
+  cp -R "$SCRIPT_DIR" "$HERMES_SKILL_DIR"
+  echo "  Copied $SCRIPT_DIR -> $HERMES_SKILL_DIR"
+  echo "  Note: Hermes uses a real copy (re-run install.sh after repo updates)"
   installed=true
 else
   echo "[3/3] Hermes Agent not found (no ~/.hermes/skills/) — skipping."
