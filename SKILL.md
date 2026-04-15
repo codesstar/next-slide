@@ -1,5 +1,11 @@
 ---
 name: next-slide
+version: 1.1.0
+author: Callum
+license: MIT
+metadata:
+  hermes:
+    tags: [Presentation, HTML, Slides, Design, PPT]
 description: "Create stunning HTML presentations from scratch or by converting PowerPoint files. 50+ curated styles, bilingual support (EN/中文), zero dependencies. Use when the user wants to build a presentation, convert a PPT/PPTX to web slides, or create slides for a talk/pitch. Slogan: 你的下个 ppt，何必是 PPT"
 ---
 

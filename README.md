@@ -43,9 +43,12 @@ open my-presentation.html    # One file. Zero dependencies.
 
 | Platform | Install |
 |----------|---------|
-| **OpenClaw** | `clawhub install next-slide` |
 | **Claude Code** | `git clone https://github.com/codesstar/next-slide ~/.claude/skills/next-slide` |
+| **Hermes Agent** | `git clone https://github.com/codesstar/next-slide ~/.hermes/skills/next-slide` |
+| **OpenClaw** | `clawhub install next-slide` |
 | **Any AI tool** | Paste `SKILL.md` as system prompt + reference the support files |
+
+> Or run `bash install.sh` from a clone — it auto-detects all three and symlinks for you.
 
 No runtime, no API keys, no vendor lock-in. Just markdown instructions + CSS/HTML references.
 
