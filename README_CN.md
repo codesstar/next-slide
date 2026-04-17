@@ -88,7 +88,7 @@ open my-presentation.html    # 单个文件，零依赖
 
 每个风格都是完整的设计系统：精挑的字体、色板、版式、专属动画、响应式断点。
 
-**看全部风格**：[Style Gallery](https://next-slide.vercel.app/gallery)，或本地 `open style-gallery.html`。
+**看全部风格**：[Style Gallery](https://next-slide-jet.vercel.app/gallery)，或本地 `open style-gallery.html`。
 
 ---
 

@@ -74,7 +74,7 @@ No runtime, no API keys, no vendor lock-in. Just markdown instructions + CSS/HTM
 
 Each style is a complete design system: curated typography, color palette, layout patterns, signature animations, and responsive breakpoints.
 
-**Browse all styles:** [Style Gallery](https://next-slide.vercel.app/gallery) or run `open style-gallery.html` locally after installing.
+**Browse all styles:** [Style Gallery](https://next-slide-jet.vercel.app/gallery) or run `open style-gallery.html` locally after installing.
 
 ---
 
